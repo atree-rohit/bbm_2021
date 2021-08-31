@@ -1,13 +1,16 @@
 @extends('layouts.app')
 
+<div class="container-fluid">
 @section('content')
-<div class="container-fluid h4">
 	<div class="d-flex justify-content-center">
 		<button type="button" id="upload-form" class="btn btn-block btn-success w-50" data-bs-toggle="modal" data-bs-target="#importModal">
 			Upload a Form
 		</button>
 	</div>
-	<div class="h1">{{$form_nos}} Forms Submitted</div>
+	<div class="h1">{{count($forms)}} Forms Submitted</div>
+	<div id="app">
+		<butterfly-counts :forms='@json($forms)' />
+	</div>
 
 </div>
 
@@ -36,3 +39,7 @@
 	</div>
 </div>
 @endsection
+
+@push('scripts')
+	<script src="{{ url('js/butterfly_counts.js') }}"></script>
+@endpush
