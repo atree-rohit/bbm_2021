@@ -16,20 +16,23 @@ class CountFormController extends Controller
      */
     public function index()
     {
-        $form_nos = CountForm::count();
+        $forms = CountForm::with("rows")->get();
 
-        return view('butterfly_count.index', compact("form_nos"));
+        return view('butterfly_count.index', compact("forms"));
     }
 
     public function import(Request $request)
     {
+        $form_cols = ["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather"];
+        //move form_cols to the component instead of a prop
         $path = $request->file('count_file')->store('count_file');
         $original_name = $request->count_file->getClientOriginalName();
         $raw_file = Excel::toArray(new CountForm, $path);
         $form_id = $this->newFile($path, $original_name, $raw_file);
-        $form = CountForm::where("id", $form_id)->with("rows")->get();
-
-        return view('butterfly_count.validate', compact('form'));
+        $form = CountForm::where("id", $form_id)->select($form_cols)->get()->first();
+        $form_data = $form->toArray();
+        $rows = $form->rows;
+        return view('butterfly_count.validate', compact('form_data', 'rows', "form_cols"));
     }
 
     public function newFile($file, $original_filename, $spreadsheet)
@@ -107,6 +110,15 @@ class CountFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    public function validate_form(Request $request)
+    {
+        dd($request->all());
+    }
+    public function getCoordinates($coordinates)
+    {
+    }
     public function create()
     {
         //
