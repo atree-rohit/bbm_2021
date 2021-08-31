@@ -1,0 +1,25 @@
+.navbar-brand{
+	display: inline-block;
+}
+#nav-logo{
+	height: 85px;
+	position: absolute;
+	margin-left: -15px;
+	margin-top: -30px;
+	/*display: block;*/
+}
+
+.h4{
+	line-height: 1.5em !important;
+}
+#upload-form{
+	font-size: 2em;
+}
+
+@media (max-width: 768px) {
+  #nav-logo {
+    position: relative;
+    margin-top: -12px;
+  }
+}
+
