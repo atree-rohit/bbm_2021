@@ -25,6 +25,7 @@ Route::get('/home', function () {
 Auth::routes();
 
 Route::post('/butterfly_count/import', [CountFormController::class, 'import']);
+Route::post('/butterfly_count/validate', [CountFormController::class, 'validate_form']);
 Route::resource('/butterfly_count', CountFormController::class);
 // Route::resource('/species', FormRowController::class);
 Route::resource('/species', SpeciesController::class);
