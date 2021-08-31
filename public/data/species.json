@@ -1,0 +1,2155 @@
+{
+  "Papilionidae": {
+    "Papilioninae": {
+      "Losaria": {
+        "1": "L. coon (Fabricius, 1793) Common Clubtail",
+        "2": "L. rhodifer (Butler, 1876) Andaman Clubtail"
+      },
+      "Pachliopta": {
+        "3": "P. aristolochiae (Fabricius, 1775) Common Rose",
+        "4": "P. hector (Linnaeus, 1758) Crimson Rose",
+        "5": "P. pandiyana (Moore, 1881) Malabar Rose"
+      },
+      "Troides": {
+        "6": "T. aeacus (C. & R. Felder, 1860) Golden Birdwing",
+        "7": "T. helena (Linnaeus, 1758) Common Birdwing",
+        "8": "T. minos (Cramer, [1779]) Southern Birdwing"
+      },
+      "Atrophaneura": {
+        "9": "A. aidoneus (Doubleday, 1845) Lesser Batwing",
+        "10": "A. varuna (White, 1842) Common Batwing"
+      },
+      "Byasa": {
+        "11": "B. crassipes (Oberthur, 1893) Black Windmill",
+        "12": "B. dasarada (Moore, 1858) Great Windmill",
+        "13": "B. latreillei (Donovan, 1826) Rose Windmill",
+        "14": "B. nevilli (Wood-Mason, 1882) Nevill’s Windmill",
+        "15": "B. plutonius (Oberthur, 1876) Chinese Windmill",
+        "16": "B. polla (de Niceville, 1897) de Niceville’s Windmill",
+        "17": "B. polyeuctes (Doubleday, 1842) Common Windmill"
+      },
+      "Papilio": {
+        "18": "P. agestor Gray, 1831 Tawny Mime",
+        "19": "P. alcmenor C. & R. Felder, [1864] Redbreast",
+        "20": "P. arcturus Westwood, 1842 Blue Peacock",
+        "21": "P. bianor Cramer, [1777] Common Peacock",
+        "22": "P. bootes Westwood, 1842 Tailed Redbreast",
+        "23": "P. buddha Westwood, 1872 Malabar Banded Peacock",
+        "24": "P. castor Westwood, 1842 Common Raven",
+        "25": "P. clytia Linnaeus, 1758 Common Mime",
+        "26": "P. crino Fabricius, 1793 Common Banded Peacock",
+        "27": "P. demoleus Linnaeus, 1758 Lime Butterfly",
+        "28": "P. dravidarum Wood-Mason, 1880 Malabar Raven",
+        "29": "P. elephenor Doubleday, 1845 Yellow-crested Spangle",
+        "30": "P. epycides Hewitson, 1864 Lesser Mime",
+        "31": "P. helenus Linnaeus, 1758 Red Helen",
+        "32": "P. krishna Moore, 1858 Krishna Peacock",
+        "33": "P. liomedon Moore, 1875 Malabar Banded Swallowtail",
+        "34": "P. machaon Linnaeus, 1758 Common Yellow Swallowtail",
+        "35": "P. mayo Atkinson, [1874] Andaman Mormon",
+        "36": "P. memnon Linnaeus, 1758 Great Mormon",
+        "37": "P. nephelus Boisduval, 1836 Yellow Helen",
+        "38": "P. paradoxa (Zincken, 1831) Great Blue Mime",
+        "39": "P. paris Linnaeus, 1758 Paris Peacock",
+        "40": "P. polymnestor Cramer, [1775] Blue Mormon",
+        "41": "P. polytes Linnaeus, 1758 Common Mormon",
+        "42": "P. prexaspes C. & R. Felder, 1865 Andaman Helen",
+        "43": "P. protenor Cramer, [1775] Spangle",
+        "44": "P. slateri Hewitson, 1859 Blue-striped Mime",
+        "45": "P. xuthus Linnaeus, 1767 Chinese Yellow Swallowtail"
+      },
+      "Graphium": {
+        "46": "G. adonarensis (Rothschild, 1896) Cryptic Bluebottle",
+        "47": "G. agamemnon (Linnaeus, 1758) Tailed Jay",
+        "48": "Graphium agetes (Westwood, 1843) Fourbar Swordtail",
+        "49": "G. albociliatis (Fruhstorfer, 1901) Scarce Jay",
+        "50": "G. antiphates (Cramer, [1775]) Fivebar Swordtail",
+        "51": "G. aristeus (Stoll, [1780]) Chain Swordtail",
+        "52": "G. arycles (Boisduval, 1836) Spotted Jay",
+        "53": "G. chironides (Honrath, 1884) Veined Jay",
+        "54": "G. cloanthus (Westwood. 1841) Glassy Bluebottle",
+        "55": "G. doson (C. & R. Felder, 1864) Common Jay",
+        "56": "G. epaminondas (Oberthur, 1789) Andaman Swordtail",
+        "57": "G. eurous (Leech, [1893]) Sixbar Swordtail",
+        "58": "G. eurypylus (Linnaeus, 1758) Great Jay",
+        "59": "G. macareus (Godart, 1819) Lesser Zebra",
+        "60": "G. mandarinus (Oberthur, 1879) Spectacle Swordtail",
+        "61": "G. megarus (Westwood, 1844) Spotted Zebra",
+        "62": "G. nomius (Esper, 1799) Spot Swordtail",
+        "63": "G. sarpedon (Linnaeus, 1758) Common Bluebottle",
+        "64": "G. teredon (C. & R. Felder, 1865) Southern Bluebottle",
+        "65": "G. xenocles (Doubleday, 1842) Great Zebra"
+      },
+      "Lamproptera": {
+        "66": "L. curius (Fabricius, 1787) White Dragontail",
+        "67": "L. meges (Zinken, 1831) Green Dragontail"
+      },
+      "Meandrusa": {
+        "68": "M. lachinus (Fruhstorfer, 1902) Brown Gorgon",
+        "69": "M. payeni (Boisduval, 1836) Yellow Gorgon"
+      },
+      "Teinopalpus": {
+        "70": "T. imperialis Hope, 1843 Kaiser-i-Hind"
+      }
+    },
+    "Parnassiinae": {
+      "Bhutanitis": {
+        "71": "B. lidderdalii Atkinson, 1873 Bhutan Glory",
+        "72": "B. ludlowi Gabriel, 1942 Ludlow’s Bhutan Glory"
+      },
+      "Parnassius": {
+        "73": "P. (Parnassius) actius (Eversmann, 1843) Scarce Red Apollo",
+        "74": "P. (Parnassius) epaphus Oberthur, 1879 Common Red Apollo",
+        "75": "P. (Parnassius) jacquemontii Boisduval, 1836 Keeled Apollo",
+        "76": "P. (Parnassius) tianschanicus Oberthur, 1879 Large Keeled Apollo",
+        "77": "P. (Kailasus) charltonius Gray, [1853] Regal Apollo",
+        "78": "P. (Kailasius) loxias Pungeler, 1901 Stately Apollo",
+        "79": "P. (Kailasius) (imperator) augustus Fruhstorfer, 1903 Noble Apollo",
+        "80": "P. (Kailasius) acdestis Grum-Grshimailo, 1891 Dusky Apollo",
+        "81": "P. (Koramius) (staudingeri) hunza Grum-Grshimailo, 1888 Karakoram Banded Apollo",
+        "82": "P. (Koramius) (staudingeri) mamaievi Bang-Haas, 1915 Scarce Banded Apollo",
+        "83": "P. (Koramius) stenosemus Honrath, 1890 Greater Banded Apollo",
+        "84": "P. (Koramius) stoliczkanus C. & R. Felder, 1865 Lesser Banded Apollo",
+        "85": "P. (Koramius) kumaonensis Riley, 1926 Himalayan Banded Apollo",
+        "86": "P. (Tadumia) acco Gray, [1853] Varnished Apollo",
+        "87": "P. (Tadumia) maharaja Avinoff, 1916 Royal Apollo",
+        "88": "P. (Lingamius) hardwickii Gray, 1831 Common Blue Apollo",
+        "89": "P. (Kreizbergia) simo Gray, [1853] Black-edged Apollo"
+      }
+    }
+  },
+  "Hesperiidae": {
+    "Coeliadinae": {
+      "Badamia": {
+        "1": "B. exclamationis (Fabricius, 1775) Brown Awl"
+      },
+      "Bibasis": {
+        "2": "B. iluska (Hewitson, 1867) Slate Awlet",
+        "3": "B. sena (Moore, [1866]) Orange-tailed Awlet"
+      },
+      "Burara": {
+        "4": "B. amara (Moore, [1866]) Small Green Awlet",
+        "5": "B. anadi (de Niceville, [1884]) Plain Orange Awlet",
+        "6": "B. etelka (Hewitson, 1867) Great Orange Awlet",
+        "7": "B. gomata (Moore, [1866]) Pale Green Awlet",
+        "8": "B. harisa (Moore, [1866]) Orange Striped Awlet",
+        "9": "B. jaina (Moore, [1866]) Orange Awlet",
+        "10": "B. oedipodea (Swainson, 1820) Branded Orange Awlet",
+        "11": "B. vasutana (Moore, [1866]) Green Awlet"
+      },
+      "Hasora": {
+        "12": "H. anura de Niceville, 1889 Slate Awl",
+        "13": "H. badra (Moore, [1858]) Common Awl",
+        "14": "H. chromus (Cramer, [1780]) Common Banded Awl",
+        "15": "H. danda Evans, 1949 Purple Awl",
+        "16": "H. khoda (Mabille, 1876) Large Banded Awl",
+        "17": "H. leucospila (Mabille, 1891) Violet Awl",
+        "18": "H. schoenherr (Latreille, [1824]) Yellow Banded Awl",
+        "19": "H. taminatus (Huebner, 1818) White Banded Awl",
+        "20": "H. vitta (Butler, 1870) Plain Banded Awl"
+      },
+      "Choaspes": {
+        "21": "C. benjaminii (Guerin-Meneville, 1843) Indian Awlking",
+        "22": "C. furcatus Evans, 1932 Hooked Awlking",
+        "23": "C. stigmatus Evans, 1932 Branded Awlking",
+        "24": "C. xanthopogon (Kollar, [1844]) Similar Awlking"
+      }
+    },
+    "Eudaminae": {
+      "Lobocla": {
+        "25": "L. liliana (Atkinson, 1871) Marbled Flat"
+      }
+    },
+    "Pyrginae": {
+      "Capila": {
+        "26": "C. jayadeva Moore, [1866] Striped Dawnfly",
+        "27": "C. lidderdali (Elwes, 1888) Lidderdale’s Dawnfly",
+        "28": "C. pennicillatum (de Niceville, [1893]) Fringed Dawnfly",
+        "29": "C. phanaeus (Hewitson, 1867) Fulvous Dawnfly",
+        "30": "C. pieridoides (Moore, 1878) White Dawnfly",
+        "31": "C. zennara (Moore, 1866]) Pale Striped Dawnfly"
+      },
+      "Tapena": {
+        "32": "T. thwaitesi Moore, [1881] Black Angle"
+      },
+      "Darpa": {
+        "33": "D. hanria Moore, [1866] Hairy Angle",
+        "34": "D. pteria (Hewitson, 1868) Snowy Angle",
+        "35": "D. striata (Druce, 1873) Striated Angle"
+      },
+      "Odina": {
+        "36": "O. decoratus (Hewitson, 1867) Zigzag Flat"
+      },
+      "Coladenia": {
+        "37": "C. agni (de Niceville, [1884]) Brown Pied Flat",
+        "38": "C. agnioides Elwes & Edwards, 1897 Elwes’s Pied Flat",
+        "39": "C. indrani (Moore, [1866]) Tricolour Pied Flat",
+        "40": "C. laxmi (de Niceville, [1889]) Grey Pied Flat"
+      },
+      "Satarupa": {
+        "41": "S. gopala Moore, [1866] Large White Flat",
+        "42": "S. splendens Tytler , 1915 Splendid White Flat",
+        "43": "S. zulla Tytler, 1915 Tytler’s White Flat"
+      },
+      "Seseria": {
+        "44": "S. dohertyi Watson, 1893 Himalayan White Flat",
+        "45": "S. sambara (Moore, [1866]) Sikkim White Flat"
+      },
+      "Pintara": {
+        "46": "P. tabrica (Hewitson, 1873) Crenulate Orange Flat"
+      },
+      "Chamunda": {
+        "47": "C. chamunda (Moore, [1866]) Olive Flat"
+      },
+      "Gerosis": {
+        "48": "G. bhagava (Moore, [1866]) Common Yellow-breast Flat",
+        "49": "G. phisara (Moore, 1884) Dusky Yello-w-breast Flat",
+        "50": "G. sinica (C. & R. Felder, 1862) White Yellow -breast Flat"
+      },
+      "Tagiades": {
+        "51": "T. calligana Butler, 1879 Malayan Snow Flat",
+        "52": "T. cohaerens Mabille, 1914 Striped Snow Flat",
+        "53": "T. gana (Moore, [1866]) Large Snow Flat",
+        "54": "T. japetus (Stoll , [1781]) Suffused Snow Flat ",
+        "55": "T. menaka (Moore, [1866])) Spotted Snow Flat",
+        "56": "T. parra Fruhstorfer, 1910 Common Snow Flat",
+        "57": "T. litigiosa Moeschler, 1878 Water Snow Flat"
+      },
+      "Mooreana": {
+        "58": "M. trichoneura (C. & R. Felder, 1860) Yellow Flat"
+      },
+      "Ctenoptilum": {
+        "59": "C. multiguttata de Niceville, 1890 Multispot Angle",
+        "60": "C. vasava (Moore, [1866]) Tawny Angle"
+      },
+      "Odontoptilum": {
+        "61": "O. angulatum (C. & R. Felder, 1862) Chestnut Angle"
+      },
+      "Caprona": {
+        "62": "C. agama (Moore, [1858]) Spotted Angle",
+        "63": "C. alida de Niceville, 1891 Evans’ Angle",
+        "64": "C. ransonnetii (Felder, 1868) Golden Angle"
+      },
+      "Celaenorrhinus": {
+        "65": "C. ambareesa (Moore, [1866]) Malabar Flat",
+        "66": "C. andamanicus Wood Mason & de Niceville, 1881 Andaman Yellow-banded Flat",
+        "67": "C. asmara (Butler, 1877) White Banded Flat",
+        "68": "C. aspersa Leech, 1891 Large Streaked Flat",
+        "69": "C. aurivittatus (Moore, 1878) Dark Yellow -banded Flat",
+        "70": "C. badius Hewitson, 1877 Scarce Banded Flat",
+        "71": "C. dhanada (Moore, [1866]) Himalayan Yellow-banded Flat",
+        "72": "C. ficulnea (Hewitson, 1868) Velvet Flat",
+        "73": "C. flavicincta (de Niceville, 1887) Bhutan Flat",
+        "74": "C. leucocera (Kollar, [1844]) Common Spotted Flat",
+        "75": "C. morena Evans, 1949 Evans’ Spotted Flat",
+        "76": "C. munda (Moore, 1884) Himalayan Spotted Flat",
+        "77": "C. nigricans (de Niceville, 1885) Small Banded Flat",
+        "78": "C. patula de Niceville, 1889 Large Spotted Flat",
+        "79": "C. pero de Niceville, 1889 Mussoorie Spotted Flat",
+        "80": "C. plagifera de Niceville, 1889 de Niceville’s Spotted Flat",
+        "81": "C. pulomaya (Moore, [1866]) Multi-spotted Flat",
+        "82": "C. putra ( Moore, [1866]) Bengal Spotted Flat",
+        "83": "C. pyrrha de Niceville, 1889 Double Spotted Flat",
+        "84": "C. ratna Fruhstorfer, 1909 Tytler’s Multi-spotted Flat",
+        "85": "C. ruficornis Mabille, 1878 Tamil Spotted Flat",
+        "86": "C. sumitra (Moore, [1866]) Moore’s Spotted Flat",
+        "87": "C. tibetanus Mabille, 1876 Tibet Flat",
+        "88": "C. zea Swinhoe, 1909 Swinhoe’s Flat"
+      },
+      "Pseudocoladenia": {
+        "89": "P. dan (Fabricius, 1787) Fulvous Pied Flat",
+        "90": "P. fatua (Evans, 1949) Sikkim Pied Flat",
+        "91": "P. festa (Evans, 1949) Naga Pied Flat"
+      },
+      "Sarangesa": {
+        "92": "S. purendra Moore, 1882 Spotted Small Flat",
+        "93": "S. dasahara (Moore, [1866]) Common Small Flat"
+      },
+      "Gomalia": {
+        "94": "G. elma (Trimen, 1862) African Marbled Skipper"
+      },
+      "Carcharodus": {
+        "95": "C. alceae (Esper, 1780) Plain Marbled Skipper",
+        "96": "C. dravira (Moore, [1875]) Tufted Marbled Skipper"
+      },
+      "Spialia": {
+        "97": "S. doris (Walker, 1870) Sind Skipper",
+        "98": "S. galba (Fabricius, 1793) Indian Skipper",
+        "99": "S. orbifer (Huebner, 1823) Brick Skipper"
+      },
+      "Erynnis": {
+        "100": "E. pathan Evans, 1949 Inky Skipper"
+      },
+      "Pyrgus": {
+        "101": "P. alpinus (Erschoff, 1874) Mountain Skipper",
+        "102": "P. cashmirensis Moore, 1874 Kashmir Skipper"
+      }
+    },
+    "Heteropterinae": {
+      "Carterocephalus": {
+        "103": "C. avanti (de Niceville, 1886) Orange-and-silver Hopper"
+      }
+    },
+    "Hesperiinae": {
+      "Ochus": {
+        "104": "O. subvittatus (Moore, 1878) Tiger Hopper"
+      },
+      "Baracus": {
+        "105": "B. vittatus (Felder, 1862) Hedge Hopper"
+      },
+      "Ampittia": {
+        "106": "A. dioscorides (Fabricius, 1793) Bush Hopper",
+        "107": "A. maroides de Niceville, 1896 Scarce Bush Hopper"
+      },
+      "Aeromachus": {
+        "108": "A. dubius Elwes & Edwards, 1897 Dingy Scrub Hopper",
+        "109": "A. jhora (de Niceville, 1885) Grey Scrub Hopper",
+        "110": "A. kali (de Niceville, 1895) Blue-spotted Scrub Hopper",
+        "111": "A. pygmaeus (Fabricius, 1775) Pigmy Scrub Hopper",
+        "112": "A. stigmatus (Moore, 1878) Veined Scrub Hopper"
+      },
+      "Sebastonyma": {
+        "113": "S. dolopia (Hewitson, 1868) Tufted Ace"
+      },
+      "Sovia": {
+        "114": "S. grahami (Evans, 1926) Graham’s Ace",
+        "115": "S. hyrtacus (de Niceville, 1897) White-branded Ace",
+        "116": "S. lucasii (Mabille, 1876) Lucas’ Ace.",
+        "117": "S. malta Evans, 1949 Manipur Ace",
+        "118": "S. separata (Moore,1882) Chequered Ace"
+      },
+      "Pedesta": {
+        "119": "P. masuriensis (Moore, 1878) Mussoorie Bush Bob",
+        "120": "P. panda Evans, 1937 Naga Bush Bob",
+        "121": "P. pandita (de Niceville, 1885) Brown Bush Bob"
+      },
+      "Thoressa": {
+        "122": "T. aina (de Niceville, [1889]) Garhwal Ace",
+        "123": "T. astigmata (Swinhoe, 1890) Southern Spotted Ace",
+        "124": "T. cerata (Hewitson, 1876) Northern Spotted Ace",
+        "125": "T. evershedi (Evans, 1910) Evershed’s Ace",
+        "126": "T. fusca (Elwes, [1893]) Fuscous Ace",
+        "127": "T. gupta (de Niceville, 1886) Olive Ace",
+        "128": "T. honorei (de Niceville, 1887) Madras Ace",
+        "129": "T. hyrie (de Niceville, 1891) Largespot Plain Ace",
+        "130": "T. masoni (Moore, 1878) Mason’s Ace",
+        "131": "T. sitala (de Niceville, 1885) Tamil Ace"
+      },
+      "Halpe": {
+        "132": "H. arcuata Evans, 1937 Evans’ Ace",
+        "133": "H. filda Evans, 1949 Elwes's Ace",
+        "134": "H. flava Evans, 1926 Tavoy Sulphur Ace",
+        "135": "H. hauxwelli Evans, 1937 Hauxwell’s Ace",
+        "136": "H. homolea (Hewitson, 1868) Indian Ace",
+        "137": "H. knyvetti Elwes & Edwards, 1897 Knyvett’s Ace",
+        "138": "H. kumara de Niceville, 1885 Plain Ace",
+        "139": "H. kusala Fruhstorfer, 1911 Tenasserim Ace",
+        "140": "H. porus (Mabille, [1877]) Moore’s Ace",
+        "141": "H. sikkima Moore, 1882 Sikkim Ace",
+        "142": "H. wantona Swinhoe, 1893 Confusing Ace",
+        "143": "H. zema (Hewitson, 1877) Banded Ace",
+        "144": "H. zola Evans, 1937 Long-banded Ace"
+      },
+      "Pithauria": {
+        "145": "P. marsena (Hewitson, [1866]) Branded Straw Ace",
+        "146": "P. murdava (Moore, [1866]) Dark Straw Ace",
+        "147": "P. stramineipennis Wood-Mason & de Niceville, [1887] Light Straw Ace"
+      },
+      "Apostictopterus": {
+        "148": "A. fuliginosus Leech, [1893] Giant Hopper"
+      },
+      "Astictopterus": {
+        "149": "A. jama C. & R. Felder, 1860 Forest Hopper"
+      },
+      "Arnetta": {
+        "150": "A. atkinsoni (Moore, 1878) Atkinson’s Bob",
+        "151": "A. mercara Evans, 1932 Coorg Forest Bob",
+        "152": "A. vindhiana (Moore, 1883) Vindhyan Bob"
+      },
+      "Actinor": {
+        "153": "A. radians (Moore, 1878) Veined Dart"
+      },
+      "Iambrix": {
+        "154": "I. salsala (Moore, [1866]) Chestnut Bob"
+      },
+      "Koruthaialos": {
+        "155": "K. butleri (de Niceville, [1884]) Dark Velvet Bob",
+        "156": "K. rubecula (Ploetz, 1882) Narrow-banded Velvet Bob",
+        "157": "K. sindu (C. & R. Felder, 1860) Bright Red Velvet Bob"
+      },
+      "Psolos": {
+        "158": "P. fuligo (Mabille, 1876) Coon"
+      },
+      "Stimula": {
+        "159": "S. swinhoei (Elwes & Edwards, 1897) Watson’s Demon"
+      },
+      "Ancistroides": {
+        "160": "A. nigrita (Latreille, [1824]) Chocolate Demon"
+      },
+      "Notocrypta": {
+        "161": "N. curvifascia (C. & R. Felder, 1862) Restricted Demon",
+        "162": "N. feisthamelii (Boisduval, 1832) Spotted Demon",
+        "163": "N. paralysos (Wood-Mason & de Niceville, 1881) Common Banded Demon"
+      },
+      "Udaspes": {
+        "164": "U. folus (Cramer, [1775]) Grass Demon"
+      },
+      "Scobura": {
+        "165": "S. cephala (Hewitson, 1876) Forest Bob",
+        "166": "S. cephaloides (de Niceville, [1889]) Large Forest Bob",
+        "167": "S. isota Swinhoe, 1893 Swinhoe’s Forest Bob",
+        "168": "S. phiditia (Hewitson, [1866]) Malay Forest Bob",
+        "169": "S. tytleri (Evans, 1914) Tytler’s Forest Bob",
+        "170": "S. woolletti (Riley, 1923) Wollett’s Forest Bob"
+      },
+      "Suada": {
+        "171": "S. swerga (de Niceville, [1884]) Grass Bob"
+      },
+      "Suastus": {
+        "172": "S. gremius (Fabricius, 1798) Indian Palm Bob",
+        "173": "S. minutus (Moore, 1877) Ceylon Palm Bob"
+      },
+      "Cupitha": {
+        "174": "C. purreea (Moore, 1877) Wax Dart"
+      },
+      "Zographetus": {
+        "175": "Z. ogygia (Hewitson, [1866]) Purple-spotted Flitter",
+        "176": "Z. rama (Mabille, [1877]) Small Flitter",
+        "177": "Z. satwa (de Niceville, [1884]) Purple-and-gold Flitter"
+      },
+      "Hyarotis": {
+        "178": "H. adrastus (Stoll, [1780]) Tree Flitter",
+        "179": "H. microstictum (Wood-Mason & de Niceville, [1887]) Brush Flitter"
+      },
+      "Quedara": {
+        "180": "Q. basiflava (de Niceville, [1888]) Golden Flitter",
+        "181": "Q. monteithi (Wood-Mason & de Niceville, [1887]) Dubious Flitter"
+      },
+      "Isma": {
+        "182": "I. bonota Cantlie & Norman, 1959 Assam Lancer"
+      },
+      "Plastingia": {
+        "183": "P. naga (de Niceville, [1884]) Silver-spotted Lancer"
+      },
+      "Salanoemia": {
+        "184": "S. fuscicornis (Elwes & Edwards, 1897) Purple Lancer",
+        "185": "S. noemi (de Niceville, 1885) Spotted Yellow Lancer",
+        "186": "S. sala (Hewitson, [1866]) Maculate Lancer",
+        "187": "S. tavoyana (Evans, 1926) Yellow-streaked Lancer"
+      },
+      "Pyroneura": {
+        "188": "P. margherita (Doherty, 1889) Assamese Yellow-vein Lancer",
+        "189": "P. niasana (Fruhstorfer, 1909) Red-vein Lancer"
+      },
+      "Lotongus": {
+        "190": "L. sarala (de Niceville, 1889) Yellowband Palmer"
+      },
+      "Zela": {
+        "191": "Z. zeus de Niceville, 1895 Redeye Palmer"
+      },
+      "Gangara": {
+        "192": "G. lebadea (Hewitson, 1886) Banded Redeye",
+        "193": "G. thyrsis (Fabricius, 1775) Giant Redeye"
+      },
+      "Erionota": {
+        "194": "E. hiraca (Moore, 1881) Andaman Redeye",
+        "195": "E. thrax (Linnaeus, 1767) Palm Redeye",
+        "196": "E. torus Evans, 1941 Banana Skipper"
+      },
+      "Matapa": {
+        "197": "M. aria (Moore, [1866]) Common Redeye",
+        "198": "M. cresta Evans, 1949 Darkbrand Redeye",
+        "199": "M. druna (Moore, [1866]) Greybrand Redeye",
+        "200": "M. purpurascens Elwes & Edwards, 1897 Purple Redeye",
+        "201": "M. sasivarna (Moore, [1866]) Black-veined Redeye"
+      },
+      "Pudicitia": {
+        "202": "P. pholus (de Niceville, 1889) Spotted Redeye"
+      },
+      "Unkana": {
+        "203": "U. ambasa Moore, [1858] Hoary Palmer"
+      },
+      "Hidari": {
+        "204": "H. bhawani (de Niceville, [1889]) Veined Palmer"
+      },
+      "Pirdana": {
+        "205": "P. hyela (Hewitson, 1867) Green-striped Palmer",
+        "206": "P. distanti Staudinger, 1889 Plain Green Palmer"
+      },
+      "Creteus": {
+        "207": "C. cyrina (Hewitson, 1876) Nonsuch Palmer"
+      },
+      "Gegenes": {
+        "208": "G. nostrodamus (Fabricius, 1793) Dingy Swift",
+        "209": "G. pumilio (Hoffmansegg, 1804) Pygmy Swift"
+      },
+      "Parnara": {
+        "210": "P. ganga Evans, 1937 Evans’ Swift",
+        "211": "P. guttatus (Bremer & Grey, [1852]) Straight Swift",
+        "212": "P. bada (Moore, 1878) Ceylon Swift"
+      },
+      "Borbo": {
+        "213": "B. bevani (Moore, 1878) Bevan’s Swift",
+        "214": "B. cinnara (Wallace, 1866) Rice Swift"
+      },
+      "Pelopidas": {
+        "215": "P. agna (Moore, [1866]) Obscure Branded Swift",
+        "217": "P. conjuncta (Herrich-Schaeffer, 1869) Conjoined Swift",
+        "218": "P. mathias (Fabricius, 1798) Variable Swift",
+        "219": "P. sinensis (Mabille, 1877) Large Branded Swift",
+        "220": "P. subochracea (Moore, 1878) Moore’s Swift",
+        "221": "P. thrax (Huebner, [1821]) Small Branded Swift"
+      },
+      "Polytremis": {
+        "222": "P. discreta (Elwes & Edwards, 1897) Himalayan Swift",
+        "223": "P. eltola (Hewitson,1869) Yellow Spot Swift",
+        "224": "P. lubricans (Herrich-Schaeffer, 1869) Contiguous Swift",
+        "225": "P. minuta (Evans, 1926) Baby Swift Assam; Manipur."
+      },
+      "Baoris": {
+        "226": "B. chapmani Evans, 1937 Small Paintbrush Swift",
+        "227": "B. farri (Moore, 1878) Paintbrush Swift",
+        "228": "B. pagana (de Niceville, 1887) Figure of Eight Swift",
+        "229": "B. unicolor Moore, 1883 Black Paintbrush Swift"
+      },
+      "Caltoris": {
+        "230": "C. aurociliata (Elwes & Edwards, 1897) Yellow Fringed Swift",
+        "231": "C. bromus (Leech, 1894) Leech’s Swift",
+        "232": "C. brunnea (Snellen, 1876) Dark-branded Swift",
+        "233": "C. cahira (Moore, 1877) Colon Swift",
+        "234": "C. canaraica (Moore, [1884]) Canara Swift",
+        "235": "C. confusa (Evans, 1932) Confusing Swift",
+        "236": "C. cormasa (Hewitson, 1876) Full-stop Swift",
+        "237": "C. kumara (Moore, 1878) Blank Swift",
+        "238": "C. philippina (Herrich-Schaeffer, 1869) Philippine Swift",
+        "239": "C. plebeia (de Niceville, 1887) Tufted Swift",
+        "240": "C. sirius (Evans, 1926) Sirius Swift ",
+        "241": "C. tulsi (de Niceville, [1884]) Purple Swift"
+      },
+      "Iton": {
+        "242": "I. semamora (Moore, [1866]) Common Wight"
+      },
+      "Taractocera": {
+        "243": "T. ceramas (Hewitson, 1868) Tamil Grassdart",
+        "244": "T. danna (Moore, 1865) Himalayan Grass Dart",
+        "245": "T. maevius (Fabricius, 1793) Common Grass Dart"
+      },
+      "Oriens": {
+        "246": "O. concinna (Elwes & Edwards, 1897) Tamil Dartlet",
+        "247": "O. gola (Moore, 1877) Common Dartlet",
+        "248": "O. goloides (Moore, [1881]) Ceylon Dartlet",
+        "249": "O. paragola de Niceville, 1895 Malay Dartlet"
+      },
+      "Potanthus": {
+        "250": "P. confucius (C. & R. Felder, 1862) Chinese Dart",
+        "251": "P. dara (Kollar, [1844]) Himalayan Dart",
+        "252": "P. ganda (Fruhstorfer, 1911) Sumatran Dart",
+        "253": "P. flavus (Murray, 1875) Japanese Dart",
+        "254": "P. hetaerus (Mabille, 1883) Large Dart",
+        "255": "P. juno (Evans, 1932) Burmese Dart",
+        "256": "P. lydia (Evans, 1934) Forest Dart",
+        "257": "P. mara (Evans, 1932) Sikkim Dart",
+        "258": "P. mingo (Edwards, 1866) Narrow Bi-dent Dart",
+        "259": "P. nesta (Evans, 1934) Brandless Dart",
+        "260": "P. pallidus (Evans, 1932) Pale Dart",
+        "261": "P. palnia (Evans, 1914) Palni Dart",
+        "262": "P. pava (Fruhstorfer, 1911) Yellow Dart",
+        "263": "P. pseudomaesa (Moore, [1881]) Indian Dart",
+        "264": "P. rectifasciata (Elwes & Edwards, 1897) Branded Dart",
+        "265": "P. sita (Evans, 1932) Yellow-and-black Dart",
+        "266": "P. trachala (Mabille, 1878) Broad Bi-dent Dart"
+      },
+      "Telicota": {
+        "267": "T. augias (Linnaeus, 1763) Pale Palm Dart",
+        "268": "T. bambusae (Moore, 1878) Dark Palm Dart Throughout",
+        "269": "T. besta Evans, 1949 Large Palm Dart",
+        "270": "T. colon (Fabricius, 1775) Common Palm Dart",
+        "271": "T. linna Evans, 1949 Evans’ Palm Dart",
+        "272": "T. ohara (Ploetz, 1883) Crested Palm Dart"
+      },
+      "Cephrenes": {
+        "273": "C. acalle (Hopffer, 1874) Plain Palm Dart"
+      },
+      "Hesperia": {
+        "274": "H. comma (Linnaeus, 1758) Chequered Darter"
+      },
+      "Ochlodes": {
+        "275": "O. brahma (Moore, 1878) Himalayan Darter",
+        "276": "O. siva (Moore, 1878) Assam Darter",
+        "277": "O. subhyalina (Bremer & Grey, 1853) Sub-hyaline Darter"
+      }
+    }
+  },
+  "Pieridae": {
+    "Coliadinae": {
+      "Catopsilia": {
+        "1": "C. pomona (Fabricius, 1775) Common Emigrant",
+        "2": "C. pyranthe (Linnaeus, 1758) Mottled Emigrant"
+      },
+      "Dercas": {
+        "3": "D. verhuelli (van der Hoeven, 1839) Tailed Sulphur",
+        "4": "D. lycorias (Doubleday, 1842) Plain Sulphur"
+      },
+      "Gonepteryx": {
+        "5": "G. amintha Blanchard, 1871 Chinese Brimstone",
+        "6": "G. chitralensis (Moore, 1905) Karakoram Brimstone",
+        "7": "G. mahaguru Gistel, 1857 Lesser Brimstone",
+        "8": "G. nepalensis Doubleday, 1847 Himalayan Brimstone"
+      },
+      "Gandaca": {
+        "9": "G. harina (Horsfield, [1829]) Tree Yellow"
+      },
+      "Eurema": {
+        "10": "E. andersoni Moore, 1886 One-spot Grass Yellow",
+        "11": "E. blanda (Boisduval, 1836) Three-spot Grass Yellow",
+        "12": "E. brigitta (Stoll, [1780]) Small Grass Yellow",
+        "13": "E. hecabe (Linnaeus, 1758) Common Grass Yellow",
+        "14": "E. laeta (Boisduval, 1836) Spotless Grass Yellow",
+        "15": "E. nilgiriensis Yata, 1990 Nilgiri Grass Yellow",
+        "16": "E. simulatrix (Semper, 1891) Scarce Grass Yellow"
+      },
+      "Colias": {
+        "17": "C. cocandica Erschoff, 1874 Pamir Clouded Yellow",
+        "18": "C. dubia Elwes, 1906 Dwarf Clouded Yellow",
+        "19": "C. eogene C. & R. Felder, 1865 Fiery Clouded Yellow",
+        "20": "C. erate (Esper, 1805) Pale Clouded Yellow",
+        "21": "C. fieldi Menetries, 1855 Dark Clouded Yellow",
+        "22": "C. ladakensis C.& R. Felder, 1865 Ladak Clouded Yellow",
+        "23": "C. leechi Grum-Grshimailo, 1893 Glaucous Clouded Yellow",
+        "24": "C. marcopolo Grum-Grshimailo, 1888 Marcopolo’s Clouded Yellow",
+        "25": "C. nilagiriensis C. & R. Felder, 1859 Nilgiri Clouded Yellow",
+        "26": "C. stoliczkana Moore, 1878 Orange Clouded Yellow",
+        "27": "C. thrasibulus Fruhstorfer, 1910 Lemon Clouded Yellow",
+        "28": "C. wiskotti Staudinger, 1882 Broad-bordered Clouded Yellow"
+      }
+    },
+    "Pierinae": {
+      "Leptosia": {
+        "29": "L. nina (Fabricius, 1793) Psyche"
+      },
+      "Baltia": {
+        "30": "B. butleri Moore, 1882 Butler’s Dwarf",
+        "31": "B. shawii (Bates, 1873) Shaw’s Dwarf",
+        "32": "B. sikkima Fruhstorfer, 1903 Sikkim Dwarf"
+      },
+      "Mesapia": {
+        "33": "M. peloria (Hewitson, 1853) Thibet Blackvein"
+      },
+      "Aporia": {
+        "34": "A. agathon (Gray, 1831) Great Blackvein",
+        "35": "A. harrietae (de Niceville, [1893]) Bhutan Blackvein",
+        "36": "A. leucodice (Eversmann, 1843) Baluchi Blackvein",
+        "37": "A. nabellica (Boisduval, [1836]) Dusky Blackvein",
+        "38": "A. soracta Moore, 1857 Himalayan Blackvein"
+      },
+      "Pieris": {
+        "39": "P. ajaka Moore, 1865 Himalayan White",
+        "40": "P. brassicae (Linnaeus, 1758) Large Cabbage White",
+        "41": "P. canidia (Linnaeus, 1768) Indian Cabbage White",
+        "42": "P. deota (de Niceville,[1884]) Kashmir White",
+        "43": "P. dubernardi Oberthur, 1884 Chumbi White",
+        "44": "P. extensa Poujade, 1888 Bhutan White",
+        "45": "P. krueperi Staudinger, 1860 Green Banded White",
+        "46": "P. melete Menetries, 1857 Western Black-Veined White",
+        "47": "P. rapae (Linnaeus, 1758) Small Cabbage White"
+      },
+      "Talbotia": {
+        "48": "T. naganum (Moore, 1884) Naga White"
+      },
+      "Pontia": {
+        "49": "P. callidice (Huebner, [1799-1800]) Lofty Bath White",
+        "50": "P. chloridice (Huebner, [1808-13]) Lesser Bath White",
+        "51": "P. daplidice (Linnaeus, 1758) Bath White",
+        "52": "P. glauconome (Klug, 1829) Desert Bath White",
+        "53": "P. sherpae Epstein, 1979 Sherpa White"
+      },
+      "Ixias": {
+        "54": "I. marianne (Cramer, [1779]) White Orange Tip",
+        "55": "I. pyrene (Linnaeus, 1764) Yellow Orange Tip"
+      },
+      "Colotis": {
+        "56": "C. amata (Cramer, 1775) Small Salmon Arab",
+        "57": "C. aurora (Cramer, [1780]) Plain Orange Tip",
+        "58": "C. danae (Fabricius, 1775) Crimson Tip",
+        "59": "C. etrida (Boisduval, 1836) Little Orange Tip",
+        "60": "C. fausta (Olivier, 1804) Large Salmon Arab",
+        "61": "C. phisadia (Godart, 1819) White Arab",
+        "62": "C. protractus Butler, 1876 Blue Spotted Arab"
+      },
+      "Appias": {
+        "63": "A. albina (Boisduval, 1836) Common Albatross",
+        "64": "A. indra (Moore, 1857) Plain Puffin",
+        "65": "A. lalage (Doubleday, 1842) Spot Puffin",
+        "66": "A. libythea (Fabricius, 1775) Striped Albatross",
+        "67": "A. lyncida (Cramer, [1777]) Chocolate Albatross",
+        "68": "A. nero (Fabricius, 1793) Orange Albatross",
+        "69": "A. paulina (Cramer, [1777]) Lesser Albatross",
+        "70": "A. wardi (Moore, 1884) Indian Albatross"
+      },
+      "Saletara": {
+        "71": "S. liberia (Cramer, [1779]) Nicobar Albatross"
+      },
+      "Prioneris": {
+        "72": "P. philonome (Boisduval, 1836) Redspot Sawtooth",
+        "73": "P. sita (C. & R. Felder, [1865]) Painted Sawtooth",
+        "74": "P. thestylis (Doubleday, 1842) Spotted Sawtooth"
+      },
+      "Belenois": {
+        "75": "B. aurota (Fabricius, 1793) Pioneer"
+      },
+      "Cepora": {
+        "76": "C. nadina (Lucas, 1852) Lesser Gull",
+        "77": "C. nerissa (Fabricius, 1775) Common Gull"
+      },
+      "Delias": {
+        "78": "D. acalis (Godart, 1819) Redbreast Jezabel",
+        "79": "D. agostina (Hewitson, 1852) Yellow Jezabel",
+        "80": "D. belladonna (Fabricius, 1793) Hill Jezabel",
+        "81": "D. berinda (Moore, 1872) Dark Jezabel",
+        "82": "D. descombesi (Boisduval, 1836) Redspot Jezabel",
+        "83": "D. eucharis (Drury, 1773) Common Jezabel",
+        "84": "D. hyparete (Linnaeus, 1758) Painted Jezabel",
+        "85": "D. lativitta Leech, 1893 Broadwing Jezabel",
+        "86": "D. sanaca (Moore, 1857) Pale Jezabel",
+        "87": "D. pasithoe (Linnaeus, 1767) Redbase Jezabel"
+      },
+      "Euchloe": {
+        "88": "E. daphalis (Moore, 1865) Little White"
+      },
+      "Pareronia": {
+        "89": "P. avatar (Moore, [1858]) Pale Wanderer",
+        "90": "P. ceylanica (C. & R. Felder, 1865) Dark Wanderer",
+        "91": "P. valeria (Cramer, [1776]) Common Wanderer"
+      },
+      "Hebomoia": {
+        "92": "H. glaucippe (Linnaeus, 1758) Great Orange Tip"
+      }
+    }
+  },
+  "Riodinidae": {
+    "Riodininae": {
+      "Zemeros": {
+        "1": "Z. flegyas (Cramer, [1780]) Punchinello"
+      },
+      "Dodona": {
+        "2": "D. adonira Hewitson, 1866 Striped Punch",
+        "3": "D. dipoea Hewitson, 1866 Lesser Punch",
+        "4": "D. durga (Kollar, [1844]) Common Punch",
+        "5": "D. egeon (Westwood, [1851]) Orange Punch",
+        "6": "D. eugenes Bates, [1868] Tailed Punch",
+        "7": "D. longicaudata Niceville, 1881 Long-tailed Punch",
+        "8": "D. ouida Moore, 1866 Mixed Punch"
+      },
+      "Abisara": {
+        "9": "A. abnormis Moore, [1884] Abnormal Judy",
+        "10": "A. attenuata Tytler, 1915 Short Tailed Judy",
+        "11": "A. bifasciata Moore, 1877 Twospot Plum Judy",
+        "12": "A. burnii (de Niceville, 1895) Burn’s Judy",
+        "13": "A. chela de Niceville, 1886 Spot Judy",
+        "14": "A. echerius (Stoll, [1790]) Plum Judy",
+        "15": "A. fylla (Westwood, 1851) Dark Judy",
+        "16": "A. neophron (Hewitson, 1861) Tailed Judy",
+        "17": "A. saturata (Moore, 1878) Malayan Plum Judy"
+      },
+      "Taxila": {
+        "18": "T. haquinus (Fabricius, 1793) Harlequin"
+      },
+      "Stiboges": {
+        "19": "S. nymphidia Butler, 1876 Columbine"
+      }
+    }
+  },
+  "Lycaenidae": {
+    "Curetinae": {
+      "Curetis": {
+        "1": "C. acuta Moore, 1877 Angled Sunbeam",
+        "2": "C. bulis (Westwood, 1852) Bright Sunbeam",
+        "3": "C. naga Evans, 1954 Naga Sunbeam",
+        "4": "C. saronis Moore, 1877 Burmese Sunbeam",
+        "5": "C. siva Evans. 1954 Siva Sunbeam",
+        "6": "C. thetis (Drury, [1773]) Indian Sunbeam"
+      }
+    },
+    "Poritinae": {
+      "Poritia": {
+        "7": "P. erycinoides (C. & R. Felder, 1865) Blue Gem",
+        "8": "P. hewitsoni Moore, [1866] Common Gem"
+      },
+      "Simiskina": {
+        "9": "S. phalena (Hewitson, 1874) Broad-banded Brilliant"
+      }
+    },
+    "Liphyrinae": {
+      "Liphyra": {
+        "10": "L. brassolis Westwood, 1864 Moth Butterfly"
+      }
+    },
+    "Miletinae": {
+      "Allotinus": {
+        "11": "A. drumila (Moore, [1866]) Great Darkie",
+        "12": "A. subviolaceus (C. & R. Felder, [1865]) Blue Darkie",
+        "13": "A. unicolor C. & R. Felder, [1865] Common Darkie",
+        "14": "A. taras (Doherty, 1889) Brown-tipped Darkie"
+      },
+      "Logania": {
+        "15": "L. distanti Semper, 1889 Dark Mottle",
+        "16": "L. marmorata Moore, 1884 Pale Mottle",
+        "17": "L. watsoniana de Niceville, 1898 Watson’s Mottle"
+      },
+      "Miletus": {
+        "18": "M. chinensis C. Felder, 1862 Common Brownie",
+        "19": "M. symethus (Cramer, 1777) Great Brownie"
+      },
+      "Taraka": {
+        "20": "T. hamada (Druce, 1875) Forest Pierrot"
+      },
+      "Spalgis": {
+        "21": "S. baiongus Cantlie & Norman 1960 Assam Apefly",
+        "22": "S. epius (Westwood, 1852) Common Apefly"
+      }
+    },
+    "Lycaeninae": {
+      "Lycaena": {
+        "23": "L. kasyapa (Moore, 1865) Green Copper",
+        "24": "L. panava (Westwood, 1852) White-bordered Copper",
+        "25": "L. phlaeas (Linnaeus, 1761) Common Copper"
+      },
+      "Thersamonia": {
+        "26": "T. aditya (Moore, [1875]) Ladakh Copper"
+      },
+      "Heliophorus": {
+        "27": "H. androcles (Westwood, 1851) Green Sapphire",
+        "28": "H. bakeri (Evans, 1927) Western Blue Sapphire",
+        "29": "H. brahma (Moore, [1858]) Golden Sapphire",
+        "30": "H. epicles (Godart, [1824]) Purple Sapphire",
+        "31": "H. hybrida (Tytler, 1912) Hybrid Sapphire",
+        "32": "H. ila (de Niceville & Martin, [1896]) Restricted Purple Sapphire",
+        "33": "H. indicus (Fruhstorfer,1908) Indian Purple Sapphire",
+        "34": "H. kohimensis (Tytler, 1912) Naga Sapphire",
+        "35": "H. moorei (Hewitson, 1865) Azure Sapphire",
+        "36": "H. oda (Hewitson, 1865) Eastern Blue Sapphire",
+        "37": "H. sena (Kollar, [1844]) Sorrel Sapphire",
+        "38": "H. tamu (Kollar, [1844]) Powdery Green Sapphire"
+      }
+    },
+    "Aphnaeinae": {
+      "Apharitis": {
+        "39": "A. acamas (Klug, 1834) Tawny Silverline",
+        "40": "A. lilacinus (Moore, 1884) Lilac Silverline"
+      },
+      "Spindasis": {
+        "41": "S. abnormis (Moore, [1884]) Abnormal Silverline",
+        "42": "S. elima (Moore, 1877) Scarce Shot Silverline",
+        "43": "S. elwesi (Evans, [1925]) Elwes’ Silverline",
+        "44": "S. evansii (Tytler, 1915) Cinnamon Silverline",
+        "45": "S. ictis (Hewitson, 1865) Common Shot Silverline",
+        "46": "S. lohita (Horsfield, [1829]) Long-banded Silverline",
+        "47": "S. nipalicus (Moore, 1884) Silvergrey Silverline",
+        "48": "S. rukma (de Niceville, 1889) Obscure Silverline",
+        "49": "S. rukmini (de Niceville, 1889) Khaki Silverline",
+        "50": "S. schistacea (Moore, 1881) Plumbeous Silverline",
+        "51": "S. syama (Horsfield, 1829) Club Silverline",
+        "52": "S. vulcanus (Fabricius, 1775) Common Silverline"
+      }
+    },
+    "Theclinae": {
+      "Chaetoprocta": {
+        "53": "C. kurumi Fujioka, 1970 Nepal Walnut Blue",
+        "54": "C. odata (Hewitson, 1865) Walnut Blue"
+      },
+      "Euaspa": {
+        "55": "E milionia (Hewitson, 1869) Water Hairstreak",
+        "56": "E. miyashitai Koiwaya, 2002 Darjeeling Hairstreak",
+        "57": "E. mikamii Koiwaya, 2002 Arunachal Hairstreak",
+        "58": "E. pavo (de Niceville, 1887) Peacock Hairstreak"
+      },
+      "Shizuyaozephyrus": {
+        "59": "S. ziha (Hewitson, [1865]) White-spotted Hairstreak"
+      },
+      "Fujiokaozephyrus": {
+        "60": "F. tsangkie (Oberthur, 1886) Suroifui Hairstreak"
+      },
+      "Iwaseozephyrus": {
+        "61": "I. mandara (Doherty, 1886) Indian Purple Hairstreak"
+      },
+      "Esakiozephyrus": {
+        "62": "E. icana (Moore, [1875]) Dull Green Hairstreak"
+      },
+      "Chrysozephyrus": {
+        "63": "C. disparatus (Howarth, 1957) Howarth’s Green Hairstreak",
+        "64": "C. duma (Hewitson, 1878) Metallic Green Hairstreak",
+        "65": "C. dumoides (Tytler, 1915) Broad-bordered Green Hairstreak",
+        "66": "C. intermedius (Tytler, 1915) Intermediate Green Hairstreak",
+        "67": "C. kabrua (Tytler, 1915) Kabru Green Hairstreak",
+        "68": "C. sandersi (Howarth, 1957) Sanders’ Green Hairstreak",
+        "69": "C. sikkimensis (Howarth, 1957) Sikkim Green Hairstreak",
+        "70": "C. tytleri (Howarth, 1957) Manipur Green Hairstreak",
+        "71": "C. vittatus (Tytler, 1915) Tytler’s Green Hairstreak",
+        "72": "C. zoa (de Niceville, 1889) Powdered Green Hairstreak"
+      },
+      "Neozephyrus": {
+        "73": "N. suroia (Tytler, 1915) Cerulean Hairstreak"
+      },
+      "Shirozuozephyrus": {
+        "74": "S. bhutanensis (Howarth, 1957) Bhutan Hairstreak",
+        "75": "S. birupa (Moore, 1877) Fawn Hairstreak",
+        "76": "S. jakamensis (Tytler, 1915) Jakama Hairstreak",
+        "77": "S. khasia (de Niceville, 1890) Tailless Metallic Green Hairstreak ",
+        "78": "S. kirbariensis (Tytler, 1915) Kirbari Hairstreak",
+        "79": "S. paona (Tytler, 1915) Paona Hairstreak",
+        "80": "S. triloka (Hannyngton, 1910) Kumaon Hairstreak"
+      },
+      "Inomataozephyrus": {
+        "81": "I. assamicus (Tytler, 1915) Assam Hairstreak",
+        "82": "I. syla (Kollar, [1844]) Silver Hairstreak"
+      },
+      "Thermozephyrus": {
+        "83": "T. ataxus (Westwood, 1851) Wonderful Hairstreak"
+      },
+      "Leucantigius": {
+        "84": "L. atayalicus (Shirozu & Murayama, 1943) Pale Hairstreak"
+      },
+      "Amblopala": {
+        "85": "A. avidiena (Hewitson, 1877) Chinese Hairstreak"
+      },
+      "Arhopala": {
+        "86": "A. aberrans (de Niceville, [1889]) Pale Bushblue",
+        "87": "A. abseus (Hewitson, 1862) Aberrant Bushblue",
+        "88": "A. ace de Niceville, [1893] Tytler’s Dull Oakblue",
+        "89": "A. aeeta de Niceville, [1893] Dawnas Tailless Oakblue",
+        "90": "A. alea (Hewitson, 1862) Kanara Oakblue",
+        "91": "A. allata (Staudinger, 1889) Tytler’s Rosy Oakblue",
+        "92": "A. agrata de Niceville, 1890 de Niceville’s Dull Oakblue",
+        "93": "A. alax (Evans, 1932) Silky Oakblue",
+        "94": "A. alesia C. & R. Felder, [1865] Pallid Oakblue",
+        "95": "A. amantes (Hewitson, 1862) Large Oakblue",
+        "96": "A. ammonides (Doherty, 1891) Dark Bushblue",
+        "97": "A. anarte (Hewitson, 1862) Magnificient Oakblue",
+        "99": "A. arvina (Hewitson, 1863) Purple-brown Tailless Oakblue",
+        "100": "A. asinarus (C. & R. Felder, 1865) Broad-banded Oakblue",
+        "101": "A. asopia (Hewitson, 1869) Plain Tailless Oakblue",
+        "102": "A. athada (Staudinger, 1889) Vinous Oakblue",
+        "103": "A. atrax (Hewitson, 1862) Indian Oakblue",
+        "104": "A. aurelia (Evans, [1925]) Grey-washed Oakblue",
+        "105": "A. bazaloides (Hewitson, 1878) Tamil Oakblue",
+        "106": "A. bazalus (Hewitson, 1862) Powdered Oakblue",
+        "107": "A. belphoebe Doherty, 1889 Doherty’s Oakblue",
+        "108": "A. birmana (Moore, [1884]) Burmese Bushblue",
+        "109": "A. camdeo (Moore, [1858]) Lilac Oakblue",
+        "110": "A. centaurus (Fabricius, 1775) Centaur Oakblue",
+        "111": "Arhopala comica de Niceville, 1900 Comic Oakblue",
+        "112": "A. curiosa (Evans, 1957) Bhutan Oakblue",
+        "113": "A. democritus (Fabricius, 1773) White-spotted Oakblue",
+        "114": "A. dispar Riley & Godfrey, 1921 Frosted Oakblue",
+        "115": "A. dodonea Moore, [1858] Pale Himalayan Oakblue",
+        "116": "A. eumolphus (Cramer, [1780]) Green Oakblue",
+        "117": "A. fulla (Hewitson, 1862) Spotless Oakblue",
+        "118": "A. ganesa (Moore, [1858]) Tailless Bushblue",
+        "119": "A. hellenore Doherty, 1889 Pointed Green Oakblue",
+        "120": "A. khamti Doherty, 1891 Doherty’s Dull Oakblue",
+        "121": "A. nicevillei Bethune-Baker, 1903 Large Spotted Oakblue",
+        "122": "A. oenea (Hewitson, 1869) Hewitson’s Dull Oakblue",
+        "123": "A. opalina (Moore, [1884]) Opal Oakblue",
+        "124": "A. paraganesa (de Niceville, 1882) Dusky Bushblue",
+        "125": "A. paralea (Evans, [1925]) Glazed Oakblue",
+        "126": "A. paramuta (de Niceville, [1884]) Hooked Oakblue",
+        "127": "A. perimuta (Moore, [1858]) Yellowdisc Tailless Oakblue",
+        "128": "A. rama (Kollar, [1844]) Dark Himalayan Oakblue",
+        "129": "A. ralanda Corbet, 1941 Bright Oakblue",
+        "130": "A. selta (Hewitson, 1869) Rosy Oakblue",
+        "131": "A. silhetensis (Hewitson, 1862) Sylhet Oakblue",
+        "132": "A. singla (de Niceville, 1885) Yellow-disc Oakblue",
+        "133": "A. zeta (Moore, 1877) Andaman Tailless Oakblue"
+      },
+      "Thaduka": {
+        "134": "T. multicaudata (Moore, 1879) Many-tailed Oakblue"
+      },
+      "Apporasa": {
+        "135": "A. atkinsoni (Hewitson, 1869) Crenulate Oakblue"
+      },
+      "Mahathala": {
+        "136": "M. ameria (Hewitson, 1862) Falcate Oakblue"
+      },
+      "Flos": {
+        "137": "F. apidanus (Cramer, 1773) Plain Plushblue",
+        "138": "F. adriana (de Niceville, 1883) Vareigated Plushblue",
+        "139": "F. areste (Hewitson, 1862) Tailless Plushblue",
+        "140": "F. asoka (de Niceville, 1883) Spangled Plushblue",
+        "141": "F. chinensis (C. & R. Felder, 1865) Chinese Plushblue",
+        "142": "F. diardi (Hewitson, 1862) Bifid Plushblue",
+        "143": "F. fulgida (Hewitson, 1863) Shining Plushblue"
+      },
+      "Mota": {
+        "144": "M. massyla (Hewitson, 1869) Saffron"
+      },
+      "Surendra": {
+        "145": "S. quercetorum (Moore, [1858]) Common Acacia Blue",
+        "146": "S. vivarna (Horsfield, [1829]) Burmese Acacia Blue"
+      },
+      "Zinaspa": {
+        "147": "Z. todara (Moore, [1884]) Silver Streaked Acacia Blue"
+      },
+      "Zesius": {
+        "148": "Z. chrysomallus Huebner, [1819] Redspot"
+      },
+      "Amblypodia": {
+        "149": "A. anita Hewitson, 1862 Purple Leaf Blue"
+      },
+      "Iraota": {
+        "150": "I. rochana (Horsfield, [1829]) Scarce Silverstreak Blue",
+        "151": "I. timoleon (Stoll, [1790]) Silverstreak Blue"
+      },
+      "Catapaecilma": {
+        "152": "C. major Druce, 1895 Common Tinsel",
+        "153": "C. subochracea Elwes, [1893] Yellow Tinsel Nagaland."
+      },
+      "Acupicta": {
+        "154": "A. delicatum (de Niceville, 1887) Dark Tinsel"
+      },
+      "Loxura": {
+        "155": "L. atymnus (Stoll, 1780) Yamfly"
+      },
+      "Yasoda": {
+        "156": "Y. tripunctata (Hewitson, 1863) Branded Yamfly"
+      },
+      "Drina": {
+        "157": "D. donina (Hewitson, 1865) Brown Yam"
+      },
+      "Horaga": {
+        "158": "H. albimacula (Wood-Mason & de Niceville, 1881) Violet Onyx",
+        "159": "H. onyx (Moore, 1858) Common Onyx",
+        "160": "H. syrinx (C. Felder, 1860) Yellow Onyx",
+        "161": "H. viola Moore, 1882 Brown Onyx"
+      },
+      "Rathinda": {
+        "162": "R. amor (Fabricius, 1775) Monkey Puzzle"
+      },
+      "Cheritra": {
+        "163": "C. freja (Fabricius, 1793) Common Imperial"
+      },
+      "Cheritrella": {
+        "164": "C. truncipennis de Niceville, 1887 Truncate Imperial"
+      },
+      "Ticherra": {
+        "165": "T. acte (Moore, [1858]) Blue Imperial"
+      },
+      "Drupadia": {
+        "166": "D. scaeva (Hewitson, 1863) Blue Posy"
+      },
+      "Pratapa": {
+        "167": "P. deva (Moore, 1858)",
+        "168": "P. icetas (Hewitson, 1865) Dark Blue Royal",
+        "169": "P. icetoides (Elwes, 1891) Blue Royal"
+      },
+      "Tajuria": {
+        "170": "T. albiplaga de Niceville, 1887 Pallid Royal",
+        "171": "T. cippus (Fabricius, 1798) Peacock Royal",
+        "172": "T. culta (de Niceville [1896]) Black-branded Royal",
+        "173": "Tajuria deudorix (Hewitson, 1869) Flash Royal",
+        "174": "T. diaeus (Hewitson, 1865) Straightline Royal",
+        "175": "T. illurgioides de Niceville, 1890 Scarce White Royal",
+        "176": "T. illurgis (Hewitson, 1869) White Royal",
+        "177": "T. isaeus (Hewitson, 1865) Bornean Royal",
+        "178": "T. ister (Hewitson, 1865) Uncertain Royal",
+        "179": "T. jehana Moore, 1883 Plains Blue Royal",
+        "180": "T. luculenta (Leech, 1890) Chinese Royal",
+        "181": "T. maculata (Hewitson, 1865) Spotted Royal",
+        "182": "T. megistia (Hewitson,1869) Orange-and-black Royal",
+        "183": "T. melastigma (de Niceville, 1884) Branded Royal",
+        "184": "T. yajna (Doherty, 1886) Chestnut-and-black Royal"
+      },
+      "Dacalana": {
+        "185": "D. cotys (Hewitson, 1865) White-banded Royal",
+        "186": "D. penicilligera (de Niceville, 1890) Double-tufted Royal"
+      },
+      "Maneca": {
+        "187": "M. bhotea (Moore, 1884) Slate Royal"
+      },
+      "Creon": {
+        "188": "C. cleobis (Godart, 1824) Broadtail Royal"
+      },
+      "Bullis": {
+        "189": "B. buto (de Niceville, 1895) Baby Royal"
+      },
+      "Eliotiana": {
+        "190": "E. jalindra (Horsfield, 1829) Banded Royal"
+      },
+      "Neocheritra": {
+        "191": "N. fabronia (Hewitson, 1878) Pale Grand Imperial"
+      },
+      "Charana": {
+        "192": "C. cepheis de Niceville, 1894 Cachar Mandarin Blue",
+        "193": "C. mandarina (Hewitson, 1863) Mandarin Blue"
+      },
+      "Suasa": {
+        "194": "S. lisides (Hewitson, 1863) Red Imperial"
+      },
+      "Britomartis": {
+        "195": "B. cleoboides (Elwes, 1892) Azure Royal"
+      },
+      "Remelana": {
+        "196": "R. jangala (Horsfield, [1829]) Chocolate Royal"
+      },
+      "Ancema": {
+        "197": "A. blanka (de Niceville, 1894) Silver Royal",
+        "198": "A. ctesia (Hewitson, 1865) Bi-Spot Royal"
+      },
+      "Hypolycaena": {
+        "199": "H. erylus (Godart, [1824]) Common Tit",
+        "200": "H. narada Kunte, 2015 Banded Tit",
+        "201": "H. nilgirica Moore, [1884] Nilgiri Tit",
+        "202": "H. thecloides (C. & R. Felder, 1860) Brown Tit"
+      },
+      "Chliaria": {
+        "203": "C. kina (Hewitson, 1869) Blue Tit",
+        "204": "C. othona (Hewitson, 1865) Orchid Tit"
+      },
+      "Zeltus": {
+        "205": "Z. amasa (Hewitson, 1865) Fluffy Tit"
+      },
+      "Deudorix": {
+        "206": "D. epijarbas (Moore, 1857) Cornelian",
+        "207": "D. gaetulia de Niceville, [1893] Assam Cornelian"
+      },
+      "Virachola": {
+        "208": "V. dohertyi Tytler, 1915 Doherty’s Guava Blue",
+        "209": "V. isocrates (Fabricius, 1793) Common Guava Blue",
+        "210": "V. kessuma (Horsfield, [1829]) Whiteline Flash",
+        "211": "V. perse (Hewitson, 1863) Large Guava Blue",
+        "212": "V. similis Hewitson, 1863 Scarce Guava Blue"
+      },
+      "Artipe": {
+        "213": "A. eryx (Linnaeus, 1771) Green Flash"
+      },
+      "Sinthusa": {
+        "214": "S. chandrana (Moore, 1882) Broad Spark",
+        "215": "S. nasaka (Horsfield, [1829]) Narrow Spark",
+        "216": "S. virgo (Elwes, 1887) Pale Spark"
+      },
+      "Araotes": {
+        "217": "A. lapithis (Moore, [1858]) Witch"
+      },
+      "Bindahara": {
+        "218": "B. phocides (Fabricius, 1793) Plane"
+      },
+      "Rapala": {
+        "219": "R. buxaria de Niceville, [1889] Shot Flash",
+        "220": "R. damona Swinhoe, 1890 Malay Red Flash",
+        "221": "R. dieneces (Hewitson, 1878) Scarlet Flash",
+        "222": "R. extensa Evans, 1926 Chitral Flash",
+        "223": "R. iarbus (Fabricius, 1787) Common Red Flash",
+        "224": "R. lankana (Moore, 1879) Malabar Flash",
+        "225": "R. manea (Hewitson, 1863) Slate Flash",
+        "226": "R. nissa (Kollar, [1844]) Common Flash",
+        "227": "R. pheretima (Hewitson, 1863) Copper Flash",
+        "228": "R. rectivitta (Moore, 1879) Scarce Shot Flash",
+        "229": "R. refulgens de Niceville, 1891 Refulgent Flash",
+        "230": "R. melida Fruhstorfer, 1912 Brilliant Flash",
+        "231": "R. rosacea de Niceville, [1889] Rosy Flash",
+        "232": "R. rubida Tytler, 1926 Tytler’s Flash",
+        "233": "R. selira (Moore, 1874) Himalayan Red Flash",
+        "234": "R. scintilla de Niceville, 1890 Scarce Slate Flash",
+        "235": "R. suffusa (Moore 1878) Suffused Flash",
+        "236": "R. tara de Niceville, [1889] Assam Flash",
+        "237": "R. varuna (Horsfield, [1829]) Indigo Flash"
+      },
+      "Pamela": {
+        "238": "P. dudgeoni (de Niceville, 1894) Lister’s Hairstreak"
+      },
+      "Ahlbergia": {
+        "239": "A. leechii (de Niceville, [1893]) Ferruginous Hairstreak"
+      },
+      "Strymon": {
+        "240": "S. mackwoodi (Evans, 1914) Mackwood’s Hairstreak"
+      },
+      "Superflua": {
+        "241": "S. deria (Moore, 1865) Moore’s Hairstreak"
+      }
+    },
+    "Polyommatinae": {
+      "Niphanda": {
+        "242": "N. asialis (de Niceville, 1895) Fawcett’s Pierrot",
+        "243": "N. cymbia de Niceville, 1884 Pointed Pierrot"
+      },
+      "Anthene": {
+        "244": "A. emolus (Godart, 1824) Ciliate Blue",
+        "245": "A. lycaenina (Felder, 1868) Pointed Ciliate Blue"
+      },
+      "Una": {
+        "246": "U. usta (Distant, 1886) Una"
+      },
+      "Orthomiella": {
+        "247": "O. pontis (Elwes, 1887) Straightwing Blue",
+        "248": "O. rantaizana Wileman, 1910 Burmese Straightwing Blue"
+      },
+      "Petrelaea": {
+        "249": "P. dana (de Niceville, [1884]) Dingy Lineblue"
+      },
+      "Nacaduba": {
+        "250": "N. berenice (Herrich-Schäffer, 1869) Rounded Sixlineblue",
+        "251": "N. beroe (C. & R. Felder, [1865]) Opaque Sixlineblue",
+        "252": "N. calauria (C. Felder, 1860) Dark Ceylon Sixlineblue",
+        "253": "N. hermus (C. Felder, 1865) Pale Fourlineblue",
+        "254": "N. kurava (Moore, [1858]) Transparent Sixlineblue",
+        "255": "N. pactolus (C. Felder, 1860) Large Fourlineblue",
+        "256": "N. pavana (Horsfield, [1828]) Small Fourlineblue",
+        "257": "N. sanaya Fruhstorfer, 1916 Jewel Fourlineblue",
+        "258": "N. subperusia (Snellen, 1896) Violet Fourlineblue"
+      },
+      "Prosotas": {
+        "259": "P. aluta (Druce, 1873) Barred Lineblue",
+        "260": "P. bhutea (de Niceville, [1884]) Bhutya Lineblue",
+        "261": "P. dubiosa (Semper, [1879]) Tailless Lineblue",
+        "262": "P. lutea (Martin, 1895) Banded Lineblue",
+        "263": "P. nora (C. Felder, 1860) Common Lineblue",
+        "264": "P. noreia (R. Felder, 1868) White-tipped Lineblue",
+        "265": "P. pia Toxopeus, 1929 Margined Lineblue"
+      },
+      "Ionolyce": {
+        "266": "I. helicon (C. Felder, 1860) Pointed Lineblue"
+      },
+      "Catopyrops": {
+        "267": "C. ancyra (C. Felder, 1860) Felder’s Lineblue"
+      },
+      "Caleta": {
+        "268": "C. decidia (Hewitson, 1876) Angled Pierrot",
+        "269": "C. elna (Hewitson, 1876) Elbowed Pierrot",
+        "270": "C. roxus (Godart, [1824]) Straight Pierrot"
+      },
+      "Discolampa": {
+        "271": "D. ethion (Westwood, 1851) Banded Blue Pierrot"
+      },
+      "Jamides": {
+        "272": "J. alecto (C. Felder, 1860) Metallic Cerulean",
+        "273": "J. bochus (Stoll, [1782]) Dark Cerulean",
+        "274": "J. caeruleus (H. Druce, 1873) Royal Cerulean",
+        "275": "J. celeno (Cramer, [1775]) Common Cerulean",
+        "276": "J. elpis (Godart, 1924) Glistening Cerulean",
+        "277": "J. ferrari Evans, 1932 Ferrar's Cerulean",
+        "278": "J. kankena (C. Felder, 1862) Frosted Cerulean",
+        "279": "J. pura (Moore, 1886) White Cerulean"
+      },
+      "Catochrysops": {
+        "280": "C. panormus (C. Felder, 1860) Silver Forgetmenot",
+        "281": "C. strabo (Fabricius, 1793) Forgetmenot"
+      },
+      "Lampides": {
+        "282": "L. boeticus (Linnaeus, 1767) Peablue"
+      },
+      "Leptotes": {
+        "283": "L. plinius (Fabricius, 1793) Zebra Blue"
+      },
+      "Castalius": {
+        "284": "C. rosimon (Fabricius, 1775) Common Pierrot"
+      },
+      "Tarucus": {
+        "285": "T. ananda (de Niceville, [1884]) Dark Pierrot",
+        "286": "T. balkanicus (Freyer, 1844) Black-spotted Pierrot",
+        "287": "T. callinara Butler, 1886 Spotted Pierrot",
+        "288": "T. hazara Evans, 1932 Hazara Pierrot",
+        "289": "T. indicus Evans, 1932 Indian Pointed Pierrot",
+        "290": "T. nara (Kollar, 1848) Striped Pierrot",
+        "291": "T. venosus Moore, 1882 Himalayan Pierrot",
+        "292": "T. waterstradti Druce, 1895 Assam Pierrot"
+      },
+      "Zizeeria": {
+        "293": "Z. karsandra (Moore, 1865) Dark Grass Blue"
+      },
+      "Pseudozizeeria": {
+        "294": "P. maha (Kollar, [1844]) Pale Grass Blue"
+      },
+      "Zizina": {
+        "295": "Z. otis (Fabricius, 1787) Lesser Grass Blue"
+      },
+      "Zizula": {
+        "296": "Z. hylax (Fabricius, 1775) Tiny Grass Blue"
+      },
+      "Everes": {
+        "297": "E. argiades (Pallas, 1771) Tailed Cupid",
+        "298": "E. hugelii (Gistel, 1857) Dusky-blue Cupid",
+        "299": "E. lacturnus (Godart, [1824]) Indian Cupid"
+      },
+      "Cupido": {
+        "300": "C. alainus Staudinger, 1887 Staudinger’s Cupid",
+        "301": "C. buddhista (Alpheraky, 1881) Shandur Cupid"
+      },
+      "Iolana": {
+        "302": "I. gigantea (Grum-Grshimailo, 1885) Gilgit Mountain Blue"
+      },
+      "Bothrinia": {
+        "303": "B. chennelli (de Niceville, [1884]) Hedge Cupid"
+      },
+      "Tongeia": {
+        "304": "T. kala (de Niceville, 1890) Black Cupid",
+        "305": "T. pseudozuthus Huang, 2001 False Tibetan Cupid"
+      },
+      "Shijimia": {
+        "306": "S. moorei (Leech, 1889) Moore’s Cupid"
+      },
+      "Talicada": {
+        "307": "T. nyseus (Guerin-Meneville, 1843) Red Pierrot"
+      },
+      "Pithecops": {
+        "308": "P. fulgens Doherty, 1889 Blue Quaker",
+        "309": "P. corvus Fruhstorfer, 1919 Forest Quaker"
+      },
+      "Azanus": {
+        "310": "A. jesous (Guerin-Meneville, 1849) African Babul Blue",
+        "311": "A. ubaldus (Stoll, [1782]) Bright Babul Blue",
+        "312": "A. uranus Butler, 1886 Dull Babul Blue"
+      },
+      "Neopithecops": {
+        "313": "N. zalmora (Butler, [1870]) Quaker"
+      },
+      "Megisba": {
+        "314": "M. malaya (Horsfield, [1828]) Malayan"
+      },
+      "Celastrina": {
+        "315": "C. argiolus (Linnaeus, 1758) Hill Hedge Blue",
+        "316": "C. gigas (Hemming, 1928) Silvery Hedge Blue",
+        "317": "C. hersilia (Leech, [1893]) Mishmi Hedge Blue",
+        "318": "C. hugelii (Moore, 1882) Large Hedge Blue",
+        "319": "C. lavendularis (Moore, 1877) Plain Hedge Blue",
+        "320": "C. oreas (Leech, [1893]) Khasi Hedge Blue"
+      },
+      "Lestranicus": {
+        "321": "L. transpectus (Moore, 1879) White-banded Hedge Blue"
+      },
+      "Celatoxia": {
+        "322": "C. albidisca (Moore, 1884) Whitedisc Hedge Blue",
+        "323": "C. marginata (de Niceville, 1884) Margined Hedge Blue"
+      },
+      "Notarthrinus": {
+        "324": "N. binghami Chapman, 1908 Chapman’s Hedge Blue"
+      },
+      "Acytolepis": {
+        "325": "A. lilacea (Hampson, 1889) Hampson’s Hedge Blue",
+        "326": "A. puspa (Horsfield, [1828]) Common Hedge Blue"
+      },
+      "Oreolyce": {
+        "327": "O. dohertyi (Tytler, 1915) Naga Hedge Blue",
+        "328": "O. vardhana (Moore, [1875]) Dusky Hedge Blue"
+      },
+      "Callenya": {
+        "329": "C. melaena (Doherty, 1889) Metallic Hedge Blue"
+      },
+      "Monodontides": {
+        "330": "M. musina (Snellen, 1892) Swinhoe’s Hedge Blue"
+      },
+      "Udara": {
+        "331": "U. akasa (Horsfield, [1828]) White Hedge Blue",
+        "332": "U. albocaerulea (Moore, 1879) Albocerulean",
+        "333": "U. dilecta (Moore, 1879) Pale Hedge Blue",
+        "334": "U. placidula (Druce, 1895) Narrow-bordered Hedge Blue",
+        "335": "U. selma (Druce, 1895) Bicoloured Hedge Blue",
+        "336": "U. singalensis (R. Felder, 1868) Singhalese Hedge Blue"
+      },
+      "Euchrysops": {
+        "337": "E. cnejus (Fabricius, 1798) Gram Blue"
+      },
+      "Freyeria": {
+        "338": "F. putli (Kollar, [1844]) Small Grass Jewel",
+        "339": "F. trochylus (Freyer, 1845) Grass Jewel"
+      },
+      "Luthrodes": {
+        "340": "L. pandava (Horsfield, [1829]) Plains Cupid"
+      },
+      "Chilades": {
+        "341": "C. lajus (Stoll, [1780]) Lime Blue",
+        "342": "C. parrhasius (Fabricius, 1793) Small Cupid"
+      },
+      "Turanana": {
+        "343": "T. chitrali Charmeux & Pages, 2004 Chitral Argus Blue"
+      },
+      "Pseudophilotes": {
+        "344": "P. vicrama (Moore, 1865) Eastern Baton Blue"
+      },
+      "Phengaris": {
+        "345": "P. atroguttata (Oberthur, 1876) Great Spotted Blue"
+      },
+      "Plebejus": {
+        "346": "P. eversmanni (Staudinger, 1886) Tibetan Jewel Blue",
+        "347": "P. samudra (Moore, [1875]) Ladakh Jewel Blue"
+      },
+      "Aricia": {
+        "348": "A. agestis (Denis & Schiffermueller, 1775) Orange-bordered Argus",
+        "349": "A. artaxerxes (Fabricius, 1793) Northern Brown Argus",
+        "350": "A. astorica (Evans, 1925) Astor Argus"
+      },
+      "Eumedonia": {
+        "351": "E. eumedon (Esper, 1780) Streaked Argus"
+      },
+      "Agriades": {
+        "352": "A. jaloka (Moore, [1875]) Greenish Mountain Blue",
+        "353": "A. morsheadi (Evans, 1923) Evans’ Mountain Blue",
+        "354": "A. pheretiades (Eversmann, 1843) Tien Shan Blue"
+      },
+      "Albulina": {
+        "355": "A. asiatica (Elwes, 1882) Azure Mountain Blue",
+        "356": "A. chitralensis (Tytler,1926) Chitral Green Underwing",
+        "357": "A. chrysopis (Grum-Grshimailo, 1888) Golden Green Underwing",
+        "358": "A. galathea (Blanchard, [1844]) Large Green Underwing",
+        "359": "A. lehanus (Moore, 1878) Common Mountain Blue",
+        "360": "A. metallica (C. & R. Felder, [1865]) Small Green Underwing",
+        "361": "A. omphisa (Moore, [1875]) Dusky Green Underwing",
+        "362": "A. pharis (Fawcett, 1903) Fawcett’s Mountain Blue",
+        "363": "A. sikkima (Moore, 1884) Sikkim Mountain Blue"
+      },
+      "Patricius": {
+        "364": "P. younghusbandi (Elwes, 1906) Chumbi Green Underwing"
+      },
+      "Plebejidea": {
+        "365": "P. loewii (Zeller, 1847) Large Jewel Blue"
+      },
+      "Kretania": {
+        "366": "Kretania beani Balint & Johnson, 1997 Bean’s Jewel Blue"
+      },
+      "Farsia": {
+        "367": "F. ashretha (Evans, 1925) Evans’ Argus Blue",
+        "368": "F. hanna (Evans, 1932) Jewel Argus Blue"
+      },
+      "Alpherakya": {
+        "369": "A. devanica (Moore, [1875]) Dusky Meadow Blue",
+        "370": "A. sarta (Alpheraky, 1881) Brilliant Meadow Blue"
+      },
+      "Polyommatus": {
+        "371": "P. ariana Moore, 1865 Lahaul Meadow Blue",
+        "372": "P. drasula Swinhoe, 1910 Ladakh Meadow Blue",
+        "373": "P. dux Riley, 1926 Kumaon Meadow Blue",
+        "374": "P. erigone (Grum-Grshimailo, 1890) Grshimailo’s Meadow Blue",
+        "375": "P. hunza (Grum-Grshimailo, 1890) Hunza Meadow Blue",
+        "376": "P. icadius (Grum-Grshimailo, 1890) Gilgit Meadow Blue",
+        "377": "P. janetae (Evans, 1927) Janet’s Meadow Blue",
+        "378": "P. pseuderos Moore, 1879 Kashmir Meadow Blue",
+        "379": "P. pulchellus (Bernardi, 1951) Bernardi’s Meadow Blue",
+        "380": "P. stoliczkanus (C. & R. Felder, [1865]) Stoliczka’s Meadow Blue"
+      }
+    }
+  },
+  "Nymphalidae": {
+    "Danainae": {
+      "Danaus": {
+        "1": "D. affinis (Fabricius, 1775) Malay Tiger",
+        "2": "D. chrysippus (Linnaeus, 1758) Plain Tiger",
+        "3": "D. genutia (Cramer, [1779]) Common Tiger",
+        "4": "D. melanippus (Cramer, [1777]) White Tiger"
+      },
+      "Ideopsis": {
+        "5": "I. juventa (Cramer, [1777]) Grey Glassy Tiger",
+        "6": "I. similis (Linnaeus, 1758) Blue Glassy Tiger"
+      },
+      "Parantica": {
+        "7": "P. aglea (Stoll, [1782]) Glassy Tiger",
+        "8": "P. agleoides (C. & R. Felder, 1860) Dark Glassy Tiger",
+        "9": "P. melaneus (Cramer, [1775]) Chocolate Tiger",
+        "10": "P. swinhoei (Moore, 1883) Swinhoe’s Chocolate Tiger",
+        "11": "P. nilgiriensis (Moore, 1877) Nilgiri Tiger",
+        "12": "P. pedonga Fujioka, 1970 Talbot’s Chestnut Tiger",
+        "13": "P. sita (Kollar, [1844]) Chestnut Tiger"
+      },
+      "Tirumala": {
+        "14": "T. gautama (Moore, 1877) Scarce Blue Tiger",
+        "15": "T. limniace (Cramer, [1775]) Blue Tiger",
+        "16": "T. septentrionis (Butler, 1874) Dark Blue Tiger"
+      },
+      "Idea": {
+        "17": "I. agamarschana (C. & R. Felder, 1865) Burmese Tree Nymph",
+        "18": "I. malabarica (Moore, 1877) Malabar Tree Nymph"
+      },
+      "Euploea": {
+        "19": "E. algea (Godart, 1819) Long-branded Blue Crow",
+        "20": "E. core (Cramer, [1780]) Common Crow",
+        "21": "E. crameri Lucas, 1853 Spotted Black Crow",
+        "22": "E. doubledayi C. & R. Felder, [1865] Striped Black Crow",
+        "23": "E. eunice (Godart, 1819) Blue-branded King Crow",
+        "24": "E. klugii Moore, [1858] King Crow",
+        "25": "E. midamus (Linnaeus, 1758) Spotted Blue Crow",
+        "26": "E. mulciber (Cramer, [1777]) Striped Blue Crow",
+        "27": "E. phaenareta (Schaller, 1785) Great Crow",
+        "28": "E. radamanthus (Fabricius, 1793) Magpie Crow",
+        "29": "E. sylvester (Fabricius, 1793) Double-branded Crow"
+      }
+    },
+    "Calinaginae": {
+      "Calinaga": {
+        "30": "C. buddha Moore 1857 Freak"
+      }
+    },
+    "Charaxinae": {
+      "Prothoe": {
+        "31": "P. franck (Godart, [1824]) Blue Begum"
+      },
+      "Polyura": {
+        "32": "P. agraria (Swinhoe, 1887) Anomalous Nawab",
+        "33": "P. arja (C. & R. Felder, [1867]) Pallid Nawab",
+        "34": "P. athamas (Drury, [1773]) Common Nawab",
+        "35": "P. bharata (C. & R. Felder, [1867]) Cryptic Nawab",
+        "36": "P. delphis (Doubleday, 1843) Jewelled Nawab",
+        "37": "P. dolon (Westwood, 1847) Stately Nawab",
+        "38": "P. eudamippus (Doubleday, 1843) Great Nawab",
+        "39": "P. moori (Distant, 1883) Malayan Nawab",
+        "40": "P. narcaeus (Hewitson, 1854) China Nawab",
+        "41": "P. schreiber (Godart, [1824]) Blue Nawab "
+      },
+      "Charaxes": {
+        "42": "Ch. aristogiton C. & R. Felder, [1867] Scarce Tawny Rajah",
+        "43": "Ch. bernardus (Fabricius, 1793) Tawny Rajah",
+        "44": "Ch. durnfordi Distant, 1884 Chestnut Rajah",
+        "45": "Ch. kahruba (Moore, [1895]) Variegated Rajah",
+        "46": "Ch. marmax Westwood, 1847 Yellow Rajah",
+        "47": "Ch. psaphon Westwood, 1847 Plain Tawny Rajah",
+        "48": "Ch. solon (Fabricius, 1793) Black Rajah"
+      }
+    },
+    "Morphinae": {
+      "Faunis": {
+        "49": "F. eumeus (Drury, [1773]) Large Faun",
+        "50": "F. canens Huebner, [1826] Common Faun"
+      },
+      "Aemona": {
+        "51": "A. amathusia (Hewitson, 1867) Yellow Dryad"
+      },
+      "Stichophthalma": {
+        "52": "S. camadeva (Westwood, 1848) Northern Junglequeen",
+        "53": "S. nourmahal (Westwood, 1851) Chocolate Junglequeen",
+        "54": "S. sparta de Niceville, 1894 Manipur Junglequeen"
+      },
+      "Amathusia": {
+        "55": "A. andamanensis Fruhstorfer, 1899 Andaman Palmking",
+        "56": "A. phidippus (Linnaeus, 1763) Common Palmking"
+      },
+      "Amathuxidia": {
+        "57": "A. amythaon (Doubleday, 1847) Koh-i-Noor"
+      },
+      "Thaumantis": {
+        "58": "T. diores Doubleday, 1845 Jungleglory"
+      },
+      "Thauria": {
+        "59": "T. lathyi Fruhstorfer, 1902 Jungleking"
+      },
+      "Discophora": {
+        "60": "D. deo de Niceville, 1898 Banded Duffer",
+        "61": "D. lepida Moore, 1857 Southern Duffer",
+        "62": "D. sondaica Boisduval, 1836 Common Duffer",
+        "63": "D. timora Westwood, [1850] Great Duffer"
+      },
+      "Enispe": {
+        "64": "E. cycnus Westwood, 1851 Blue Caliph",
+        "65": "E. euthymius (Doubleday, 1845) Red Caliph",
+        "66": "E. intermedia Rothschild, 1916 Malayan Red Caliph"
+      }
+    },
+    "Satyrinae": {
+      "Elymnias": {
+        "67": "E. cottonis (Hewitson, 1874) Andaman Palmfly",
+        "68": "E. hypermnestra (Linnaeus, 1763) Common Palmfly",
+        "69": "E. malelas (Hewitson, 1863) Spotted Palmfly",
+        "70": "E. nesaea (Linnaeus, 1764) Tiger Palmfly",
+        "71": "E. panthera (Fabricius, 1787) Nicobar Palmfly",
+        "72": "E. patna (Westwood, 1851) Blue-striped Palmfly",
+        "73": "E. peali Wood-Mason, 1883 Peal’s Palmfly",
+        "74": "E. penaga (Westwood, 1851) Pointed Palmfly",
+        "75": "E. vasudeva Moore, 1857 Jezabel Palmfly"
+      },
+      "Neorina": {
+        "76": "N. hilda Westwood, [1850] Yellow Owl",
+        "77": "N. patria Leech, 1891 White Owl"
+      },
+      "Penthema": {
+        "78": "P. lisarda (Doubleday, 1845) Yellow Kaiser"
+      },
+      "Ethope": {
+        "79": "E. himachala (Moore, 1857) Dusky Diadem"
+      },
+      "Melanitis": {
+        "80": "M. leda (Linnaeus, 1758) Common Evening Brown",
+        "81": "M. phedima (Cramer, [1780]) Dark Evening Brown",
+        "82": "M. zitenius (Herbst, 1796) Great Evening Brown"
+      },
+      "Cyllogenes": {
+        "83": "C. janetae de Niceville, 1887 Scarce Evening Brown",
+        "84": "C. suradeva (Moore, 1857) Branded Evening Brown"
+      },
+      "Parantirrhoea": {
+        "85": "P. marshalli Wood-Mason, 1881 Travancore Evening Brown"
+      },
+      "Lethe": {
+        "86": "L. andersoni (Atkinson, 1871) Anderson’s Silverstripe",
+        "87": "L. atkinsonia Hewitson, 1876 Small Goldenfork",
+        "88": "L. baladeva (Moore, [1866]) Treble Silverstripe",
+        "89": "L. bhairava (Moore, 1857) Rusty Forester",
+        "90": "L. brisanda de Niceville, 1886 Dark Forester",
+        "91": "L. chandica (Moore, [1858]) Angled Red Forester",
+        "92": "L. confusa Aurivillius, 1898 Banded Treebrown",
+        "93": "L. dakwania (Tytler, 1939) Garhwal Woodbrown",
+        "94": "L. dura (Marshall, 1882) Scarce Lilacfork",
+        "95": "L. distans Butler, 1870 Scarce Red Forester",
+        "96": "L. drypetis (Hewitson, 1863) Tamil Treebrown",
+        "97": "L. europa (Fabricius, 1775) Bamboo Treebrown",
+        "98": "L. goalpara (Moore, [1866]) Large Goldenfork",
+        "99": "L. gemina Leech, 1891 Tytler’s Treebrown",
+        "100": "L. gulnihal de Niceville, 1887 Dull Forester",
+        "101": "L. isana (Kollar, [1844]) Common Forester",
+        "102": "L. jalaurida (de Niceville, 1880) Small Silverfork",
+        "103": "L. kabrua (Tytler, 1914) Manipur Goldenfork",
+        "104": "L. kanjupkula Tytler, 1914 Manipur Woodbrown",
+        "105": "L. kansa (Moore, 1857) Bamboo Forester",
+        "106": "L. latiaris (Hewitson, 1862) Pale Forester",
+        "107": "L. maitrya de Niceville, 1881 Barred Woodbrown",
+        "108": "L. margaritae Elwes, 1882 Bhutan Treebrown",
+        "109": "L. mekara (Moore, [1858]) Common Red Forester",
+        "110": "L. moelleri (Elwes, 1887) Moeller‘s Silverfork",
+        "111": "L. naga Doherty, 1889 Naga Treebrown",
+        "112": "L. nicetas (Hewitson, 1863) Yellow Woodbrown",
+        "113": "L. nicetella de Niceville, 1887 Small Woodbrown",
+        "114": "L. ramadeva (de Niceville, 1887) Single Silverstripe",
+        "115": "L. rohria (Fabricius, 1787) Common Treebrown",
+        "116": "L. satyavati de Niceville, 1880 Pallid Forester",
+        "117": "L. scanda (Moore, 1857) Blue Forester",
+        "118": "L. serbonis (Hewitson, 1876) Brown Forester",
+        "119": "L. siderea Marshall, 1881 Scarce Woodbrown",
+        "120": "L. sidonis (Hewitson, 1863) Common Woodbrown",
+        "121": "L. sinorix (Hewitson, 1863) Tailed Red Forester",
+        "122": "L. sura (Doubleday, [1849]) Scarce Lilacfork",
+        "123": "L. tristigmata Elwes, 1887 Spotted Mystic",
+        "124": "L. verma (Kollar, [1844]) Straight-banded Treebrown",
+        "125": "L. vindhya (C. & R. Felder, 1859) Black Forester",
+        "126": "L. visrava (Moore, [1866]) White-edged Woodbrown"
+      },
+      "Neope": {
+        "127": "N. armandii (Oberthur, 1876) Chinese Labyrinth",
+        "128": "N. bhadra (Moore, 1857) Tailed Labyrinth",
+        "129": "N. pulaha (Moore, [1858]) Veined Labyrinth",
+        "130": "N. pulahina (Evans, 1923) Scarce Labyrinth",
+        "131": "N. pulahoides (Moore, [1892]) Assam Veined Labyrinth",
+        "132": "N. yama (Moore, [1858]) Dusky Labyrinth"
+      },
+      "Lasiommata": {
+        "133": "L. maerula C. & R. Felder, [1867] Scarce Wall",
+        "134": "L. menava Moore, 1865 Dark Wall",
+        "135": "L. schakra (Kollar, [1844]) Common Wall"
+      },
+      "Kirinia": {
+        "136": "K. eversmanni (Eversmann, 1847) Yellow Wall"
+      },
+      "Chonala": {
+        "137": "Ch. masoni (Elwes, 1882) Chumbi Wall"
+      },
+      "Rhaphicera": {
+        "138": "R. moorei (Butler, 1867) Small Tawny Wall",
+        "139": "R. satricus (Doubleday, [1849]) Large Tawny Wall"
+      },
+      "Orinoma": {
+        "140": "O. damaris Gray, 1846 Tigerbrown"
+      },
+      "Heteropsis": {
+        "141": "H. adolphei (Guerin-Meneville, 1843) Redeye Bushbrown",
+        "142": "H. malsara (Moore, 1857) White-line Bushbrown",
+        "143": "H. mamerta (Stoll, [1780]) Blind-eye Bushbrown"
+      },
+      "Mycalesis": {
+        "144": "M. adamsoni Watson, 1897 Watson’s Bushbrown",
+        "145": "M. anaptia Moore, [1858] Tawny Bushbrown",
+        "146": "M. anaxias Hewitson, 1862 Whitebar Bushbrown",
+        "147": "M. annamitica Fruhstorfer, 1906 Blindeyed Bushbrown",
+        "148": "M. evansii Tytler, 1914 Tytler’s Bushbrown",
+        "149": "M. francisca (Stoll, [1780]) Lilacine Bushbrown",
+        "150": "M. gotama Moore, 1857 Chinese Bushbrown",
+        "151": "M. heri Moore, 1857 Moore’s Bushbrown",
+        "152": "M. igilia Fruhstorfer, 1911 Small Long-brand Bushbrown",
+        "153": "M. intermedia (Moore, [1892]) Intermediate Bushbrown",
+        "154": "M. lepcha (Moore, 1880) Lepcha Bushbrown",
+        "155": "M. malsarida Butler, 1868 Plain Bushbrown",
+        "156": "M. manii Doherty, 1886 Nicobar Bushbrown",
+        "157": "M. mestra Hewitson, 1862 White-edged Bushbrown",
+        "158": "M. mineus (Linnaeus, 1758) Dark-brand Bushbrown",
+        "159": "M. misenus de Niceville, 1889 De Niceville’s Bushbrown",
+        "160": "M. mnasicles Hewitson, 1864 Cyclops Bushbrown",
+        "161": "M. mystes de Niceville, 1891 Many-tufted Bushbrown",
+        "162": "M. nicotia Westwood, [1850] Brighteye Bushbrown",
+        "163": "M. oculus Marshall, 1881 Red-disc Bushbrown",
+        "164": "M. orcha Evans, 1920 Pale-brand Bushbrown",
+        "166": "M. patiana Eliot, 1969 Eliot’s Bushbrown",
+        "167": "M. patnia Moore, 1857 Glad-eye Bushbrown",
+        "168": "M. perseus (Fabricius, 1775) Common Bushbrown",
+        "170": "M. suaveolens Wood -Mason & de Niceville, 1883 Wood-Mason’s Bushbrown",
+        "171": "M. visala Moore, [1858] Long-brand Bushbrown"
+      },
+      "Orsotriaena": {
+        "172": "O. medus (Fabricius, 1775) Nigger"
+      },
+      "Zipaetis": {
+        "173": "Z. saitis Hewitson, 1863 Tamil Catseye",
+        "174": "Z. scylax Hewitson, 1863 Dark Catseye"
+      },
+      "Erites": {
+        "175": "E. falcipennis Wood Mason & de Niceville, 1883 Common Cyclops"
+      },
+      "Coelites": {
+        "176": "C. nothis Westwood, [1850] Scarce Catseye"
+      },
+      "Ragadia": {
+        "177": "R. crisilda Hewitson, 1862 Striped Ringlet"
+      },
+      "Hyponephele": {
+        "178": "H. carbonelli Lukhtanov, 1995 Baltistan Meadowbrown",
+        "179": "H. cheena (Moore, 1865) Branded Meadowbrown",
+        "180": "H. coenonympha (C. & R. Felder, 1867) Spotted Meadowbrown",
+        "181": "H. davendra (Moore, 1865) White-ringed Meadowbrown",
+        "182": "H. brevistigma (Moore, 1893) Short-branded Meadowbrown",
+        "183": "H. tenuistigma (Moore, 1893) Lesser White-ringed Meadowbrown",
+        "184": "H. pulchella (C. & R. Felder, [1867]) Tawny Meadowbrown",
+        "185": "H. pulchra (C. & R. Felder, [1867]) Dusky Meadowbrown",
+        "186": "H. hilaris (Staudinger, 1886) Pamir Meadowbrown"
+      },
+      "Callerebia": {
+        "187": "C. annada (Moore, [1858]) Ringed Argus ",
+        "188": "C. baileyi South, 1913 White-bordered Argus",
+        "189": "C. dibangensis Roy, 2013 Roy’s Argus",
+        "190": "C. hybrida Butler, 1880 Hybrid Argus",
+        "191": "C. nirmala (Moore, 1865) Common Argus",
+        "192": "C. orixa Moore, 1872 Moore’s Argus",
+        "193": "C. scanda (Kollar, [1844]) Pallid Argus",
+        "194": "C. suroia Tytler, 1914 Manipur Argus"
+      },
+      "Paralasa": {
+        "195": "P. chitralica (Evans, 1923) Chitral Argus",
+        "196": "P. kalinda (Moore, 1865) Scarce Mountain Argus",
+        "197": "P. mani (de Niceville, 1881) Yellow Argus",
+        "198": "P. shallada (Lang, 1881) Mountain Argus"
+      },
+      "Loxerebia": {
+        "199": "L. narasingha (Moore, 1857) Mottled Argus"
+      },
+      "Ypthima": {
+        "200": "Y. affectata Elwes & Edwards, 1893 Khasi Fivering",
+        "201": "Y. asterope (Klug, 1832) Common Threering",
+        "202": "Y. atra Cantlie & Norman, 1959 Black Fivering",
+        "203": "Y. baldus (Fabricius, 1775) Common Fivering",
+        "204": "Y. bolanica Marshall, 1882 Desert Fourring",
+        "205": "Y. cantliei Norman, 1958 Cantlie’s Fourring",
+        "206": "Y. ceylonica Hewitson, 1865 White Fourring",
+        "207": "Y. chenu (Guerin-Meneville, 1843) Nilgiri Fourring",
+        "208": "Y. davidsoni Eliot, 1967 Davidson’s Fivering",
+        "209": "Y. dohertyi (Moore, [1893]) Great Fivering",
+        "210": "Y. fusca Elwes & Edwards, 1893 Assam Threering",
+        "211": "Y. hannyngtoni Eliot, 1967 Hannyngton’s Fivering",
+        "212": "Y. huebneri Kirby, 1871 Common Fourring",
+        "213": "Y. hyagriva (Moore, 1857) Brown Argus",
+        "214": "Y. indecora Moore, 1882 Western Fivering",
+        "215": "Y. inica Hewitson, 1865 Lesser Threering",
+        "216": "Y. kasmira Moore, 1884 Kashmir Fourring",
+        "217": "Y. lisandra (Cramer, [1780]) Jewel Fourring",
+        "218": "Y. lycus de Niceville, 1889 Plain Threering",
+        "219": "Y. methora Hewitson, 1865 Variegated Fivering",
+        "220": "Y. nareda (Kollar, [1844]) Large Threering",
+        "221": "Y. newara Moore, [1875] Newar Threering",
+        "222": "Y. nikaea Moore, [1875] Moore’s Fivering",
+        "223": ". norma Westwood, 1851 Burmese Threering",
+        "224": "Y. parasakra Eliot, 1987 Himalayan Fourring",
+        "225": "Y. persimilis Elwes & Edwards, 1893 Manipur Fivering",
+        "226": "Y. philomela (Linnaeus, 1763) Baby Fivering",
+        "227": "Y. sakra Moore, 1857 Himalayan Fivering",
+        "228": "Y. savara Grose-Smith, 1887 Pallid Fivering",
+        "229": "Y. similis Elwes & Edwards, 1893 Eastern Fivering",
+        "230": "Y. singala R. Felder, 1868 Small Jewel Fourring",
+        "231": "Y. sobrina Elwes & Edwards, 1893 Karen Fivering",
+        "232": "Y. striata Hampson, 1888 Nilgiri Jewel Fourring",
+        "233": "Y. watsoni (Moore, [1893]) Looped Threering",
+        "234": "Y. yphthimoides (Moore, 1881) Palni Fourring"
+      },
+      "Oeneis": {
+        "235": "O. buddha Grum-Grshimailo, 1891 Tibetan Satyr"
+      },
+      "Paroeneis": {
+        "236": "P. pumilus (C. & R. Felder, [1867]) Mountain Satyr",
+        "237": "P. sikkimensis (Staudinger, 1889) Sikkim Satyr"
+      },
+      "Karanasa": {
+        "238": "K. alpherakyi (Avinoff, 1910) Avinoff’s Satyr",
+        "239": "K. bolorica (Grum-Grshimailo, 1888) Turkestan Satyr",
+        "240": "K. cadesia (Moore, [1875]) Moore’s Satyr",
+        "241": "K. huebneri (C. & R. Felder, [1867]) Tawny Satyr",
+        "242": "K. modesta Moore, 1893 Small Satyr",
+        "243": "K. moorei (Evans, 1912) Shandur Satyr",
+        "244": "K. leechi (Grum-Grshimailo, 1890) Leech’s Satyr",
+        "245": "K. rohtanga Avinoff & Sweadner, 1951 Rohtang Satyr"
+      },
+      "Satyrus": {
+        "246": "S. pimpla (C. & R. Felder, [1867]) Black Satyr"
+      },
+      "Aulocera": {
+        "247": "A. brahminus Blanchard, 1853 Narrow-banded Satyr",
+        "248": "A. loha (Doherty, 1886) Doherty’s Satyr",
+        "249": "A. padma (Kollar, [1844]) Great Satyr",
+        "250": "A. saraswati (Kollar, [1844]) Striated Satyr",
+        "251": "A. swaha (Kollar, [1844]) Common Satyr\t"
+      },
+      "Hipparchia": {
+        "252": "H. parisatis (Kollar, [1849]) White-edged Rockbrown"
+      },
+      "Chazara": {
+        "253": "C. heydenreichi (Lederer, 1853) Shandur Rockbrown"
+      },
+      "Pseudochazara": {
+        "254": "P. baldiva (Moore, 1865) Kashmir Rockbrown",
+        "255": "P. droshica (Tytler, 1926) Tytler’s Rockbrown"
+      },
+      "Kanetisa": {
+        "256": "K. digna (Marshall, 1883) Chitrali Satyr"
+      }
+    },
+    "Limenitidinae": {
+      "Neptis": {
+        "257": "N. ananta Moore, 1858 Yellow Sailer",
+        "258": "N. armandia (Oberthur, 1876) Variegated Sailer",
+        "259": "N. capnodes Fruhstorfer, 1908 Eliot’s Sailer",
+        "260": "N. cartica Moore, 1872 Plain Sailer",
+        "261": "N. clinia Moore, 1872 Clear Sailer",
+        "262": "N. cydippe Leech, 1890 Chinese Yellow Sailer",
+        "263": "N. harita Moore, [1875] Dingiest Sailer",
+        "264": "N. hylas (Linnaeus, 1758) Common Sailer",
+        "265": "N. ilira Kheil, 1884 Dark Dingy Sailer",
+        "266": "N. jumbah Moore, [1858] Chestnut-streaked Sailer",
+        "267": "N. magadha C. & R. Felder, [1867] Spotted Sailer",
+        "268": "N. mahendra Moore, 1872 Himalayan Sailer",
+        "269": "N. manasa Moore, [1858] Pale Hockeystick Sailer",
+        "270": "N. miah Moore, 1857 Small Yellow Sailer",
+        "271": "N. namba Tytler, 1915 Manipur Yellow Sailer",
+        "272": "N. narayana Moore, 1858 Broadstick Sailer",
+        "273": "N. nashona Swinhoe, 1896 Less Rich Sailer",
+        "274": "N. nata Moore, [1858] Sullied Sailer",
+        "275": "N. nemorum Oberthur, 1906 Naga Hockeystick Sailer",
+        "277": "N. pseudovikasi (Moore, 1899) Dingy Sailer",
+        "278": "N. radha Moore, 1857 Great Yellow Sailer",
+        "279": "N. sankara (Kollar, [1844]) Broad-banded Sailer",
+        "280": "N. sappho (Pallas, 1771) Pallas’ Sailer",
+        "281": "N. soma Moore, 1858 Creamy Sailer",
+        "282": "N. zaida Doubleday, [1848] Pale Green Sailer"
+      },
+      "Phaedyma": {
+        "283": "Ph. aspasia (Leech, 1890) Great Hockeystick Sailer",
+        "284": "Ph. columella (Cramer, [1780]) Short-banded Sailer"
+      },
+      "Lasippa": {
+        "285": "L. tiga (Moore, 1858) Burmese Lascar",
+        "286": "L. viraja (Moore, 1872) Yellowjack Sailer"
+      },
+      "Pantoporia": {
+        "287": "P. assamica (Moore, 1881) Assamese Lascar",
+        "288": "P. aurelia (Staudinger, 1886) Baby Lascar",
+        "289": "P. bieti (Oberthur, 1894) Tytler’s Lascar",
+        "290": "P. hordonia (Stoll, [1790]) Common Lascar",
+        "291": "P. paraka (Butler, 1879) Perak Lascar",
+        "292": "P. sandaca (Butler, 1892) Extra Lascar"
+      },
+      "Athyma": {
+        "293": "A. asura Moore, [1858] Studded Sergeant",
+        "294": "A. cama Moore, [1858] Orange Staff Sergeant",
+        "295": "A. nefte (Cramer, [1780]) Colour Sergeant",
+        "296": "A. jina Moore, [1858] Bhutan Sergeant",
+        "297": "A. kanwa Moore, 1858 Dot-dash Sergeant",
+        "298": "A. larymna (Doubleday, [1848]) Great Sergeant",
+        "299": "A. opalina (Kollar, [1844]) Himalayan Sergeant",
+        "300": "A. orientalis Elwes, 1888 Oriental Sergeant",
+        "301": "A. perius (Linnaeus, 1758) Common Sergeant",
+        "302": "A. pravara Moore, [1858] Unbroken Sergeant",
+        "303": "A. ranga Moore, [1858] Blackvein Sergeant",
+        "304": "A. reta Moore, 1858 Malay Staff Sergeant",
+        "305": "A. rufula de Niceville, [1889] Andaman Sergeant",
+        "306": "A. selenophora (Kollar, [1844]) Staff Sergeant",
+        "307": "A. whitei (Tytler, 1940) Cryptic Sergeant",
+        "308": "A. zeroca Moore, 1872 Small Staff Sergeant"
+      },
+      "Limenitis": {
+        "309": "L lepechini Erschoff, 1874 Chitral White Admiral",
+        "310": "L. trivena Moore, 1864 Indian White Admiral"
+      },
+      "Moduza": {
+        "311": "M. procris (Cramer, [1777]) Commander"
+      },
+      "Parasarpa": {
+        "312": "P. dudu (Doubleday, [1848]) White Commodore",
+        "313": "P. zayla (Doubleday, [1848]) Bicolour Commodore"
+      },
+      "Sumalia": {
+        "314": "S. daraxa (Doubleday, [1848]) Green Commodore",
+        "315": "S. zulema (Doubleday, [1848]) Scarce White Commodore"
+      },
+      "Auzakia": {
+        "316": "A. danava (Moore, [1858]) Commodore"
+      },
+      "Bhagadatta": {
+        "317": "B. austenia (Moore, 1872) Grey Commodore"
+      },
+      "Lebadea": {
+        "318": "L. martha (Fabricius, 1787) Knight"
+      },
+      "Parthenos": {
+        "319": "P. sylvia (Donovan, 1842) Clipper"
+      },
+      "Neurosigma": {
+        "320": "N. siva (Westwood, [1850]) Panther"
+      },
+      "Abrota": {
+        "321": "A. ganga Moore, 1857 Sergeant-major"
+      },
+      "Cynitia": {
+        "322": "C. cocytus (Fabricius, 1787) Lavender Count",
+        "323": "C. lepidea (Butler, 1868) Grey Count",
+        "324": "C. telchinia (Menetries, 1857) Blue Baron"
+      },
+      "Tanaecia": {
+        "226": "T. jahnu (Moore, [1858]) Plain Earl",
+        "325": "T. cibaritis (Hewitson, 1874) Andaman Viscount",
+        "327": "T. julii (Lesson, 1837) Common Earl"
+      },
+      "Euthalia": {
+        "328": "E. aconthea (Cramer, [1777]) Common Baron",
+        "329": "E. alpheda (Godart, [1824]) Streaked Baron",
+        "330": "E. anosia (Moore, [1858]) Grey Baron",
+        "331": "E. confucius (Westwood, 1850) Chinese Duke",
+        "332": "E. curvifascia (Tytler, 1915) Naga Duke",
+        "333": "E. durga (Moore, [1858]) Blue Duke",
+        "334": "E. duda Staudinger, 1886 Blue Duchess",
+        "335": "E. evelina (Stoll, [1790]) Red-spot Duke",
+        "336": "E. eriphylae de Niceville, 1891 White-tipped Baron",
+        "337": "E. franciae (Gray, 1846) French Duke",
+        "338": "E. iva (Moore, [1858]) Grand Duke",
+        "339": "E. lengba Tytler, 1940 Tytler’s Duchess",
+        "340": "E. lubentina (Cramer, [1777]) Gaudy Baron",
+        "341": "E. malaccana Fruhstorfer, 1899 Fruhstorfer’s Baron",
+        "342": "E. merta (Moore, 1859) Dark Baron",
+        "343": "E. monina (Fabricius, 1787) Powdered Baron",
+        "344": "E. nara (Moore, 1859) Bronze Duke",
+        "345": "E. narayana Grose-Smith & Kirby, 1891 Burmese Baron",
+        "346": "E. patala (Kollar, [1844]) Grand Duchess",
+        "347": "E. phemius (Doubleday, [1848]) White-edged Blue Baron",
+        "348": "E. recta (de Niceville, 1886) Redtail Maquis",
+        "349": "E. sahadeva (Moore, 1859) Green Duke",
+        "350": "E. saitaphernes Fruhstorfer, 1913 Mottled Baron",
+        "351": "E. teuta (Doubleday, [1848]) Banded Marquis",
+        "352": "E. thawgawa Tytler, 1940 Tytler’s Duke"
+      },
+      "Symphaedra": {
+        "353": "S. nais (Forster, 1771) Baronet"
+      },
+      "Lexias": {
+        "354": "L. cyanipardus (Butler, [1869]) Great Archduke",
+        "355": "L. dirtea (Fabricius, 1793) Dark Archduke",
+        "356": "L. pardalis (Moore, 1878) Archduke"
+      }
+    },
+    "Heliconiinae": {
+      "Argynnis": {
+        "357": "A. aglaja (Linnaeus, 1758) Dark Green Silverspot",
+        "358": "A. childreni Gray, 1831 Great Silverstripe",
+        "359": "A. clara (Blanchard, [1844]) Silverstreak",
+        "360": "A. hyperbius (Linnaeus, 1763) Indian Fritillary",
+        "361": "A. jainadeva (Moore, 1864) Highbrown Silverspot",
+        "362": "A. kamala (Moore, 1857) Common Silverstripe",
+        "363": "A. laodice (Pallas, 1771) Eastern Silverstripe",
+        "364": "A. pandora ([Schiffermuller] 1775) Cardinal"
+      },
+      "Issoria": {
+        "365": "I. altissima (Elwes, 1882) Mountain Silverspot",
+        "366": "I. gemmata (Butler, 1881) Gem Silverspot",
+        "367": "I. lathonia (Linnaeus, 1758) Queen of Spain Fritillary",
+        "368": "I. mackinnoni (de Niceville, 1891) Brilliant Silverspot"
+      },
+      "Boloria": {
+        "369": "B. erubescens (Staudinger, 1901) Whitespot Fritillary",
+        "370": "B. generator (Staudinger, 1886) Hunza Silverspot",
+        "371": "B. jerdoni (Lang, 1868) Jerdon’s Silverspot",
+        "372": "B. sipora (Moore, [1875]) Straightwing Silverspot"
+      },
+      "Phalanta": {
+        "373": "P. alcippe (Stoll, [1782]) Small Leopard",
+        "374": "P. phalantha (Drury, [1773]) Common Leopard"
+      },
+      "Cupha": {
+        "375": "C. erymanthis (Drury, [1773]) Rustic"
+      },
+      "Vagrans": {
+        "376": "V. egista (Cramer, [1780]) Vagrant"
+      },
+      "Vindula": {
+        "377": "V. erota (Fabricius, 1793) Cruiser"
+      },
+      "Algia": {
+        "378": "A. fasciata (C. & R. Felder, 1860) Branded Yeoman"
+      },
+      "Cirrochroa": {
+        "379": "C. aoris Doubleday, [1847] Large Yeoman",
+        "380": "C. nicobarica Wood-Mason & de Nicceville, 1881 Nicobar Yeoman",
+        "381": "C. thais (Fabricius, 1787) Tamil Yeoman ",
+        "382": "C. tyche C. & R. Felder, 1861 Common Yeoman"
+      }
+    },
+    "Biblidinae": {
+      "Ariadne": {
+        "383": "A. ariadne (Linnaeus, 1763) Angled Castor",
+        "384": "A. merione (Cramer, [1777]) Common Castor"
+      },
+      "Laringa": {
+        "385": "L. horsfieldi (Boisduval, 1833) Banded Dandy"
+      },
+      "Byblia": {
+        "386": "B. ilithyia (Drury, [1773]) Joker"
+      }
+    },
+    "Apaturinae": {
+      "Rohana": {
+        "387": "R. parisatis (Westwood, 1850) Black Prince",
+        "388": "R. parvata (Moore, 1857) Brown Prince"
+      },
+      "Eulaceura": {
+        "389": "E. manipurensis Tytler, 1915 Tytler’s Emperor"
+      },
+      "Chitoria": {
+        "390": "C. naga (Tytler, 1915) Naga Emperor",
+        "391": "C. sordida (Moore, [1866]) Sordid Emperor",
+        "392": "C. ulupi (Doherty, 1889) Tawny Emperor"
+      },
+      "Mimathyma": {
+        "393": "M. ambica (Kollar, [1844]) Indian Purple Emperor",
+        "394": "M. bhavana (Moore, 1881) Bhutan Emperor",
+        "395": "M. chevana (Moore, [1866]) Sergeant Emperor",
+        "396": "M. chitralensis (Evans, 1912) Chitral Emperor"
+      },
+      "Dilipa": {
+        "397": "D. morgiana (Westwood, [1850]) Golden Emperor"
+      },
+      "Sephisa": {
+        "398": "S. chandra (Moore, [1858]) Eastern Courtier",
+        "399": "S. dichroa (Kollar, [1844]) Western Courtier"
+      },
+      "Helcyra": {
+        "400": "H. hemina Hewitson, 1864 White Emperor"
+      },
+      "Herona": {
+        "401": "H. marathus Doubleday, [1848] Pasha"
+      },
+      "Euripus": {
+        "402": "E. consimilis (Westwood, 1850) Painted Courtesan",
+        "403": "E. nyctelius (Doubleday, 1845) Courtesan"
+      },
+      "Hestina": {
+        "404": "H. nicevillei (Moore, [1895]) Scarce Siren",
+        "405": "H. persimilis (Westwood, [1850]) Siren"
+      },
+      "Hestinalis": {
+        "406": "H. nama (Doubleday, 1844) Circe"
+      },
+      "Sasakia": {
+        "407": "S. funebris (Leech, 1891) Empress"
+      }
+    },
+    "Cyrestinae": {
+      "Cyrestis": {
+        "408": "C. cocles (Fabricius, 1787) Marbled Map",
+        "409": "C. tabula de Niceville, 1883 Nicobar Map",
+        "410": "C. thyodamas Boisduval, 1846 Common Map"
+      },
+      "Chersonesia": {
+        "411": "C. intermedia Martin, 1895 Wavy Maplet",
+        "412": "C. risa (Doubleday, [1848]) Common Maplet"
+      },
+      "Pseudergolis": {
+        "413": "P. wedah (Kollar, 1848) Tabby"
+      },
+      "Stibochiona": {
+        "414": "S. nicea (Gray, 1846) Popinjay"
+      },
+      "Dichorragia": {
+        "415": "D. nesimachus (Doyere, 1840) Constable"
+      }
+    },
+    "Nymphalinae": {
+      "Melitaea": {
+        "416": "M. arcesia Bremer, 1861 Blackvein Fritillary",
+        "417": "M. shandura Evans, 1924 Shandur Fritillary",
+        "418": "M. fergana Staudinger, 1882 Uzbek Fritillary",
+        "419": "M. nadezhdae Sheljuzhko, 1912 Sheljuzhko’s Fritillary",
+        "420": "M. balbina Tytler, 1926 Pamir Fritillary"
+      },
+      "Symbrenthia": {
+        "421": "S. brabira Moore, 1872 Himalayan Jester",
+        "422": "S. doni Tytler, 1940 Naga Jester",
+        "423": "S. hypselis (Godart, [1824]) Spotted Jester",
+        "424": "S. lilaea (Hewitson, 1864) Common Jester",
+        "425": "S. niphanda Moore, 1872 Blue-tailed Jester",
+        "426": "S. silana de Niceville, 1885 Scarce Jester"
+      },
+      "Araschnia": {
+        "427": "A. prorsoides (Blanchard, 1871) Mongol"
+      },
+      "Nymphalis": {
+        "428": "N. xanthomelas (Esper, 1781) Large Tortoiseshell"
+      },
+      "Aglais": {
+        "429": "A. caschmirensis (Kollar, [1844]) Indian Tortoiseshell",
+        "430": "A. ladakensis (Moore, 1878) Ladakh Tortoiseshell",
+        "431": "A. rizana (Moore, 1872) Mountain Tortoiseshell"
+      },
+      "Kaniska": {
+        "432": "K. canace (Linnaeus, 1763) Blue Admiral"
+      },
+      "Polygonia": {
+        "433": "P. c-album (Linnaeus, 1758) Comma",
+        "434": "P. l-album (Esper, 1781) False Comma",
+        "435": "P. undina (Grum-Grshimailo, 1890) Pamir Comma"
+      },
+      "Vanessa": {
+        "436": "V. cardui (Linnaeus, 1758) Painted Lady",
+        "437": "V. indica (Herbst, 1794) Indian Red Admiral"
+      },
+      "Junonia": {
+        "438": "J. almana (Linnaeus, 1758) Peacock Pansy",
+        "439": "J. atlites (Linnaeus, 1763) Grey Pansy",
+        "440": "J. hierta (Fabricius, 1798) Yellow Pansy",
+        "441": "J. iphita (Cramer, [1779]) Chocolate Pansy",
+        "442": "J. lemonias (Linnaeus, 1758) Lemon Pansy",
+        "443": "J. orithya (Linnaeus, 1758) Blue Pansy"
+      },
+      "Hypolimnas": {
+        "444": "H. anomala (Wallace, 1869) Malayan Eggfly",
+        "445": "H. bolina (Linnaeus, 1758) Great Eggfly",
+        "446": "H. misippus (Linnaeus, 1764) Danaid Eggfly"
+      },
+      "Kallima": {
+        "447": "K. albofasciata Moore, 1877 White Oakleaf",
+        "448": "K. horsfieldii (Kollar, [1844]) Southern Blue Oakleaf",
+        "449": "K. inachus (Boisduval, 1846) Orange Oakleaf",
+        "450": "K. knyvetti de Niceville, 1886 Scarce Blue Oakleaf"
+      },
+      "Doleschallia": {
+        "451": "D. bisaltide (Cramer, [1777]) Autumn Leaf"
+      },
+      "Rhinopalpa": {
+        "452": "R. polynice (Cramer, [1799]) Wizard"
+      },
+      "Yoma": {
+        "453": "Y. sabina (Cramer, [1780]) Lurcher"
+      }
+    },
+    "Acraeinae": {
+      "Acraea": {
+        "454": "A. issoria (Huebner, [1819]) Yellow Coster",
+        "455": "A. violae (Fabricius, 1793) Tawny Coster"
+      },
+      "Cethosia": {
+        "456": "C. biblis (Drury, [1773]) Red Lacewing",
+        "457": "C. cyane (Drury, [1773]) Leopard Lacewing",
+        "458": "C. nietneri C. & R. Felder, [1867] Tamil Lacewing"
+      }
+    },
+    "Libytheinae": {
+      "Libythea": {
+        "459": "L. lepita Moore, [1858] Common Beak",
+        "460": "L. myrrha Godart, 1819 Club Beak",
+        "461": "L. narina Godart, 1819 White-spotted Beak"
+      }
+    }
+  }
+}
