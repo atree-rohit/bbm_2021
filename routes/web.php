@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SpeciesController;
+use App\Http\Controllers\CountFormController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/home', function () {
+    return view('home');
+});
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::post('/butterfly_count/import', [CountFormController::class, 'import']);
+Route::resource('/butterfly_count', CountFormController::class);
+// Route::resource('/species', FormRowController::class);
+Route::resource('/species', SpeciesController::class);
