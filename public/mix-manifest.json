@@ -1,5 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/validate.js": "/js/validate.js",
+    "/js/butterfly_counts.js": "/js/butterfly_counts.js",
     "/css/app.css": "/css/app.css",
     "/css/style.css": "/css/style.css"
 }

@@ -12,6 +12,8 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
+    .js('resources/js/validate.js', 'public/js')
+    .js('resources/js/butterfly_counts.js', 'public/js')
     .vue()
     .css('resources/css/style.css', 'public/css')
     .sass('resources/sass/app.scss', 'public/css');
