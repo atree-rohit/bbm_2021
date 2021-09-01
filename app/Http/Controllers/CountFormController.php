@@ -114,11 +114,30 @@ class CountFormController extends Controller
 
     public function validate_form(Request $request)
     {
-        dd($request->all());
+        $row_cols = ["sl_no", "common_name", "scientific_name", "no_of_individuals", "remarks"];
+        $form = CountForm::find($request["form"]["id"]);
+        foreach($request["form"] as $k => $v){
+            if($k != "id"){
+                $form->$k = $request["form"][$k];
+            }
+        }
+        if($form->isDirty()){
+            $form->save();
+        }
+
+        foreach($request["rows"] as $r){
+            $r = FormRow::find($r["id"]);
+            foreach($row_cols as $c){
+                $r->$c = $r[$c];
+            }
+            if($r->isDirty()){
+                $r->save();
+            }
+        }
+
+        return response()->json("success", 200);
     }
-    public function getCoordinates($coordinates)
-    {
-    }
+    
     public function create()
     {
         //
