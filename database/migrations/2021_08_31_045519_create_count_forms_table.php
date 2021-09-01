@@ -35,6 +35,7 @@ class CreateCountFormsTable extends Migration
             $table->string('original_filename');
             $table->boolean('duplicate')->default(false);
             $table->boolean('flag')->default(false);
+            $table->boolean('validated')->default(false);
             $table->timestamps();
         });
     }
