@@ -1,24 +1,40 @@
 <style>
+	#table-container{
+		width: 100%;
+		height: 70vh;
+		overflow: scroll;
+	}
+	#counts-table{
+		font-size: .8rem;
+	}
+	#counts-table tbody tr:hover{
+		background: #ffa;
+		cursor: pointer;
+	}
+	#species-table{
+
+	}
+
 </style>
 <template>
-	<div class="container-fluid">
-		<div class="text-center">
-			<button class="btn mx-3" v-for="m in modes" v-text="titleCase(m)" @click='mode=m' :class="(mode==m)?'btn-success':'btn-outline-info'"></button>
-		</div>
-		<div v-if="mode=='forms'">
-			<table class="table table-sm" v-if="selected_form==null">
-				<thead class="bg-dark text-light">
-					<tr>
-						<th v-for="col in form_cols" v-text="titleCase(col)"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="f in forms" @click='selected_form=f.id'>
-						<td v-for="col in form_cols" v-text="f[col]"></td>
-					</tr>
-				</tbody>
-			</table>
-			<table class="table table-sm" v-if="selected_form != null">
+	<div class="container-fluid" id="table-container">
+		<table class="table table-sm" id="counts-table" v-if="selected_form==null">
+			<thead class="bg-dark text-light">
+				<tr>
+					<th v-for="col in form_cols" v-text="titleCase(col)" class="text-nowrap"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="f in forms" @click='selected_form=f.id'>
+					<td v-for="col in form_cols" v-text="f[col]" class="text-nowrap"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="form-data" v-if="selected_form != null">
+			<div class="text-center">
+				<button class="btn btn-primary" @click="selected_form=null">Back to Counts Table</button>
+			</div>
+			<table class="table table-sm" id="species-table">
 				<thead>
 					<tr>
 						<th>Sl. No</th>
@@ -33,10 +49,8 @@
 						<td v-for="col in row_cols" v-text="row[col]"></td>
 					</tr>
 				</tbody>
-			</table>
+			</table>			
 		</div>
-
-
 	</div>
 </template>
 
@@ -47,8 +61,6 @@
 		props: ["forms"],
 		data(){
 			return {
-				modes:["forms", "species"],
-				mode:"forms",
 				form_cols:["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather", "comments", "original_filename", "created_at"],
 				row_cols:["sl_no", "common_name", "scientific_name", "no_of_individuals", "remarks"],
 				selected_form:null,
@@ -69,6 +81,14 @@
 		created(){
 		},
 		methods:{
+			formColClass(col){
+				let op = "";
+				let cols = ["id", "name", "affilation", "phone", "email", "coordinates", "date","altitude", "distance", "original_filename"];
+				if(cols.indexOf(col) != -1){
+					op = "text-nowrap";
+				}
+				return op;
+			},
 			titleCase(str) {
 				let splitStr = str.toLowerCase().split('_');
 				for (let i = 0; i < splitStr.length; i++) {
