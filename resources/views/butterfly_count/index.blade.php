@@ -1,1 +1,45 @@
-<!DOCTYPE html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><!--[if IE]><link rel="icon" href="/bbm_pwa/favicon.ico"><![endif]--><title>bbm_app</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"><link href="/bbm_pwa/css/app.c4888126.css" rel="preload" as="style"><link href="/bbm_pwa/js/app.9db5c2bb.js" rel="preload" as="script"><link href="/bbm_pwa/js/chunk-vendors.cede804d.js" rel="preload" as="script"><link href="/bbm_pwa/css/app.c4888126.css" rel="stylesheet"><link rel="icon" type="image/png" sizes="32x32" href="/bbm_pwa/img/icons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/bbm_pwa/img/icons/favicon-16x16.png"><link rel="manifest" href="/bbm_pwa/manifest.json"><meta name="theme-color" content="#4DBA87"><meta name="apple-mobile-web-app-capable" content="no"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="bbm_app"><link rel="apple-touch-icon" href="/bbm_pwa/img/icons/apple-touch-icon-152x152.png"><link rel="mask-icon" href="/bbm_pwa/img/icons/safari-pinned-tab.svg" color="#4DBA87"><meta name="msapplication-TileImage" content="/bbm_pwa/img/icons/msapplication-icon-144x144.png"><meta name="msapplication-TileColor" content="#000000"></head><body class="container-fluid"><noscript><strong>We're sorry but bbm_app doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script><script src="/bbm_pwa/js/chunk-vendors.cede804d.js"></script><script src="/bbm_pwa/js/app.9db5c2bb.js"></script></body></html>
+@extends('layouts.app')
+
+<div class="container-fluid">
+@section('content')
+	<div class="d-flex justify-content-center">
+		<button type="button" id="upload-form" class="btn btn-block btn-success w-50" data-bs-toggle="modal" data-bs-target="#importModal">
+			Upload a Form
+		</button>
+	</div>
+	<div class="h1">{{count($forms)}} Forms Submitted</div>
+	<div id="app">
+		<butterfly-counts :forms='@json($forms)' />
+	</div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="ImportButterflyCountXLSX" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ImportButterflyCountXLSX">Import a completed Butterfly Count Sheet</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form method="POST" action="/butterfly_count/import" enctype="multipart/form-data">
+				@csrf
+				<div class="modal-body">
+					<div class="mb-3">
+						<input class="form-control" type="file" name="count_file" required>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Save changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+@endsection
+
+@push('scripts')
+	<script src="{{ url('js/butterfly_counts.js') }}"></script>
+@endpush
