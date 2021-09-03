@@ -116,21 +116,21 @@ class CountFormController extends Controller
     {
         $row_cols = ["sl_no", "common_name", "scientific_name", "no_of_individuals", "remarks"];
         $form = CountForm::find($request["form"]["id"]);
-        foreach($request["form"] as $k => $v){
-            if($k != "id"){
+        foreach ($request["form"] as $k => $v) {
+            if ($k != "id") {
                 $form->$k = $request["form"][$k];
             }
         }
-        if($form->isDirty()){
+        if ($form->isDirty()) {
             $form->save();
         }
 
-        foreach($request["rows"] as $r){
+        foreach ($request["rows"] as $r) {
             $r = FormRow::find($r["id"]);
-            foreach($row_cols as $c){
+            foreach ($row_cols as $c) {
                 $r->$c = $r[$c];
             }
-            if($r->isDirty()){
+            if ($r->isDirty()) {
                 $r->save();
             }
         }
