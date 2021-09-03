@@ -18,7 +18,8 @@ class CountFormController extends Controller
     {
         // $forms = CountForm::with("rows")->get();
 
-        return view('butterfly_count.index');
+        // return view('butterfly_count.index');
+        return \File::get(public_path() . '/bbm_pwa/index.html');
     }
 
     public function import(Request $request)
