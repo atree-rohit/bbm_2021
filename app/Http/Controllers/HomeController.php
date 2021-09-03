@@ -24,16 +24,16 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    public function index()
+    public function welcome()
     {
         $forms = CountForm::count();
         $form_rows = FormRow::all();
         $species = count($form_rows->groupBy("scientific_name"));
         $individuals = $form_rows->sum("no_of_individuals_cleaned");
         $data = [
-            "Forms" => [$forms, "bg-warning"],
-            "Species" => [$species, "bg-success"],
-            "Individuals" => [$individuals, "table-secondary"]
+            [$forms,"Forms", "bg-warning"],
+            [$species,"Species", "bg-success"],
+            [$individuals,"Individuals", "bg-indigo"]
         ];
         return view('welcome', compact("data"));
     }

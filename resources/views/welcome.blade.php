@@ -1,12 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid h4">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+<div class="container-fluid h4">
+
+    <div class="card-group text-center">
+        @foreach($data as $d)
+        <div class="card {{$d[2]}}">
+            <div class="card-body">
+                <h1 class="card-text">{{$d[0]}}</h1>
+                <h3 class="card-title">{{$d[1]}}</h3>
+            </div>
+        </div>
+        @endforeach
     </div>
+
+</div>
 @endsection

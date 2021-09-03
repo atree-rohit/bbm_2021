@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SpeciesController;
 use App\Http\Controllers\CountFormController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SpeciesController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +16,7 @@ use App\Http\Controllers\CountFormController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'welcome']);
 Route::get('/home', function () {
     return view('home');
 });

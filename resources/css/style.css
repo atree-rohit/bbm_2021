@@ -1,12 +1,11 @@
-.navbar-brand{
-	display: inline-block;
-}
 #nav-logo{
 	height: 85px;
 	position: absolute;
-	margin-left: -30px;
-	margin-top: -30px;
-	/*display: block;*/
+	margin-left: -5px;
+	margin-top: -20px;
+}
+.bg-indigo{
+	background: #9561e2;
 }
 
 @media (max-width: 768px) {

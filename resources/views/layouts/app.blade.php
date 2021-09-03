@@ -41,13 +41,13 @@
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 						<!-- Authentication Links -->
 						@guest
-							<li class="nav-item">
+							{{-- <li class="nav-item">
 								<a class="nav-link" href="{{ url('butterfly_count') }}">Butterfly Counts</a>
 							</li>
 
 							<li class="nav-item">
 								<a class="nav-link" href="{{ url('species') }}">Species</a>
-							</li>
+							</li> --}}
 						@else
 							<li class="nav-item dropdown">
 								<a id="userDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -68,6 +68,7 @@
 						@endguest
 					</ul>
 				</div>
+				<span class="h2 p-2 mb-0">Big Butterfly Month - 2021</span>
 			</div>
 		</nav>
 
