@@ -16,9 +16,9 @@ class CountFormController extends Controller
      */
     public function index()
     {
-        $forms = CountForm::with("rows")->get();
+        // $forms = CountForm::with("rows")->get();
 
-        return view('butterfly_count.index', compact("forms"));
+        return view('butterfly_count.index');
     }
 
     public function import(Request $request)
