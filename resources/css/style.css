@@ -7,6 +7,10 @@
 .bg-indigo{
 	background: #9561e2;
 }
+#app-button{
+	font-size: 3.0rem;
+
+}
 
 @media (max-width: 768px) {
   #nav-logo {

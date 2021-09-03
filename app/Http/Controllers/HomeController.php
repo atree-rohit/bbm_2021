@@ -29,7 +29,11 @@ class HomeController extends Controller
         $forms = CountForm::count();
         $form_rows = FormRow::all();
         $species = count($form_rows->groupBy("scientific_name"));
-        $individuals = $form_rows->sum("no_of_individuals_cleaned");
+        $individuals = 0;
+        foreach($form_rows as $f){
+            if(is_numeric($f->individuals))
+                $individuals += $f->individuals;
+        }
         $data = [
             [$forms,"Forms", "bg-warning"],
             [$species,"Species", "bg-success"],

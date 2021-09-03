@@ -24,7 +24,24 @@ class CountFormController extends Controller
 
     public function pwa_post(Request $request)
     {
-        dd($request->all());
+        $form = new CountForm();
+        foreach($request->form as $k=>$v){
+            $form->$k = $v ?? null;
+        }
+        $form->save();
+
+        foreach($request->rows as $row){
+            $new_row = new FormRow();
+            $new_row->count_form_id = $form->id;
+            foreach($row as $k=>$v){
+                $new_row->$k = $v ?? null;
+            }
+            $new_row->save();
+            
+        }
+
+        return response()->json("success", 200);
+
     }
     public function import(Request $request)
     {
