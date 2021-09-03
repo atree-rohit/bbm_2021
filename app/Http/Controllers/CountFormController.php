@@ -22,6 +22,10 @@ class CountFormController extends Controller
         return \File::get(public_path() . '/bbm_pwa/index.html');
     }
 
+    public function pwa_post(Request $request)
+    {
+        dd($request->all());
+    }
     public function import(Request $request)
     {
         $form_cols = ["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather"];
