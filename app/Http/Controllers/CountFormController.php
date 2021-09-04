@@ -39,7 +39,6 @@ class CountFormController extends Controller
             $new_row->save();
             
         }
-        dd($request->all());
 
         return response()->json("success", 200);
 
