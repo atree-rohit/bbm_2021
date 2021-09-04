@@ -28,7 +28,8 @@ class HomeController extends Controller
     {
         $forms = CountForm::count();
         $form_rows = FormRow::all();
-        $species = count($form_rows->groupBy("scientific_name"));
+        $species = count($form_rows->groupBy("common_name"));
+        // dd($form_rows->groupBy("scientific_name"));
         $individuals = 0;
         foreach($form_rows as $f){
             if(is_numeric($f->individuals))
