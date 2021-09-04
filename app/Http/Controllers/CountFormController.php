@@ -16,12 +16,16 @@ class CountFormController extends Controller
      */
     public function index()
     {
-        // $forms = CountForm::with("rows")->get();
+        $forms = CountForm::with("rows")->get();
 
-        // return view('butterfly_count.index');
-        return \File::get(public_path() . '/bbm_pwa/index.html');
+        return view('butterfly_count.index', compact("forms"));
+        
     }
 
+    public function pwa_app(){
+
+        return \File::get(public_path() . '/bbm_pwa/index.html');
+    }
     public function pwa_post(Request $request)
     {
         $form = new CountForm();

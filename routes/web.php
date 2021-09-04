@@ -26,6 +26,7 @@ Auth::routes();
 Route::post('/butterfly_count/import', [CountFormController::class, 'import']);
 Route::post('/butterfly_count/validate', [CountFormController::class, 'validate_form']);
 Route::post('/butterfly_count/pwa_post', [CountFormController::class, 'pwa_post']);
+Route::get('/butterfly_count/pwa_app', [CountFormController::class, 'pwa_app']);
 
 Route::resource('/butterfly_count', CountFormController::class);
 // Route::resource('/species', FormRowController::class);
