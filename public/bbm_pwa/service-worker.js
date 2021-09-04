@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/bbm_pwa/precache-manifest.fbc0002dfe12613e0748f1175aa19e28.js"
+  "/bbm_pwa/precache-manifest.1753bc5005fdefcf8c535c0de86a73da.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "bbm_app"});
