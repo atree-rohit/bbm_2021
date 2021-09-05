@@ -22,10 +22,36 @@ class CountFormController extends Controller
         
     }
 
-    public function pwa_app(){
+    public function forms()
+    {
+        $forms = CountForm::with("rows")->get();
+
+        return view('butterfly_count.forms', compact("forms"));
+        
+    }
+    
+    public function set_flag(Request $request){
+        $form = CountForm::find($request["id"]);
+        $form->flag = $request["flag"];
+        $form->save();
+
+        return response()->json("success", 200);
+    }
+
+    public function set_duplicate(Request $request){
+        $form = CountForm::find($request["id"]);
+        $form->duplicate = $request["duplicate"];
+        $form->save();
+
+        return response()->json("success", 200);
+    }
+
+    public function pwa_app()
+    {
 
         return \File::get(public_path() . '/bbm_pwa/index.html');
     }
+
     public function pwa_post(Request $request)
     {
         $form = new CountForm();
@@ -45,8 +71,8 @@ class CountFormController extends Controller
         }
 
         return response()->json("success", 200);
-
     }
+
     public function import(Request $request)
     {
         $form_cols = ["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather"];
