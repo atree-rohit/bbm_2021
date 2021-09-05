@@ -29,7 +29,11 @@
 			</thead>
 			<tbody>
 				<tr v-for="f in forms" @click='selectForm(f)' :class="formsTableClass(f)">
-					<td v-for="col in form_cols" v-text="f[col]"></td>
+					<template v-for="col in form_cols">
+						<td v-if="(col=='date') || (col=='created_at')">{{moment(f[col]).format("MMM Do YY")}}</td>
+						<td v-else-if="col=='state'" v-text="f[col]" class="bg-dark text-warning"></td>
+						<td v-else v-text="f[col]"></td>
+					</template>
 				</tr>
 			</tbody>
 		</table>
@@ -73,7 +77,7 @@
 		props: ["forms"],
 		data(){
 			return {
-				form_cols:["id", "name", "affilation", "phone", "email", "team_members", "state", "location", "coordinates", "date", "altitude", "distance", "weather", "comments", "original_filename", "created_at"],
+				form_cols:["id", "name", "affilation", "phone", "email", "team_members", "state", "location", "coordinates", "date", "start_time", "end_time", "altitude", "distance", "weather", "comments", "created_at"],
 				row_cols:["sl_no", "common_name", "scientific_name", "individuals", "remarks"],
 				selected_form:null,
 				is_flagged:null,
