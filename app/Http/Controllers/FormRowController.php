@@ -17,6 +17,15 @@ class FormRowController extends Controller
         //
     }
 
+
+    public function set_flag(Request $request){
+        $row = FormRow::find($request["id"]);
+        $row->flag = $request["flag"];
+        $row->save();
+
+        return response()->json("success", 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
