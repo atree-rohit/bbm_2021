@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CountForm;
 use App\Models\FormRow;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -29,12 +31,16 @@ class HomeController extends Controller
         $forms = CountForm::where("flag", false)->count();
         $form_rows = FormRow::with("form")->get();
         $stats = $this->populate_sci_names($form_rows);
+        $users = User::count();
         
         $data = [
             [$forms,"Forms", "bg-warning"],
             [count($stats[0]),"Species", "bg-success"],
             [$stats[1],"Individuals", "bg-indigo"]
         ];
+        if(Auth::user()){
+            $data[] = [$users, "Users", "bg-danger"];
+        }
         // if(isset($_GET["new"]))
             return view('welcome-india', compact("data"));
         // return view('welcome', compact("data"));

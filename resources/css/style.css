@@ -44,6 +44,11 @@
 	color: 	#fff;
 }
 
+.color-3{
+	background: #ff3333;
+	color: 	#fff;
+}
+
 @media (max-width: 768px) {
   #nav-logo {
     position: relative;
