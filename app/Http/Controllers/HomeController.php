@@ -45,19 +45,21 @@ class HomeController extends Controller
             "synoptic" => json_decode(file_get_contents(public_path('/data/synoptic.json'))),
             "boi" => json_decode(file_get_contents(public_path('/data/boi.json'))),
         ];
+
         $scientific_names = [];
         $individuals = 0;
         $skipped = $sci_name_not_set = [];
+
         foreach($rows as $row){
             //ignore if row is flag, form is flag or duplicate
             if(!($row->flag || $row->form->flag || $row->form->duplicate)){
                 if(is_numeric($row->individuals))
                     $individuals += $row->individuals;
-                if(!$row->scientific_name){
+                if( (!$row->scientific_name) && (strlen($row->common_name)>1) ){
                     $sci_name_flag = true;
                     foreach($names as $list_name=>$list){
                         foreach($list as $sp){
-                            if($sp[1] == $row->common_name){
+                            if($sp[1] == trim($row->common_name)){
                                 $sci_name_flag = false;
                                 $row->scientific_name = $sp[0];
                                 $row->save();
