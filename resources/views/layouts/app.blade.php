@@ -31,44 +31,35 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
+				<div class="mx-5"></div>
+				<div class="h2 text-center p-2 ms-5 mb-0">Big Butterfly Month - 2021</div>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<!-- Left Side Of Navbar -->
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-					</ul>
-
 					<!-- Right Side Of Navbar -->
+					@auth
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-						<!-- Authentication Links -->
-						@guest
-							{{-- <li class="nav-item">
-								<a class="nav-link" href="{{ url('butterfly_count') }}">Butterfly Counts</a>
-							</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ url('butterfly_count/forms') }}">Submitted Counts</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a id="userDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								{{ Auth::user()->name }}
+							</a>
 
-							<li class="nav-item">
-								<a class="nav-link" href="{{ url('species') }}">Species</a>
-							</li> --}}
-						@else
-							<li class="nav-item dropdown">
-								<a id="userDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-									{{ Auth::user()->name }}
+							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+								<a class="dropdown-item" href="{{ route('logout') }}"
+								   onclick="event.preventDefault();
+												 document.getElementById('logout-form').submit();">
+									{{ __('Logout') }}
 								</a>
-
-								<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-									<a class="dropdown-item" href="{{ route('logout') }}"
-									   onclick="event.preventDefault();
-													 document.getElementById('logout-form').submit();">
-										{{ __('Logout') }}
-									</a>
-									<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-										@csrf
-									</form>
-								</div>
-							</li>
-						@endguest
+								<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+									@csrf
+								</form>
+							</div>
+						</li>
+					@endauth
 					</ul>
 				</div>
-				<span class="h2 p-2 mb-0">Big Butterfly Month - 2021</span>
 			</div>
 		</nav>
 
