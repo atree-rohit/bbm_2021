@@ -1919,6 +1919,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "butterfly-counts",
@@ -1951,6 +1952,17 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {},
   methods: {
+    trimCoordinates: function trimCoordinates(c) {
+      var op = "";
+      c.split(", ").forEach(function (p) {
+        if (op == "") {
+          op = p.slice(0, 5) + p.slice(-2);
+        } else {
+          op += "," + p.slice(0, 5) + p.slice(-2);
+        }
+      });
+      return op;
+    },
     rowFlagBtnClass: function rowFlagBtnClass(row) {
       var op = "border border-primary bg-light text-secondary";
 
@@ -24245,13 +24257,21 @@ var render = function() {
                           col == "date" || col == "created_at"
                             ? _c("td", [
                                 _vm._v(
-                                  _vm._s(_vm.moment(f[col]).format("MMM Do YY"))
+                                  _vm._s(_vm.moment(f[col]).format("MMM D, YY"))
                                 )
                               ])
                             : col == "state"
                             ? _c("td", {
                                 staticClass: "bg-dark text-warning",
                                 domProps: { textContent: _vm._s(f[col]) }
+                              })
+                            : col == "coordinates"
+                            ? _c("td", {
+                                domProps: {
+                                  textContent: _vm._s(
+                                    _vm.trimCoordinates(f[col])
+                                  )
+                                }
                               })
                             : _c("td", {
                                 domProps: { textContent: _vm._s(f[col]) }

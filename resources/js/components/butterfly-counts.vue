@@ -30,8 +30,9 @@
 			<tbody>
 				<tr v-for="f in forms" @click='selectForm(f)' :class="formsTableClass(f)">
 					<template v-for="col in form_cols">
-						<td v-if="(col=='date') || (col=='created_at')">{{moment(f[col]).format("MMM Do YY")}}</td>
+						<td v-if="(col=='date') || (col=='created_at')">{{moment(f[col]).format("MMM D, YY")}}</td>
 						<td v-else-if="col=='state'" v-text="f[col]" class="bg-dark text-warning"></td>
+						<td v-else-if="col=='coordinates'" v-text="trimCoordinates(f[col])"></td>
 						<td v-else v-text="f[col]"></td>
 					</template>
 				</tr>
@@ -101,6 +102,18 @@
 		created(){
 		},
 		methods:{
+			trimCoordinates(c){
+				let op = "";
+				c.split(", ").forEach(p => {
+					if(op == ""){
+						op = p.slice(0,5) + p.slice(-2)
+					} else {
+						op += ","+p.slice(0,5) + p.slice(-2)
+					}
+
+				})
+				return op;
+			},
 			rowFlagBtnClass(row){
 				let op = "border border-primary bg-light text-secondary";
 				if(row.flag){
