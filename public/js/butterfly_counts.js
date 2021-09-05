@@ -1903,15 +1903,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "butterfly-counts",
   props: ["forms"],
   data: function data() {
     return {
-      form_cols: ["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather", "comments", "original_filename", "created_at"],
-      row_cols: ["sl_no", "common_name", "scientific_name", "no_of_individuals", "remarks"],
-      selected_form: null
+      form_cols: ["id", "name", "affilation", "phone", "email", "team_members", "state", "location", "coordinates", "date", "altitude", "distance", "weather", "comments", "original_filename", "created_at"],
+      row_cols: ["sl_no", "common_name", "scientific_name", "individuals", "remarks"],
+      selected_form: null,
+      is_flagged: null,
+      is_duplicate: null,
+      forms_data: this.forms,
+      axios: __webpack_require__(/*! axios */ "./node_modules/axios/index.js")
     };
   },
   computed: {
@@ -1921,7 +1937,7 @@ __webpack_require__.r(__webpack_exports__);
       var op = [];
 
       if (this.selected_form != null) {
-        this.forms.forEach(function (f) {
+        this.forms_data.forEach(function (f) {
           if (f.id == _this.selected_form) op = f.rows;
         });
       }
@@ -1931,6 +1947,95 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {},
   methods: {
+    rowFlagBtnClass: function rowFlagBtnClass(row) {
+      var op = "border border-primary bg-light text-secondary";
+
+      if (row.flag) {
+        op = "bg-danger";
+      }
+
+      return op;
+    },
+    formsTableClass: function formsTableClass(f) {
+      var op = "table-success";
+
+      if (f.duplicate) {
+        op = "table-warning";
+      }
+
+      if (f.flag) {
+        op = "table-danger";
+      }
+
+      return op;
+    },
+    toggleRowFlag: function toggleRowFlag(r) {
+      var that = this;
+      var post_data = {
+        "id": r.id,
+        "flag": !r.flag
+      }; // console.log(that.forms_data)
+
+      this.axios.post('/butterfly_count/set_row_flag', post_data).then(function (response) {
+        if (response.status == 200) {
+          // console.log(response)
+          that.forms_data.forEach(function (form, fid) {
+            if (form.id == that.selected_form) {
+              form.rows.forEach(function (row, row_id) {
+                if (row.id == r.id) {
+                  console.log(that.forms_data[fid]["rows"][row_id], r.flag);
+                  that.forms_data[fid]["rows"][row_id].flag = !r.flag;
+                  console.log(that.forms_data[fid]["rows"][row_id]);
+                }
+              });
+            }
+          });
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    toggleFormFlag: function toggleFormFlag() {
+      var that = this;
+      var post_data = {
+        "id": this.selected_form,
+        "flag": !this.is_flagged
+      };
+      this.axios.post('/butterfly_count/set_flag', post_data).then(function (response) {
+        if (response.status == 200) {
+          console.log(response);
+          that.is_flagged = !that.is_flagged;
+          that.forms_data.forEach(function (form, fid) {
+            if (form.id == that.selected_form) that.forms_data[fid].flag = that.is_flagged;
+          });
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    toggleFormDuplicate: function toggleFormDuplicate() {
+      var that = this;
+      var post_data = {
+        "id": this.selected_form,
+        "duplicate": !this.is_duplicate
+      };
+      this.axios.post('/butterfly_count/set_duplicate', post_data).then(function (response) {
+        if (response.status == 200) {
+          console.log(response);
+          that.is_duplicate = !that.is_duplicate;
+          that.forms_data.forEach(function (form, fid) {
+            if (form.id == that.selected_form) that.forms_data[fid].duplicate = that.is_duplicate;
+          });
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    selectForm: function selectForm(f) {
+      this.selected_form = f.id;
+      this.is_flagged = f.flag;
+      this.is_duplicate = f.duplicate;
+    },
     formColClass: function formColClass(col) {
       var op = "";
       var cols = ["id", "name", "affilation", "phone", "email", "coordinates", "date", "altitude", "distance", "original_filename"];
@@ -1972,7 +2077,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#table-container{\n\twidth: 100%;\n\theight: 70vh;\n\toverflow: scroll;\n}\n#counts-table{\n\tfont-size: .8rem;\n}\n#counts-table tbody tr:hover{\n\tbackground: #ffa;\n\tcursor: pointer;\n}\n#species-table{\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#table-container{\n\twidth: 100%;\n\theight: 70vh;\n\toverflow: scroll;\n}\n#counts-table{\n\tfont-size: .8rem;\n}\n#counts-table tbody tr:hover{\n\tbackground: #ffa;\n\tcursor: pointer;\n}\n#counts-table th, td{\n\tmax-width: 10% !important;\n}\n#species-table a:hover{\n\tcursor: pointer;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2689,15 +2794,15 @@ var render = function() {
                   return _c(
                     "tr",
                     {
+                      class: _vm.formsTableClass(f),
                       on: {
                         click: function($event) {
-                          _vm.selected_form = f.id
+                          return _vm.selectForm(f)
                         }
                       }
                     },
                     _vm._l(_vm.form_cols, function(col) {
                       return _c("td", {
-                        staticClass: "text-nowrap",
                         domProps: { textContent: _vm._s(f[col]) }
                       })
                     }),
@@ -2712,19 +2817,43 @@ var render = function() {
       _vm._v(" "),
       _vm.selected_form != null
         ? _c("div", { attrs: { id: "form-data" } }, [
-            _c("div", { staticClass: "text-center" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-primary",
-                  on: {
-                    click: function($event) {
-                      _vm.selected_form = null
+            _c("div", { staticClass: "container border border-primary p-2" }, [
+              _c("div", { staticClass: "d-flex justify-content-center" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: {
+                      click: function($event) {
+                        _vm.selected_form = null
+                      }
                     }
-                  }
-                },
-                [_vm._v("Back to Counts Table")]
-              )
+                  },
+                  [_vm._v("Back to Counts Table")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-center mt-5" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm mx-2",
+                    class: _vm.is_flagged ? "btn-danger" : "btn-outline-dark",
+                    on: { click: _vm.toggleFormFlag }
+                  },
+                  [_vm._v("Flag")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm mx-2",
+                    class: _vm.is_duplicate ? "btn-danger" : "btn-outline-dark",
+                    on: { click: _vm.toggleFormDuplicate }
+                  },
+                  [_vm._v("Duplicate")]
+                )
+              ])
             ]),
             _vm._v(" "),
             _c(
@@ -2738,12 +2867,33 @@ var render = function() {
                   _vm._l(_vm.selectedRows, function(row) {
                     return _c(
                       "tr",
-                      _vm._l(_vm.row_cols, function(col) {
-                        return _c("td", {
-                          domProps: { textContent: _vm._s(row[col]) }
-                        })
-                      }),
-                      0
+                      { class: row.flag ? "table-danger" : "table-success" },
+                      [
+                        _vm._l(_vm.row_cols, function(col) {
+                          return _c("td", {
+                            domProps: { textContent: _vm._s(row[col]) }
+                          })
+                        }),
+                        _vm._v(" "),
+                        _c("td", [
+                          !(_vm.is_flagged || _vm.is_duplicate)
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "badge rounded-pill flag-button",
+                                  class: _vm.rowFlagBtnClass(row),
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.toggleRowFlag(row)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Flag")]
+                              )
+                            : _vm._e()
+                        ])
+                      ],
+                      2
                     )
                   }),
                   0
@@ -2770,7 +2920,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("No of Individuals")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Remarks")])
+        _c("th", [_vm._v("Remarks")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Actions")])
       ])
     ])
   }
