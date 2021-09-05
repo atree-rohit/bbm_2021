@@ -104,14 +104,16 @@
 		methods:{
 			trimCoordinates(c){
 				let op = "";
-				c.split(", ").forEach(p => {
-					if(op == ""){
-						op = p.slice(0,5) + p.slice(-2)
-					} else {
-						op += ","+p.slice(0,5) + p.slice(-2)
-					}
+				if(c != null){
+					c.split(", ").forEach(p => {
+						if(op == ""){
+							op = p.slice(0,5) + p.slice(-2)
+						} else {
+							op += ","+p.slice(0,5) + p.slice(-2)
+						}
 
-				})
+					})					
+				}
 				return op;
 			},
 			rowFlagBtnClass(row){
