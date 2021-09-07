@@ -26,7 +26,6 @@ class FormRowController extends Controller
         return response()->json("success", 200);
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
