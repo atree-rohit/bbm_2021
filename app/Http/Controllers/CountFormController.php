@@ -16,16 +16,60 @@ class CountFormController extends Controller
      */
     public function index()
     {
-        // $forms = CountForm::with("rows")->get();
+        $forms = CountForm::with("rows")->get();
 
-        // return view('butterfly_count.index');
+        return view('butterfly_count.index', compact("forms"));
+    }
+
+    public function forms()
+    {
+        $forms = CountForm::with("rows")->get();
+
+        return view('butterfly_count.forms', compact("forms"));
+    }
+
+    public function set_flag(Request $request)
+    {
+        $form = CountForm::find($request["id"]);
+        $form->flag = $request["flag"];
+        $form->save();
+
+        return response()->json("success", 200);
+    }
+
+    public function set_duplicate(Request $request)
+    {
+        $form = CountForm::find($request["id"]);
+        $form->duplicate = $request["duplicate"];
+        $form->save();
+
+        return response()->json("success", 200);
+    }
+
+    public function pwa_app()
+    {
         return \File::get(public_path() . '/bbm_pwa/index.html');
     }
 
     public function pwa_post(Request $request)
     {
-        dd($request->all());
+        $form = new CountForm();
+        foreach ($request->form as $k=>$v) {
+            $form->$k = $v ?? null;
+        }
+        $form->save();
+
+        foreach ($request->rows as $row) {
+            $new_row = new FormRow();
+            $new_row->count_form_id = $form->id;
+            foreach ($row as $k=>$v) {
+                $new_row->$k = $v ?? null;
+            }
+            $new_row->save();
+        }
+        return response()->json("success", 200);
     }
+
     public function import(Request $request)
     {
         $form_cols = ["id", "name", "affilation", "phone", "email", "team_members", "photo_link", "location", "coordinates", "date", "altitude", "distance", "weather"];
