@@ -17,8 +17,8 @@ class FormRowController extends Controller
         //
     }
 
-
-    public function set_flag(Request $request){
+    public function set_flag(Request $request)
+    {
         $row = FormRow::find($request["id"]);
         $row->flag = $request["flag"];
         $row->save();
