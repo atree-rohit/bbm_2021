@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8131803a88205be35d1d",
+    "revision": "e4e8dc2ae3e390cbbb70",
     "url": "/bbm_pwa/css/app.057a5bb7.css"
   },
   {
@@ -12,12 +12,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bbm_pwa/img/favicon_package_v0.16.zip"
   },
   {
-    "revision": "d7b4c2e4a108ab5e944e635772838f3d",
+    "revision": "f49442e290534c9fe3144eb846d6f6b2",
     "url": "/bbm_pwa/index.html"
   },
   {
-    "revision": "8131803a88205be35d1d",
-    "url": "/bbm_pwa/js/app.21a7d3bc.js"
+    "revision": "e4e8dc2ae3e390cbbb70",
+    "url": "/bbm_pwa/js/app.740d5637.js"
   },
   {
     "revision": "aaefbc7ce722a1881369",
