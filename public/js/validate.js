@@ -1917,7 +1917,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       form_values: this.form_data,
       row_values: this.rows,
-      row_cols: ["sl_no", "common_name", "scientific_name", "no_of_individuals", "remarks"],
+      row_cols: ["sl_no", "common_name", "scientific_name", "individuals", "remarks"],
       species_names: _species_json__WEBPACK_IMPORTED_MODULE_1__,
       row_comments: {}
     };

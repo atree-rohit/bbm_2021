@@ -19,6 +19,7 @@
 	<!-- Styles -->
 	<link href="{{ asset('css/app.css') }}" rel="stylesheet">
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	@yield('style')
 </head>
 <body>
 	<div id="app">
@@ -63,7 +64,7 @@
 			</div>
 		</nav>
 
-		<main class="p-5">
+		<main>
 			@yield('content')
 		</main>
 	</div>

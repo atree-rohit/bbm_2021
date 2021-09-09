@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid h4">
+<div class="container-fluid">
 
     <div class="card-group text-center">
         @foreach($data as $d)
@@ -15,7 +15,7 @@
     </div>
     <div class="row text-center py-5">
         <div class="w-50 mx-auto">
-            <a class="btn btn-outline-success btn-block" id="app-button" href="/butterfly_count">Butterfly Count Form/App</a>            
+            <a class="btn btn-outline-success btn-block" id="app-button" href="/butterfly_count">Butterfly Count Form/App</a>           +++ 
         </div>
     </div>
 </div>
