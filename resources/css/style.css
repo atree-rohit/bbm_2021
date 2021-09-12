@@ -3,6 +3,7 @@
 	position: absolute;
 	margin-left: -5px;
 	margin-top: -20px;
+	z-index: 100;
 }
 .bg-indigo{
 	background: #9561e2;
