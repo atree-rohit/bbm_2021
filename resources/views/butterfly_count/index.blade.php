@@ -4,57 +4,105 @@
 <style>
 	.diagonal-box {
 		background-image: linear-gradient(65deg, rgba(255,150, 100, .5), rgba(255, 255,0, .25));
-		transform: skewY(-1deg);
-		position: relative;
+		/*transform: skewY(-1deg);*/
+		position: fixed;
+		width: 100%;
+		height: calc(100% - 66px);;
 	} 
-	.diagonal-box:before {
-		position: absolute;
-	    top: 100px;
-	    right: 0;
-	    left: 0;
-	    bottom: 0;
-	    background-image: linear-gradient(45deg, rgba(0,150, 100, .25), rgba(0, 0, 255, .15));
-	    transform: skewY(-1deg);
-	}
 	.content { 	
-		max-width: 50em;
-	    margin: 0 auto;
+		margin: 0 auto;
 	    position: relative;
+	    transform: translate(0%, 10%);
 	}
-	.card{
-		background: rgba(225,225,225,.35);
+	.container-fluid{
+		vertical-align: middle;
+	}
+
+	.custom-card{
+		background-image: linear-gradient(-180deg, rgba(255, 255,255, .1), rgba(150,150, 150, .15));
+		box-shadow: 1px 1px 10px rgba(0,0,0,0);
+		border: 1px solid rgba(0, 0, 0, 0.125);
+    	border-radius: 0.5rem;
+    	margin: 5px;
+	}
+	.custom-card .card-title{
+		transition: all .5s;
+	}
+	.custom-card .card-buttons{
+		padding: 10px 0;
+		border-radius: 10px;
+	}
+	.custom-card .card-text{
+		color: rgba(100,100,100,.9);
+		font-size: 1.1rem;
+		padding: 10px;
+		background: rgba(255,255,235,.5);
+		border-radius: 10px;
+		transition: all .5s;
+	}
+	.custom-card .card-text li{
+		transition: all .5s;
+		margin: 0;
+	}
+	.custom-card:hover{
+		background-image: linear-gradient(65deg, rgba(255, 255,0, .1), rgba(255,150, 100, .15));
+		box-shadow: 1px 1px 10px rgba(0,0,0,.25);
+	}
+	.custom-card:hover .card-title{
+		font-size: 2.25rem;
+	}
+	.custom-card:hover .card-text{
+		color: rgba(00,00,00,1);
+		box-shadow: 1px 1px 10px rgba(0,0,0,.25);
+		background: rgba(255,255,255,1);
+	}
+	.custom-card:hover .card-text li{
+		margin: 10px 0;
+	}
+
+	.card-text>ul {
+		margin-bottom: 0 !important;
 	}
 	
 </style>
 @endsection
 @section('content')
-<div class="diagonal-box p-5 my-5">
-	<div class="container p-5">			
+<div class="diagonal-box py-5 mb-5">
+	<div class="container content">			
 		<p class="h1 py-3 text-dark">This year we have 2 ways for you to submit Butterfly Count data to us:</p>
-		<div class="card-group d-flex justify-content-center">
-			<div class="card mx-5">
+		<div class="card-group row d-flex justify-content-center">
+			<div class="custom-card col-xl-5 col-lg-10">
 				<div class="card-body">
 					<h5 class="card-title text-center h1">Using the App</h5>
-					<p class="card-text text-center"><a href="{{url('/butterfly_count/pwa_app')}}" class="btn btn-lg btn-success btn-block">Go to App</a></p>
-					<p class="card-text h5 text-dark">
-						You can use this app to submit count forms.
-						<br>
-						This app can be installed on your phone or computer.
-						<br>
-						At the end of Big Butterfly Month 2021, we will send you an excel sheet with all the data you contributed to the email address you provide
-					</p>
+					<div class="card-buttons text-center">
+						<a href="{{url('/butterfly_count/pwa_app')}}" class="btn btn-lg btn-success btn-block">Go to App</a>
+					</div>
+					<div class="card-text">
+						<ul>
+							<li>You can use this app to submit count forms.</li>
+							<li>This app can be installed on your phone or computer.</li>
+							<li>At the end of Big Butterfly Month 2021, we will send you an excel sheet with all the data you contributed</li>
+						</ul>
+					</div>
 				</div>
 			</div>
-			<div class="card">
+			<div class="custom-card col-xl-5 col-lg-10">
 				<div class="card-body">
 					<h5 class="card-title text-center h1">Excel Sheet</h5>
-					<p class="card-text text-center">
+					<div class="card-buttons text-center">
 						<a href="{{ asset('data/BBM21_Count.xlsx') }}" class="btn btn-lg btn-info btn-block">Download</a>
 						<button type="button" class="btn btn-lg btn-success btn-block" data-bs-toggle="modal" data-bs-target="#submitModal">
 							Submit
 						</button>
-					</p>
-					<p class="card-text h5 text-dark">You can also fill in this butterfly count format excel sheet and submit it to us.</p>
+					</div>
+					<div class="card-text">
+						<ul>
+							<li>You can also fill the Butterfly Count Excel Sheet.</li>
+							<li>Download the excel sheet from the link above</li>
+							<li>Fill in the sheet with your butterfly count data</li>
+							<li>Submit completed forms here</li>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
