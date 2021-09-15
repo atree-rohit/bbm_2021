@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CountFormController;
 use App\Http\Controllers\FormRowController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\INatController;
 use App\Http\Controllers\SpeciesController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,12 @@ Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'
 Route::post('/butterfly_count/set_duplicate', [CountFormController::class, 'set_duplicate'])->middleware('auth');
 Route::post('/butterfly_count/set_row_flag', [FormRowController::class, 'set_flag'])->middleware('auth');
 
+Route::post('/inat/store_observation', [INatController::class, 'store_observation'])->name('inat.store_observation');
+Route::post('/inat/update_observation', [INatController::class, 'update_observation'])->name('inat.update_observation');
+Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('inat.store_taxon');
+Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull');
+
+
 Route::resource('/butterfly_count', CountFormController::class);
-// Route::resource('/species', FormRowController::class);
-Route::resource('/species', SpeciesController::class);
+Route::resource('/inat', INatController::class);
+// Route::resource('/species', SpeciesController::class);

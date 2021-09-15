@@ -2,6 +2,8 @@
     "/js/app.js": "/js/app.js",
     "/js/validate.js": "/js/validate.js",
     "/js/butterfly_counts.js": "/js/butterfly_counts.js",
+    "/js/inat.js": "/js/inat.js",
+    "/js/inat_pull.js": "/js/inat_pull.js",
     "/css/app.css": "/css/app.css",
     "/css/style.css": "/css/style.css"
 }
