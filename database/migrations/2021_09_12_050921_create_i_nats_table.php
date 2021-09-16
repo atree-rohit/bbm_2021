@@ -19,6 +19,7 @@ class CreateINatsTable extends Migration
             $table->string('observed_on')->nullable();
             $table->string('location')->nullable();
             $table->string('place_guess')->nullable();
+            $table->string('state')->nullable();
             $table->integer('taxa_id')->nullable();
             $table->string('taxa_name')->nullable();
             $table->string('taxa_rank')->nullable();
