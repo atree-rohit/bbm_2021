@@ -194,12 +194,9 @@ import country from '../country.json'
 				});
 			},
 			initMap(){
-				this.svgWidth = window.innerWidth / 2 - 20
-				this.svgHeight = window.innerHeight - 10
-				if(window.innerWidth < 1140){
-					this.svgWidth = window.innerWidth - 50
-					this.svgHeight = window.innerHeight/1.25
-				}
+				this.svgWidth = "75vw";
+				this.svgHeight = "75vh";
+
 				this.renderMap();
 			},
 			renderMap() {
@@ -318,7 +315,11 @@ import country from '../country.json'
 				this.svg.call(zoom);
 			},
 			select_state(s){
-				this.selected_state = s;
+				if(this.selected_state == s){
+					this.selected_state = ""
+				} else {
+					this.selected_state = s;
+				}
 				this.renderMap();
 			},
 			init(){
