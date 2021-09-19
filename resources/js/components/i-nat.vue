@@ -1,4 +1,4 @@
-<style scoped>
+<style>
 *,
 *::before,
 *::after {
@@ -17,6 +17,32 @@ html {
 	max-height: 80vh;
 	overflow: scroll;
 }
+#date-chart-continer svg g rect,
+.map-boundary path,
+.map-points circle,
+.doughnut-chart path
+{
+	transition: fill .5s;
+}
+#date-chart-continer svg g rect:hover {
+  fill: orangered;
+  cursor: pointer;
+  background: orangered;
+}
+.y-grid .tick line{
+	stroke: #ccc;
+}
+.map-boundary path:hover{
+	cursor: pointer;
+	fill: #ffa;
+}
+.doughnut-chart path:hover,
+.map-points circle:hover{
+	cursor: pointer;
+	stroke: yellow;
+	fill: red;
+}
+
 
 </style>
 <template>
@@ -28,7 +54,7 @@ html {
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Location'"
+				:selected="tab.title === 'Taxonomy'"
 				:title="tab.title"
 				v-for="tab in tabs"
 				class="overflow-div"
@@ -40,84 +66,29 @@ html {
 								<th>User ID</th>
 								<th>User Name</th>
 								<th>Observations</th>
+								<th>State</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(u_data, u_id) in user_data">
-								<td v-text="u_id"></td>
-								<td v-text="u_data[0].user_name"></td>
-								<td v-text="u_data.length"></td>								
+							<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id)'>
+								<td v-text="u.id"></td>
+								<td v-text="u.name"></td>
+								<td v-text="u.observations"></td>
+								<td v-text="u.state"></td>
 							</tr>
 						</tbody>
 						
 					</table>
 				</div>
 				<div v-if="tab.title=='Date'">
-					<table class="table table-sm">
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>Observations</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(d_data, d_id) in date_data">
-								<td v-text="d_id"></td>
-								<td v-text="d_data.length"></td>
-							</tr>
-						</tbody>
-						
-					</table>
+					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Location'">
 					{{selected_state}}
 					<div id="map-container" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
-					<ui-tabs
-						:fullwidth="true"
-						:raised="true"
-						type="text"
-						@tab-change="tabChanged"
-					>
-						<ui-tab
-							:key="t_level"
-							:selected="t_level === ''"
-							:title="`${t_level} (${taxa_level[t_level].length})`"
-							v-for="t_level in taxa_levels_sequence"
-							v-if="Object.keys(taxa_level).indexOf(t_level) != -1"
-						>
-							<table class="table table-sm species-table">
-								<thead>
-									<tr>
-										<th>Sl. No.</th>
-										<th>Taxa</th>
-										<th>No of Observations</th>
-									</tr>
-								</thead>
-								<tbody>
-									<template v-for="(o, t_name) in taxaFilteredObservations">
-										<tr class='hover-row' @click="taxaClick(t_name)">
-											<td v-text="Object.keys(taxaFilteredObservations).indexOf(t_name)+1"></td>
-											<td v-text="t_name"></td>
-											<td v-text="o.length"></td>
-										</tr>
-										<!--  -->
-										<tr v-if="selected_taxa == t_name">
-											<td colspan="3">
-												<div class="d-flex justify-content-between">
-													<img v-for="p in o" :src="imgUrl(p.img_url)" @click="gotoObservation(p)">
-												</div>
-											</td>
-											
-										</tr>
-										
-									</template>
-								</tbody>
-							</table>
-						</ui-tab>
-					</ui-tabs>
-
+					<div id="taxonomy-chart-continer" class="svg-container"></div>
 				</div>
 			</ui-tab>
 		</ui-tabs>
@@ -136,12 +107,14 @@ import country from '../country.json'
 			return{
 				user_data:{},
 				date_data:{},
+				date_table_data:[],
 				state_data:{},
 				state_unmatched:[],
 				selected_state:"",
 				state_max:0,
 				species:{},
 				taxa_level:{},
+				taxa_table_data:{},
 				tabs:[
 					{title:"Users"},
 					{title:"Date"},
@@ -159,12 +132,39 @@ import country from '../country.json'
 		created() {
 		},
 		mounted() {
-			this.init();
-			this.initMap();
+			this.init()
+			this.initMap()
+			this.renderDateChart()
+			this.renderTaxonomyChart()
 		},
 		computed:{
+			userTableData () {
+				let op = []
+				Object.keys(this.user_data).forEach(u => {
+					op.push({
+						id: u,
+						name: this.user_data[u][0].user_name,
+						observations: this.user_data[u].length,
+						state: this.user_data[u][0].state
+					})
+				})
+
+				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
+				return op
+			}
 		},
 		methods: {
+			userTableRowClass(id){
+				let op = ""
+				if(id < 10){
+					op = "table-success"
+				} else if (id < 50){
+					op = "table-warning"
+				} else if (id < 100) {
+					op = "table-info"
+				}
+				return op;
+			},
 			imgUrl(url){
 				// return url.replace("square", "medium")
 				return url
@@ -192,6 +192,96 @@ import country from '../country.json'
 							this.$set(this.taxaFilteredObservations, o.taxa_name, [o])
 						}
 				});
+			},
+			renderDateChart(){
+				let height = this.svgHeight / 1.75
+				let width = this.svgWidth
+				let color = "steelblue"
+				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
+				let svg = d3.select("#date-chart-continer").append("svg")
+  					.attr("viewBox", [0, 0, width, height]);
+
+  				let x = d3.scaleBand()
+  							.domain(d3.range(this.date_table_data.length))
+  							.range([margin.left, width - margin.right])
+  							.padding(0.1)
+  				let y = d3.scaleLinear()
+							.domain([0, d3.max(this.date_table_data, d => d.value)]).nice()
+							.range([height - margin.bottom, margin.top])
+				let xAxis = g => g
+						.attr("transform", `translate(0,${height - margin.bottom})`)
+						.call(d3.axisBottom(x)
+							.tickFormat(i => this.date_table_data[i].name)
+							.tickSizeOuter(0))
+				let yAxis = g => g
+					    .attr("transform", `translate(${margin.left},0)`)
+					    .call(d3.axisLeft(y).ticks(null, this.date_table_data.format))
+					    .call(g => g.select(".domain").remove())
+					    .call(g => g.append("text")
+					        .attr("x", -margin.left)
+					        .attr("y", 10)
+					        .attr("fill", "currentColor")
+					        .attr("text-anchor", "start")
+					        .text(this.date_table_data.y))
+				let tooltip = d3.select('body')
+							    .append('div')
+							    .attr('class', 'd3-tooltip')
+							    .style('position', 'absolute')
+							    .style('z-index', '10')
+							    .style('visibility', 'hidden')
+							    .style('padding', '10px')
+							    .style('background', 'rgba(0,0,0,0.6)')
+							    .style('border-radius', '4px')
+							    .style('color', '#fff')
+							    .text('a simple tooltip');
+				const yGrid = d3.axisLeft()
+								.scale(y)
+								.tickFormat('')
+								.ticks(5)
+								.tickSizeInner(-width + margin.left + margin.right)
+				
+
+  				svg.append("g")
+  					.classed('chart-bars', true)
+  					.selectAll("rect")
+  					.data(this.date_table_data)
+  					.join("rect")
+  					.attr("x", (d, i) => x(i))
+  					.attr("y", d => y(0))
+  					.attr("fill", "#6574cd")
+  					.attr("height", d => y(0) - y(d.value))
+  					.attr("width", x.bandwidth())
+  					.on('mouseover', function (d, i) {
+  						tooltip.html(`<div>Date: ${d.name}</div><div>Observations: ${d.value}</div>`)
+  							.style('visibility', 'visible');
+  						})
+  					.on('mousemove', function () {
+  						tooltip
+  							.style('top', d3.event.pageY - 10 + 'px')
+  							.style('left', d3.event.pageX + 10 + 'px');
+  						})
+  					.on('mouseout', function () {
+  						tooltip.html(``).style('visibility', 'hidden');
+  					});
+
+  				svg.append('g')
+					.attr('class', 'y-grid')
+					.attr('transform', 'translate(' + margin.left + ', 0)')
+					.call(yGrid)
+
+				svg.selectAll("rect")
+  					.transition()
+  					.duration(400)
+  					.attr("y", function(d) { return y(d.value); })
+  					.attr("height", function(d) { return y(0) - y(d.value); })
+  					.delay(function(d,i){console.log(i) ; return(i*30)})
+
+
+  				svg.append("g")
+  					.call(xAxis);
+
+  				svg.append("g")
+  					.call(yAxis);
 			},
 			initMap(){
 				this.svgWidth = window.innerWidth * 0.75;
@@ -234,6 +324,8 @@ import country from '../country.json'
 
 					if(this.state_data[s_name] == undefined){
 						shape.attr("fill", (d) => colors(-1))
+					} else if (this.selected_state === s_name) {
+						shape.attr("fill", "yellow")
 					} else {
 						shape.attr("fill", (d) => colors(this.state_data[s_name].length))
 					}
@@ -253,7 +345,9 @@ import country from '../country.json'
 					})
 				}
 				if(points.length > 0){
-					this.svg.selectAll("circle")
+					let map_points = this.svg.append('g')
+						.classed('map-points', true)
+						.selectAll("circle")
 						.data(points).enter()
 						.append("circle")
 						.attr("cx", (d) => projection(d)[0])
@@ -261,7 +355,9 @@ import country from '../country.json'
 						.attr("r", "5px")
 						.attr("stroke", "red")
 						.attr("fill", "white")
-						.on("click", (d) => alert(d[2] + " - " + d[3]))
+						// .on("click", (d) => alert(d[2] + " - " + d[3]))
+					if(this.selected_state == '')
+						map_points.on("click", (d) => this.setMissingState(d))
 				}
 
 				let that = this;
@@ -279,6 +375,87 @@ import country from '../country.json'
 					});
 				this.svg.call(zoom);
 			},
+			renderTaxonomyChart(){
+				let height = this.svgHeight / 1.75
+				let width = this.svgWidth
+				let margin = 40
+				let data = this.taxa_table_data
+				
+  				var radius = Math.min(width, height) / 2 - margin
+
+  				var svg = d3.select("#taxonomy-chart-continer")
+  							.append("svg")
+  							.classed('doughnut-chart d-flex m-auto', true)
+  							.attr("width", width)
+  							.attr("height", height)
+  							.append("g")
+  								.classed('doughnut-chart', true)
+  								.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  				// set the color scale
+  				var color = d3.scaleOrdinal()
+  								.domain(data)
+  								.range(d3.schemeSet2);
+
+  				// Compute the position of each group on the pie:
+  				var pie = d3.pie()
+  					.value(function(d) {return d.value; })
+  				var data_ready = pie(d3.entries(data))
+
+  				var arcGenerator = d3.arc()
+										.innerRadius(70)
+										.outerRadius(radius)
+				let tooltip = d3.select('body')
+							    .append('div')
+							    .attr('class', 'd3-tooltip')
+							    .style('position', 'absolute')
+							    .style('z-index', '10')
+							    .style('visibility', 'hidden')
+							    .style('padding', '10px')
+							    .style('background', 'rgba(0,0,0,0.6)')
+							    .style('border-radius', '4px')
+							    .style('color', '#fff')
+							    .text('a simple tooltip');
+
+
+  				// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+				svg.selectAll('mySlices')
+					.data(data_ready)
+					.enter()
+					.append('path')
+					.attr('d', arcGenerator)
+					.attr('fill', function(d){ return(color(d.data.key)) })
+					.attr("stroke", "black")
+					.style("stroke-width", ".25px")
+					.style("opacity", 0.7)
+					.on('mouseover', function (d, i) {
+  						tooltip.html(`<div>Taxonomic Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div>`)
+  							.style('visibility', 'visible');
+  						})
+  					.on('mousemove', function () {
+  						tooltip
+  							.style('top', d3.event.pageY - 10 + 'px')
+  							.style('left', d3.event.pageX + 10 + 'px');
+  						})
+  					.on('mouseout', function () {
+  						tooltip.html(``).style('visibility', 'hidden');
+  					});
+				svg.append('g')
+					.classed('doughnut-labels', true)
+					.selectAll('mySlices')
+					.data(data_ready)
+					.enter()
+					.append('text')
+					.text(function(d){ return d.data.key})
+					.attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+					.style("text-anchor", "middle")
+					.style("font-size", 15)
+
+
+
+			},
+			setMissingState (p) {
+				console.log(p)
+			},
 			select_state(s){
 				if(this.selected_state == s){
 					this.selected_state = ""
@@ -292,7 +469,6 @@ import country from '../country.json'
 					this.state_data[s.properties.ST_NM] = [];
 				})
 				this.inat_data.forEach(o => {
-					let date = o.inat_created_at.split("T");
 					
 					if(Object.keys(this.user_data).indexOf(o.user_id) != -1){
 						this.user_data[o.user_id].push(o)
@@ -300,10 +476,10 @@ import country from '../country.json'
 						this.$set(this.user_data,o.user_id,[o])
 					}
 
-					if(Object.keys(this.date_data).indexOf(date[0]) != -1){
-						this.date_data[date[0]].push(o)
+					if(Object.keys(this.date_data).indexOf(o.inat_created_at) != -1){
+						this.date_data[o.inat_created_at].push(o)
 					} else {
-						this.$set(this.date_data,date[0],[o])
+						this.$set(this.date_data,o.inat_created_at,[o])
 					}
 
 					if(o.state == null){
@@ -324,6 +500,17 @@ import country from '../country.json'
 				Object.keys(this.state_data).forEach(s => {
 					if(this.state_data[s].length > this.state_max)
 						this.state_max = this.state_data[s].length;
+				})
+				this.date_table_data = []
+				Object.keys(this.date_data).forEach(d => {
+					this.date_table_data.push({
+						name: d,
+						value: this.date_data[d].length
+					})
+				})
+				this.taxa_table_data = {}
+				Object.keys(this.taxa_level).forEach(tl => {
+					this.taxa_table_data[tl] = Math.log(this.taxa_level[tl].length)
 				})
 				this.tabChanged({title:"superfamily "});
 			}
