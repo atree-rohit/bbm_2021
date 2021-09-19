@@ -8,9 +8,8 @@
 .bg-indigo{
 	background: #9561e2;
 }
-#app-button{
-	font-size: 3.0vw;
-
+.lg-button{
+	font-size: 3.0vw !important;
 }
 .nav-flag{
 	background: rgb(255,204,102);
