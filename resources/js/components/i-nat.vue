@@ -194,8 +194,8 @@ import country from '../country.json'
 				});
 			},
 			initMap(){
-				this.svgWidth = "75vw";
-				this.svgHeight = "75vh";
+				this.svgWidth = window.innerWidth * 0.75;
+				this.svgHeight = window.innerHeight * 0.75;
 
 				this.renderMap();
 			},
@@ -207,9 +207,9 @@ import country from '../country.json'
 					.attr("width", this.svgWidth)
 					.attr("height", this.svgHeight)
 					.style("background-color", "rgb(190, 229, 235)")
-					.classed("svg-content", true)
+					.classed("svg-content d-flex m-auto", true)
 
-				var projection = d3.geoMercator().scale(750).center([85.5, 29.5])
+				var projection = d3.geoMercator().scale(750).center([89, 29.5])
 				const path = d3.geoPath().projection(projection)
 				const colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"])
 				var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6)
@@ -232,47 +232,12 @@ import country from '../country.json'
 						.attr("stroke-width", .5)
 						.on("click", (d) => this.select_state(s_name));
 
-					// if(s_name == this.selected_state){
-					// 	shape.attr("fill", "rgba(255,255,50,1)")
-					// 	.attr("stroke", "RED")
-					// } else if(this.state_totals[s_name] == undefined){
-					// 	shape.attr("fill", (d) => colors(-1))
-					// } else {
-					// 	shape.attr("fill", (d) => colors(this.state_totals[s_name]["all"][this.selected_label]))
-					// }
 					if(this.state_data[s_name] == undefined){
 						shape.attr("fill", (d) => colors(-1))
 					} else {
 						shape.attr("fill", (d) => colors(this.state_data[s_name].length))
-						// shape.attr("fill", (d) => colors(100))
 					}
 				})
-
-				/*
-				country.features.forEach(state=> {
-					let s_name = state.properties.ST_NM
-					let label = base_text.append("g")
-						.data([state])
-						.enter().append("text")
-						.classed("poly_text", true)
-						.attr("x", (h) => path.centroid(h)[0] )
-						.attr("y", (h) => path.centroid(h)[1] )
-						.attr("text-anchor", "middle")
-						.attr("font-size",12)
-						.text(this.state_data[s_name].length)
-						// .on("click", (d) => this.select_state(s_name))
-				})
-
-				this.svg.append("g")
-					.attr("transform", "translate("+this.svgWidth*.575+", 50)")
-					.call(legend)
-					.append("text")
-					.classed("map_label", true)
-					.attr("dx", 5)
-					.attr("dy", -10)
-					.classed("h1", true)
-					.text(this.selected_label.replace(/(?:_| |\b)(\w)/g, function($1){return $1.toUpperCase().replace('_',' ');}))
-				*/
 
 				let points = [];
 				if(this.selected_state == ''){
@@ -302,12 +267,12 @@ import country from '../country.json'
 				let that = this;
 				let zoom = d3.zoom()
 					.scaleExtent([.5, 7.5])
-					.translateExtent([[0,0],[that.svgWidth,that.svgHeight]])
+					.translateExtent([[-that.svgWidth,-that.svgHeight],[2 * that.svgWidth,2 * that.svgHeight]])
 					.on('zoom', function() {
 						that.svg.selectAll('.poly_text')
 							.attr('transform', d3.event.transform),
 						that.svg.selectAll('path')
-							.attr('transform', d3.event.transform);
+							.attr('transform', d3.event.transform),
 						that.svg.selectAll('circle')
 							.attr('transform', d3.event.transform)
 							.attr("r", 5 / d3.event.transform.k);

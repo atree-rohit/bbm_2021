@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import moment from 'moment'
+import * as d3 from "d3"
+import * as d3Legend from "d3-svg-legend"
 
 import KeenUI from 'keen-ui';
 import 'keen-ui/dist/keen-ui.css';
