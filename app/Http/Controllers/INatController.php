@@ -70,26 +70,31 @@ class INatController extends Controller
         $state_names = [];
         $state_saved = 0;
         foreach ($inat_data as $observation) {
-            $point = explode(",", $observation->location);
-            foreach ($geojson->features as $state) {
-                $state_name = $state->properties->ST_NM;
-                if (!in_array($state_name, $state_names)) {
-                    $state_names[] = $state_name;
-                }
-                foreach ($state->geometry->coordinates as $polygon) {
-                    if ($this->in_polygon($polygon, $point)) {
-                        // dd($state_name, $inat_data->first()->toArray());
-                        $observation->state = $state_name;
-                        $observation->save();
-                        $state_saved++;
-                    }
-                    // echo $this->in_polygon($polygon, $point) ."$state_name"."<br>";
+            
+            $state = $this->get_point_state($observation->location);
+            if($state != false){
+                $observation->state = $state;
+                $observation->save();
+                $state_saved++;
+            }
+        }
+        
+        dd($state_saved);
+    }
+
+    public function get_point_state($p){
+        $point = explode(",", $p);
+        $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
+        $op = false;
+        foreach ($geojson->features as $state) {
+            $state_name = $state->properties->ST_NM;
+            foreach ($state->geometry->coordinates as $polygon) {
+                if ($this->in_polygon($polygon, $point)) {
+                    $op = $state_name;
                 }
             }
-            // dd($observation->toArray());
         }
-        // dd($state_names);
-        dd($state_saved);
+        return $op;
     }
 
     // $points_polygon, $vertices_x, $vertices_y, $longitude_x, $latitude_y)
@@ -188,6 +193,11 @@ class INatController extends Controller
         }
         $obv->user_id = $request->user["login"] ?? null;
         $obv->user_name = $request->user["name"] ?? null;
+
+        $state = $this->get_point_state($request->location);
+        if($state != false){
+            $obv->state = $state;
+        }
         $obv->save();
 
         return response()->json([$obv->id], 200);
