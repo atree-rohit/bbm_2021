@@ -380,6 +380,7 @@ import country from '../country.json'
 				let width = this.svgWidth
 				let margin = 40
 				let data = this.taxa_table_data
+				let total_observations = this.inat_data.length
 				
   				var radius = Math.min(width, height) / 2 - margin
 
@@ -402,7 +403,7 @@ import country from '../country.json'
   				var data_ready = pie(d3.entries(data))
 
   				var arcGenerator = d3.arc()
-										.innerRadius(70)
+										.innerRadius(50)
 										.outerRadius(radius)
 				let tooltip = d3.select('body')
 							    .append('div')
@@ -428,7 +429,7 @@ import country from '../country.json'
 					.style("stroke-width", ".25px")
 					.style("opacity", 0.7)
 					.on('mouseover', function (d, i) {
-  						tooltip.html(`<div>Taxonomic Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div>`)
+  						tooltip.html(`<div>Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div><div>Percent of Total: ${Math.round(Math.round(Math.exp(d.value))/total_observations*10000)/100}%`)
   							.style('visibility', 'visible');
   						})
   					.on('mousemove', function () {
