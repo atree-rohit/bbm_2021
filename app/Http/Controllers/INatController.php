@@ -43,7 +43,7 @@ class INatController extends Controller
 
     public function index()
     {
-        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->
+        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->
                         limit(-1)
                         ->get();
         $inat_taxa = iNatTaxa::limit(10)->get();
@@ -57,7 +57,52 @@ class INatController extends Controller
      */
     public function create()
     {
-        //
+        $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
+        $inat_data = iNat::where("state", null)->
+                        limit(-1)
+                        ->get();
+        $state_names = [];
+        $state_saved = 0;
+        foreach ($inat_data as $observation) {
+            $point = explode(",", $observation->location);
+            foreach ($geojson->features as $state) {
+                $state_name = $state->properties->ST_NM;
+                if (!in_array($state_name, $state_names)) {
+                    $state_names[] = $state_name;
+                }
+                foreach ($state->geometry->coordinates as $polygon) {
+                    if ($this->in_polygon($polygon, $point)) {
+                        // dd($state_name, $inat_data->first()->toArray());
+                        $observation->state = $state_name;
+                        $observation->save();
+                        $state_saved++;
+                    }
+                    // echo $this->in_polygon($polygon, $point) ."$state_name"."<br>";
+                }
+            }
+            // dd($observation->toArray());
+        }
+        // dd($state_names);
+        dd($state_saved);
+    }
+
+    // $points_polygon, $vertices_x, $vertices_y, $longitude_x, $latitude_y)
+    public function in_polygon($polygon, $point)
+    {
+        $points_polygon = count($polygon);
+        $longitude_x = $point[1];
+        $latitude_y = $point[0];
+        $vertices_x = array_column($polygon, 0);
+        $vertices_y = array_column($polygon, 1);
+        $i = $j = $c = 0;
+
+        for ($i = 0, $j = $points_polygon-1 ; $i < $points_polygon; $j = $i++) {
+            if ((($vertices_y[$i] > $latitude_y != ($vertices_y[$j] > $latitude_y)) &&
+                ($longitude_x < ($vertices_x[$j] - $vertices_x[$i]) * ($latitude_y - $vertices_y[$i]) / ($vertices_y[$j] - $vertices_y[$i]) + $vertices_x[$i]))) {
+                $c = !$c;
+            }
+        }
+        return $c;
     }
 
     /**
@@ -142,11 +187,12 @@ class INatController extends Controller
         return response()->json([$obv->id], 200);
     }
 
-    public function update_observation(Request $request){
+    public function update_observation(Request $request)
+    {
         $obv = iNat::find($request->id);
         $fields = ["observed_on", "location", "place_guess", "description", "quality_grade", "license_code"];
         foreach ($fields as $f) {
-            if($obv->{$f} != $request->{$f}){
+            if ($obv->{$f} != $request->{$f}) {
                 $obv->{$f} = $request->{$f} ?? null;
             }
         }
