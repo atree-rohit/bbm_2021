@@ -200,6 +200,9 @@ class CountFormController extends Controller
         return response()->json("success", 200);
     }
     
+    public function calendar(){
+        return view('butterfly_count.calendar');
+    }
     public function create()
     {
         //
