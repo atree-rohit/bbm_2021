@@ -51,7 +51,7 @@ class INatController extends Controller
         $inat_taxa = iNatTaxa::limit(10)->get();
         foreach($inat_data as $k=>$id){
             $timestamp = strtotime($inat_data[$k]["inat_created_at"]);  
-            $inat_data[$k]["inat_created_at"] = date('d M', $timestamp );
+            $inat_data[$k]["inat_created_at"] = date('D, d M', $timestamp );
         }
         return view('inat.index', compact("inat_data", "inat_taxa", "last_update"));
     }
