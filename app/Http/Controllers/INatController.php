@@ -45,8 +45,12 @@ class INatController extends Controller
     {
         $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->
                         limit(-1)
-                        ->get();
+                        ->get()->toArray();
         $inat_taxa = iNatTaxa::limit(10)->get();
+        foreach($inat_data as $k=>$id){
+            $timestamp = strtotime($inat_data[$k]["inat_created_at"]);  
+            $inat_data[$k]["inat_created_at"] = date('d M', $timestamp );
+        }
         return view('inat.index', compact("inat_data", "inat_taxa"));
     }
 
