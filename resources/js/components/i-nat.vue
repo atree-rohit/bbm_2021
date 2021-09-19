@@ -54,7 +54,7 @@ html {
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Taxonomy'"
+				:selected="tab.title === 'Location'"
 				:title="tab.title"
 				v-for="tab in tabs"
 				class="overflow-div"
