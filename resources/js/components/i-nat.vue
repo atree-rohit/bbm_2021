@@ -127,7 +127,8 @@ import country from '../country.json'
 				svg: null,
 				svgWidth: 0,
 				svgHeight: 0,
-				tooltip: null
+				tooltip: null,
+				stats:{}
 			}
 		},
 		created() {
@@ -313,7 +314,13 @@ import country from '../country.json'
 						.attr("stroke-width", .5)
 						.on("click", (d) => this.select_state(s_name))
 						.on('mouseover', function (d, i) {
-	  						that.tooltip.html(`<div>State: ${s_name}</div><div>Observations: ${that.state_data[s_name].length}`)
+	  						that.tooltip.html(
+	  							`<table>
+	  							<tr><td>State</td><td>${s_name}</td></tr>
+	  							<tr><td>Observations</td><td>${that.stats[s_name].observations}</td></tr>
+	  							<tr><td>Users</td><td>${that.stats[s_name].users.size}</td></tr>
+	  							<tr><td>Unique Taxa</td><td>${that.stats[s_name].species.size}</td></tr>
+	  							</table>`)
 	  							.style('visibility', 'visible');
 	  						})
 	  					.on('mousemove', function () {
@@ -460,6 +467,11 @@ import country from '../country.json'
 			init(){
 				country.features.forEach(s => {
 					this.state_data[s.properties.ST_NM] = [];
+					this.stats[s.properties.ST_NM] = {
+						observations: 0,
+						users: new Set(),
+						species: new Set()
+					}
 				})
 				this.inat_data.forEach(o => {
 					
@@ -479,8 +491,12 @@ import country from '../country.json'
 						this.state_unmatched.push(o);
 					} else if(Object.keys(this.state_data).indexOf(o.state) != -1){
 						this.state_data[o.state].push(o)
+						this.stats[o.state].observations++
+						this.stats[o.state].users.add(o.user_id)
+						this.stats[o.state].species.add(o.taxa_name)
 					} else {
 						this.$set(this.state_data,o.state,[o])
+						console.log("strange state name", o.state, o)
 					}
 
 
