@@ -2,6 +2,7 @@
 
 @section('style')
 <link rel="stylesheet" href="{{asset('/css/keen-ui.min.css')}}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 @endsection
 
 
