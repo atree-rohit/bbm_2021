@@ -40,6 +40,7 @@ Route::post('/butterfly_count/set_row_flag', [FormRowController::class, 'set_fla
 
 Route::post('/inat/store_observation', [INatController::class, 'store_observation'])->name('inat.store_observation');
 Route::post('/inat/update_observation', [INatController::class, 'update_observation'])->name('inat.update_observation');
+Route::post('/inat/update_state', [INatController::class, 'update_state'])->name('inat.update_state');
 Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('inat.store_taxon')->middleware('auth');;
 Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->middleware('auth');;
 
