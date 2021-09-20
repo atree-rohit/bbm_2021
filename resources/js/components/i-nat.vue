@@ -92,6 +92,9 @@ html {
 				</div>
 			</ui-tab>
 		</ui-tabs>
+		<ui-modal ref="update-state-Modal" title="Set / Update Observation State">
+				{{selected_point}}
+        </ui-modal>
 	</div>
 </template>
 
@@ -111,6 +114,7 @@ import country from '../country.json'
 				state_data:{},
 				state_unmatched:[],
 				selected_state:"",
+				selected_point: null,
 				state_max:0,
 				species:{},
 				taxa_level:{},
@@ -367,8 +371,8 @@ import country from '../country.json'
 						.attr("stroke", "red")
 						.attr("fill", "white")
 						// .on("click", (d) => alert(d[2] + " - " + d[3]))
-					if(this.selected_state == '')
 						map_points.on("click", (d) => this.setMissingState(d))
+					// if(this.selected_state == '')
 				}
 
 				let that = this;
@@ -455,6 +459,11 @@ import country from '../country.json'
 			},
 			setMissingState (p) {
 				console.log(p)
+				this.inat_data.forEach(o =>{
+					if(o.id = p[2])
+						this.selected_point = o
+				})
+				this.openModal('update-state-Modal')
 			},
 			select_state(s){
 				if(this.selected_state == s){
@@ -463,6 +472,9 @@ import country from '../country.json'
 					this.selected_state = s;
 				}
 				this.renderMap();
+			},
+			openModal(ref) {
+				this.$refs[ref].open();
 			},
 			init(){
 				country.features.forEach(s => {
