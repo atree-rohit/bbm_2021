@@ -123,10 +123,11 @@ import country from '../country.json'
 				],
 				taxa_levels_sequence: ['superfamily','family','subfamily','tribe','subtribe','genus','subgenus','species','subspecies','form'],
 				taxaFilteredObservations:{},
-				selected_taxa:'',
-				svg:null,
-				svgWidth:0,
-				svgHeight:0,
+				selected_taxa: '',
+				svg: null,
+				svgWidth: 0,
+				svgHeight: 0,
+				tooltip: null
 			}
 		},
 		created() {
@@ -223,24 +224,13 @@ import country from '../country.json'
 					        .attr("fill", "currentColor")
 					        .attr("text-anchor", "start")
 					        .text(this.date_table_data.y))
-				let tooltip = d3.select('body')
-							    .append('div')
-							    .attr('class', 'd3-tooltip')
-							    .style('position', 'absolute')
-							    .style('z-index', '10')
-							    .style('visibility', 'hidden')
-							    .style('padding', '10px')
-							    .style('background', 'rgba(0,0,0,0.6)')
-							    .style('border-radius', '4px')
-							    .style('color', '#fff')
-							    .text('a simple tooltip');
 				const yGrid = d3.axisLeft()
 								.scale(y)
 								.tickFormat('')
 								.ticks(5)
 								.tickSizeInner(-width + margin.left + margin.right)
 				
-
+				let that = this
   				svg.append("g")
   					.classed('chart-bars', true)
   					.selectAll("rect")
@@ -252,16 +242,16 @@ import country from '../country.json'
   					.attr("height", d => y(0) - y(d.value))
   					.attr("width", x.bandwidth())
   					.on('mouseover', function (d, i) {
-  						tooltip.html(`<div>Date: ${d.name}</div><div>Observations: ${d.value}</div>`)
+  						that.tooltip.html(`<div>Date: ${d.name}</div><div>Observations: ${d.value}</div>`)
   							.style('visibility', 'visible');
   						})
   					.on('mousemove', function () {
-  						tooltip
+  						that.tooltip
   							.style('top', d3.event.pageY - 10 + 'px')
   							.style('left', d3.event.pageX + 10 + 'px');
   						})
   					.on('mouseout', function () {
-  						tooltip.html(``).style('visibility', 'hidden');
+  						that.tooltip.html(``).style('visibility', 'hidden');
   					});
 
   				svg.append('g')
@@ -311,6 +301,7 @@ import country from '../country.json'
 
 				country.features.forEach(state=> {
 					let s_name = state.properties.ST_NM
+					let that = this
 
 					let shape = base.append("g")
 						.data([state])
@@ -320,7 +311,20 @@ import country from '../country.json'
 						.attr("id", s_name)
 						.attr("title", s_name)
 						.attr("stroke-width", .5)
-						.on("click", (d) => this.select_state(s_name));
+						.on("click", (d) => this.select_state(s_name))
+						.on('mouseover', function (d, i) {
+	  						that.tooltip.html(`<div>State: ${s_name}</div><div>Observations: ${that.state_data[s_name].length}`)
+	  							.style('visibility', 'visible');
+	  						})
+	  					.on('mousemove', function () {
+	  						that.tooltip
+	  							.style('top', d3.event.pageY - 10 + 'px')
+	  							.style('left', d3.event.pageX + 10 + 'px');
+	  						})
+	  					.on('mouseout', function () {
+	  						that.tooltip.html(``).style('visibility', 'hidden');
+	  					});
+						;
 
 					if(this.state_data[s_name] == undefined){
 						shape.attr("fill", (d) => colors(-1))
@@ -405,20 +409,11 @@ import country from '../country.json'
   				var arcGenerator = d3.arc()
 										.innerRadius(50)
 										.outerRadius(radius)
-				let tooltip = d3.select('body')
-							    .append('div')
-							    .attr('class', 'd3-tooltip')
-							    .style('position', 'absolute')
-							    .style('z-index', '10')
-							    .style('visibility', 'hidden')
-							    .style('padding', '10px')
-							    .style('background', 'rgba(0,0,0,0.6)')
-							    .style('border-radius', '4px')
-							    .style('color', '#fff')
-							    .text('a simple tooltip');
+
 
 
   				// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+  				let that = this
 				svg.selectAll('mySlices')
 					.data(data_ready)
 					.enter()
@@ -429,16 +424,16 @@ import country from '../country.json'
 					.style("stroke-width", ".25px")
 					.style("opacity", 0.7)
 					.on('mouseover', function (d, i) {
-  						tooltip.html(`<div>Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div><div>Percent of Total: ${Math.round(Math.round(Math.exp(d.value))/total_observations*10000)/100}%`)
+  						that.tooltip.html(`<div>Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div><div>Percent of Total: ${Math.round(Math.round(Math.exp(d.value))/total_observations*10000)/100}%`)
   							.style('visibility', 'visible');
   						})
   					.on('mousemove', function () {
-  						tooltip
+  						that.tooltip
   							.style('top', d3.event.pageY - 10 + 'px')
   							.style('left', d3.event.pageX + 10 + 'px');
   						})
   					.on('mouseout', function () {
-  						tooltip.html(``).style('visibility', 'hidden');
+  						that.tooltip.html(``).style('visibility', 'hidden');
   					});
 				svg.append('g')
 					.classed('doughnut-labels', true)
@@ -450,9 +445,6 @@ import country from '../country.json'
 					.attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
-
-
-
 			},
 			setMissingState (p) {
 				console.log(p)
@@ -513,6 +505,17 @@ import country from '../country.json'
 				Object.keys(this.taxa_level).forEach(tl => {
 					this.taxa_table_data[tl] = Math.log(this.taxa_level[tl].length)
 				})
+				this.tooltip = d3.select('body')
+							    .append('div')
+							    .attr('class', 'd3-tooltip')
+							    .style('position', 'absolute')
+							    .style('z-index', '10')
+							    .style('visibility', 'hidden')
+							    .style('padding', '10px')
+							    .style('background', 'rgba(0,0,0,0.6)')
+							    .style('border-radius', '4px')
+							    .style('color', '#fff')
+							    .text('a simple tooltip');
 				this.tabChanged({title:"superfamily "});
 			}
 		}
