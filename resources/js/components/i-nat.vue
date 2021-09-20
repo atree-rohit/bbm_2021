@@ -1,49 +1,47 @@
 <style>
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+	*,
+	*::before,
+	*::after {
+	    box-sizing: border-box;
+	}
 
-html {
-    font-size: 100%;
-}
+	html {
+	    font-size: 100%;
+	}
 
-.species-table tbody tr.hover-row:hover{
-	background: #ff9;
-	cursor: pointer;
-}
-.overflow-div{
-	max-height: 80vh;
-	overflow: scroll;
-}
-#date-chart-continer svg g rect,
-.map-boundary path,
-.map-points circle,
-.doughnut-chart path
-{
-	transition: fill .5s;
-}
-#date-chart-continer svg g rect:hover {
-  fill: orangered;
-  cursor: pointer;
-  background: orangered;
-}
-.y-grid .tick line{
-	stroke: #ccc;
-}
-.map-boundary path:hover{
-	cursor: pointer;
-	fill: #ffa;
-}
-.doughnut-chart path:hover,
-.map-points circle:hover{
-	cursor: pointer;
-	stroke: yellow;
-	fill: red;
-}
-
-
+	.species-table tbody tr.hover-row:hover{
+		background: #ff9;
+		cursor: pointer;
+	}
+	.overflow-div{
+		max-height: 80vh;
+		overflow: scroll;
+	}
+	#date-chart-continer svg g rect,
+	.map-boundary path,
+	.map-points circle,
+	.doughnut-chart path
+	{
+		transition: fill .5s;
+	}
+	#date-chart-continer svg g rect:hover {
+	  fill: orangered;
+	  cursor: pointer;
+	  background: orangered;
+	}
+	.y-grid .tick line{
+		stroke: #ccc;
+	}
+	.map-boundary path:hover{
+		cursor: pointer;
+		fill: #ffa;
+	}
+	.doughnut-chart path:hover,
+	.map-points circle:hover{
+		cursor: pointer;
+		stroke: yellow;
+		fill: red;
+	}
 </style>
 <template>
 	<div class="container-fluid p-2 mt-5">
@@ -92,8 +90,15 @@ html {
 				</div>
 			</ui-tab>
 		</ui-tabs>
-		<ui-modal ref="update-state-Modal" title="Set / Update Observation State">
-				{{selected_point}}
+		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
+			 <ui-select
+                has-search
+                label="Select State"
+                placeholder="Select State"
+                :options="select_states"
+                v-model="set_state"
+            ></ui-select>
+            <ui-button color="green" raised @click="updateState">Submit</ui-button>
         </ui-modal>
 	</div>
 </template>
@@ -108,31 +113,33 @@ import country from '../country.json'
 		props: ["inat_data", "inat_taxa"],
 		data() {
 			return{
-				user_data:{},
-				date_data:{},
-				date_table_data:[],
-				state_data:{},
-				state_unmatched:[],
-				selected_state:"",
-				selected_point: null,
-				state_max:0,
-				species:{},
-				taxa_level:{},
-				taxa_table_data:{},
-				tabs:[
+				user_data: {},
+				date_data: {},
+				date_table_data: [],
+				state_data: {},
+				state_unmatched: [],
+				select_states: [],
+				selected_state: "",
+				set_state: "",
+				selected_point:  null,
+				state_max: 0,
+				species: {},
+				taxa_level: {},
+				taxa_table_data: {},
+				tabs: [
 					{title:"Users"},
 					{title:"Date"},
 					{title:"Location"},
 					{title:"Taxonomy"},
 				],
 				taxa_levels_sequence: ['superfamily','family','subfamily','tribe','subtribe','genus','subgenus','species','subspecies','form'],
-				taxaFilteredObservations:{},
+				taxaFilteredObservations: {},
 				selected_taxa: '',
 				svg: null,
 				svgWidth: 0,
 				svgHeight: 0,
 				tooltip: null,
-				stats:{}
+				stats: {}
 			}
 		},
 		created() {
@@ -160,6 +167,27 @@ import country from '../country.json'
 			}
 		},
 		methods: {
+			updateState (){
+				const axios = require('axios');
+				let post_data = {
+					id: this.selected_point.id,
+					state: this.set_state
+				}
+				var that = this;
+
+				axios.post('/inat/update_state', post_data)
+					.then(function (response) {
+						if(response.status == 200){
+							that.closeModal('update-state-Modal')
+						}
+					})
+					.catch(function (error) {
+						console.log(error);
+					})
+					.then( function () {
+						location.reload();
+					});
+			},
 			userTableRowClass(id){
 				let op = ""
 				if(id < 10){
@@ -458,10 +486,15 @@ import country from '../country.json'
 					.style("font-size", 15)
 			},
 			setMissingState (p) {
-				console.log(p)
 				this.inat_data.forEach(o =>{
-					if(o.id = p[2])
+					if(o.id == p[2]){
 						this.selected_point = o
+						if(o.state == null){
+							this.set_state = ''
+						} else {
+							this.set_state = o.state
+						}
+					}
 				})
 				this.openModal('update-state-Modal')
 			},
@@ -475,6 +508,9 @@ import country from '../country.json'
 			},
 			openModal(ref) {
 				this.$refs[ref].open();
+			},
+			closeModal(ref) {
+				this.$refs[ref].close();
 			},
 			init(){
 				country.features.forEach(s => {
@@ -544,7 +580,9 @@ import country from '../country.json'
 							    .style('border-radius', '4px')
 							    .style('color', '#fff')
 							    .text('a simple tooltip');
-				this.tabChanged({title:"superfamily "});
+				country.features.forEach(state=> {
+					this.select_states.push(state.properties.ST_NM)
+				})
 			}
 		}
 	};
