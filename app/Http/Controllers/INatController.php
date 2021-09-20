@@ -49,9 +49,9 @@ class INatController extends Controller
                         limit(-1)
                         ->get()->toArray();
         $inat_taxa = iNatTaxa::limit(10)->get();
-        foreach($inat_data as $k=>$id){
-            $timestamp = strtotime($inat_data[$k]["inat_created_at"]);  
-            $inat_data[$k]["inat_created_at"] = date('D, d M', $timestamp );
+        foreach ($inat_data as $k=>$id) {
+            $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
+            $inat_data[$k]["inat_created_at"] = date('D, d M', $timestamp);
         }
         return view('inat.index', compact("inat_data", "inat_taxa", "last_update"));
     }
@@ -70,9 +70,8 @@ class INatController extends Controller
         $state_names = [];
         $state_saved = 0;
         foreach ($inat_data as $observation) {
-            
             $state = $this->get_point_state($observation->location);
-            if($state != false){
+            if ($state != false) {
                 $observation->state = $state;
                 $observation->save();
                 $state_saved++;
@@ -82,7 +81,8 @@ class INatController extends Controller
         dd($state_saved);
     }
 
-    public function get_point_state($p){
+    public function get_point_state($p)
+    {
         $point = explode(",", $p);
         $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
         $op = false;
@@ -172,6 +172,14 @@ class INatController extends Controller
         //
     }
 
+    public function update_state(Request $request)
+    {
+        $inat = iNat::find($request->id);
+        $inat->state = $request->state;
+        $inat->save();
+        return response()->json([], 200);
+    }
+
     public function store_observation(Request $request)
     {
         $fields = ["id", "uuid", "observed_on", "location", "place_guess", "description", "quality_grade", "license_code", "oauth_application_id"];
@@ -195,7 +203,7 @@ class INatController extends Controller
         $obv->user_name = $request->user["name"] ?? null;
 
         $state = $this->get_point_state($request->location);
-        if($state != false){
+        if ($state != false) {
             $obv->state = $state;
         }
         $obv->save();
