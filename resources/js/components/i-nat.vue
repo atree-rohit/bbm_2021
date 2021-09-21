@@ -24,6 +24,11 @@
 	{
 		transition: fill .5s;
 	}
+	.map-points circle{
+		stroke-width: .5px;
+		stroke: red;
+		fill: pink;
+	}
 	#date-chart-continer svg g rect:hover {
 	  fill: orangered;
 	  cursor: pointer;
@@ -32,9 +37,14 @@
 	.y-grid .tick line{
 		stroke: #ccc;
 	}
+	.map-boundary path{
+		stroke: #333;
+		stroke-linejoin: round;
+		stroke-width: .1;
+	}
 	.map-boundary path:hover{
 		cursor: pointer;
-		fill: #ffa;
+		fill: beige;
 	}
 	.doughnut-chart path:hover,
 	.map-points circle:hover{
@@ -82,8 +92,11 @@
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Location'">
-					{{selected_state}}
 					<div id="map-container" class="svg-container"></div>
+					<div v-if="selected_state != ''">
+						{{selected_state}}
+
+					</div>
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
 					<div id="taxonomy-chart-continer" class="svg-container"></div>
@@ -136,8 +149,8 @@ import country from '../country.json'
 				taxaFilteredObservations: {},
 				selected_taxa: '',
 				svg: null,
-				svgWidth: 0,
-				svgHeight: 0,
+				svgWidth: window.innerWidth * 0.75,
+				svgHeight: window.innerHeight * 0.75,
 				tooltip: null,
 				stats: {}
 			}
@@ -145,8 +158,8 @@ import country from '../country.json'
 		created() {
 		},
 		mounted() {
-			this.init()
 			this.initMap()
+			this.renderMap()
 			this.renderDateChart()
 			this.renderTaxonomyChart()
 		},
@@ -297,7 +310,7 @@ import country from '../country.json'
   					.duration(400)
   					.attr("y", function(d) { return y(d.value); })
   					.attr("height", function(d) { return y(0) - y(d.value); })
-  					.delay(function(d,i){console.log(i) ; return(i*30)})
+  					.delay(function(d,i){return(i*30)})
 
 
   				svg.append("g")
@@ -306,19 +319,15 @@ import country from '../country.json'
   				svg.append("g")
   					.call(yAxis);
 			},
-			initMap(){
-				this.svgWidth = window.innerWidth * 0.75;
-				this.svgHeight = window.innerHeight * 0.75;
-
-				this.renderMap();
-			},
 			renderMap() {
+				let that = this;
+				let height = this.svgHeight / 1.75
+				let width = this.svgWidth
 				if (!d3.select("#map-container svg").empty()) {
 					d3.selectAll("svg").remove()
 				}
 				this.svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
-					.attr("width", this.svgWidth)
-					.attr("height", this.svgHeight)
+					.attr("viewBox", [0,0, width, height])
 					.style("background-color", "rgb(190, 229, 235)")
 					.classed("svg-content d-flex m-auto", true)
 
@@ -328,22 +337,22 @@ import country from '../country.json'
 				var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6)
 				let base = this.svg.append("g")
 					.classed("map-boundary", true)
+				let x = {properties:{ST_NM: ''}}
 
 				let base_text = base.selectAll("text").append("g")
 				base = base.selectAll("path").append("g")
+				let states = base.append("g").classed("states", true)
 
 				country.features.forEach(state=> {
 					let s_name = state.properties.ST_NM
 					let that = this
 
-					let shape = base.append("g")
+					let current_state = states.append("g")
 						.data([state])
 						.enter().append("path")
 						.attr("d", path)
-						.attr("stroke", "#333")
-						.attr("id", s_name)
+						.attr("id", s_name.replace(" ", "_"))
 						.attr("title", s_name)
-						.attr("stroke-width", .5)
 						.on("click", (d) => this.select_state(s_name))
 						.on('mouseover', function (d, i) {
 	  						that.tooltip.html(
@@ -362,51 +371,19 @@ import country from '../country.json'
 	  						})
 	  					.on('mouseout', function () {
 	  						that.tooltip.html(``).style('visibility', 'hidden');
-	  					});
-						;
+	  					})
+	  					// .on("click", this.selectState);
+	  					.on("click", clicked);
 
 					if(this.state_data[s_name] == undefined){
-						shape.attr("fill", (d) => colors(-1))
-					} else if (this.selected_state === s_name) {
-						shape.attr("fill", "yellow")
+						current_state.attr("fill", (d) => colors(-1))
 					} else {
-						shape.attr("fill", (d) => colors(this.state_data[s_name].length))
+						current_state.attr("fill", (d) => colors(this.state_data[s_name].length))
 					}
 				})
-
-				let points = [];
-				if(this.selected_state == ''){
-					this.state_unmatched.forEach(o => {
-						let coords = o.location.split(",")
-						points.push([coords[1], coords[0], o.id, o.place_guess]);
-					})
-				}
-				if(this.selected_state != ''){
-					this.state_data[this.selected_state].forEach(o => {
-						let coords = o.location.split(",")
-						points.push([coords[1], coords[0], o.id, o.place_guess]);
-					})
-				}
-				if(points.length > 0){
-					let map_points = this.svg.append('g')
-						.classed('map-points', true)
-						.selectAll("circle")
-						.data(points).enter()
-						.append("circle")
-						.attr("cx", (d) => projection(d)[0])
-						.attr("cy", (d) => projection(d)[1])
-						.attr("r", "5px")
-						.attr("stroke", "red")
-						.attr("fill", "white")
-						// .on("click", (d) => alert(d[2] + " - " + d[3]))
-						map_points.on("click", (d) => this.setMissingState(d))
-					// if(this.selected_state == '')
-				}
-
-				let that = this;
 				let zoom = d3.zoom()
-					.scaleExtent([.5, 7.5])
-					.translateExtent([[-that.svgWidth,-that.svgHeight],[2 * that.svgWidth,2 * that.svgHeight]])
+					.scaleExtent([.25, 20])
+					.translateExtent([[-width,-height],[2 * width,2 * height]])
 					.on('zoom', function() {
 						that.svg.selectAll('.poly_text')
 							.attr('transform', d3.event.transform),
@@ -414,9 +391,70 @@ import country from '../country.json'
 							.attr('transform', d3.event.transform),
 						that.svg.selectAll('circle')
 							.attr('transform', d3.event.transform)
-							.attr("r", 5 / d3.event.transform.k);
+							.attr("r", 2 / d3.event.transform.k);
 					});
 				this.svg.call(zoom);
+				mapPoints()
+				clicked(x)
+
+				function clicked(d) {
+					let state = d.properties.ST_NM
+					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
+				    states.transition().style("fill", null);
+					if(that.selected_state != ''){
+						d3.select("#" + that.selected_state.replace(" ", "_")).transition().style("fill", null);
+					}
+					if(that.selected_state == state){
+						[[x0, y0], [x1, y1]] = path.bounds(country)
+						that.selected_state = ''
+					} else {
+				    	[[x0, y0], [x1, y1]] = path.bounds(d);
+						that.selected_state = state
+						d3.select(this).transition().style("fill", "gold");
+					}
+				    that.svg.transition().duration(750).call(
+				      zoom.transform,
+				      d3.zoomIdentity
+				        .translate(width / 2, height / 2)
+				        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+				        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+				    );
+				    mapPoints()
+				}
+				function mapPoints(){
+					if (!d3.select("#map-container .map-points").empty()) {
+						d3.selectAll(".map-points").remove()
+					}
+					let points = [];
+					if(that.selected_state == ''){
+						that.state_unmatched.forEach(o => {
+							let coords = o.location.split(",")
+							points.push([coords[1], coords[0], o.id, o.place_guess]);
+						})
+					}
+					if(that.selected_state != ''){
+						that.state_data[that.selected_state].forEach(o => {
+							let coords = o.location.split(",")
+							points.push([coords[1], coords[0], o.id, o.place_guess]);
+						})
+					}
+					if(points.length > 0){
+						let map_points = that.svg.append('g')
+							.classed('map-points', true)
+							.selectAll("circle")
+							.data(points).enter()
+							.append("circle")
+							.attr("cx", (d) => projection(d)[0])
+							.attr("cy", (d) => projection(d)[1])
+							.attr("r", "0px")
+							map_points.on("click", (d) => that.setMissingState(d))
+					}
+				}
+			},
+			selectState(d){
+				let path = d3.geoPath()
+				const [[x0, y0], [x1, y1]] = path.bounds(d);
+				console.log(d, [[x0, y0], [x1, y1]])
 			},
 			renderTaxonomyChart(){
 				let height = this.svgHeight / 1.75
