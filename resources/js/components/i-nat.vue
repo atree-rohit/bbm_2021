@@ -235,7 +235,7 @@ import country from '../country.json'
 						if (o.taxa_name == oo.name){
 							new_flag = false
 							op[oid].count++
-							op[oid].users.add(oo.user_id)
+							op[oid].users.add(o.user_id)
 						}
 					})
 					if(new_flag)
