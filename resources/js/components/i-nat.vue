@@ -37,6 +37,11 @@
 	.y-grid .tick line{
 		stroke: #ccc;
 	}
+	.x-ticks .tick text{
+		text-anchor: end;
+		transform: rotate(-20deg);
+		font-size: .5vw;
+	}
 	.map-boundary path{
 		stroke: #333;
 		stroke-linejoin: round;
@@ -62,7 +67,7 @@
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Location'"
+				:selected="tab.title === 'Date'"
 				:title="tab.title"
 				v-for="tab in tabs"
 				class="overflow-div"
@@ -285,8 +290,8 @@ import country from '../country.json'
 				});
 			},
 			renderDateChart(){
-				let height = this.svgHeight / 1.75
-				let width = this.svgWidth
+				let height = this.svgHeight/2
+				let width = this.svgWidth/0.9
 				let color = "steelblue"
 				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
 				let svg = d3.select("#date-chart-continer").append("svg")
@@ -300,9 +305,15 @@ import country from '../country.json'
 							.domain([0, d3.max(this.date_table_data, d => d.value)]).nice()
 							.range([height - margin.bottom, margin.top])
 				let xAxis = g => g
-						.attr("transform", `translate(0,${height - margin.bottom})`)
+						.attr("transform", `translate(0,${height -  margin.bottom})`)
+						.classed("x-ticks", true)
 						.call(d3.axisBottom(x)
 							.tickFormat(i => this.date_table_data[i].name)
+								// let op = ""
+								// 	op = this.date_table_data[i].name
+								// if((i % 5) == 4){
+								// }
+								// return op
 							.tickSizeOuter(0))
 				let yAxis = g => g
 					    .attr("transform", `translate(${margin.left},0)`)
@@ -634,6 +645,7 @@ import country from '../country.json'
 						value: this.date_data[d].length
 					})
 				})
+
 				this.taxa_table_data = {}
 				Object.keys(this.taxa_level).forEach(tl => {
 					this.taxa_table_data[tl] = Math.log(this.taxa_level[tl].length)
