@@ -94,8 +94,41 @@
 				<div v-if="tab.title=='Location'">
 					<div id="map-container" class="svg-container"></div>
 					<div v-if="selected_state != ''">
-						{{selected_state}}
+						<div class="h1 text-center mt-5 p-2 bg-info">{{selected_state}} Data</div>
+						<div class="d-flex justify-content-around text-center">
+							<table class="table">
+								<tbody>
+									<tr>
+										<td class="display-4" v-text="stats[selected_state].observations"></td>
+										<td class="display-4" v-text="stats[selected_state].users.size"></td>
+										<td class="display-4" v-text="stats[selected_state].species.size"></td>
+									</tr><tr>
+										<td class="h1">Observations</td>
+										<td class="h1">Users</td>
+										<td class="h1">Unique Taxa</td>
+									</tr>
 
+								</tbody>
+							</table>
+						</div>
+						<table class="table">
+							<thead>
+								<tr>
+									<th>iNat ID</th>
+									<th>User</th>
+									<th>Created Date</th>
+									<th>Taxa Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="row in stateObservations">
+									<td v-text="row.id"></td>
+									<td v-text="row.user_id"></td>
+									<td v-text="row.inat_created_at"></td>
+									<td v-text="row.taxa_name"></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
@@ -158,7 +191,7 @@ import country from '../country.json'
 		created() {
 		},
 		mounted() {
-			this.initMap()
+			this.init()
 			this.renderMap()
 			this.renderDateChart()
 			this.renderTaxonomyChart()
@@ -176,6 +209,17 @@ import country from '../country.json'
 				})
 
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
+				return op
+			},
+			stateObservations () {
+				let op = []
+				if(this.selected_state != ''){
+					this.inat_data.forEach(o => {
+						if(o.state == this.selected_state){
+							op.push(o)
+						}
+					})
+				}
 				return op
 			}
 		},
@@ -353,7 +397,6 @@ import country from '../country.json'
 						.attr("d", path)
 						.attr("id", s_name.replace(" ", "_"))
 						.attr("title", s_name)
-						.on("click", (d) => this.select_state(s_name))
 						.on('mouseover', function (d, i) {
 	  						that.tooltip.html(
 	  							`<table>
@@ -369,10 +412,7 @@ import country from '../country.json'
 	  							.style('top', d3.event.pageY - 10 + 'px')
 	  							.style('left', d3.event.pageX + 10 + 'px');
 	  						})
-	  					.on('mouseout', function () {
-	  						that.tooltip.html(``).style('visibility', 'hidden');
-	  					})
-	  					// .on("click", this.selectState);
+	  					.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
 	  					.on("click", clicked);
 
 					if(this.state_data[s_name] == undefined){
@@ -450,11 +490,6 @@ import country from '../country.json'
 							map_points.on("click", (d) => that.setMissingState(d))
 					}
 				}
-			},
-			selectState(d){
-				let path = d3.geoPath()
-				const [[x0, y0], [x1, y1]] = path.bounds(d);
-				console.log(d, [[x0, y0], [x1, y1]])
 			},
 			renderTaxonomyChart(){
 				let height = this.svgHeight / 1.75
@@ -536,14 +571,6 @@ import country from '../country.json'
 				})
 				this.openModal('update-state-Modal')
 			},
-			select_state(s){
-				if(this.selected_state == s){
-					this.selected_state = ""
-				} else {
-					this.selected_state = s;
-				}
-				this.renderMap();
-			},
 			openModal(ref) {
 				this.$refs[ref].open();
 			},
@@ -551,6 +578,10 @@ import country from '../country.json'
 				this.$refs[ref].close();
 			},
 			init(){
+				if (this.svgWidth > 800){
+					this.svgWidth = window.innerWidth / 2
+				}
+				console.log(this.svgWidth, window.innerWidth)
 				country.features.forEach(s => {
 					this.state_data[s.properties.ST_NM] = [];
 					this.stats[s.properties.ST_NM] = {
