@@ -7,6 +7,7 @@
 
 	html {
 	    font-size: 100%;
+	    overflow: hidden;
 	}
 
 	.species-table tbody tr.hover-row:hover{
@@ -64,6 +65,7 @@
 			:fullwidth="true"
 			:raised="true"
 			type="text"
+			@tab-change="changeTab"
 		>
 			<ui-tab
 				:key="tab.title"
@@ -119,18 +121,16 @@
 						<table class="table">
 							<thead>
 								<tr>
-									<th>iNat ID</th>
-									<th>User</th>
-									<th>Created Date</th>
 									<th>Taxa Name</th>
+									<th>Observations</th>
+									<th>Users</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="row in stateObservations">
-									<td v-text="row.id"></td>
-									<td v-text="row.user_id"></td>
-									<td v-text="row.inat_created_at"></td>
-									<td v-text="row.taxa_name"></td>
+								<tr v-for="row in stateSpeciesList">
+									<td v-text="row.name"></td>
+									<td v-text="row.count"></td>
+									<td v-text="row.users.size"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -226,6 +226,28 @@ import country from '../country.json'
 					})
 				}
 				return op
+			},
+			stateSpeciesList () {
+				let op = []
+				this.stateObservations.forEach(o => {
+					let new_flag = true
+					op.forEach((oo, oid) => {
+						if (o.taxa_name == oo.name){
+							new_flag = false
+							op[oid].count++
+							op[oid].users.add(oo.user_id)
+						}
+					})
+					if(new_flag)
+						op.push({
+							name: o.taxa_name,
+							count: 1,
+							users: new Set([o.user_id])
+						})
+				})
+				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
+				
+				return op
 			}
 		},
 		methods: {
@@ -275,6 +297,17 @@ import country from '../country.json'
 				let url = 'https://www.inaturalist.org/observations/' + o.id;
 				window.open(url, '_blank').focus();
 			},
+			changeTab(d){
+				d3.selectAll("svg").remove()
+				switch(d.title){
+					case "Date" : this.renderDateChart()
+						break
+					case "Location" :this.renderMap()
+						break
+					case "Taxonomy" :this.renderTaxonomyChart()
+						break
+				}
+			},
 			tabChanged(x){
 				let rank_text = x.title.split(" ");
 
@@ -294,6 +327,9 @@ import country from '../country.json'
 				let width = this.svgWidth/0.9
 				let color = "steelblue"
 				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
+				if (!d3.select("#date-chart-continer svg").empty()) {
+					d3.selectAll("svg").remove()
+				}
 				let svg = d3.select("#date-chart-continer").append("svg")
   					.attr("viewBox", [0, 0, width, height]);
 
@@ -376,8 +412,8 @@ import country from '../country.json'
 			},
 			renderMap() {
 				let that = this;
-				let height = this.svgHeight / 1.75
-				let width = this.svgWidth
+				let height = this.svgHeight / 2
+				let width = this.svgWidth / 0.9
 				if (!d3.select("#map-container svg").empty()) {
 					d3.selectAll("svg").remove()
 				}
