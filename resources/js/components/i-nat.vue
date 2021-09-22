@@ -10,12 +10,17 @@
 	    overflow: hidden;
 	}
 
+	.ui-tabs > div, 
+	.ui-tabs > div > div{
+		overflow-x: hidden;
+	}
+
 	.species-table tbody tr.hover-row:hover{
 		background: #ff9;
 		cursor: pointer;
 	}
 	.overflow-div{
-		max-height: 80vh;
+		max-height: 95vh;
 		overflow: scroll;
 	}
 	#date-chart-continer svg g rect,
@@ -58,9 +63,14 @@
 		stroke: yellow;
 		fill: red;
 	}
+
+	#map-data-table {
+	    max-width: 50%;
+	}
+
 </style>
 <template>
-	<div class="container-fluid p-2 mt-5">
+	<div class="container-fluid">
 		<ui-tabs
 			:fullwidth="true"
 			:raised="true"
@@ -69,7 +79,7 @@
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Date'"
+				:selected="tab.title === 'Location'"
 				:title="tab.title"
 				v-for="tab in tabs"
 				class="overflow-div"
@@ -78,6 +88,7 @@
 					<table class="table table-sm">
 						<thead>
 							<tr>
+								<th>Sl No</th>
 								<th>User ID</th>
 								<th>User Name</th>
 								<th>Observations</th>
@@ -86,6 +97,7 @@
 						</thead>
 						<tbody>
 							<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id)'>
+								<td v-text="id + 1"></td>
 								<td v-text="u.id"></td>
 								<td v-text="u.name"></td>
 								<td v-text="u.observations"></td>
@@ -98,9 +110,9 @@
 				<div v-if="tab.title=='Date'">
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
-				<div v-if="tab.title=='Location'">
-					<div id="map-container" class="svg-container"></div>
-					<div v-if="selected_state != ''">
+				<div v-if="tab.title=='Location'" class="d-flex flex-row">
+					<div id="map-container" class="svg-container flex-grow-1"></div>
+					<div v-if="selected_state != ''" id="map-data-table" :class="selected_state != ''?'flex-grow-1':''">
 						<div class="h1 text-center mt-5 p-2 bg-info">{{selected_state}} Data</div>
 						<div class="d-flex justify-content-around text-center">
 							<table class="table">
@@ -198,8 +210,8 @@ import country from '../country.json'
 		mounted() {
 			this.init()
 			this.renderMap()
-			this.renderDateChart()
-			this.renderTaxonomyChart()
+			// this.renderDateChart()
+			// this.renderTaxonomyChart()
 		},
 		computed:{
 			userTableData () {
@@ -412,24 +424,26 @@ import country from '../country.json'
 			},
 			renderMap() {
 				let that = this;
-				let height = this.svgHeight / 2
-				let width = this.svgWidth / 0.9
+				let height = this.svgHeight * 2
+				let width = this.svgWidth *3.5
+				console.log(width, height)
+
 				if (!d3.select("#map-container svg").empty()) {
 					d3.selectAll("svg").remove()
 				}
-				this.svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
+				let svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
 					.attr("viewBox", [0,0, width, height])
 					.style("background-color", "rgb(190, 229, 235)")
 					.classed("svg-content d-flex m-auto", true)
+				console.log(width, height)
 
 				var projection = d3.geoMercator().scale(750).center([89, 29.5])
 				const path = d3.geoPath().projection(projection)
 				const colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"])
 				var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6)
-				let base = this.svg.append("g")
+				let base = svg.append("g")
 					.classed("map-boundary", true)
-				let x = {properties:{ST_NM: ''}}
-
+				
 				let base_text = base.selectAll("text").append("g")
 				base = base.selectAll("path").append("g")
 				let states = base.append("g").classed("states", true)
@@ -472,17 +486,17 @@ import country from '../country.json'
 					.scaleExtent([.25, 20])
 					.translateExtent([[-width,-height],[2 * width,2 * height]])
 					.on('zoom', function() {
-						that.svg.selectAll('.poly_text')
+						svg.selectAll('.poly_text')
 							.attr('transform', d3.event.transform),
-						that.svg.selectAll('path')
+						svg.selectAll('path')
 							.attr('transform', d3.event.transform),
-						that.svg.selectAll('circle')
+						svg.selectAll('circle')
 							.attr('transform', d3.event.transform)
 							.attr("r", 2 / d3.event.transform.k);
 					});
-				this.svg.call(zoom);
+				svg.call(zoom);
+				clicked({properties:{ST_NM: ''}})
 				mapPoints()
-				clicked(x)
 
 				function clicked(d) {
 					let state = d.properties.ST_NM
@@ -499,14 +513,21 @@ import country from '../country.json'
 						that.selected_state = state
 						d3.select(this).transition().style("fill", "gold");
 					}
-				    that.svg.transition().duration(750).call(
+				    svg.transition().duration(750).call(
 				      zoom.transform,
 				      d3.zoomIdentity
 				        .translate(width / 2, height / 2)
 				        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
 				        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
 				    );
-				    mapPoints()
+					if(that.selected_state != ''){
+						svg.attr("viewBox", [0,0, that.svgWidth*2.5, that.svgHeight*6])
+						console.log("not empty", that.selected_state)
+					} else {
+						svg.attr("viewBox", [0,0, that.svgWidth * 3.5, that.svgHeight * 2])
+						console.log("empty")
+					}
+					mapPoints()
 				}
 				function mapPoints(){
 					if (!d3.select("#map-container .map-points").empty()) {
@@ -526,7 +547,7 @@ import country from '../country.json'
 						})
 					}
 					if(points.length > 0){
-						let map_points = that.svg.append('g')
+						let map_points = svg.append('g')
 							.classed('map-points', true)
 							.selectAll("circle")
 							.data(points).enter()

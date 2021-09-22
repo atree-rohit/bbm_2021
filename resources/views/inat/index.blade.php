@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.blank')
 
 @section('style')
 <link rel="stylesheet" href="{{asset('/css/keen-ui.min.css')}}">
@@ -7,13 +7,11 @@
 
 
 @section('content')
-<div class="container-fluid">
-	<div id="app">
-		<i-nat :inat_data='@json($inat_data)' :inat_taxa='@json($inat_taxa)'></i-nat>
-	</div>
-	<div class="text-center">
-		Last Updated at {{$last_update}}
-	</div>
+<div id="app">
+	<i-nat :inat_data='@json($inat_data)' :inat_taxa='@json($inat_taxa)'></i-nat>
+</div>
+<div class="text-center">
+	Last Updated at {{$last_update}}
 </div>
 @endsection
 
