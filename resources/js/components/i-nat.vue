@@ -23,6 +23,10 @@
 		max-height: 95vh;
 		overflow: scroll;
 	}
+	#users-table-container {
+		height: 70vh;
+		overflow-y: scroll;
+	}
 	#date-chart-continer svg g rect,
 	.map-boundary path,
 	.map-points circle,
@@ -63,9 +67,50 @@
 		stroke: yellow;
 		fill: red;
 	}
+	#locations-tab{
+		/*display: flex;
+		flex-direction: row;*/
+		display: grid;
+  		grid-template-columns: repeat(2, 1fr);
+	}
+	.all-states-table tbody tr:hover{
+		background: #ffa;
+		cursor: pointer;
+	}
+	.species-data-table{
+		height: 50vh;
+		overflow-y: scroll;
+	}
+	.tableFixHead{
+		overflow: auto;
+		height: 100px;
+	}
+	.tableFixHead thead th{
+		position: sticky;
+		top: 0;
+		z-index: 1;
+	}
 
-	#map-data-table {
-	    max-width: 50%;
+	#observation-container{
+		height: 70vh;
+		overflow-y: scroll;
+		/*overflow-x: hidden;*/
+		display: grid;
+		gap: 10px;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-rows: masonry;
+	}
+	#observation-container div{
+		/*max-height: 200px;*/
+		margin: auto;
+	}
+
+
+	@media screen and (max-width: 800px) {
+		#locations-tab {
+  			grid-template-columns: repeat(1, 1fr);
+			/*flex-direction: column;*/
+		}
 	}
 
 </style>
@@ -79,45 +124,47 @@
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Location'"
+				:selected="tab.title === 'Observations'"
 				:title="tab.title"
 				v-for="tab in tabs"
-				class="overflow-div"
 			>
 				<div v-if="tab.title=='Users'">
-					<table class="table table-sm">
-						<thead>
-							<tr>
-								<th>Sl No</th>
-								<th>User ID</th>
-								<th>User Name</th>
-								<th>Observations</th>
-								<th>State</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id)'>
-								<td v-text="id + 1"></td>
-								<td v-text="u.id"></td>
-								<td v-text="u.name"></td>
-								<td v-text="u.observations"></td>
-								<td v-text="u.state"></td>
-							</tr>
-						</tbody>
+					<div id="users-table-container">
+						<table class="table table-sm tableFixHead">
+							<thead class="table-secondary">
+								<tr>
+									<th>Sl No</th>
+									<th>User ID</th>
+									<th>User Name</th>
+									<th>Observations</th>
+									<th>State</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id)'>
+									<td v-text="id + 1"></td>
+									<td v-text="u.id"></td>
+									<td v-text="u.name"></td>
+									<td v-text="u.observations"></td>
+									<td v-text="u.state"></td>
+								</tr>
+							</tbody>
+							
+						</table>
 						
-					</table>
+					</div>
 				</div>
 				<div v-if="tab.title=='Date'">
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
-				<div v-if="tab.title=='Location'" class="d-flex flex-row">
+				<div v-if="tab.title=='Location'" id="locations-tab">
 					<div id="map-container" class="svg-container flex-grow-1"></div>
-					<div v-if="selected_state != ''" id="map-data-table" :class="selected_state != ''?'flex-grow-1':''">
-						<div class="h1 text-center mt-5 p-2 bg-info">{{selected_state}} Data</div>
+					<div id="map-data-table" :class="selected_state != ''?'flex-grow-1':''">
+						<div class="h1 text-center p-2 bg-info">{{selected_state}}</div>
 						<div class="d-flex justify-content-around text-center">
 							<table class="table">
 								<tbody>
-									<tr>
+									<tr v-if="selected_state != ''">
 										<td class="display-4" v-text="stats[selected_state].observations"></td>
 										<td class="display-4" v-text="stats[selected_state].users.size"></td>
 										<td class="display-4" v-text="stats[selected_state].species.size"></td>
@@ -130,26 +177,53 @@
 								</tbody>
 							</table>
 						</div>
-						<table class="table">
-							<thead>
-								<tr>
-									<th>Taxa Name</th>
-									<th>Observations</th>
-									<th>Users</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="row in stateSpeciesList">
-									<td v-text="row.name"></td>
-									<td v-text="row.count"></td>
-									<td v-text="row.users.size"></td>
-								</tr>
-							</tbody>
-						</table>
+						<div class="species-data-table">
+							<table class="table tableFixHead all-states-table" v-if="selected_state == 'All'">
+								<thead class="table-secondary">
+									<tr>
+										<th>State</th>
+										<th>Observations</th>
+										<th>Unique Taxa</th>
+										<th>Users</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="row in statesTableData" @click='selectState(row.state)'>
+										<td v-text="row.state"></td>
+										<td v-text="row.observations"></td>
+										<td v-text="row.species"></td>
+										<td v-text="row.users"></td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table tableFixHead" v-else>
+								<thead class="table-secondary">
+									<tr>
+										<th>Taxa Name</th>
+										<th>Observations</th>
+										<th>Users</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="row in stateSpeciesList">
+										<td v-text="row.name"></td>
+										<td v-text="row.count"></td>
+										<td v-text="row.users.size"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
 					<div id="taxonomy-chart-continer" class="svg-container"></div>
+				</div>
+				<div v-if="tab.title=='Observations'">
+					<div id="observation-container">
+						<div v-for="o in filteredObservations" class="brick">
+							<img :src="imgUrl(o.img_url)" class="img-fluid">
+						</div>
+					</div>
 				</div>
 			</ui-tab>
 		</ui-tabs>
@@ -194,6 +268,7 @@ import country from '../country.json'
 					{title:"Date"},
 					{title:"Location"},
 					{title:"Taxonomy"},
+					{title:"Observations"},
 				],
 				taxa_levels_sequence: ['superfamily','family','subfamily','tribe','subtribe','genus','subgenus','species','subspecies','form'],
 				taxaFilteredObservations: {},
@@ -202,7 +277,9 @@ import country from '../country.json'
 				svgWidth: window.innerWidth * 0.75,
 				svgHeight: window.innerHeight * 0.75,
 				tooltip: null,
-				stats: {}
+				stats: {},
+				observationsPerPage: 36,
+				observationsPageNo: 1
 			}
 		},
 		created() {
@@ -214,6 +291,19 @@ import country from '../country.json'
 			// this.renderTaxonomyChart()
 		},
 		computed:{
+			filteredObservations(){
+				let op = []
+				this.inat_data.forEach(o => {
+					if(o.state == this.selected_state || this.selected_state == "All"){
+						op.push(o)
+					}
+				})
+
+
+				op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
+				return op
+
+			},
 			userTableData () {
 				let op = []
 				Object.keys(this.user_data).forEach(u => {
@@ -260,6 +350,21 @@ import country from '../country.json'
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
 				
 				return op
+			},
+			statesTableData () {
+				let op = []
+				Object.keys(this.stats).forEach(s => {
+					if(s != 'All'){
+						op.push({
+							state: s,
+							observations: this.stats[s].observations,
+							users: this.stats[s].users.size,
+							species: this.stats[s].species.size
+						})
+					}
+				})
+				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
+				return op
 			}
 		},
 		methods: {
@@ -296,8 +401,8 @@ import country from '../country.json'
 				return op;
 			},
 			imgUrl(url){
-				// return url.replace("square", "medium")
-				return url
+				return url.replace("square", "medium")
+				// return url
 			},
 			taxaClick(t){
 				if(this.selected_taxa != t)
@@ -319,20 +424,6 @@ import country from '../country.json'
 					case "Taxonomy" :this.renderTaxonomyChart()
 						break
 				}
-			},
-			tabChanged(x){
-				let rank_text = x.title.split(" ");
-
-				let rank = this.taxa_levels_sequence.indexOf(rank_text[0]);
-				this.taxaFilteredObservations = {};
-				this.inat_data.forEach(o => {
-					if(this.taxa_levels_sequence.indexOf(o.taxa_rank) == rank)
-						if(Object.keys(this.taxaFilteredObservations).indexOf(o.taxa_name) != -1){
-							this.taxaFilteredObservations[o.taxa_name].push(o)
-						} else {
-							this.$set(this.taxaFilteredObservations, o.taxa_name, [o])
-						}
-				});
 			},
 			renderDateChart(){
 				let height = this.svgHeight/2
@@ -423,10 +514,10 @@ import country from '../country.json'
   					.call(yAxis);
 			},
 			renderMap() {
-				let that = this;
-				let height = this.svgHeight * 2
-				let width = this.svgWidth *3.5
-				console.log(width, height)
+				let that = this
+				let height = this.svgHeight
+				let width = this.svgWidth
+
 
 				if (!d3.select("#map-container svg").empty()) {
 					d3.selectAll("svg").remove()
@@ -435,7 +526,6 @@ import country from '../country.json'
 					.attr("viewBox", [0,0, width, height])
 					.style("background-color", "rgb(190, 229, 235)")
 					.classed("svg-content d-flex m-auto", true)
-				console.log(width, height)
 
 				var projection = d3.geoMercator().scale(750).center([89, 29.5])
 				const path = d3.geoPath().projection(projection)
@@ -456,7 +546,7 @@ import country from '../country.json'
 						.data([state])
 						.enter().append("path")
 						.attr("d", path)
-						.attr("id", s_name.replace(" ", "_"))
+						.attr("id", s_name.replaceAll(" ", "_").replaceAll("&", ""))
 						.attr("title", s_name)
 						.on('mouseover', function (d, i) {
 	  						that.tooltip.html(
@@ -503,11 +593,11 @@ import country from '../country.json'
 					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 				    states.transition().style("fill", null);
 					if(that.selected_state != ''){
-						d3.select("#" + that.selected_state.replace(" ", "_")).transition().style("fill", null);
+						d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
 					}
 					if(that.selected_state == state){
 						[[x0, y0], [x1, y1]] = path.bounds(country)
-						that.selected_state = ''
+						that.selected_state = 'All'
 					} else {
 				    	[[x0, y0], [x1, y1]] = path.bounds(d);
 						that.selected_state = state
@@ -520,13 +610,6 @@ import country from '../country.json'
 				        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
 				        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
 				    );
-					if(that.selected_state != ''){
-						svg.attr("viewBox", [0,0, that.svgWidth*2.5, that.svgHeight*6])
-						console.log("not empty", that.selected_state)
-					} else {
-						svg.attr("viewBox", [0,0, that.svgWidth * 3.5, that.svgHeight * 2])
-						console.log("empty")
-					}
 					mapPoints()
 				}
 				function mapPoints(){
@@ -540,7 +623,7 @@ import country from '../country.json'
 							points.push([coords[1], coords[0], o.id, o.place_guess]);
 						})
 					}
-					if(that.selected_state != ''){
+					if(that.selected_state != 'All'){
 						that.state_data[that.selected_state].forEach(o => {
 							let coords = o.location.split(",")
 							points.push([coords[1], coords[0], o.id, o.place_guess]);
@@ -626,6 +709,14 @@ import country from '../country.json'
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
 			},
+			selectState(s){
+				if (this.selected_state == s) {
+					this.selected_state = 'All'
+				} else {
+					this.selected_state = s					
+				}
+				// this.renderMap()
+			},
 			setMissingState (p) {
 				this.inat_data.forEach(o =>{
 					if(o.id == p[2]){
@@ -649,7 +740,11 @@ import country from '../country.json'
 				if (this.svgWidth > 800){
 					this.svgWidth = window.innerWidth / 2
 				}
-				console.log(this.svgWidth, window.innerWidth)
+				this.stats['All'] = {
+						observations: 0,
+						users: new Set(),
+						species: new Set()
+					}
 				country.features.forEach(s => {
 					this.state_data[s.properties.ST_NM] = [];
 					this.stats[s.properties.ST_NM] = {
@@ -659,7 +754,9 @@ import country from '../country.json'
 					}
 				})
 				this.inat_data.forEach(o => {
-					
+					this.stats['All'].observations++
+					this.stats['All'].users.add(o.user_id)
+					this.stats['All'].species.add(o.taxa_name)
 					if(Object.keys(this.user_data).indexOf(o.user_id) != -1){
 						this.user_data[o.user_id].push(o)
 					} else {
@@ -683,6 +780,7 @@ import country from '../country.json'
 						this.$set(this.state_data,o.state,[o])
 						console.log("strange state name", o.state, o)
 					}
+
 
 
 					if(Object.keys(this.taxa_level).indexOf(o.taxa_rank) != -1){

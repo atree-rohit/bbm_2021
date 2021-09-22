@@ -2030,6 +2030,80 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2060,6 +2134,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         title: "Location"
       }, {
         title: "Taxonomy"
+      }, {
+        title: "Observations"
       }],
       taxa_levels_sequence: ['superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'genus', 'subgenus', 'species', 'subspecies', 'form'],
       taxaFilteredObservations: {},
@@ -2068,7 +2144,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       svgWidth: window.innerWidth * 0.75,
       svgHeight: window.innerHeight * 0.75,
       tooltip: null,
-      stats: {}
+      stats: {},
+      observationsPerPage: 36,
+      observationsPageNo: 1
     };
   },
   created: function created() {},
@@ -2078,16 +2156,28 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     // this.renderTaxonomyChart()
   },
   computed: {
-    userTableData: function userTableData() {
+    filteredObservations: function filteredObservations() {
       var _this = this;
+
+      var op = [];
+      this.inat_data.forEach(function (o) {
+        if (o.state == _this.selected_state || _this.selected_state == "All") {
+          op.push(o);
+        }
+      });
+      op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * this.observationsPageNo);
+      return op;
+    },
+    userTableData: function userTableData() {
+      var _this2 = this;
 
       var op = [];
       Object.keys(this.user_data).forEach(function (u) {
         op.push({
           id: u,
-          name: _this.user_data[u][0].user_name,
-          observations: _this.user_data[u].length,
-          state: _this.user_data[u][0].state
+          name: _this2.user_data[u][0].user_name,
+          observations: _this2.user_data[u].length,
+          state: _this2.user_data[u][0].state
         });
       });
       op.sort(function (a, b) {
@@ -2096,13 +2186,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return op;
     },
     stateObservations: function stateObservations() {
-      var _this2 = this;
+      var _this3 = this;
 
       var op = [];
 
       if (this.selected_state != '') {
         this.inat_data.forEach(function (o) {
-          if (o.state == _this2.selected_state) {
+          if (o.state == _this3.selected_state) {
             op.push(o);
           }
         });
@@ -2129,6 +2219,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       });
       op.sort(function (a, b) {
         return a.count < b.count ? 1 : b.count < a.count ? -1 : 0;
+      });
+      return op;
+    },
+    statesTableData: function statesTableData() {
+      var _this4 = this;
+
+      var op = [];
+      Object.keys(this.stats).forEach(function (s) {
+        if (s != 'All') {
+          op.push({
+            state: s,
+            observations: _this4.stats[s].observations,
+            users: _this4.stats[s].users.size,
+            species: _this4.stats[s].species.size
+          });
+        }
+      });
+      op.sort(function (a, b) {
+        return a.observations < b.observations ? 1 : b.observations < a.observations ? -1 : 0;
       });
       return op;
     }
@@ -2166,8 +2275,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return op;
     },
     imgUrl: function imgUrl(url) {
-      // return url.replace("square", "medium")
-      return url;
+      return url.replace("square", "medium"); // return url
     },
     taxaClick: function taxaClick(t) {
       if (this.selected_taxa != t) this.selected_taxa = t;else this.selected_taxa = '';
@@ -2193,22 +2301,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           break;
       }
     },
-    tabChanged: function tabChanged(x) {
-      var _this3 = this;
-
-      var rank_text = x.title.split(" ");
-      var rank = this.taxa_levels_sequence.indexOf(rank_text[0]);
-      this.taxaFilteredObservations = {};
-      this.inat_data.forEach(function (o) {
-        if (_this3.taxa_levels_sequence.indexOf(o.taxa_rank) == rank) if (Object.keys(_this3.taxaFilteredObservations).indexOf(o.taxa_name) != -1) {
-          _this3.taxaFilteredObservations[o.taxa_name].push(o);
-        } else {
-          _this3.$set(_this3.taxaFilteredObservations, o.taxa_name, [o]);
-        }
-      });
-    },
     renderDateChart: function renderDateChart() {
-      var _this4 = this;
+      var _this5 = this;
 
       var height = this.svgHeight / 2;
       var width = this.svgWidth / 0.9;
@@ -2232,7 +2326,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
       var xAxis = function xAxis(g) {
         return g.attr("transform", "translate(0,".concat(height - margin.bottom, ")")).classed("x-ticks", true).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(x).tickFormat(function (i) {
-          return _this4.date_table_data[i].name;
+          return _this5.date_table_data[i].name;
         }) // let op = ""
         // 	op = this.date_table_data[i].name
         // if((i % 5) == 4){
@@ -2242,10 +2336,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       };
 
       var yAxis = function yAxis(g) {
-        return g.attr("transform", "translate(".concat(margin.left, ",0)")).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(y).ticks(null, _this4.date_table_data.format)).call(function (g) {
+        return g.attr("transform", "translate(".concat(margin.left, ",0)")).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(y).ticks(null, _this5.date_table_data.format)).call(function (g) {
           return g.select(".domain").remove();
         }).call(function (g) {
-          return g.append("text").attr("x", -margin.left).attr("y", 10).attr("fill", "currentColor").attr("text-anchor", "start").text(_this4.date_table_data.y);
+          return g.append("text").attr("x", -margin.left).attr("y", 10).attr("fill", "currentColor").attr("text-anchor", "start").text(_this5.date_table_data.y);
         });
       };
 
@@ -2276,19 +2370,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       svg.append("g").call(yAxis);
     },
     renderMap: function renderMap() {
-      var _this5 = this;
+      var _this6 = this;
 
       var that = this;
-      var height = this.svgHeight * 2;
-      var width = this.svgWidth * 3.5;
-      console.log(width, height);
+      var height = this.svgHeight;
+      var width = this.svgWidth;
 
       if (!d3__WEBPACK_IMPORTED_MODULE_1__.select("#map-container svg").empty()) {
         d3__WEBPACK_IMPORTED_MODULE_1__.selectAll("svg").remove();
       }
 
       var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
-      console.log(width, height);
       var projection = d3__WEBPACK_IMPORTED_MODULE_1__.geoMercator().scale(750).center([89, 29.5]);
       var path = d3__WEBPACK_IMPORTED_MODULE_1__.geoPath().projection(projection);
       var colors = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
@@ -2299,8 +2391,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var states = base.append("g").classed("states", true);
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
-        var that = _this5;
-        var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replace(" ", "_")).attr("title", s_name).on('mouseover', function (d, i) {
+        var that = _this6;
+        var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
           that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
           that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageX + 10 + 'px');
@@ -2308,13 +2400,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
 
-        if (_this5.state_data[s_name] == undefined) {
+        if (_this6.state_data[s_name] == undefined) {
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this5.state_data[s_name].length);
+            return colors(_this6.state_data[s_name].length);
           });
         }
       });
@@ -2338,7 +2430,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         states.transition().style("fill", null);
 
         if (that.selected_state != '') {
-          d3__WEBPACK_IMPORTED_MODULE_1__.select("#" + that.selected_state.replace(" ", "_")).transition().style("fill", null);
+          d3__WEBPACK_IMPORTED_MODULE_1__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
         }
 
         if (that.selected_state == state) {
@@ -2355,7 +2447,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           x1 = _path$bounds2$2[0];
           y1 = _path$bounds2$2[1];
-          that.selected_state = '';
+          that.selected_state = 'All';
         } else {
           var _path$bounds3 = path.bounds(d);
 
@@ -2375,15 +2467,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         }
 
         svg.transition().duration(750).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_1__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
-
-        if (that.selected_state != '') {
-          svg.attr("viewBox", [0, 0, that.svgWidth * 2.5, that.svgHeight * 6]);
-          console.log("not empty", that.selected_state);
-        } else {
-          svg.attr("viewBox", [0, 0, that.svgWidth * 3.5, that.svgHeight * 2]);
-          console.log("empty");
-        }
-
         mapPoints();
       }
 
@@ -2401,7 +2484,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           });
         }
 
-        if (that.selected_state != '') {
+        if (that.selected_state != 'All') {
           that.state_data[that.selected_state].forEach(function (o) {
             var coords = o.location.split(",");
             points.push([coords[1], coords[0], o.id, o.place_guess]);
@@ -2453,17 +2536,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         return "translate(" + arcGenerator.centroid(d) + ")";
       }).style("text-anchor", "middle").style("font-size", 15);
     },
+    selectState: function selectState(s) {
+      if (this.selected_state == s) {
+        this.selected_state = 'All';
+      } else {
+        this.selected_state = s;
+      } // this.renderMap()
+
+    },
     setMissingState: function setMissingState(p) {
-      var _this6 = this;
+      var _this7 = this;
 
       this.inat_data.forEach(function (o) {
         if (o.id == p[2]) {
-          _this6.selected_point = o;
+          _this7.selected_point = o;
 
           if (o.state == null) {
-            _this6.set_state = '';
+            _this7.set_state = '';
           } else {
-            _this6.set_state = o.state;
+            _this7.set_state = o.state;
           }
         }
       });
@@ -2476,73 +2567,83 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.$refs[ref].close();
     },
     init: function init() {
-      var _this7 = this;
+      var _this8 = this;
 
       if (this.svgWidth > 800) {
         this.svgWidth = window.innerWidth / 2;
       }
 
-      console.log(this.svgWidth, window.innerWidth);
+      this.stats['All'] = {
+        observations: 0,
+        users: new Set(),
+        species: new Set()
+      };
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
-        _this7.state_data[s.properties.ST_NM] = [];
-        _this7.stats[s.properties.ST_NM] = {
+        _this8.state_data[s.properties.ST_NM] = [];
+        _this8.stats[s.properties.ST_NM] = {
           observations: 0,
           users: new Set(),
           species: new Set()
         };
       });
       this.inat_data.forEach(function (o) {
-        if (Object.keys(_this7.user_data).indexOf(o.user_id) != -1) {
-          _this7.user_data[o.user_id].push(o);
+        _this8.stats['All'].observations++;
+
+        _this8.stats['All'].users.add(o.user_id);
+
+        _this8.stats['All'].species.add(o.taxa_name);
+
+        if (Object.keys(_this8.user_data).indexOf(o.user_id) != -1) {
+          _this8.user_data[o.user_id].push(o);
         } else {
-          _this7.$set(_this7.user_data, o.user_id, [o]);
+          _this8.$set(_this8.user_data, o.user_id, [o]);
         }
 
-        if (Object.keys(_this7.date_data).indexOf(o.inat_created_at) != -1) {
-          _this7.date_data[o.inat_created_at].push(o);
+        if (Object.keys(_this8.date_data).indexOf(o.inat_created_at) != -1) {
+          _this8.date_data[o.inat_created_at].push(o);
         } else {
-          _this7.$set(_this7.date_data, o.inat_created_at, [o]);
+          _this8.$set(_this8.date_data, o.inat_created_at, [o]);
         }
 
         if (o.state == null) {
-          _this7.state_unmatched.push(o);
-        } else if (Object.keys(_this7.state_data).indexOf(o.state) != -1) {
-          _this7.state_data[o.state].push(o);
+          _this8.state_unmatched.push(o);
+        } else if (Object.keys(_this8.state_data).indexOf(o.state) != -1) {
+          _this8.state_data[o.state].push(o);
 
-          _this7.stats[o.state].observations++;
+          _this8.stats[o.state].observations++;
 
-          _this7.stats[o.state].users.add(o.user_id);
+          _this8.stats[o.state].users.add(o.user_id);
 
-          _this7.stats[o.state].species.add(o.taxa_name);
+          _this8.stats[o.state].species.add(o.taxa_name);
         } else {
-          _this7.$set(_this7.state_data, o.state, [o]);
+          _this8.$set(_this8.state_data, o.state, [o]);
 
           console.log("strange state name", o.state, o);
         }
 
-        if (Object.keys(_this7.taxa_level).indexOf(o.taxa_rank) != -1) {
-          _this7.taxa_level[o.taxa_rank].push(o);
+        if (Object.keys(_this8.taxa_level).indexOf(o.taxa_rank) != -1) {
+          _this8.taxa_level[o.taxa_rank].push(o);
         } else {
-          _this7.$set(_this7.taxa_level, o.taxa_rank, [o]);
+          _this8.$set(_this8.taxa_level, o.taxa_rank, [o]);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
-        if (_this7.state_data[s].length > _this7.state_max) _this7.state_max = _this7.state_data[s].length;
+        if (_this8.state_data[s].length > _this8.state_max) _this8.state_max = _this8.state_data[s].length;
       });
       this.date_table_data = [];
       Object.keys(this.date_data).forEach(function (d) {
-        _this7.date_table_data.push({
+        _this8.date_table_data.push({
           name: d,
-          value: _this7.date_data[d].length
+          value: _this8.date_data[d].length
         });
       });
       this.taxa_table_data = {};
       Object.keys(this.taxa_level).forEach(function (tl) {
-        _this7.taxa_table_data[tl] = Math.log(_this7.taxa_level[tl].length);
+        _this8.taxa_table_data[tl] = Math.log(_this8.taxa_level[tl].length);
       });
       this.tooltip = d3__WEBPACK_IMPORTED_MODULE_1__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (state) {
-        _this7.select_states.push(state.properties.ST_NM);
+        _this8.select_states.push(state.properties.ST_NM);
       });
     }
   }
@@ -2591,7 +2692,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n*::before,\n*::after {\n    box-sizing: border-box;\n}\nhtml {\n    font-size: 100%;\n    overflow: hidden;\n}\n.ui-tabs > div, \n.ui-tabs > div > div{\n\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\tbackground: #ff9;\n\tcursor: pointer;\n}\n.overflow-div{\n\tmax-height: 95vh;\n\toverflow: scroll;\n}\n#date-chart-continer svg g rect,\n.map-boundary path,\n.map-points circle,\n.doughnut-chart path\n{\n\ttransition: fill .5s;\n}\n.map-points circle{\n\tstroke-width: .5px;\n\tstroke: red;\n\tfill: pink;\n}\n#date-chart-continer svg g rect:hover {\n  fill: orangered;\n  cursor: pointer;\n  background: orangered;\n}\n.y-grid .tick line{\n\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\ttext-anchor: end;\n\ttransform: rotate(-20deg);\n\tfont-size: .5vw;\n}\n.map-boundary path{\n\tstroke: #333;\n\tstroke-linejoin: round;\n\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\tcursor: pointer;\n\tfill: beige;\n}\n.doughnut-chart path:hover,\n.map-points circle:hover{\n\tcursor: pointer;\n\tstroke: yellow;\n\tfill: red;\n}\n#map-data-table {\n    max-width: 50%;\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    overflow: hidden;\n}\n.ui-tabs > div, \n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\theight: 70vh;\n\t\toverflow-y: scroll;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g rect:hover {\n\t  fill: orangered;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#locations-tab{\n\t\t/*display: flex;\n\t\tflex-direction: row;*/\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\theight: 50vh;\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n#observation-container{\n\t\theight: 70vh;\n\t\toverflow-y: scroll;\n\t\t/*overflow-x: hidden;*/\n\t\tdisplay: grid;\n\t\tgap: 10px;\n\t\tgrid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n\t\tgrid-template-rows: masonry;\n}\n#observation-container div{\n\t\t/*max-height: 200px;*/\n\t\tmargin: auto;\n}\n@media screen and (max-width: 800px) {\n#locations-tab {\n  \t\t\tgrid-template-columns: repeat(1, 1fr);\n\t\t\t/*flex-direction: column;*/\n}\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -75685,59 +75786,67 @@ var render = function() {
             "ui-tab",
             {
               key: tab.title,
-              staticClass: "overflow-div",
-              attrs: { selected: tab.title === "Location", title: tab.title }
+              attrs: {
+                selected: tab.title === "Observations",
+                title: tab.title
+              }
             },
             [
               tab.title == "Users"
                 ? _c("div", [
-                    _c("table", { staticClass: "table table-sm" }, [
-                      _c("thead", [
-                        _c("tr", [
-                          _c("th", [_vm._v("Sl No")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("User ID")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("User Name")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Observations")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("State")])
-                        ])
-                      ]),
-                      _vm._v(" "),
+                    _c("div", { attrs: { id: "users-table-container" } }, [
                       _c(
-                        "tbody",
-                        _vm._l(_vm.userTableData, function(u, id) {
-                          return _c(
-                            "tr",
-                            { class: _vm.userTableRowClass(id) },
-                            [
-                              _c("td", {
-                                domProps: { textContent: _vm._s(id + 1) }
-                              }),
+                        "table",
+                        { staticClass: "table table-sm tableFixHead" },
+                        [
+                          _c("thead", { staticClass: "table-secondary" }, [
+                            _c("tr", [
+                              _c("th", [_vm._v("Sl No")]),
                               _vm._v(" "),
-                              _c("td", {
-                                domProps: { textContent: _vm._s(u.id) }
-                              }),
+                              _c("th", [_vm._v("User ID")]),
                               _vm._v(" "),
-                              _c("td", {
-                                domProps: { textContent: _vm._s(u.name) }
-                              }),
+                              _c("th", [_vm._v("User Name")]),
                               _vm._v(" "),
-                              _c("td", {
-                                domProps: {
-                                  textContent: _vm._s(u.observations)
-                                }
-                              }),
+                              _c("th", [_vm._v("Observations")]),
                               _vm._v(" "),
-                              _c("td", {
-                                domProps: { textContent: _vm._s(u.state) }
-                              })
-                            ]
+                              _c("th", [_vm._v("State")])
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "tbody",
+                            _vm._l(_vm.userTableData, function(u, id) {
+                              return _c(
+                                "tr",
+                                { class: _vm.userTableRowClass(id) },
+                                [
+                                  _c("td", {
+                                    domProps: { textContent: _vm._s(id + 1) }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("td", {
+                                    domProps: { textContent: _vm._s(u.id) }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("td", {
+                                    domProps: { textContent: _vm._s(u.name) }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("td", {
+                                    domProps: {
+                                      textContent: _vm._s(u.observations)
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("td", {
+                                    domProps: { textContent: _vm._s(u.state) }
+                                  })
+                                ]
+                              )
+                            }),
+                            0
                           )
-                        }),
-                        0
+                        ]
                       )
                     ])
                   ])
@@ -75753,39 +75862,36 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               tab.title == "Location"
-                ? _c("div", { staticClass: "d-flex flex-row" }, [
+                ? _c("div", { attrs: { id: "locations-tab" } }, [
                     _c("div", {
                       staticClass: "svg-container flex-grow-1",
                       attrs: { id: "map-container" }
                     }),
                     _vm._v(" "),
-                    _vm.selected_state != ""
-                      ? _c(
+                    _c(
+                      "div",
+                      {
+                        class: _vm.selected_state != "" ? "flex-grow-1" : "",
+                        attrs: { id: "map-data-table" }
+                      },
+                      [
+                        _c(
+                          "div",
+                          { staticClass: "h1 text-center p-2 bg-info" },
+                          [_vm._v(_vm._s(_vm.selected_state))]
+                        ),
+                        _vm._v(" "),
+                        _c(
                           "div",
                           {
-                            class:
-                              _vm.selected_state != "" ? "flex-grow-1" : "",
-                            attrs: { id: "map-data-table" }
+                            staticClass:
+                              "d-flex justify-content-around text-center"
                           },
                           [
-                            _c(
-                              "div",
-                              {
-                                staticClass: "h1 text-center mt-5 p-2 bg-info"
-                              },
-                              [_vm._v(_vm._s(_vm.selected_state) + " Data")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "d-flex justify-content-around text-center"
-                              },
-                              [
-                                _c("table", { staticClass: "table" }, [
-                                  _c("tbody", [
-                                    _c("tr", [
+                            _c("table", { staticClass: "table" }, [
+                              _c("tbody", [
+                                _vm.selected_state != ""
+                                  ? _c("tr", [
                                       _c("td", {
                                         staticClass: "display-4",
                                         domProps: {
@@ -75815,65 +75921,144 @@ var render = function() {
                                           )
                                         }
                                       })
-                                    ]),
-                                    _c("tr", [
-                                      _c("td", { staticClass: "h1" }, [
-                                        _vm._v("Observations")
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("td", { staticClass: "h1" }, [
-                                        _vm._v("Users")
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("td", { staticClass: "h1" }, [
-                                        _vm._v("Unique Taxa")
-                                      ])
                                     ])
-                                  ])
-                                ])
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c("table", { staticClass: "table" }, [
-                              _c("thead", [
+                                  : _vm._e(),
                                 _c("tr", [
-                                  _c("th", [_vm._v("Taxa Name")]),
+                                  _c("td", { staticClass: "h1" }, [
+                                    _vm._v("Observations")
+                                  ]),
                                   _vm._v(" "),
-                                  _c("th", [_vm._v("Observations")]),
+                                  _c("td", { staticClass: "h1" }, [
+                                    _vm._v("Users")
+                                  ]),
                                   _vm._v(" "),
-                                  _c("th", [_vm._v("Users")])
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "tbody",
-                                _vm._l(_vm.stateSpeciesList, function(row) {
-                                  return _c("tr", [
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.name)
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.count)
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.users.size)
-                                      }
-                                    })
+                                  _c("td", { staticClass: "h1" }, [
+                                    _vm._v("Unique Taxa")
                                   ])
-                                }),
-                                0
-                              )
+                                ])
+                              ])
                             ])
                           ]
-                        )
-                      : _vm._e()
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "species-data-table" }, [
+                          _vm.selected_state == "All"
+                            ? _c(
+                                "table",
+                                {
+                                  staticClass:
+                                    "table tableFixHead all-states-table"
+                                },
+                                [
+                                  _c(
+                                    "thead",
+                                    { staticClass: "table-secondary" },
+                                    [
+                                      _c("tr", [
+                                        _c("th", [_vm._v("State")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Observations")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Unique Taxa")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Users")])
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tbody",
+                                    _vm._l(_vm.statesTableData, function(row) {
+                                      return _c(
+                                        "tr",
+                                        {
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.selectState(row.state)
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.state)
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(
+                                                row.observations
+                                              )
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.species)
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.users)
+                                            }
+                                          })
+                                        ]
+                                      )
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                            : _c(
+                                "table",
+                                { staticClass: "table tableFixHead" },
+                                [
+                                  _c(
+                                    "thead",
+                                    { staticClass: "table-secondary" },
+                                    [
+                                      _c("tr", [
+                                        _c("th", [_vm._v("Taxa Name")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Observations")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Users")])
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tbody",
+                                    _vm._l(_vm.stateSpeciesList, function(row) {
+                                      return _c("tr", [
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.name)
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.count)
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.users.size)
+                                          }
+                                        })
+                                      ])
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                        ])
+                      ]
+                    )
                   ])
                 : _vm._e(),
               _vm._v(" "),
@@ -75883,6 +76068,24 @@ var render = function() {
                       staticClass: "svg-container",
                       attrs: { id: "taxonomy-chart-continer" }
                     })
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              tab.title == "Observations"
+                ? _c("div", [
+                    _c(
+                      "div",
+                      { attrs: { id: "observation-container" } },
+                      _vm._l(_vm.filteredObservations, function(o) {
+                        return _c("div", { staticClass: "brick" }, [
+                          _c("img", {
+                            staticClass: "img-fluid",
+                            attrs: { src: _vm.imgUrl(o.img_url) }
+                          })
+                        ])
+                      }),
+                      0
+                    )
                   ])
                 : _vm._e()
             ]
