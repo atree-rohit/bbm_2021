@@ -27,6 +27,25 @@
 		height: 70vh;
 		overflow-y: scroll;
 	}
+	#users-table-container tbody tr:hover {
+		background: #ffd !important;
+		cursor: pointer;
+	}
+	#users-table-container .user-selected {
+		background: #080;
+		color: #ffa;
+		font-weight: 600;
+	}
+	#users-table-container .first-10 {
+		background: #d7f3e3;
+	}
+	#users-table-container .second-50 {
+		background: #e2f0fb;
+	}
+	#users-table-container .third-100 {
+		background: #fdd;
+	}
+
 	#date-chart-continer svg g rect,
 	.map-boundary path,
 	.map-points circle,
@@ -94,22 +113,96 @@
 	#observation-container{
 		height: 70vh;
 		overflow-y: scroll;
-		/*overflow-x: hidden;*/
-		display: grid;
-		gap: 10px;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		grid-template-rows: masonry;
 	}
-	#observation-container div{
-		/*max-height: 200px;*/
-		margin: auto;
+	#gallery{
+		/* Prevent vertical gaps */
+		/*line-height: 0;*/
+
+		-webkit-column-count: 6;
+		-webkit-column-gap:   2px;
+		-moz-column-count:    6;
+		-moz-column-gap:      2px;
+		column-count:         6;
+		column-gap:           2px;  
+	}
+
+	#gallery div {
+		/* Just in case there are inline attributes */
+		width: 100% !important;
+		height: auto !important;
+		margin: 2px;
+	}
+	.observation-img{
+		position: relative;
+	}
+	.observation-img .gallery-item-overlay {
+		background: rgba(0,0,0,0.7);
+		position: absolute;
+		height: 99%;
+		width: 100%;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		opacity: 0;
+		-webkit-transition: all 0.3s ease-in-out 0s;
+		-moz-transition: all 0.3s ease-in-out 0s;
+		transition: all 0.3s ease-in-out 0s;
+	}
+
+	.observation-img:hover .gallery-item-overlay{
+		opacity: 1;
+	}
+
+	.observation-img .gallery-item-image{
+		width: 100%;
+	}
+
+	.observation-img .gallery-item-details {
+		position: absolute;
+		text-align: center;
+		padding-left: 1em;
+		padding-right: 1em;
+		width: 100%;
+		top: 180%;
+		left: 50%;
+		opacity: 0;
+		-webkit-transform: translate(-50%, -50%);
+		-moz-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		-webkit-transition: all 0.2s ease-in-out 0s;
+		-moz-transition: all 0.2s ease-in-out 0s;
+		transition: all 0.2s ease-in-out 0s;
+	}
+
+	.observation-img:hover .gallery-item-details{
+		top: 50%;
+		left: 50%;
+		opacity: 1;
+		color:  #aaa;
+	}
+
+	.table-sm{
+		padding: 1px;
+	}
+	.place-cell{
+		font-size: .8rem;
+	}
+	.gallery-table-title{
+		background: #330;
+		font-size: .9rem;
+		font-weight: 600;
 	}
 
 
 	@media screen and (max-width: 800px) {
-		#locations-tab {
-  			grid-template-columns: repeat(1, 1fr);
-			/*flex-direction: column;*/
+		#gallery {
+  			-webkit-column-count: 2;
+			-webkit-column-gap:   1px;
+			-moz-column-count:    2;
+			-moz-column-gap:      1px;
+			column-count:         2;
+			column-gap:           1px;  
 		}
 	}
 
@@ -120,15 +213,14 @@
 			:fullwidth="true"
 			:raised="true"
 			type="text"
-			@tab-change="changeTab"
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Observations'"
+				:selected="tab.title === 'Users'"
 				:title="tab.title"
 				v-for="tab in tabs"
 			>
-				<div v-if="tab.title=='Users'">
+				<div v-if="tab.title === 'Users'">
 					<div id="users-table-container">
 						<table class="table table-sm tableFixHead">
 							<thead class="table-secondary">
@@ -141,7 +233,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id)'>
+								<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
 									<td v-text="id + 1"></td>
 									<td v-text="u.id"></td>
 									<td v-text="u.name"></td>
@@ -155,6 +247,7 @@
 					</div>
 				</div>
 				<div v-if="tab.title=='Date'">
+					{{selected_dates}}
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Location'" id="locations-tab">
@@ -220,8 +313,36 @@
 				</div>
 				<div v-if="tab.title=='Observations'">
 					<div id="observation-container">
-						<div v-for="o in filteredObservations" class="brick">
-							<img :src="imgUrl(o.img_url)" class="img-fluid">
+						<div id="gallery">
+							<div v-for="o in filteredObservations">
+								<div class="observation-img">
+									 <div class="gallery-item-overlay"></div>
+									 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
+									 <div class="gallery-item-details">
+									 	<table class="table table-sm text-light">
+									 		<tbody>
+									 			<tr>
+									 				<td class='gallery-table-title'>Name</td><td v-text="speciesName(o.taxa_id)"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>User</td><td v-text="o.user_id"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>Date</td><td v-text="fullDate(o.inat_created_at)"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>Place</td><td class="place-cell" v-text="o.place_guess"></td>
+									 			</tr>
+									 			<tr>
+									 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
+									 			</tr>
+									 		</tbody>
+									 	</table>
+									 	
+									 </div>
+								</div>
+							</div>
+							
 						</div>
 					</div>
 				</div>
@@ -232,7 +353,7 @@
                 has-search
                 label="Select State"
                 placeholder="Select State"
-                :options="select_states"
+                :options="all_states"
                 v-model="set_state"
             ></ui-select>
             <ui-button color="green" raised @click="updateState">Submit</ui-button>
@@ -252,18 +373,24 @@ import country from '../country.json'
 			return{
 				user_data: {},
 				date_data: {},
-				date_table_data: [],
-				selected_dates: [],
 				state_data: {},
+
 				state_unmatched: [],
-				select_states: [],
-				selected_state: "All",
+				all_states: [],
 				set_state: "",
-				selected_point:  null,
 				state_max: 0,
-				species: {},
-				taxa_level: {},
+
+				selected_users: [],
+				selected_dates: [],
+				selected_state: "All",
+				selected_point:  null,
+				selected_taxa: '',
+				
+				date_table_data: [],
 				taxa_table_data: {},
+				stats: {},
+
+				taxa_level: {},
 				tabs: [
 					{title:"Users"},
 					{title:"Date"},
@@ -271,22 +398,19 @@ import country from '../country.json'
 					{title:"Taxonomy"},
 					{title:"Observations"},
 				],
-				taxa_levels_sequence: ['superfamily','family','subfamily','tribe','subtribe','genus','subgenus','species','subspecies','form'],
-				taxaFilteredObservations: {},
-				selected_taxa: '',
-				svg: null,
+				
 				svgWidth: window.innerWidth * 0.75,
 				svgHeight: window.innerHeight * 0.75,
 				tooltip: null,
-				stats: {},
-				observationsPerPage: 36,
+				
+				observationsPerPage: 100,
 				observationsPageNo: 1
 			}
 		},
 		created() {
+			this.init()
 		},
 		mounted() {
-			this.init()
 			this.renderMap()
 			this.renderDateChart()
 			this.renderTaxonomyChart()
@@ -296,16 +420,24 @@ import country from '../country.json'
 		computed:{
 			filteredObservations(){
 				let op = []
-				this.inat_data.forEach(o => {
-					if(o.state == this.selected_state || this.selected_state == "All"){
-						op.push(o)
-					}
-				})
 
+				//filter state state
+				if (this.selected_state === "All"){
+					op = this.inat_data
+				} else {
+					op = this.inat_data.filter(x => x.state === this.selected_state)
+				}
+
+				if(this.selected_users.length > 0){
+					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+
+				if(this.selected_dates.length > 0){
+					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
+				}				
 
 				op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 				return op
-
 			},
 			userTableData () {
 				let op = []
@@ -327,7 +459,6 @@ import country from '../country.json'
 				let op = []
 				let date_array = {}
 
-				console.log(this.selected_state)
 				this.inat_data.forEach( o => {
 					if(this.selected_state == "All" || this.selected_state == o.state) {
 						if(Object.keys(date_array).indexOf(o.inat_created_at) == -1){
@@ -338,16 +469,8 @@ import country from '../country.json'
 					}
 				})
 
-				Object.keys(date_array).forEach(d => {
-					if ((this.selected_dates.indexOf(this.selected_state.inat_created_at) != -1) || (this.selected_dates.length === 0)){
-						op.push({
-							name: d,
-							value: date_array[d]
-						})							
-					}
-				})
-				console.log("computed", op)
-
+				Object.keys(date_array).map(d => op.push({name: d, value: date_array[d]}))
+				
 				return op;
 			},
 			stateObservations () {
@@ -400,7 +523,7 @@ import country from '../country.json'
 			}
 		},
 		methods: {
-			updateState (){
+			updateState () {
 				const axios = require('axios');
 				let post_data = {
 					id: this.selected_point.id,
@@ -421,50 +544,79 @@ import country from '../country.json'
 						location.reload();
 					});
 			},
-			userTableRowClass(id){
+			setMissingState (p) {
+				this.inat_data.forEach(o =>{
+					if(o.id == p[2]){
+						this.selected_point = o
+						if(o.state == null){
+							this.set_state = ''
+						} else {
+							this.set_state = o.state
+						}
+					}
+				})
+				this.openModal('update-state-Modal')
+			},
+			seletUser(u){
+				var index = this.selected_users.indexOf(u.id);
+				if (index !== -1) {
+					this.selected_users.splice(index, 1);
+				} else {
+					this.selected_users.push(u.id)
+				}
+			},
+			userTableRowClass (id, u) {
 				let op = ""
-				if(id < 10){
-					op = "table-success"
-				} else if (id < 50){
-					op = "table-warning"
-				} else if (id < 100) {
-					op = "table-info"
+				if(this.selected_users.indexOf(u.id) !== -1){
+					op = "user-selected"
+				} else {
+					if(id < 10){
+						op = "first-10"
+					} else if (id < 50){
+						op = "second-50"
+					} else if (id < 100) {
+						op = "third-100"
+					}					
 				}
 				return op;
 			},
-			imgUrl(url){
-				return url.replace("square", "medium")
-				// return url
+			imgUrl (url) {
+				// let op = ""
+				let op = url.replace("square", "medium")
+				return op
 			},
-			taxaClick(t){
+			taxaClick (t) {
 				if(this.selected_taxa != t)
 					this.selected_taxa = t
 				else 
 					this.selected_taxa = '';
 			},
-			gotoObservation(o){
+			fullDate (d) {
+				let op = d.split("-")
+				op = `${op[0]} Sept, 21`
+				return op
+			},
+			speciesName (id) {
+				let op = this.inat_taxa[id].name
+				if (this.inat_taxa[id].common_name !== '' && this.inat_taxa[id].rank === 'species') {
+					op += ` ( ${this.inat_taxa[id].common_name} )`
+				}
+				return op
+			},
+			gotoObservation (o) {
 				let url = 'https://www.inaturalist.org/observations/' + o.id;
 				window.open(url, '_blank').focus();
 			},
-			changeTab(d){
-				// d3.selectAll("svg").remove()
-				// switch(d.title){
-				// 	case "Date" : this.renderDateChart()
-				// 		break
-				// 	case "Location" :this.renderMap()
-				// 		break
-				// 	case "Taxonomy" :this.renderTaxonomyChart()
-				// 		break
-				// }
-			},
-			renderDateChart(){
+			renderDateChart () {
 				let height = this.svgHeight/2
 				let width = this.svgWidth/0.9
 				let color = "steelblue"
 				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
+
 				if (!d3.select("#date-chart-continer svg").empty()) {
 					d3.selectAll("svg").remove()
 				}
+
 				let svg = d3.select("#date-chart-continer").append("svg")
   					.attr("viewBox", [0, 0, width, height]);
 
@@ -480,11 +632,6 @@ import country from '../country.json'
 						.classed("x-ticks", true)
 						.call(d3.axisBottom(x)
 							.tickFormat(i => this.date_table_data[i].name)
-								// let op = ""
-								// 	op = this.date_table_data[i].name
-								// if((i % 5) == 4){
-								// }
-								// return op
 							.tickSizeOuter(0))
 				let yAxis = g => g
 					    .attr("transform", `translate(${margin.left},0)`)
@@ -510,21 +657,22 @@ import country from '../country.json'
   					.join("rect")
   					.attr("x", (d, i) => x(i))
   					.attr("y", d => y(0))
-  					.attr("fill", "#6574cd")
+  					.attr("fill", d => (this.selected_dates.indexOf(d.name) !== -1)?"green":"#6574cd")
   					.attr("height", d => y(0) - y(d.value))
   					.attr("width", x.bandwidth())
   					.on('mouseover', function (d, i) {
   						that.tooltip.html(`<div>Date: ${d.name}</div><div>Observations: ${d.value}</div>`)
-  							.style('visibility', 'visible');
+  							.style('visibility', 'visible')
   						})
   					.on('mousemove', function () {
   						that.tooltip
   							.style('top', d3.event.pageY - 10 + 'px')
-  							.style('left', d3.event.pageX + 10 + 'px');
+  							.style('left', d3.event.pageX + 10 + 'px')
   						})
   					.on('mouseout', function () {
-  						that.tooltip.html(``).style('visibility', 'hidden');
-  					});
+  						that.tooltip.html(``).style('visibility', 'hidden')
+  						})
+  					.on("click", d => this.selectDate(d))
 
   				svg.append('g')
 					.attr('class', 'y-grid')
@@ -545,7 +693,16 @@ import country from '../country.json'
   				svg.append("g")
   					.call(yAxis);
 			},
-			renderMap() {
+			selectDate (d) {
+				var index = this.selected_dates.indexOf(d.name);
+				if (index !== -1) {
+					this.selected_dates.splice(index, 1);
+				} else {
+					this.selected_dates.push(d.name)
+				}
+				this.renderDateChart()
+			},
+			renderMap () {
 				let that = this
 				let height = this.svgHeight
 				let width = this.svgWidth
@@ -618,8 +775,7 @@ import country from '../country.json'
 					});
 				svg.call(zoom);
 
-				console.log("outside", this.selected_state)
-				// clicked({properties:{ST_NM: 'All'}})
+				clicked({properties:{ST_NM: 'All'}})
 				mapPoints()
 
 				function clicked(d) {
@@ -651,7 +807,6 @@ import country from '../country.json'
 					if (!d3.select("#map-container .map-points").empty()) {
 						d3.selectAll(".map-points").remove()
 					}
-					console.log("inside", that.selected_state)
 					let points = [];
 					if(that.selected_state == 'All'){
 						that.state_unmatched.forEach(o => {
@@ -678,7 +833,7 @@ import country from '../country.json'
 					}
 				}
 			},
-			renderTaxonomyChart(){
+			renderTaxonomyChart () {
 				let height = this.svgHeight / 1.75
 				let width = this.svgWidth
 				let margin = 40
@@ -745,7 +900,7 @@ import country from '../country.json'
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
 			},
-			selectState(s){
+			selectState (s) {
 				if (this.selected_state == s) {
 					this.selected_state = 'All'
 				} else {
@@ -753,26 +908,15 @@ import country from '../country.json'
 				}
 				// this.renderMap()
 			},
-			setMissingState (p) {
-				this.inat_data.forEach(o =>{
-					if(o.id == p[2]){
-						this.selected_point = o
-						if(o.state == null){
-							this.set_state = ''
-						} else {
-							this.set_state = o.state
-						}
-					}
-				})
-				this.openModal('update-state-Modal')
-			},
-			openModal(ref) {
+			openModal (ref) {
+				//
 				this.$refs[ref].open();
 			},
-			closeModal(ref) {
+			closeModal (ref) {
+				//
 				this.$refs[ref].close();
 			},
-			init(){
+			init () {
 				if (this.svgWidth > 800){
 					this.svgWidth = window.innerWidth / 2
 				}
@@ -852,9 +996,9 @@ import country from '../country.json'
 							    .style('border-radius', '4px')
 							    .style('color', '#fff')
 							    .text('a simple tooltip');
-				country.features.forEach(state=> {
-					this.select_states.push(state.properties.ST_NM)
-				})
+				
+				this.all_states = country.features.map(s => s.properties.ST_NM)
+				
 			}
 		}
 	};
