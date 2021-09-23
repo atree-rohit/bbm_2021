@@ -253,10 +253,11 @@ import country from '../country.json'
 				user_data: {},
 				date_data: {},
 				date_table_data: [],
+				selected_dates: [],
 				state_data: {},
 				state_unmatched: [],
 				select_states: [],
-				selected_state: "",
+				selected_state: "All",
 				set_state: "",
 				selected_point:  null,
 				state_max: 0,
@@ -287,8 +288,10 @@ import country from '../country.json'
 		mounted() {
 			this.init()
 			this.renderMap()
-			// this.renderDateChart()
-			// this.renderTaxonomyChart()
+			this.renderDateChart()
+			this.renderTaxonomyChart()
+
+			// console.log(this.dateTableData)
 		},
 		computed:{
 			filteredObservations(){
@@ -307,16 +310,45 @@ import country from '../country.json'
 			userTableData () {
 				let op = []
 				Object.keys(this.user_data).forEach(u => {
-					op.push({
-						id: u,
-						name: this.user_data[u][0].user_name,
-						observations: this.user_data[u].length,
-						state: this.user_data[u][0].state
-					})
+					if(this.selected_state === this.user_data[u][0].state || this.selected_state === 'All'){
+						op.push({
+							id: u,
+							name: this.user_data[u][0].user_name,
+							observations: this.user_data[u].length,
+							state: this.user_data[u][0].state
+						})						
+					}
 				})
 
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 				return op
+			},
+			dateTableData () {
+				let op = []
+				let date_array = {}
+
+				console.log(this.selected_state)
+				this.inat_data.forEach( o => {
+					if(this.selected_state == "All" || this.selected_state == o.state) {
+						if(Object.keys(date_array).indexOf(o.inat_created_at) == -1){
+							date_array[o.inat_created_at] = 1
+						} else {
+							date_array[o.inat_created_at]++
+						}
+					}
+				})
+
+				Object.keys(date_array).forEach(d => {
+					if ((this.selected_dates.indexOf(this.selected_state.inat_created_at) != -1) || (this.selected_dates.length === 0)){
+						op.push({
+							name: d,
+							value: date_array[d]
+						})							
+					}
+				})
+				console.log("computed", op)
+
+				return op;
 			},
 			stateObservations () {
 				let op = []
@@ -415,15 +447,15 @@ import country from '../country.json'
 				window.open(url, '_blank').focus();
 			},
 			changeTab(d){
-				d3.selectAll("svg").remove()
-				switch(d.title){
-					case "Date" : this.renderDateChart()
-						break
-					case "Location" :this.renderMap()
-						break
-					case "Taxonomy" :this.renderTaxonomyChart()
-						break
-				}
+				// d3.selectAll("svg").remove()
+				// switch(d.title){
+				// 	case "Date" : this.renderDateChart()
+				// 		break
+				// 	case "Location" :this.renderMap()
+				// 		break
+				// 	case "Taxonomy" :this.renderTaxonomyChart()
+				// 		break
+				// }
 			},
 			renderDateChart(){
 				let height = this.svgHeight/2
@@ -585,14 +617,16 @@ import country from '../country.json'
 							.attr("r", 2 / d3.event.transform.k);
 					});
 				svg.call(zoom);
-				clicked({properties:{ST_NM: ''}})
+
+				console.log("outside", this.selected_state)
+				// clicked({properties:{ST_NM: 'All'}})
 				mapPoints()
 
 				function clicked(d) {
 					let state = d.properties.ST_NM
 					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 				    states.transition().style("fill", null);
-					if(that.selected_state != ''){
+					if(that.selected_state != 'All'){
 						d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
 					}
 					if(that.selected_state == state){
@@ -612,12 +646,14 @@ import country from '../country.json'
 				    );
 					mapPoints()
 				}
+
 				function mapPoints(){
 					if (!d3.select("#map-container .map-points").empty()) {
 						d3.selectAll(".map-points").remove()
 					}
+					console.log("inside", that.selected_state)
 					let points = [];
-					if(that.selected_state == ''){
+					if(that.selected_state == 'All'){
 						that.state_unmatched.forEach(o => {
 							let coords = o.location.split(",")
 							points.push([coords[1], coords[0], o.id, o.place_guess]);
