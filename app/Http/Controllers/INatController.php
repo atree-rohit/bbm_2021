@@ -48,7 +48,7 @@ class INatController extends Controller
         $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->
                         limit(-1)
                         ->get()->toArray();
-        $inat_taxa = iNatTaxa::limit(10)->get();
+        $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("id");
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
             // if(date('D, d M', $timestamp) == "Tue, 31 Aug"){
