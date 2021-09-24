@@ -329,9 +329,8 @@
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
 					<div id="taxa-level-btns" class="text-center">
-						{{selected_taxa_levels}}<br>
-						<ui-button size="small" 
-							v-for="(t, tname) in taxa_table_data"
+						<ui-button size="small"
+							v-for="(t, tname) in taxaLevelCounts"
 							:key="tname"
 							:color="taxaLevelBtnClass(tname)"
 							:class=""
@@ -345,10 +344,10 @@
 				<div v-if="tab.title=='Observations'">
 					<div id="observation-container">
 						<div id="gallery">
-							<div v-for="o in filteredObservations">
+							<div v-for="(o, k) in filteredObservations" v-if="k < 100">
 								<div class="observation-img">
 									 <div class="gallery-item-overlay"></div>
-									 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
+									 <img class="gallery-item-image" :src="imgUrl(o.img_url)">
 									 <div class="gallery-item-details">
 									 	<table class="table table-sm text-light">
 									 		<tbody>
@@ -399,7 +398,7 @@ import * as d3Legend from "d3-svg-legend"
 import country from '../country.json'
 	export default {
 		name:"i-nat",
-		props: ["inat_data", "inat_taxa"],
+		props: ["inat_data", "inat_taxa", "inat_tree"],
 		data() {
 			return{
 				user_data: {},
@@ -419,10 +418,10 @@ import country from '../country.json'
 				selected_taxa: '',
 				
 				date_table_data: [],
-				taxa_table_data: {},
 				stats: {},
 
 				taxa_level: {},
+				taxa_tree: this.inat_tree,
 				tabs: [
 					{title:"Users"},
 					{title:"Date"},
@@ -445,7 +444,7 @@ import country from '../country.json'
 		mounted() {
 			this.renderMap()
 			this.renderDateChart()
-			this.renderTaxonomyChart()
+			// this.renderTaxonomyChart()
 		},
 		computed:{
 			filteredObservations(){
@@ -464,10 +463,13 @@ import country from '../country.json'
 
 				if(this.selected_dates.length > 0){
 					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}				
+				}
+				if(this.selected_taxa_levels.length > 0){
+					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+				}
 
 				op = op.reverse()
-				op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
+				// op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 				return op
 			},
 			userTableData () {
@@ -550,6 +552,17 @@ import country from '../country.json'
 					}
 				})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
+				return op
+			},
+			taxaLevelCounts () {
+				let op = {}
+				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
+				levels.forEach(t => {
+					op[t] = 0
+				})
+				this.filteredObservations.forEach(o => {
+					op[o.taxa_rank]++;
+				})
 				return op
 			}
 		},
@@ -944,28 +957,19 @@ import country from '../country.json'
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
 			},
-			selectTaxaLevel(tname){
+			selectTaxaLevel (tname) {
 				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
-				var index = this.selected_taxa_levels.indexOf(tname);
-				if(index !== -1){
-					//temporarly deselect everyting. 
-					// have to make it check if this is the lowest level selected
-					// if yes, then deselect.
-					// if no select down to this level
-
-					this.selected_taxa_levels.splice(index, 1);
-				} else {
-					this.selected_taxa_levels.push(tname)
-				}
+				var index = levels.indexOf(tname)
+				this.selected_taxa_levels = levels.filter((l,lid) => lid <= index)
 			},
-			taxaLevelBtnClass(tname){
+			taxaLevelBtnClass (tname) {
 				let op = "default"
 				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
 				// if (this.selected_taxa_levels.indexOf(tname)) {
 
 				// }
 				if (this.selected_taxa_levels.indexOf(tname) != -1) {
-					console.log("select-" + tname, this.selected_taxa_levels)
+					// console.log("select-" + tname, this.selected_taxa_levels)
 						op = "primary"
 
 				}
@@ -1024,14 +1028,13 @@ import country from '../country.json'
 						console.log("strange state name", o.state, o)
 					}
 
-
-
 					if(Object.keys(this.taxa_level).indexOf(o.taxa_rank) != -1){
 						this.taxa_level[o.taxa_rank].push(o)
 					} else {
 						this.$set(this.taxa_level,o.taxa_rank,[o])
 					}
 				});
+
 				Object.keys(this.state_data).forEach(s => {
 					if(this.state_data[s].length > this.state_max)
 						this.state_max = this.state_data[s].length;
@@ -1042,11 +1045,6 @@ import country from '../country.json'
 						name: d,
 						value: this.date_data[d].length
 					})
-				})
-
-				this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-				Object.keys(this.taxa_level).forEach(tl => {
-					this.taxa_table_data[tl] = this.taxa_level[tl].length
 				})
 				this.tooltip = d3.select('body')
 							    .append('div')
