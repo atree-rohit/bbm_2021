@@ -344,7 +344,7 @@
 				<div v-if="tab.title=='Observations'">
 					<div id="observation-container">
 						<div id="gallery">
-							<div v-for="(o, k) in filteredObservations" v-if="k < 100">
+							<div v-for="(o, k) in paginatedObservations" v-if="k < 100">
 								<div class="observation-img">
 									 <div class="gallery-item-overlay"></div>
 									 <img class="gallery-item-image" :src="imgUrl(o.img_url)">
@@ -372,7 +372,22 @@
 									 </div>
 								</div>
 							</div>
-							
+						</div>
+						<div class="text-center">
+							<ui-button size="small"
+								color="primary"
+								v-text="'Previous'"
+								@click="observationsPageNo--"
+								v-if="observationsPageNo > 1"
+							>
+							</ui-button>
+							{{observationsPageNo}}
+							<ui-button size="small"
+								color="primary"
+								v-text="'Next'"
+								@click="observationsPageNo++"
+							>
+							</ui-button>
 						</div>
 					</div>
 				</div>
@@ -469,8 +484,10 @@ import country from '../country.json'
 				}
 
 				op = op.reverse()
-				// op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 				return op
+			},
+			paginatedObservations()  {
+				return this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			userTableData () {
 				let op = []
