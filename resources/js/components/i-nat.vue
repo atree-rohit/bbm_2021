@@ -645,7 +645,9 @@ import country from '../country.json'
 				if (this.inat_taxa[id] !== undefined){
 					if (this.inat_taxa[id].common_name !== '' && this.inat_taxa[id].rank === 'species') {
 						op = `${this.inat_taxa[id].name} ( ${this.inat_taxa[id].common_name} )`
-					}					
+					} else {
+						op = this.inat_taxa[id].name
+					}
 				}
 				return op
 			},
