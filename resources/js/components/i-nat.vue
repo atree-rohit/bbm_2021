@@ -87,10 +87,23 @@
 		fill: red;
 	}
 	#locations-tab{
-		/*display: flex;
-		flex-direction: row;*/
 		display: grid;
   		grid-template-columns: repeat(2, 1fr);
+  		font-size: .8rem;
+  	}
+	.cards-table {
+		font-size: calc(1.5rem + 1.5vw);
+	}
+	.cards-table, 
+	.cards-table td{
+		padding: 0;
+		margin: 0;
+	}
+	.card-values{
+		font-size: calc(1rem + 1vw);
+	}
+	.map-data-title{
+		font-size: calc(1rem + 1vw);
 	}
 	.all-states-table tbody tr:hover{
 		background: #ffa;
@@ -196,6 +209,13 @@
 
 
 	@media screen and (max-width: 800px) {
+		.container-fluid,
+		.ui-tabs__body{
+			padding: 0;
+		}
+		#locations-tab{
+			grid-template-columns: repeat(1, 1fr);
+		}
 		#gallery {
   			-webkit-column-count: 2;
 			-webkit-column-gap:   1px;
@@ -216,7 +236,7 @@
 		>
 			<ui-tab
 				:key="tab.title"
-				:selected="tab.title === 'Users'"
+				:selected="tab.title === 'Taxonomy'"
 				:title="tab.title"
 				v-for="tab in tabs"
 			>
@@ -247,24 +267,23 @@
 					</div>
 				</div>
 				<div v-if="tab.title=='Date'">
-					{{selected_dates}}
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Location'" id="locations-tab">
-					<div id="map-container" class="svg-container flex-grow-1"></div>
-					<div id="map-data-table" :class="selected_state != ''?'flex-grow-1':''">
-						<div class="h1 text-center p-2 bg-info">{{selected_state}}</div>
+					<div id="map-container" class="svg-container"></div>
+					<div id="map-data-table">
+						<div class="text-center p-2 bg-info map-data-title">{{selected_state}}</div>
 						<div class="d-flex justify-content-around text-center">
-							<table class="table">
+							<table class="table cards-table">
 								<tbody>
-									<tr v-if="selected_state != ''">
-										<td class="display-4" v-text="stats[selected_state].observations"></td>
-										<td class="display-4" v-text="stats[selected_state].users.size"></td>
-										<td class="display-4" v-text="stats[selected_state].species.size"></td>
-									</tr><tr>
-										<td class="h1">Observations</td>
-										<td class="h1">Users</td>
-										<td class="h1">Unique Taxa</td>
+									<tr v-if="selected_state != ''"	>
+										<td v-text="stats[selected_state].observations"></td>
+										<td v-text="stats[selected_state].users.size"></td>
+										<td v-text="stats[selected_state].species.size"></td>
+									</tr><tr class="card-values">
+										<td>Observations</td>
+										<td>Users</td>
+										<td>Unique Taxa</td>
 									</tr>
 
 								</tbody>
@@ -309,6 +328,18 @@
 					</div>
 				</div>
 				<div v-if="tab.title=='Taxonomy'">
+					<div id="taxa-level-btns" class="text-center">
+						{{selected_taxa_levels}}<br>
+						<ui-button size="small" 
+							v-for="(t, tname) in taxa_table_data"
+							:key="tname"
+							:color="taxaLevelBtnClass(tname)"
+							:class=""
+							v-text="`${tname} (${t})`"
+							@click="selectTaxaLevel(tname)"
+						>
+						</ui-button>
+					</div>
 					<div id="taxonomy-chart-continer" class="svg-container"></div>
 				</div>
 				<div v-if="tab.title=='Observations'">
@@ -384,6 +415,7 @@ import country from '../country.json'
 				selected_dates: [],
 				selected_state: "All",
 				selected_point:  null,
+				selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
 				selected_taxa: '',
 				
 				date_table_data: [],
@@ -414,8 +446,6 @@ import country from '../country.json'
 			this.renderMap()
 			this.renderDateChart()
 			this.renderTaxonomyChart()
-
-			// console.log(this.dateTableData)
 		},
 		computed:{
 			filteredObservations(){
@@ -436,6 +466,7 @@ import country from '../country.json'
 					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
 				}				
 
+				op = op.reverse()
 				op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 				return op
 			},
@@ -597,9 +628,11 @@ import country from '../country.json'
 				return op
 			},
 			speciesName (id) {
-				let op = this.inat_taxa[id].name
-				if (this.inat_taxa[id].common_name !== '' && this.inat_taxa[id].rank === 'species') {
-					op += ` ( ${this.inat_taxa[id].common_name} )`
+				let op = ""
+				if (this.inat_taxa[id] !== undefined){
+					if (this.inat_taxa[id].common_name !== '' && this.inat_taxa[id].rank === 'species') {
+						op = `${this.inat_taxa[id].name} ( ${this.inat_taxa[id].common_name} )`
+					}					
 				}
 				return op
 			},
@@ -614,7 +647,7 @@ import country from '../country.json'
 				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
 
 				if (!d3.select("#date-chart-continer svg").empty()) {
-					d3.selectAll("svg").remove()
+					d3.selectAll("#date-chart-continer svg").remove()
 				}
 
 				let svg = d3.select("#date-chart-continer").append("svg")
@@ -706,10 +739,13 @@ import country from '../country.json'
 				let that = this
 				let height = this.svgHeight
 				let width = this.svgWidth
+				if(height > width){
+					height /= 3
+				}
 
 
 				if (!d3.select("#map-container svg").empty()) {
-					d3.selectAll("svg").remove()
+					d3.selectAll("#map-container svg").remove()
 				}
 				let svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
 					.attr("viewBox", [0,0, width, height])
@@ -833,8 +869,16 @@ import country from '../country.json'
 					}
 				}
 			},
+			selectState (s) {
+				if (this.selected_state == s) {
+					this.selected_state = 'All'
+				} else {
+					this.selected_state = s					
+				}
+				// this.renderMap()
+			},
 			renderTaxonomyChart () {
-				let height = this.svgHeight / 1.75
+				let height = this.svgHeight
 				let width = this.svgWidth
 				let margin = 40
 				let data = this.taxa_table_data
@@ -900,13 +944,32 @@ import country from '../country.json'
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
 			},
-			selectState (s) {
-				if (this.selected_state == s) {
-					this.selected_state = 'All'
+			selectTaxaLevel(tname){
+				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
+				var index = this.selected_taxa_levels.indexOf(tname);
+				if(index !== -1){
+					//temporarly deselect everyting. 
+					// have to make it check if this is the lowest level selected
+					// if yes, then deselect.
+					// if no select down to this level
+
+					this.selected_taxa_levels.splice(index, 1);
 				} else {
-					this.selected_state = s					
+					this.selected_taxa_levels.push(tname)
 				}
-				// this.renderMap()
+			},
+			taxaLevelBtnClass(tname){
+				let op = "default"
+				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
+				// if (this.selected_taxa_levels.indexOf(tname)) {
+
+				// }
+				if (this.selected_taxa_levels.indexOf(tname) != -1) {
+					console.log("select-" + tname, this.selected_taxa_levels)
+						op = "primary"
+
+				}
+				return op				
 			},
 			openModal (ref) {
 				//
@@ -981,9 +1044,9 @@ import country from '../country.json'
 					})
 				})
 
-				this.taxa_table_data = {}
+				this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
 				Object.keys(this.taxa_level).forEach(tl => {
-					this.taxa_table_data[tl] = Math.log(this.taxa_level[tl].length)
+					this.taxa_table_data[tl] = this.taxa_level[tl].length
 				})
 				this.tooltip = d3.select('body')
 							    .append('div')
@@ -998,7 +1061,6 @@ import country from '../country.json'
 							    .text('a simple tooltip');
 				
 				this.all_states = country.features.map(s => s.properties.ST_NM)
-				
 			}
 		}
 	};
