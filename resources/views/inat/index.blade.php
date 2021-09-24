@@ -8,7 +8,7 @@
 
 @section('content')
 <div id="app">
-	<i-nat :inat_data='@json($inat_data)' :inat_taxa='@json($inat_taxa)'></i-nat>
+	<i-nat :inat_data='@json($inat_data)' :inat_taxa='@json($inat_taxa)' :inat_tree='@json($inat_tree)'></i-nat>
 </div>
 <div class="text-center">
 	Last Updated at {{$last_update}}
