@@ -229,21 +229,49 @@
 </style>
 <template>
 	<div class="container-fluid">
-		<div id="locations-tab">
-			<ui-tabs
-				:fullwidth="true"
-				:raised="true"
-				type="text"
+		<ui-tabs
+			:fullwidth="true"
+			:raised="true"
+			type="text"
+		>
+			<ui-tab
+				:key="tab.title"
+				:selected="tab.title === 'Taxonomy'"
+				:title="tab.title"
+				v-for="tab in tabs"
 			>
-				<ui-tab
-					:key="tab.title"
-					:selected="tab.title === 'Location'"
-					:title="tab.title"
-					v-for="tab in tabs"
-				>
-
-					<div id="map-container" class="svg-container" v-if="tab.title === 'Location'"></div>
-					<div id="map-data-table" v-if="tab.title === 'Table'">
+				<div v-if="tab.title === 'Users'">
+					<div id="users-table-container">
+						<table class="table table-sm tableFixHead">
+							<thead class="table-secondary">
+								<tr>
+									<th>Sl No</th>
+									<th>User ID</th>
+									<th>User Name</th>
+									<th>Observations</th>
+									<th>State</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
+									<td v-text="id + 1"></td>
+									<td v-text="u.id"></td>
+									<td v-text="u.name"></td>
+									<td v-text="u.observations"></td>
+									<td v-text="u.state"></td>
+								</tr>
+							</tbody>
+							
+						</table>
+						
+					</div>
+				</div>
+				<div v-if="tab.title=='Date'">
+					<div id="date-chart-continer" class="svg-container"></div>
+				</div>
+				<div v-if="tab.title=='Location'" id="locations-tab">
+					<div id="map-container" class="svg-container"></div>
+					<div id="map-data-table">
 						<div class="text-center p-2 bg-info map-data-title">{{selected_state}}</div>
 						<div class="d-flex justify-content-around text-center">
 							<table class="table cards-table">
@@ -298,104 +326,59 @@
 							</table>
 						</div>
 					</div>
-					<div id="observations-continer"v-if="tab.title === 'Observations'">
-						Observations
+				</div>
+				<div v-if="tab.title=='Taxonomy'">
+					<div id="taxa-level-btns" class="text-center">
+						{{selected_taxa_levels}}<br>
+						<ui-button size="small" 
+							v-for="(t, tname) in taxa_table_data"
+							:key="tname"
+							:color="taxaLevelBtnClass(tname)"
+							:class=""
+							v-text="`${tname} (${t})`"
+							@click="selectTaxaLevel(tname)"
+						>
+						</ui-button>
 					</div>
-
-				</ui-tab>
-			</ui-tabs>
-			<div id="map-filters">
-				<ui-collapsible title="Users" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
-	                <div id="user-filter">
-						<div id="users-table-container">
-							<table class="table table-sm tableFixHead">
-								<thead class="table-secondary">
-									<tr>
-										<th>Sl No</th>
-										<th>User ID</th>
-										<th>User Name</th>
-										<th>Observations</th>
-										<th>State</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
-										<td v-text="id + 1"></td>
-										<td v-text="u.id"></td>
-										<td v-text="u.name"></td>
-										<td v-text="u.observations"></td>
-										<td v-text="u.state"></td>
-									</tr>
-								</tbody>
-								
-							</table>
+					<div id="taxonomy-chart-continer" class="svg-container"></div>
+				</div>
+				<div v-if="tab.title=='Observations'">
+					<div id="observation-container">
+						<div id="gallery">
+							<div v-for="o in filteredObservationsPaginated">
+								<div class="observation-img">
+									 <div class="gallery-item-overlay"></div>
+									 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
+									 <div class="gallery-item-details">
+									 	<table class="table table-sm text-light">
+									 		<tbody>
+									 			<tr>
+									 				<td class='gallery-table-title'>Name</td><td v-text="speciesName(o.taxa_id)"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>User</td><td v-text="o.user_id"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>Date</td><td v-text="fullDate(o.inat_created_at)"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-table-title'>Place</td><td class="place-cell" v-text="o.place_guess"></td>
+									 			</tr>
+									 			<tr>
+									 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
+									 			</tr>
+									 		</tbody>
+									 	</table>
+									 	
+									 </div>
+								</div>
+							</div>
 							
 						</div>
 					</div>
-	            </ui-collapsible>
-
-	            <ui-collapsible title="Upload Date" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
-	                <div id="date-filter">
-						<div id="date-chart-continer" class="svg-container"></div>
-					</div>
-	            </ui-collapsible>
-
-	            <ui-collapsible title="ID Level" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
-	                <div id="taxon-level-filter">
-						<div id="taxa-level-btns" class="text-center">
-							{{selected_taxa_levels}}<br>
-							<ui-button size="small" 
-								v-for="(t, tname) in taxa_table_data"
-								:key="tname"
-								:color="taxaLevelBtnClass(tname)"
-								:class=""
-								v-text="`${tname} (${t})`"
-								@click="selectTaxaLevel(tname)"
-							>
-							</ui-button>
-						</div>
-						<div id="taxonomy-chart-continer" class="svg-container"></div>
-					</div>
-	            </ui-collapsible>
-			</div>
-
-		</div>
-
-		<!-- <div >
-			<div id="observation-container">
-				<div id="gallery">
-					<div v-for="o in filteredObservationsPaginated">
-						<div class="observation-img">
-							 <div class="gallery-item-overlay"></div>
-							 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
-							 <div class="gallery-item-details">
-							 	<table class="table table-sm text-light">
-							 		<tbody>
-							 			<tr>
-							 				<td class='gallery-table-title'>Name</td><td v-text="speciesName(o.taxa_id)"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>User</td><td v-text="o.user_id"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>Date</td><td v-text="fullDate(o.inat_created_at)"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>Place</td><td class="place-cell" v-text="o.place_guess"></td>
-							 			</tr>
-							 			<tr>
-							 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
-							 			</tr>
-							 		</tbody>
-							 	</table>
-							 	
-							 </div>
-						</div>
-					</div>
-					
 				</div>
-			</div>
-		</div> -->
+			</ui-tab>
+		</ui-tabs>
 		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
 			 <ui-select
                 has-search
@@ -441,8 +424,10 @@ import country from '../country.json'
 
 				taxa_level: {},
 				tabs: [
+					{title:"Users"},
+					{title:"Date"},
 					{title:"Location"},
-					{title:"Table"},
+					{title:"Taxonomy"},
 					{title:"Observations"},
 				],
 				
@@ -451,12 +436,7 @@ import country from '../country.json'
 				tooltip: null,
 				
 				observationsPerPage: 100,
-				observationsPageNo: 1,
-				accordions: {
-					0: true,
-					1: false,
-					2: false
-				}
+				observationsPageNo: 1
 			}
 		},
 		created() {
@@ -473,9 +453,6 @@ import country from '../country.json'
 			dateTableData: function (val) {
 				this.renderDateChart();
 			},
-			// filteredObservations(){
-			// 	this.renderMap();
-			// }
 		},
 		computed:{
 			filteredObservations(){
@@ -590,14 +567,6 @@ import country from '../country.json'
 			},
 		},
 		methods: {
-			onAccordionOpen(id) {
-				Object.keys(this.accordions).forEach(key => {
-					this.accordions[key] = key == id; // eslint-disable-line eqeqeq
-				});
-			},
-			onAccordionClose(key) {
-				this.accordions[key] = false;
-			},
 			updateState () {
 				const axios = require('axios');
 				let post_data = {

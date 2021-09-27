@@ -2256,6 +2256,23 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2283,13 +2300,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       stats: {},
       taxa_level: {},
       tabs: [{
-        title: "Users"
-      }, {
-        title: "Date"
-      }, {
         title: "Location"
       }, {
-        title: "Taxonomy"
+        title: "Table"
       }, {
         title: "Observations"
       }],
@@ -2297,7 +2310,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       svgHeight: window.innerHeight * 0.75,
       tooltip: null,
       observationsPerPage: 100,
-      observationsPageNo: 1
+      observationsPageNo: 1,
+      accordions: {
+        0: true,
+        1: false,
+        2: false
+      }
     };
   },
   created: function created() {
@@ -2313,7 +2331,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   watch: {
     dateTableData: function dateTableData(val) {
       this.renderDateChart();
-    }
+    } // filteredObservations(){
+    // 	this.renderMap();
+    // }
+
   },
   computed: {
     filteredObservations: function filteredObservations() {
@@ -2443,6 +2464,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     }
   },
   methods: {
+    onAccordionOpen: function onAccordionOpen(id) {
+      var _this5 = this;
+
+      Object.keys(this.accordions).forEach(function (key) {
+        _this5.accordions[key] = key == id; // eslint-disable-line eqeqeq
+      });
+    },
+    onAccordionClose: function onAccordionClose(key) {
+      this.accordions[key] = false;
+    },
     updateState: function updateState() {
       var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
@@ -2462,16 +2493,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       });
     },
     setMissingState: function setMissingState(p) {
-      var _this5 = this;
+      var _this6 = this;
 
       this.inat_data.forEach(function (o) {
         if (o.id == p[2]) {
-          _this5.selected_point = o;
+          _this6.selected_point = o;
 
           if (o.state == null) {
-            _this5.set_state = '';
+            _this6.set_state = '';
           } else {
-            _this5.set_state = o.state;
+            _this6.set_state = o.state;
           }
         }
       });
@@ -2532,7 +2563,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       window.open(url, '_blank').focus();
     },
     renderDateChart: function renderDateChart() {
-      var _this6 = this;
+      var _this7 = this;
 
       var height = this.svgHeight / 2;
       var width = this.svgWidth / 0.9;
@@ -2556,15 +2587,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
       var xAxis = function xAxis(g) {
         return g.attr("transform", "translate(0,".concat(height - margin.bottom, ")")).classed("x-ticks", true).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(x).tickFormat(function (i) {
-          return _this6.dateTableData[i].name;
+          return _this7.dateTableData[i].name;
         }).tickSizeOuter(0));
       };
 
       var yAxis = function yAxis(g) {
-        return g.attr("transform", "translate(".concat(margin.left, ",0)")).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(y).ticks(null, _this6.dateTableData.format)).call(function (g) {
+        return g.attr("transform", "translate(".concat(margin.left, ",0)")).call(d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(y).ticks(null, _this7.dateTableData.format)).call(function (g) {
           return g.select(".domain").remove();
         }).call(function (g) {
-          return g.append("text").attr("x", -margin.left).attr("y", 10).attr("fill", "currentColor").attr("text-anchor", "start").text(_this6.dateTableData.y);
+          return g.append("text").attr("x", -margin.left).attr("y", 10).attr("fill", "currentColor").attr("text-anchor", "start").text(_this7.dateTableData.y);
         });
       };
 
@@ -2575,7 +2606,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }).attr("y", function (d) {
         return y(0);
       }).attr("fill", function (d) {
-        return _this6.selected_dates.indexOf(d.name) !== -1 ? "green" : "#6574cd";
+        return _this7.selected_dates.indexOf(d.name) !== -1 ? "green" : "#6574cd";
       }).attr("height", function (d) {
         return y(0) - y(d.value);
       }).attr("width", x.bandwidth()).on('mouseover', function (d, i) {
@@ -2585,7 +2616,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }).on('mouseout', function () {
         that.tooltip.html("").style('visibility', 'hidden');
       }).on("click", function (d) {
-        return _this6.selectDate(d);
+        return _this7.selectDate(d);
       });
       svg.append('g').attr('class', 'y-grid').attr('transform', 'translate(' + margin.left + ', 0)').call(yGrid);
       svg.selectAll("rect").transition().duration(400).attr("y", function (d) {
@@ -2610,7 +2641,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.renderDateChart();
     },
     renderMap: function renderMap() {
-      var _this7 = this;
+      var _this8 = this;
 
       var that = this;
       var height = this.svgHeight;
@@ -2635,7 +2666,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var states = base.append("g").classed("states", true);
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
-        var that = _this7;
+        var that = _this8;
         var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
           that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
@@ -2644,13 +2675,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
 
-        if (_this7.state_data[s_name] == undefined) {
+        if (_this8.state_data[s_name] == undefined) {
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this7.state_data[s_name].length);
+            return colors(_this8.state_data[s_name].length);
           });
         }
       });
@@ -2823,7 +2854,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.$refs[ref].close();
     },
     init: function init() {
-      var _this8 = this;
+      var _this9 = this;
 
       if (this.svgWidth > 800) {
         this.svgWidth = window.innerWidth / 2;
@@ -2835,56 +2866,56 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         species: new Set()
       };
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
-        _this8.state_data[s.properties.ST_NM] = [];
-        _this8.stats[s.properties.ST_NM] = {
+        _this9.state_data[s.properties.ST_NM] = [];
+        _this9.stats[s.properties.ST_NM] = {
           observations: 0,
           users: new Set(),
           species: new Set()
         };
       });
       this.inat_data.forEach(function (o) {
-        _this8.stats['All'].observations++;
+        _this9.stats['All'].observations++;
 
-        _this8.stats['All'].users.add(o.user_id);
+        _this9.stats['All'].users.add(o.user_id);
 
-        _this8.stats['All'].species.add(o.taxa_name);
+        _this9.stats['All'].species.add(o.taxa_name);
 
-        if (Object.keys(_this8.user_data).indexOf(o.user_id) != -1) {
-          _this8.user_data[o.user_id].push(o);
+        if (Object.keys(_this9.user_data).indexOf(o.user_id) != -1) {
+          _this9.user_data[o.user_id].push(o);
         } else {
-          _this8.$set(_this8.user_data, o.user_id, [o]);
+          _this9.$set(_this9.user_data, o.user_id, [o]);
         }
 
-        if (Object.keys(_this8.date_data).indexOf(o.inat_created_at) != -1) {
-          _this8.date_data[o.inat_created_at].push(o);
+        if (Object.keys(_this9.date_data).indexOf(o.inat_created_at) != -1) {
+          _this9.date_data[o.inat_created_at].push(o);
         } else {
-          _this8.$set(_this8.date_data, o.inat_created_at, [o]);
+          _this9.$set(_this9.date_data, o.inat_created_at, [o]);
         }
 
         if (o.state == null) {
-          _this8.state_unmatched.push(o);
-        } else if (Object.keys(_this8.state_data).indexOf(o.state) != -1) {
-          _this8.state_data[o.state].push(o);
+          _this9.state_unmatched.push(o);
+        } else if (Object.keys(_this9.state_data).indexOf(o.state) != -1) {
+          _this9.state_data[o.state].push(o);
 
-          _this8.stats[o.state].observations++;
+          _this9.stats[o.state].observations++;
 
-          _this8.stats[o.state].users.add(o.user_id);
+          _this9.stats[o.state].users.add(o.user_id);
 
-          _this8.stats[o.state].species.add(o.taxa_name);
+          _this9.stats[o.state].species.add(o.taxa_name);
         } else {
-          _this8.$set(_this8.state_data, o.state, [o]);
+          _this9.$set(_this9.state_data, o.state, [o]);
 
           console.log("strange state name", o.state, o);
         }
 
-        if (Object.keys(_this8.taxa_level).indexOf(o.taxa_rank) != -1) {
-          _this8.taxa_level[o.taxa_rank].push(o);
+        if (Object.keys(_this9.taxa_level).indexOf(o.taxa_rank) != -1) {
+          _this9.taxa_level[o.taxa_rank].push(o);
         } else {
-          _this8.$set(_this8.taxa_level, o.taxa_rank, [o]);
+          _this9.$set(_this9.taxa_level, o.taxa_rank, [o]);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
-        if (_this8.state_data[s].length > _this8.state_max) _this8.state_max = _this8.state_data[s].length;
+        if (_this9.state_data[s].length > _this9.state_max) _this9.state_max = _this9.state_data[s].length;
       });
       this.taxa_table_data = {
         superfamily: 0,
@@ -2899,7 +2930,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         form: 0
       };
       Object.keys(this.taxa_level).forEach(function (tl) {
-        _this8.taxa_table_data[tl] = _this8.taxa_level[tl].length;
+        _this9.taxa_table_data[tl] = _this9.taxa_level[tl].length;
       });
       this.tooltip = d3__WEBPACK_IMPORTED_MODULE_1__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
       this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_3__.features.map(function (s) {
@@ -76036,18 +76067,241 @@ var render = function() {
     { staticClass: "container-fluid" },
     [
       _c(
-        "ui-tabs",
-        { attrs: { fullwidth: true, raised: true, type: "text" } },
-        _vm._l(_vm.tabs, function(tab) {
-          return _c(
-            "ui-tab",
-            {
-              key: tab.title,
-              attrs: { selected: tab.title === "Taxonomy", title: tab.title }
-            },
+        "div",
+        { attrs: { id: "locations-tab" } },
+        [
+          _c(
+            "ui-tabs",
+            { attrs: { fullwidth: true, raised: true, type: "text" } },
+            _vm._l(_vm.tabs, function(tab) {
+              return _c(
+                "ui-tab",
+                {
+                  key: tab.title,
+                  attrs: {
+                    selected: tab.title === "Location",
+                    title: tab.title
+                  }
+                },
+                [
+                  tab.title === "Location"
+                    ? _c("div", {
+                        staticClass: "svg-container",
+                        attrs: { id: "map-container" }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  tab.title === "Table"
+                    ? _c("div", { attrs: { id: "map-data-table" } }, [
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "text-center p-2 bg-info map-data-title"
+                          },
+                          [_vm._v(_vm._s(_vm.selected_state))]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "d-flex justify-content-around text-center"
+                          },
+                          [
+                            _c("table", { staticClass: "table cards-table" }, [
+                              _c("tbody", [
+                                _vm.selected_state != ""
+                                  ? _c("tr", [
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(
+                                            _vm.stats[_vm.selected_state]
+                                              .observations
+                                          )
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(
+                                            _vm.stats[_vm.selected_state].users
+                                              .size
+                                          )
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(
+                                            _vm.stats[_vm.selected_state]
+                                              .species.size
+                                          )
+                                        }
+                                      })
+                                    ])
+                                  : _vm._e(),
+                                _c("tr", { staticClass: "card-values" }, [
+                                  _c("td", [_vm._v("Observations")]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v("Users")]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v("Unique Taxa")])
+                                ])
+                              ])
+                            ])
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "species-data-table" }, [
+                          _vm.selected_state == "All"
+                            ? _c(
+                                "table",
+                                {
+                                  staticClass:
+                                    "table tableFixHead all-states-table"
+                                },
+                                [
+                                  _c(
+                                    "thead",
+                                    { staticClass: "table-secondary" },
+                                    [
+                                      _c("tr", [
+                                        _c("th", [_vm._v("State")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Observations")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Unique Taxa")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Users")])
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tbody",
+                                    _vm._l(_vm.statesTableData, function(row) {
+                                      return _c(
+                                        "tr",
+                                        {
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.selectState(row.state)
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.state)
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(
+                                                row.observations
+                                              )
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.species)
+                                            }
+                                          }),
+                                          _vm._v(" "),
+                                          _c("td", {
+                                            domProps: {
+                                              textContent: _vm._s(row.users)
+                                            }
+                                          })
+                                        ]
+                                      )
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                            : _c(
+                                "table",
+                                { staticClass: "table tableFixHead" },
+                                [
+                                  _c(
+                                    "thead",
+                                    { staticClass: "table-secondary" },
+                                    [
+                                      _c("tr", [
+                                        _c("th", [_vm._v("Taxa Name")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Observations")]),
+                                        _vm._v(" "),
+                                        _c("th", [_vm._v("Users")])
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tbody",
+                                    _vm._l(_vm.stateSpeciesList, function(row) {
+                                      return _c("tr", [
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.name)
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.count)
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        _c("td", {
+                                          domProps: {
+                                            textContent: _vm._s(row.users.size)
+                                          }
+                                        })
+                                      ])
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  tab.title === "Observations"
+                    ? _c("div", { attrs: { id: "observations-continer" } }, [
+                        _vm._v("\n\t\t\t\t\t\tObservations\n\t\t\t\t\t")
+                      ])
+                    : _vm._e()
+                ]
+              )
+            }),
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { attrs: { id: "map-filters" } },
             [
-              tab.title === "Users"
-                ? _c("div", [
+              _c(
+                "ui-collapsible",
+                {
+                  attrs: { title: "Users", open: _vm.accordions[0] },
+                  on: {
+                    open: function($event) {
+                      return _vm.onAccordionOpen(0)
+                    },
+                    close: function($event) {
+                      return _vm.onAccordionClose(0)
+                    }
+                  }
+                },
+                [
+                  _c("div", { attrs: { id: "user-filter" } }, [
                     _c("div", { attrs: { id: "users-table-container" } }, [
                       _c(
                         "table",
@@ -76111,198 +76365,47 @@ var render = function() {
                       )
                     ])
                   ])
-                : _vm._e(),
+                ]
+              ),
               _vm._v(" "),
-              tab.title == "Date"
-                ? _c("div", [
+              _c(
+                "ui-collapsible",
+                {
+                  attrs: { title: "Upload Date", open: _vm.accordions[1] },
+                  on: {
+                    open: function($event) {
+                      return _vm.onAccordionOpen(1)
+                    },
+                    close: function($event) {
+                      return _vm.onAccordionClose(1)
+                    }
+                  }
+                },
+                [
+                  _c("div", { attrs: { id: "date-filter" } }, [
                     _c("div", {
                       staticClass: "svg-container",
                       attrs: { id: "date-chart-continer" }
                     })
                   ])
-                : _vm._e(),
+                ]
+              ),
               _vm._v(" "),
-              tab.title == "Location"
-                ? _c("div", { attrs: { id: "locations-tab" } }, [
-                    _c("div", {
-                      staticClass: "svg-container",
-                      attrs: { id: "map-container" }
-                    }),
-                    _vm._v(" "),
-                    _c("div", { attrs: { id: "map-data-table" } }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass: "text-center p-2 bg-info map-data-title"
-                        },
-                        [_vm._v(_vm._s(_vm.selected_state))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "d-flex justify-content-around text-center"
-                        },
-                        [
-                          _c("table", { staticClass: "table cards-table" }, [
-                            _c("tbody", [
-                              _vm.selected_state != ""
-                                ? _c("tr", [
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(
-                                          _vm.stats[_vm.selected_state]
-                                            .observations
-                                        )
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(
-                                          _vm.stats[_vm.selected_state].users
-                                            .size
-                                        )
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(
-                                          _vm.stats[_vm.selected_state].species
-                                            .size
-                                        )
-                                      }
-                                    })
-                                  ])
-                                : _vm._e(),
-                              _c("tr", { staticClass: "card-values" }, [
-                                _c("td", [_vm._v("Observations")]),
-                                _vm._v(" "),
-                                _c("td", [_vm._v("Users")]),
-                                _vm._v(" "),
-                                _c("td", [_vm._v("Unique Taxa")])
-                              ])
-                            ])
-                          ])
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "species-data-table" }, [
-                        _vm.selected_state == "All"
-                          ? _c(
-                              "table",
-                              {
-                                staticClass:
-                                  "table tableFixHead all-states-table"
-                              },
-                              [
-                                _c(
-                                  "thead",
-                                  { staticClass: "table-secondary" },
-                                  [
-                                    _c("tr", [
-                                      _c("th", [_vm._v("State")]),
-                                      _vm._v(" "),
-                                      _c("th", [_vm._v("Observations")]),
-                                      _vm._v(" "),
-                                      _c("th", [_vm._v("Unique Taxa")]),
-                                      _vm._v(" "),
-                                      _c("th", [_vm._v("Users")])
-                                    ])
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "tbody",
-                                  _vm._l(_vm.statesTableData, function(row) {
-                                    return _c(
-                                      "tr",
-                                      {
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.selectState(row.state)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.state)
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(
-                                              row.observations
-                                            )
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.species)
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.users)
-                                          }
-                                        })
-                                      ]
-                                    )
-                                  }),
-                                  0
-                                )
-                              ]
-                            )
-                          : _c("table", { staticClass: "table tableFixHead" }, [
-                              _c("thead", { staticClass: "table-secondary" }, [
-                                _c("tr", [
-                                  _c("th", [_vm._v("Taxa Name")]),
-                                  _vm._v(" "),
-                                  _c("th", [_vm._v("Observations")]),
-                                  _vm._v(" "),
-                                  _c("th", [_vm._v("Users")])
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "tbody",
-                                _vm._l(_vm.stateSpeciesList, function(row) {
-                                  return _c("tr", [
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.name)
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.count)
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c("td", {
-                                      domProps: {
-                                        textContent: _vm._s(row.users.size)
-                                      }
-                                    })
-                                  ])
-                                }),
-                                0
-                              )
-                            ])
-                      ])
-                    ])
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              tab.title == "Taxonomy"
-                ? _c("div", [
+              _c(
+                "ui-collapsible",
+                {
+                  attrs: { title: "ID Level", open: _vm.accordions[2] },
+                  on: {
+                    open: function($event) {
+                      return _vm.onAccordionOpen(2)
+                    },
+                    close: function($event) {
+                      return _vm.onAccordionClose(2)
+                    }
+                  }
+                },
+                [
+                  _c("div", { attrs: { id: "taxon-level-filter" } }, [
                     _c(
                       "div",
                       {
@@ -76311,7 +76414,7 @@ var render = function() {
                       },
                       [
                         _vm._v(
-                          "\n\t\t\t\t\t\t" + _vm._s(_vm.selected_taxa_levels)
+                          "\n\t\t\t\t\t\t\t" + _vm._s(_vm.selected_taxa_levels)
                         ),
                         _c("br"),
                         _vm._v(" "),
@@ -76341,145 +76444,12 @@ var render = function() {
                       attrs: { id: "taxonomy-chart-continer" }
                     })
                   ])
-                : _vm._e(),
-              _vm._v(" "),
-              tab.title == "Observations"
-                ? _c("div", [
-                    _c("div", { attrs: { id: "observation-container" } }, [
-                      _c(
-                        "div",
-                        { attrs: { id: "gallery" } },
-                        _vm._l(_vm.filteredObservationsPaginated, function(o) {
-                          return _c("div", [
-                            _c("div", { staticClass: "observation-img" }, [
-                              _c("div", {
-                                staticClass: "gallery-item-overlay"
-                              }),
-                              _vm._v(" "),
-                              _c("img", {
-                                staticClass: "gallery-item-image",
-                                attrs: { src: _vm.imgUrl(o.img_url) }
-                              }),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "gallery-item-details" },
-                                [
-                                  _c(
-                                    "table",
-                                    {
-                                      staticClass: "table table-sm text-light"
-                                    },
-                                    [
-                                      _c("tbody", [
-                                        _c("tr", [
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass: "gallery-table-title"
-                                            },
-                                            [_vm._v("Name")]
-                                          ),
-                                          _c("td", {
-                                            domProps: {
-                                              textContent: _vm._s(
-                                                _vm.speciesName(o.taxa_id)
-                                              )
-                                            }
-                                          })
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("tr", [
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass: "gallery-table-title"
-                                            },
-                                            [_vm._v("User")]
-                                          ),
-                                          _c("td", {
-                                            domProps: {
-                                              textContent: _vm._s(o.user_id)
-                                            }
-                                          })
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("tr", [
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass: "gallery-table-title"
-                                            },
-                                            [_vm._v("Date")]
-                                          ),
-                                          _c("td", {
-                                            domProps: {
-                                              textContent: _vm._s(
-                                                _vm.fullDate(o.inat_created_at)
-                                              )
-                                            }
-                                          })
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("tr", [
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass: "gallery-table-title"
-                                            },
-                                            [_vm._v("Place")]
-                                          ),
-                                          _c("td", {
-                                            staticClass: "place-cell",
-                                            domProps: {
-                                              textContent: _vm._s(o.place_guess)
-                                            }
-                                          })
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("tr", [
-                                          _c(
-                                            "td",
-                                            { attrs: { colspan: "2" } },
-                                            [
-                                              _c(
-                                                "ui-button",
-                                                {
-                                                  attrs: {
-                                                    color: "green",
-                                                    size: "small",
-                                                    raised: ""
-                                                  },
-                                                  on: {
-                                                    click: function($event) {
-                                                      return _vm.gotoObservation(
-                                                        o
-                                                      )
-                                                    }
-                                                  }
-                                                },
-                                                [_vm._v("Go to Observation")]
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ])
-                                      ])
-                                    ]
-                                  )
-                                ]
-                              )
-                            ])
-                          ])
-                        }),
-                        0
-                      )
-                    ])
-                  ])
-                : _vm._e()
-            ]
+                ]
+              )
+            ],
+            1
           )
-        }),
+        ],
         1
       ),
       _vm._v(" "),
