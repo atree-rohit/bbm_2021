@@ -7,7 +7,7 @@
 
 	html {
 	    font-size: 100%;
-	    overflow: hidden;
+	    /*overflow: hidden;*/
 	}
 
 	.ui-tabs > div, 
@@ -123,7 +123,7 @@
 		z-index: 1;
 	}
 
-	#observation-container{
+	#observations-container {
 		height: 70vh;
 		overflow-y: scroll;
 	}
@@ -131,12 +131,13 @@
 		/* Prevent vertical gaps */
 		/*line-height: 0;*/
 
-		-webkit-column-count: 6;
+		-webkit-column-count: 3;
 		-webkit-column-gap:   2px;
-		-moz-column-count:    6;
+		-moz-column-count:    3;
 		-moz-column-gap:      2px;
-		column-count:         6;
+		column-count:         3;
 		column-gap:           2px;  
+		overflow-y: scroll;
 	}
 
 	#gallery div {
@@ -195,16 +196,18 @@
 		color:  #aaa;
 	}
 
-	.table-sm{
+	.gallery-item-details .table-sm,
+	.gallery-item-details tr,
+	.gallery-item-details td
+	{
 		padding: 1px;
+		margin: 0;
 	}
 	.place-cell{
-		font-size: .8rem;
+		font-size: .6rem;
 	}
-	.gallery-table-title{
-		background: #330;
+	.gallery-caption-icon{
 		font-size: .9rem;
-		font-weight: 600;
 	}
 
 
@@ -225,7 +228,6 @@
 			column-gap:           1px;  
 		}
 	}
-
 </style>
 <template>
 	<div class="container-fluid">
@@ -234,6 +236,7 @@
 				:fullwidth="true"
 				:raised="true"
 				type="text"
+				backgroundColor="clear"
 			>
 				<ui-tab
 					:key="tab.title"
@@ -241,7 +244,6 @@
 					:title="tab.title"
 					v-for="tab in tabs"
 				>
-
 					<div id="map-container" class="svg-container" v-if="tab.title === 'Location'"></div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
 						<div class="text-center p-2 bg-info map-data-title">{{selected_state}}</div>
@@ -249,9 +251,9 @@
 							<table class="table cards-table">
 								<tbody>
 									<tr v-if="selected_state != ''"	>
-										<td v-text="stats[selected_state].observations"></td>
-										<td v-text="stats[selected_state].users.size"></td>
-										<td v-text="stats[selected_state].species.size"></td>
+										<td v-text="stateStats[selected_state].observationsa"></t d>
+										<td v-text="stateStats[selected_state].users.size"></td>
+										<td v-text="stateStats[selected_state].species.size"></td>
 									</tr><tr class="card-values">
 										<td>Observations</td>
 										<td>Users</td>
@@ -274,7 +276,7 @@
 								<tbody>
 									<tr v-for="row in statesTableData" @click='selectState(row.state)'>
 										<td v-text="row.state"></td>
-										<td v-text="row.observations"></td>
+										<td v-text="row.observations"></t d>
 										<td v-text="row.species"></td>
 										<td v-text="row.users"></td>
 									</tr>
@@ -298,15 +300,62 @@
 							</table>
 						</div>
 					</div>
-<<<<<<< HEAD
-					<div id="observations-continer"v-if="tab.title === 'Observations'">
-						Observations
-					</div>
+					<div id="observations-container" v-if="tab.title === 'Observations'">
+						<div id="gallery">
+							<div v-for="o in filteredObservationsPaginated">
+								<div class="observation-img">
+									 <div class="gallery-item-overlay"></div>
+									 <img class="gallery-item-image" :src="imgUrl(o.img_url)">
+									 <div class="gallery-item-details">
+									 	<table class="table table-sm text-light">
+									 		<tbody>
+									 			<tr>
+									 				<td class='gallery-caption-icon'>
+									 					<span class="material-icons">
+									 						badge
+									 					</span>
+									 				</td>
+								 					<td v-text="speciesName(o.taxa_id)">
 
+									 				</td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-caption-icon'>
+									 					<span class="material-icons">
+									 						person
+									 					</span>
+									 				</td>
+									 				<td v-text="o.user_id"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-caption-icon'>
+									 					<span class="material-icons">
+									 						calendar_today
+									 					</span>
+									 				</td><td v-text="fullDate(o.inat_created_at)"></td>
+									 			</tr>
+									 			<tr>
+									 				<td class='gallery-caption-icon'>
+									 					<span class="material-icons">
+															place
+														</span>
+									 				</td><td class="place-cell" v-text="o.place_guess"></td>
+									 			</tr>
+									 			<tr>
+									 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
+									 			</tr>
+									 		</tbody>
+									 	</table>
+
+									 </div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</ui-tab>
 			</ui-tabs>
 			<div id="map-filters">
-				<ui-collapsible title="Users" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+				<ui-collapsible :disableRipple="true" title="Users" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
 	                <div id="user-filter">
 						<div id="users-table-container">
 							<table class="table table-sm tableFixHead">
@@ -328,139 +377,40 @@
 										<td v-text="u.state"></td>
 									</tr>
 								</tbody>
-								
+
 							</table>
-							
-=======
-				</div>
-				<div v-if="tab.title=='Taxonomy'">
-					<div id="taxa-level-btns" class="text-center">
-						<ui-button size="small"
-							v-for="(t, tname) in taxaLevelCounts"
-							:key="tname"
-							:color="taxaLevelBtnClass(tname)"
-							:class=""
-							v-text="`${tname} (${t})`"
-							@click="selectTaxaLevel(tname)"
-						>
-						</ui-button>
-					</div>
-					<div id="taxonomy-chart-continer" class="svg-container"></div>
-				</div>
-				<div v-if="tab.title=='Observations'">
-					<div id="observation-container">
-						<div id="gallery">
-							<div v-for="(o, k) in paginatedObservations" v-if="k < 100">
-								<div class="observation-img">
-									 <div class="gallery-item-overlay"></div>
-									 <img class="gallery-item-image" :src="imgUrl(o.img_url)">
-									 <div class="gallery-item-details">
-									 	<table class="table table-sm text-light">
-									 		<tbody>
-									 			<tr>
-									 				<td class='gallery-table-title'>Name</td><td v-text="speciesName(o.taxa_id)"></td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-table-title'>User</td><td v-text="o.user_id"></td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-table-title'>Date</td><td v-text="fullDate(o.inat_created_at)"></td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-table-title'>Place</td><td class="place-cell" v-text="o.place_guess"></td>
-									 			</tr>
-									 			<tr>
-									 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
-									 			</tr>
-									 		</tbody>
-									 	</table>
-									 	
-									 </div>
-								</div>
-							</div>
-						</div>
-						<div class="text-center">
-							<ui-button size="small"
-								color="primary"
-								v-text="'Previous'"
-								@click="observationsPageNo--"
-								v-if="observationsPageNo > 1"
-							>
-							</ui-button>
-							{{observationsPageNo}}
-							<ui-button size="small"
-								color="primary"
-								v-text="'Next'"
-								@click="observationsPageNo++"
-							>
-							</ui-button>
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
 						</div>
 					</div>
 	            </ui-collapsible>
 
-	            <ui-collapsible title="Upload Date" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+	            <ui-collapsible :disableRipple="true" title="Upload Date" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
 	                <div id="date-filter">
 						<div id="date-chart-continer" class="svg-container"></div>
 					</div>
 	            </ui-collapsible>
 
-	            <ui-collapsible title="ID Level" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+	            <ui-collapsible :disableRipple="true" title="ID Level" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
 	                <div id="taxon-level-filter">
-						<div id="taxa-level-btns" class="text-center">
-							{{selected_taxa_levels}}<br>
-							<ui-button size="small" 
+						<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
+							<button
 								v-for="(t, tname) in taxa_table_data"
+								class="btn m-2"
 								:key="tname"
-								:color="taxaLevelBtnClass(tname)"
-								:class=""
+								:class="taxaLevelBtnClass(tname)"
 								v-text="`${tname} (${t})`"
 								@click="selectTaxaLevel(tname)"
 							>
-							</ui-button>
+							</button>
 						</div>
-						<div id="taxonomy-chart-continer" class="svg-container"></div>
+						<!-- <div id="taxonomy-chart-continer" class="svg-container"></div> -->
 					</div>
 	            </ui-collapsible>
-			</div>
 
+	            <ui-collapsible :disableRipple="true" title="Taxon" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
+	                Taxonomy
+	            </ui-collapsible>
+			</div>
 		</div>
-
-		<!-- <div >
-			<div id="observation-container">
-				<div id="gallery">
-					<div v-for="o in filteredObservationsPaginated">
-						<div class="observation-img">
-							 <div class="gallery-item-overlay"></div>
-							 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
-							 <div class="gallery-item-details">
-							 	<table class="table table-sm text-light">
-							 		<tbody>
-							 			<tr>
-							 				<td class='gallery-table-title'>Name</td><td v-text="speciesName(o.taxa_id)"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>User</td><td v-text="o.user_id"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>Date</td><td v-text="fullDate(o.inat_created_at)"></td>
-							 			</tr>
-							 			<tr>
-							 				<td class='gallery-table-title'>Place</td><td class="place-cell" v-text="o.place_guess"></td>
-							 			</tr>
-							 			<tr>
-							 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
-							 			</tr>
-							 		</tbody>
-							 	</table>
-							 	
-							 </div>
-						</div>
-					</div>
-					
-				</div>
-			</div>
-		</div> -->
 		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
 			 <ui-select
                 has-search
@@ -520,7 +470,8 @@ import country from '../country.json'
 				accordions: {
 					0: true,
 					1: false,
-					2: false
+					2: false,
+					3: false,
 				}
 			}
 		},
@@ -530,21 +481,21 @@ import country from '../country.json'
 		mounted() {
 			this.renderMap()
 			this.renderDateChart()
-<<<<<<< HEAD
-			this.renderTaxonomyChart()
-			console.log(this.dateTableData)
-			console.log(this.date_table_data)
+			// this.renderTaxonomyChart()
 		},
 		watch: {
 			dateTableData: function (val) {
 				this.renderDateChart();
 			},
-			// filteredObservations(){
-			// 	this.renderMap();
-			// }
-=======
-			// this.renderTaxonomyChart()
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
+			selected_users(){
+				this.renderMap();
+			},
+			selected_dates(){
+				this.renderMap();
+			},
+			selected_taxa_levels(){
+				this.renderMap();
+			},
 		},
 		computed:{
 			filteredObservations(){
@@ -564,23 +515,16 @@ import country from '../country.json'
 				if(this.selected_dates.length > 0){
 					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
 				}
-<<<<<<< HEAD
-=======
 				if(this.selected_taxa_levels.length > 0){
 					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
 				}
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
 
 				op = op.reverse()
 				return op
 			},
-<<<<<<< HEAD
 			filteredObservationsPaginated(){
+				//
 				return  this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
-=======
-			paginatedObservations()  {
-				return this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
 			},
 			userTableData () {
 				let op = []
@@ -631,6 +575,36 @@ import country from '../country.json'
 				}
 				return op
 			},
+			stateData () {
+				let op = {}
+
+				country.features.forEach(s => {
+					op[s.properties.ST_NM] = [];
+				})
+				this.filteredObservations.forEach(o => {
+					op[o.state].push(o)
+				})
+				return op
+			},
+			stateStats () {
+				let op = {}
+				op['All'] = { observations: 0, users: new Set(), species: new Set() }
+				country.features.forEach(s => {
+					op[s.properties.ST_NM] = { observations: 0, users: new Set(), species: new Set() }
+				})
+
+				this.filteredObservations.forEach(o => {
+					// console.log(o.state)
+					op['All'].observations++
+					op['All'].users.add(o.user_id)
+					op['All'].species.add(o.taxa_name)
+					op[o.state].observations++
+					op[o.state].users.add(o.user_id)
+					op[o.state].species.add(o.taxa_name)
+				});
+
+				return op
+			},
 			stateSpeciesList () {
 				let op = []
 				this.stateObservations.forEach(o => {
@@ -668,8 +642,6 @@ import country from '../country.json'
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 				return op
 			},
-<<<<<<< HEAD
-=======
 			taxaLevelCounts () {
 				let op = {}
 				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
@@ -681,7 +653,6 @@ import country from '../country.json'
 				})
 				return op
 			}
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
 		},
 		methods: {
 			onAccordionOpen(id) {
@@ -690,6 +661,7 @@ import country from '../country.json'
 				});
 			},
 			onAccordionClose(key) {
+				//
 				this.accordions[key] = false;
 			},
 			updateState () {
@@ -883,7 +855,6 @@ import country from '../country.json'
 					height /= 3
 				}
 
-
 				if (!d3.select("#map-container svg").empty()) {
 					d3.selectAll("#map-container svg").remove()
 				}
@@ -931,10 +902,10 @@ import country from '../country.json'
 	  					.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
 	  					.on("click", clicked);
 
-					if(this.state_data[s_name] == undefined){
+					if(this.stateData[s_name] == undefined){
 						current_state.attr("fill", (d) => colors(-1))
 					} else {
-						current_state.attr("fill", (d) => colors(this.state_data[s_name].length))
+						current_state.attr("fill", (d) => colors(this.stateData[s_name].length))
 					}
 				})
 				let zoom = d3.zoom()
@@ -951,11 +922,11 @@ import country from '../country.json'
 					});
 				svg.call(zoom);
 
-				clicked({properties:{ST_NM: 'All'}})
-				mapPoints()
+				clicked({properties:{ST_NM: this.selected_state}})
 
 				function clicked(d) {
 					let state = d.properties.ST_NM
+					console.log(state);
 					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 				    states.transition().style("fill", null);
 					if(that.selected_state != 'All'){
@@ -1085,20 +1056,17 @@ import country from '../country.json'
 					.style("font-size", 15)
 			},
 			selectTaxaLevel (tname) {
-				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
-				var index = levels.indexOf(tname)
-				this.selected_taxa_levels = levels.filter((l,lid) => lid <= index)
+				let op = this.selected_taxa_levels.indexOf(tname)
+				if(op == -1){
+					this.selected_taxa_levels.push(tname)
+				} else {
+					this.selected_taxa_levels.splice(op, 1)
+				}
 			},
 			taxaLevelBtnClass (tname) {
-				let op = "default"
-				let levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
-				// if (this.selected_taxa_levels.indexOf(tname)) {
-
-				// }
+				let op = "btn-outline-secondary"
 				if (this.selected_taxa_levels.indexOf(tname) != -1) {
-					// console.log("select-" + tname, this.selected_taxa_levels)
-						op = "primary"
-
+						op = "btn-success"
 				}
 				return op				
 			},
@@ -1166,19 +1134,17 @@ import country from '../country.json'
 					if(this.state_data[s].length > this.state_max)
 						this.state_max = this.state_data[s].length;
 				})
-<<<<<<< HEAD
 
 				this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
 				Object.keys(this.taxa_level).forEach(tl => {
 					this.taxa_table_data[tl] = this.taxa_level[tl].length
-=======
+				})
 				this.date_table_data = []
 				Object.keys(this.date_data).forEach(d => {
 					this.date_table_data.push({
 						name: d,
 						value: this.date_data[d].length
 					})
->>>>>>> 7fa3e3fde45440581323e3537284e524e30f1d9e
 				})
 				this.tooltip = d3.select('body')
 							    .append('div')
