@@ -345,7 +345,7 @@
 				<div v-if="tab.title=='Observations'">
 					<div id="observation-container">
 						<div id="gallery">
-							<div v-for="o in filteredObservations">
+							<div v-for="o in filteredObservationsPaginated">
 								<div class="observation-img">
 									 <div class="gallery-item-overlay"></div>
 									 <img class="gallery-item-image" :src="imgUrl(o.img_url)"">
@@ -446,6 +446,13 @@ import country from '../country.json'
 			this.renderMap()
 			this.renderDateChart()
 			this.renderTaxonomyChart()
+			console.log(this.dateTableData)
+			console.log(this.date_table_data)
+		},
+		watch: {
+			dateTableData: function (val) {
+				this.renderDateChart();
+			},
 		},
 		computed:{
 			filteredObservations(){
@@ -464,11 +471,13 @@ import country from '../country.json'
 
 				if(this.selected_dates.length > 0){
 					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}				
+				}
 
 				op = op.reverse()
-				op = op.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 				return op
+			},
+			filteredObservationsPaginated(){
+				return  this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			userTableData () {
 				let op = []
@@ -488,19 +497,23 @@ import country from '../country.json'
 			},
 			dateTableData () {
 				let op = []
-				let date_array = {}
+				let date_data = {}
 
-				this.inat_data.forEach( o => {
-					if(this.selected_state == "All" || this.selected_state == o.state) {
-						if(Object.keys(date_array).indexOf(o.inat_created_at) == -1){
-							date_array[o.inat_created_at] = 1
-						} else {
-							date_array[o.inat_created_at]++
-						}
+				this.filteredObservations.reverse().forEach(o => {
+					if(Object.keys(date_data).indexOf(o.inat_created_at) != -1){
+						date_data[o.inat_created_at].push(o)
+					} else {
+						date_data[o.inat_created_at] = [o]
 					}
 				})
 
-				Object.keys(date_array).map(d => op.push({name: d, value: date_array[d]}))
+				Object.keys(date_data).forEach(d => {
+					op.push({
+						name: d,
+						value: date_data[d].length
+					})
+				})
+				// op = this.date_data.map((d, k) => {return {name: k, value: d.length}})
 				
 				return op;
 			},
@@ -551,7 +564,7 @@ import country from '../country.json'
 				})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 				return op
-			}
+			},
 		},
 		methods: {
 			updateState () {
@@ -654,28 +667,28 @@ import country from '../country.json'
   					.attr("viewBox", [0, 0, width, height]);
 
   				let x = d3.scaleBand()
-  							.domain(d3.range(this.date_table_data.length))
+  							.domain(d3.range(this.dateTableData.length))
   							.range([margin.left, width - margin.right])
   							.padding(0.1)
   				let y = d3.scaleLinear()
-							.domain([0, d3.max(this.date_table_data, d => d.value)]).nice()
+							.domain([0, d3.max(this.dateTableData, d => d.value)]).nice()
 							.range([height - margin.bottom, margin.top])
 				let xAxis = g => g
 						.attr("transform", `translate(0,${height -  margin.bottom})`)
 						.classed("x-ticks", true)
 						.call(d3.axisBottom(x)
-							.tickFormat(i => this.date_table_data[i].name)
+							.tickFormat(i => this.dateTableData[i].name)
 							.tickSizeOuter(0))
 				let yAxis = g => g
 					    .attr("transform", `translate(${margin.left},0)`)
-					    .call(d3.axisLeft(y).ticks(null, this.date_table_data.format))
+					    .call(d3.axisLeft(y).ticks(null, this.dateTableData.format))
 					    .call(g => g.select(".domain").remove())
 					    .call(g => g.append("text")
 					        .attr("x", -margin.left)
 					        .attr("y", 10)
 					        .attr("fill", "currentColor")
 					        .attr("text-anchor", "start")
-					        .text(this.date_table_data.y))
+					        .text(this.dateTableData.y))
 				const yGrid = d3.axisLeft()
 								.scale(y)
 								.tickFormat('')
@@ -686,7 +699,7 @@ import country from '../country.json'
   				svg.append("g")
   					.classed('chart-bars', true)
   					.selectAll("rect")
-  					.data(this.date_table_data)
+  					.data(this.dateTableData)
   					.join("rect")
   					.attr("x", (d, i) => x(i))
   					.attr("y", d => y(0))
@@ -965,7 +978,7 @@ import country from '../country.json'
 
 				// }
 				if (this.selected_taxa_levels.indexOf(tname) != -1) {
-					console.log("select-" + tname, this.selected_taxa_levels)
+					// console.log("select-" + tname, this.selected_taxa_levels)
 						op = "primary"
 
 				}
@@ -1035,13 +1048,6 @@ import country from '../country.json'
 				Object.keys(this.state_data).forEach(s => {
 					if(this.state_data[s].length > this.state_max)
 						this.state_max = this.state_data[s].length;
-				})
-				this.date_table_data = []
-				Object.keys(this.date_data).forEach(d => {
-					this.date_table_data.push({
-						name: d,
-						value: this.date_data[d].length
-					})
 				})
 
 				this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
