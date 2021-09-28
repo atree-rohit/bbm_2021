@@ -24,7 +24,7 @@
 		overflow: scroll;
 	}
 	#users-table-container {
-		height: 70vh;
+		max-height: 50vh;
 		overflow-y: scroll;
 	}
 	#users-table-container tbody tr:hover {
@@ -59,7 +59,7 @@
 		fill: pink;
 	}
 	#date-chart-continer svg g rect:hover {
-	  fill: orangered;
+	  fill: yellow;
 	  cursor: pointer;
 	  background: orangered;
 	}
@@ -86,7 +86,7 @@
 		stroke: yellow;
 		fill: red;
 	}
-	#locations-tab{
+	#report-page{
 		display: grid;
   		grid-template-columns: repeat(2, 1fr);
   		font-size: .8rem;
@@ -110,7 +110,7 @@
 		cursor: pointer;
 	}
 	.species-data-table{
-		height: 50vh;
+		height: 60vh;
 		overflow-y: scroll;
 	}
 	.tableFixHead{
@@ -124,7 +124,7 @@
 	}
 
 	#observations-container {
-		height: 70vh;
+		height: 75vh;
 		overflow-y: scroll;
 	}
 	#gallery{
@@ -209,14 +209,17 @@
 	.gallery-caption-icon{
 		font-size: .9rem;
 	}
-
+	#date-chart-continer .tick line{
+		stroke:  #aaa;
+		stroke-width: 0.5px;
+	}
 
 	@media screen and (max-width: 800px) {
 		.container-fluid,
 		.ui-tabs__body{
 			padding: 0;
 		}
-		#locations-tab{
+		#report-page{
 			grid-template-columns: repeat(1, 1fr);
 		}
 		#gallery {
@@ -230,7 +233,7 @@
 	}
 </style>
 <template>
-	<div class="container-fluid">
+	<div class="container-fluid" id="report-page">
 		<div id="locations-tab">
 			<ui-tabs
 				:fullwidth="true"
@@ -246,15 +249,15 @@
 				>
 					<div id="map-container" class="svg-container" v-if="tab.title === 'Location'"></div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
-						<div class="text-center p-2 bg-info map-data-title">{{selected_state}}</div>
 						<div class="d-flex justify-content-around text-center">
 							<table class="table cards-table">
 								<tbody>
-									<tr v-if="selected_state != ''"	>
+									<tr>
 										<td v-text="stateStats[selected_state].observations"></td>
 										<td v-text="stateStats[selected_state].users.size"></td>
 										<td v-text="stateStats[selected_state].species.size"></td>
-									</tr><tr class="card-values">
+									</tr>
+									<tr class="card-values">
 										<td>Observations</td>
 										<td>Users</td>
 										<td>Unique Taxa</td>
@@ -274,7 +277,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="row in statesTableData" @click='selectState(row.state)'>
+									<tr v-for="(row, state) in statesTableData" :key="state" @click='selectState(row.state)' v-if="state != 'All'">
 										<td v-text="row.state"></td>
 										<td v-text="row.observations"></t d>
 										<td v-text="row.species"></td>
@@ -354,62 +357,64 @@
 					</div>
 				</ui-tab>
 			</ui-tabs>
-			<div id="map-filters">
-				<ui-collapsible :disableRipple="true" title="Users" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
-	                <div id="user-filter">
-						<div id="users-table-container">
-							<table class="table table-sm tableFixHead">
-								<thead class="table-secondary">
-									<tr>
-										<th>Sl No</th>
-										<th>User ID</th>
-										<th>User Name</th>
-										<th>Observations</th>
-										<th>State</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
-										<td v-text="id + 1"></td>
-										<td v-text="u.id"></td>
-										<td v-text="u.name"></td>
-										<td v-text="u.observations"></td>
-										<td v-text="u.state"></td>
-									</tr>
-								</tbody>
+		</div>
+		<div id="map-filters">
+			<ui-collapsible :disableRipple="true" :title="filterTitle('users')" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+				<div id="users-table-container">
+					<table class="table 5able-sm tableFixHead">
+						<thead class="table-secondary">
+							<tr>
+								<th>Sl No</th>
+								<th>User ID</th>
+								<th>User Name</th>
+								<th>Observations</th>
+								<th>State</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
+								<td v-text="id + 1"></td>
+								<td v-text="u.id"></td>
+								<td v-text="u.name"></td>
+								<td v-text="u.observations"></td>
+								<td v-text="u.state"></td>
+							</tr>
+						</tbody>
 
-							</table>
-						</div>
+					</table>
+				</div>
+            </ui-collapsible>
+
+            <ui-collapsible :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+                <div id="date-filter">
+					<div id="date-chart-continer" class="svg-container"></div>
+				</div>
+            </ui-collapsible>
+
+            <ui-collapsible :disableRipple="true" :title="filterTitle('id_level')" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+                <div id="taxon-level-filter">
+					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
+						<button
+							v-for="(t, tname) in taxa_table_data"
+							class="btn m-2"
+							:key="tname"
+							:class="taxaLevelBtnClass(tname)"
+							v-text="`${tname} (${t})`"
+							@click="selectTaxaLevel(tname)"
+						>
+						</button>
 					</div>
-	            </ui-collapsible>
-
-	            <ui-collapsible :disableRipple="true" title="Upload Date" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
-	                <div id="date-filter">
-						<div id="date-chart-continer" class="svg-container"></div>
+					<div class="d-flex justify-content-around">
+						<button class="btn btn-sm" :class="idLevelBtnClass('all')" @click="idLevelBtnClick('all')">Select All</button>
+						<button class="btn btn-sm" :class="idLevelBtnClass('none')" @click="idLevelBtnClick('none')">Select None</button>
 					</div>
-	            </ui-collapsible>
 
-	            <ui-collapsible :disableRipple="true" title="ID Level" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
-	                <div id="taxon-level-filter">
-						<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
-							<button
-								v-for="(t, tname) in taxa_table_data"
-								class="btn m-2"
-								:key="tname"
-								:class="taxaLevelBtnClass(tname)"
-								v-text="`${tname} (${t})`"
-								@click="selectTaxaLevel(tname)"
-							>
-							</button>
-						</div>
-						<!-- <div id="taxonomy-chart-continer" class="svg-container"></div> -->
-					</div>
-	            </ui-collapsible>
+				</div>
+            </ui-collapsible>
 
-	            <ui-collapsible :disableRipple="true" title="Taxon" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
-	                Taxonomy
-	            </ui-collapsible>
-			</div>
+            <ui-collapsible :disableRipple="true" title="Taxon" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
+                Taxonomy
+            </ui-collapsible>
 		</div>
 		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
 			 <ui-select
@@ -460,15 +465,16 @@ import country from '../country.json'
 					{title:"Table"},
 					{title:"Observations"},
 				],
+				map_first_render:true,
 				
-				svgWidth: window.innerWidth * 0.75,
-				svgHeight: window.innerHeight * 0.75,
+				svgWidth: window.innerWidth * 0.6,
+				svgHeight: window.innerHeight * 0.9,
 				tooltip: null,
 				
 				observationsPerPage: 100,
 				observationsPageNo: 1,
 				accordions: {
-					0: true,
+					0: false,
 					1: false,
 					2: false,
 					3: false,
@@ -484,9 +490,6 @@ import country from '../country.json'
 			// this.renderTaxonomyChart()
 		},
 		watch: {
-			dateTableData: function (val) {
-				this.renderDateChart();
-			},
 			selected_users(){
 				this.renderMap();
 			},
@@ -543,25 +546,40 @@ import country from '../country.json'
 				return op
 			},
 			dateTableData () {
+				let observations = []
 				let op = []
 				let date_data = {}
 
-				this.filteredObservations.reverse().forEach(o => {
-					if(Object.keys(date_data).indexOf(o.inat_created_at) != -1){
-						date_data[o.inat_created_at].push(o)
-					} else {
-						date_data[o.inat_created_at] = [o]
+				if (this.selected_state === "All"){
+					observations = this.inat_data
+				} else {
+					observations = this.inat_data.filter(x => x.state === this.selected_state)
+				}
+
+				if(this.selected_users.length > 0){
+					observations = observations.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+
+				if(this.selected_taxa_levels.length > 0){
+					observations = observations.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+				}
+				for(var i = 1; i<31; i++){
+					date_data[i] = 0
+				}
+				observations.forEach(o => {
+					if(Object.keys(date_data).indexOf(o.inat_created_at.toString()) != -1){
+						date_data[o.inat_created_at]++
 					}
 				})
 
 				Object.keys(date_data).forEach(d => {
 					op.push({
 						name: d,
-						value: date_data[d].length
+						value: date_data[d]
 					})
 				})
-				// op = this.date_data.map((d, k) => {return {name: k, value: d.length}})
-				
+
+
 				return op;
 			},
 			stateObservations () {
@@ -596,7 +614,6 @@ import country from '../country.json'
 				})
 
 				this.filteredObservations.forEach(o => {
-					
 					op['All'].observations++
 					op['All'].users.add(o.user_id)
 					op['All'].species.add(o.taxa_name)
@@ -633,13 +650,14 @@ import country from '../country.json'
 			},
 			statesTableData () {
 				let op = []
-				Object.keys(this.stats).forEach(s => {
+
+				Object.keys(this.stateStats).forEach(s => {
 					if(s != 'All'){
 						op.push({
 							state: s,
-							observations: this.stats[s].observations,
-							users: this.stats[s].users.size,
-							species: this.stats[s].species.size
+							observations: this.stateStats[s].observations,
+							users: this.stateStats[s].users.size,
+							species: this.stateStats[s].species.size
 						})
 					}
 				})
@@ -656,9 +674,65 @@ import country from '../country.json'
 					op[o.taxa_rank]++;
 				})
 				return op
-			}
+			},
 		},
 		methods: {
+			idLevelBtnClass (t) {
+				let op = "btn-outline-secondary"
+				switch(t){
+					case 'all':
+						if(this.selected_taxa_levels.length < 10){
+							op = "btn-primary"
+						}
+						break;
+					case 'none':
+						if(this.selected_taxa_levels.length > 0){
+							op = "btn-primary"
+						}
+						break;
+				}
+				return op
+			},
+			idLevelBtnClick (t) {
+				switch(t){
+					case 'all':
+							this.selected_taxa_levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
+						break;
+					case 'none':
+							this.selected_taxa_levels = []
+						break;
+				}
+			},
+			filterTitle(f){
+				let op = ""
+				switch(f){
+					case'users':
+						op = "Users : "
+						if(this.selected_users.length > 0) {
+							op += `${this.selected_users.length} selected`
+						} else {
+							op += "All selected"
+						}
+						break;
+					case 'date':
+						op = "Upload Date : "
+						if(this.selected_dates.length > 0 && this.selected_dates.length < 30) {
+							op += `${Math.min(...this.selected_dates)} - ${Math.max(...this.selected_dates)} Sept, 2021`
+						} else {
+							op += "All selected"
+						}
+						break;
+					case 'id_level':
+						op = "ID Level : "
+						if(this.selected_taxa_levels.length > 0 && this.selected_taxa_levels.length < 10) {
+							op += `${this.selected_taxa_levels.length} selected`
+						} else {
+							op += "All selected"
+						}
+						break;
+				}
+				return op
+			},
 			onAccordionOpen(id) {
 				Object.keys(this.accordions).forEach(key => {
 					this.accordions[key] = key == id; // eslint-disable-line eqeqeq
@@ -737,8 +811,7 @@ import country from '../country.json'
 					this.selected_taxa = '';
 			},
 			fullDate (d) {
-				let op = d.split("-")
-				op = `${op[0]} Sept, 21`
+				let op = `${d} Sept, 21`
 				return op
 			},
 			speciesName (id) {
@@ -757,60 +830,63 @@ import country from '../country.json'
 				window.open(url, '_blank').focus();
 			},
 			renderDateChart () {
-				let height = this.svgHeight
-				let width = this.svgWidth/0.9
-				let color = "steelblue"
-				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
+				let margin = {top: 20, right: 20, bottom: 90, left: 50}
+				let margin2 = {top: this.svgHeight * .6 - 70, right: 20, bottom: 30, left: 50}
+				let width = this.svgWidth * .9 - margin.left - margin.right
+				let height = this.svgHeight * .6 - margin.top - margin.bottom
+				let height2 = this.svgHeight *.6 - margin2.top - margin2.bottom
+
+				let that = this
+
 
 				if (!d3.select("#date-chart-continer svg").empty()) {
 					d3.selectAll("#date-chart-continer svg").remove()
 				}
 
 				let svg = d3.select("#date-chart-continer").append("svg")
-  					.attr("viewBox", [0, 0, width, height]);
+					// .attr("viewBox", [0, 0, width, height])
+						.attr("width",width+margin.left+margin.right)
+						.attr("height",height+margin.top+margin.bottom);
 
-  				let x = d3.scaleBand()
-  							.domain(d3.range(this.dateTableData.length))
-  							.range([margin.left, width - margin.right])
-  							.padding(0.1)
-  				let y = d3.scaleLinear()
-							.domain([0, d3.max(this.dateTableData, d => d.value)]).nice()
-							.range([height - margin.bottom, margin.top])
-				let xAxis = g => g
-						.attr("transform", `translate(0,${height -  margin.bottom})`)
-						.classed("x-ticks", true)
-						.call(d3.axisBottom(x)
-							.tickFormat(i => this.dateTableData[i].name)
-							.tickSizeOuter(0))
-				let yAxis = g => g
-					    .attr("transform", `translate(${margin.left},0)`)
-					    .call(d3.axisLeft(y).ticks(null, this.dateTableData.format))
-					    .call(g => g.select(".domain").remove())
-					    .call(g => g.append("text")
-					        .attr("x", -margin.left)
-					        .attr("y", 10)
-					        .attr("fill", "currentColor")
-					        .attr("text-anchor", "start")
-					        .text(this.dateTableData.y))
-				const yGrid = d3.axisLeft()
-								.scale(y)
-								.tickFormat('')
-								.ticks(5)
-								.tickSizeInner(-width + margin.left + margin.right)
-				
-				let that = this
-  				svg.append("g")
-  					.classed('chart-bars', true)
-  					.selectAll("rect")
-  					.data(this.dateTableData)
-  					.join("rect")
-  					.attr("x", (d, i) => x(i))
-  					.attr("y", d => y(0))
-  					.attr("fill", d => (this.selected_dates.indexOf(d.name) !== -1)?"green":"#6574cd")
-  					.attr("height", d => y(0) - y(d.value))
-  					.attr("width", x.bandwidth())
-  					.on('mouseover', function (d, i) {
-  						that.tooltip.html(`<div>Date: ${d.name}</div><div>Observations: ${d.value}</div>`)
+				let focus = svg.append("g")
+								.attr("transform", `translate(${margin.left}, ${margin.top})`)
+				let context = svg.append("g")
+								.attr("transform", `translate(${margin2.left}, ${margin2.top})`)
+
+				let dataset = this.dateTableData.map(d => d.value)
+				dataset.pop()
+				dataset.unshift(0)
+				var maxHeight=d3.max(dataset,function(d){return d})
+                var minHeight=d3.min(dataset,function(d){return d})
+
+                var yScale = d3.scaleLinear().range([0,height]).domain([maxHeight*1.1,0])
+				var xScale = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length+1,1)).padding(0.1)
+				var yScale2 = d3.scaleLinear().range([0,height2]).domain([maxHeight*1.1,0])
+				var xScale2 = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length+1,1)).padding(0.1)
+
+				var yAxis = d3.axisLeft(yScale).tickSize(-width)
+				var yAxisGroup = focus.append("g").call(yAxis)
+				var xAxis = d3.axisBottom(xScale)
+				var xAxisGroup = focus.append("g").call(xAxis).attr("transform", "translate(0,"+height+")")
+
+				var xAxis2 = d3.axisBottom(xScale2)
+				var xAxisGroup2 = context.append("g").call(xAxis2).attr("transform", "translate(0,"+height2+")")
+
+				var bars1 = focus.selectAll("rect").data(dataset).enter().append("rect")
+				bars1.attr("x",function(d,i){
+					return xScale(i)//i*(width/dataset.length)
+					})
+					.attr("y",function(d){
+					return yScale(d)
+					})//for bottom to top
+					.attr("width", xScale.bandwidth()/*width/dataset.length-barpadding*/)
+					.attr("height", function(d){
+						return height-yScale(d)
+					})
+
+				bars1.attr("fill","steelblue")
+					.on('mouseover', function (d, i) {
+  						that.tooltip.html(`<div>${d} Observations</div>`)
   							.style('visibility', 'visible')
   						})
   					.on('mousemove', function () {
@@ -821,26 +897,92 @@ import country from '../country.json'
   					.on('mouseout', function () {
   						that.tooltip.html(``).style('visibility', 'hidden')
   						})
-  					.on("click", d => this.selectDate(d))
 
-  				svg.append('g')
-					.attr('class', 'y-grid')
-					.attr('transform', 'translate(' + margin.left + ', 0)')
-					.call(yGrid)
+				var bars2 = context.selectAll("rect").data(dataset).enter().append("rect");
+				bars2.attr("x",function(d,i){
+					return xScale2(i);//i*(width/dataset.length);
+				})
+					.attr("y",function(d){
+						return yScale2(d);
+					})//for bottom to top
+						.attr("width", xScale2.bandwidth()/*width/dataset.length-barpadding*/)
+						.attr("height", function(d){
+						return height2-yScale2(d);
+					})
+				bars2.attr("fill", "red")
 
-				svg.selectAll("rect")
-  					.transition()
-  					.duration(400)
-  					.attr("y", function(d) { return y(d.value); })
-  					.attr("height", function(d) { return y(0) - y(d.value); })
-  					.delay(function(d,i){return(i*30)})
+				var brush = d3.brushX()
+						.extent([[0,0],[width,height2]])//(x0,y0)  (x1,y1)
+						.on("brush",brushed)//when mouse up, move the selection to the exact tick //start(mouse down), brush(mouse move), end(mouse up)
+						.on("end",brushend);
+				context.append("g")
+				.attr("class","brush")
+				.call(brush)
+				.call(brush.move,xScale2.range());
 
 
-  				svg.append("g")
-  					.call(xAxis);
 
-  				svg.append("g")
-  					.call(yAxis);
+				function brushed(){
+					if (!d3.event.sourceEvent) return; // Only transition after input.
+					if (!d3.event.selection) return; // Ignore empty selections.
+					if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
+						//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
+						//The idea here is to count all the bar chart in the brush area. And reset the domain
+					var newInput = [];
+					var brushArea = d3.event.selection;
+					if(brushArea === null) brushArea = xScale.range();
+
+					xScale2.domain().forEach(function(d){
+						var pos = xScale2(d) + xScale2.bandwidth()/2;
+						if (pos >= brushArea[0] && pos <= brushArea[1]){
+						  newInput.push(d);
+						}
+					});
+
+					xScale.domain(newInput);
+					//	console.log(xScale.domain());
+					//realocate the bar chart
+					bars1.attr("x",function(d,i){//data set is still data
+						return xScale(i)/*xScale(xScale.domain().indexOf(i))*/;
+					})
+						.attr("y",function(d){
+							return yScale(d);
+						})//for bottom to top
+						.attr("width", xScale.bandwidth())//if you want to change the width of bar. Set the width to xScale.bandwidth(); If you want a fixed width, use xScale2.bandwidth(). Note because we use padding() in the scale, we should use xScale.bandwidth()
+						.attr("height", function(d,i){
+							if(xScale.domain().indexOf(i) === -1){
+								return 0;
+							}
+							else
+								return height-yScale(d);
+						})
+
+					xAxisGroup.call(xAxis);
+				}
+				function brushend(){
+					if (!d3.event.sourceEvent) return; // Only transition after input.
+					if (!d3.event.selection) return; // Ignore empty selections.
+					if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
+						//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
+						//The idea here is to count all the bar chart in the brush area. And reset the domain
+					var newInput = []
+					var brushArea = d3.event.selection
+					if(brushArea === null) brushArea = xScale.range()
+
+					xScale2.domain().forEach(function(d){
+						var pos = xScale2(d) + xScale2.bandwidth()/2;
+						if (pos >= brushArea[0] && pos <= brushArea[1]){
+							newInput.push(d);
+						}
+					})
+
+					//relocate the position of brush area
+					var increment = 0;
+					var left=xScale2(d3.min(newInput));
+					var right = xScale2(d3.max(newInput))+xScale2.bandwidth();
+					that.selected_dates = newInput
+					d3.select(this).transition().call(d3.event.target.move,[left,right]);//The inner padding determines the ratio of the range that is reserved for blank space between bands.
+				}
 			},
 			selectDate (d) {
 				var index = this.selected_dates.indexOf(d.name);
@@ -849,11 +991,10 @@ import country from '../country.json'
 				} else {
 					this.selected_dates.push(d.name)
 				}
-				this.renderDateChart()
 			},
 			renderMap () {
 				let that = this
-				let height = this.svgHeight
+				let height = this.svgHeight * .9
 				let width = this.svgWidth
 				if(height > width){
 					height /= 3
@@ -867,13 +1008,13 @@ import country from '../country.json'
 					.style("background-color", "rgb(190, 229, 235)")
 					.classed("svg-content d-flex m-auto", true)
 
-				var projection = d3.geoMercator().scale(750).center([89, 29.5])
+				var projection = d3.geoMercator().scale(850).center([87, 25.5])
 				const path = d3.geoPath().projection(projection)
 				const colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"])
 				var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6)
 				let base = svg.append("g")
 					.classed("map-boundary", true)
-				
+
 				let base_text = base.selectAll("text").append("g")
 				base = base.selectAll("path").append("g")
 				let states = base.append("g").classed("states", true)
@@ -926,11 +1067,14 @@ import country from '../country.json'
 					});
 				svg.call(zoom);
 
-				clicked({properties:{ST_NM: this.selected_state}})
+				mapPoints()
+				if(this.map_first_render){
+					clicked({properties:{ST_NM: this.selected_state}})
+					this.map_first_render = false
+				}
 
 				function clicked(d) {
 					let state = d.properties.ST_NM
-					console.log(state);
 					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 				    states.transition().style("fill", null);
 					if(that.selected_state != 'All'){
@@ -951,7 +1095,7 @@ import country from '../country.json'
 				        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
 				        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
 				    );
-					mapPoints()
+				    mapPoints()
 				}
 
 				function mapPoints(){
@@ -980,7 +1124,8 @@ import country from '../country.json'
 							.attr("cx", (d) => projection(d)[0])
 							.attr("cy", (d) => projection(d)[1])
 							.attr("r", "0px")
-							map_points.on("click", (d) => that.setMissingState(d))
+
+						// map_points.on("click", (d) => that.setMissingState(d))
 					}
 				}
 			},
