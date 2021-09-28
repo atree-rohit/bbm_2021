@@ -251,7 +251,7 @@
 							<table class="table cards-table">
 								<tbody>
 									<tr v-if="selected_state != ''"	>
-										<td v-text="stateStats[selected_state].observationsa"></t d>
+										<td v-text="stateStats[selected_state].observations"></td>
 										<td v-text="stateStats[selected_state].users.size"></td>
 										<td v-text="stateStats[selected_state].species.size"></td>
 									</tr><tr class="card-values">
@@ -582,7 +582,9 @@ import country from '../country.json'
 					op[s.properties.ST_NM] = [];
 				})
 				this.filteredObservations.forEach(o => {
-					op[o.state].push(o)
+					if(o.state !== null){
+						op[o.state].push(o)
+					}
 				})
 				return op
 			},
@@ -594,13 +596,15 @@ import country from '../country.json'
 				})
 
 				this.filteredObservations.forEach(o => {
-					// console.log(o.state)
+					
 					op['All'].observations++
 					op['All'].users.add(o.user_id)
 					op['All'].species.add(o.taxa_name)
-					op[o.state].observations++
-					op[o.state].users.add(o.user_id)
-					op[o.state].species.add(o.taxa_name)
+					if(o.state !== null){
+						op[o.state].observations++
+						op[o.state].users.add(o.user_id)
+						op[o.state].species.add(o.taxa_name)						
+					}
 				});
 
 				return op
@@ -753,7 +757,7 @@ import country from '../country.json'
 				window.open(url, '_blank').focus();
 			},
 			renderDateChart () {
-				let height = this.svgHeight/2
+				let height = this.svgHeight
 				let width = this.svgWidth/0.9
 				let color = "steelblue"
 				let margin = ({top: 30, right: 0, bottom: 30, left: 40})
