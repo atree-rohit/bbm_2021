@@ -58,7 +58,8 @@ class INatController extends Controller
 
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
-            $inat_data[$k]["inat_created_at"] = date('d-D', strtotime('+5 hours +30 minutes', $timestamp));
+            $inat_data[$k]["inat_created_at"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
+            // echo $inat_data[$k]["inat_created_at"] . '<br>';
             // $inat_data[$k]["inat_created_at"] = date('D, d M', $timestamp);
             // $this->add_to_tree($id);
         }
