@@ -582,7 +582,9 @@ import country from '../country.json'
 					op[s.properties.ST_NM] = [];
 				})
 				this.filteredObservations.forEach(o => {
-					op[o.state].push(o)
+					if(o.state !== null){
+						op[o.state].push(o)
+					}
 				})
 				return op
 			},
@@ -594,13 +596,15 @@ import country from '../country.json'
 				})
 
 				this.filteredObservations.forEach(o => {
-					// console.log(o.state)
+					
 					op['All'].observations++
 					op['All'].users.add(o.user_id)
 					op['All'].species.add(o.taxa_name)
-					op[o.state].observations++
-					op[o.state].users.add(o.user_id)
-					op[o.state].species.add(o.taxa_name)
+					if(o.state !== null){
+						op[o.state].observations++
+						op[o.state].users.add(o.user_id)
+						op[o.state].species.add(o.taxa_name)						
+					}
 				});
 
 				return op
