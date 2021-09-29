@@ -59,47 +59,10 @@ class INatController extends Controller
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
             $inat_data[$k]["inat_created_at"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
-            // echo $inat_data[$k]["inat_created_at"] . '<br>';
-            // $inat_data[$k]["inat_created_at"] = date('D, d M', $timestamp);
-            // $this->add_to_tree($id);
         }
-        // usort($this->inat_tree, function ($a, $b) {
-        //     return count($a) - count($b);
-        // });
-        // $op = [];
-        // foreach ($this->inat_tree as $it) {
-        //     switch (count($it)) {
-        //         case 1:
-        //             $op[$it["superfamily"]] = [];
-        //             break;
-        //         case 2:
-        //             $op[$it["superfamily"]][$it["family"]] = [];
-        //             break;
-        //         case 3:
-        //             $op[$it["superfamily"]][$it["family"]][$it["subfamily"]] = [];
-        //             break;
-        //         case 4:
-        //             $op[$it["superfamily"]][$it["family"]][$it["subfamily"]][$it["tribe"]] = [];
-        //             break;
-        //         case 5:
-        //             $op[$it["superfamily"]][$it["family"]][$it["subfamily"]][$it["tribe"]][$it["genus"]] = [];
-        //             break;
-        //         case 6:
-        //             $op[$it["superfamily"]][$it["family"]][$it["subfamily"]][$it["tribe"]][$it["genus"]] = $it["species"];
-        //             break;
-        //     }
-        // }
-        // echo "<pre>";
-        // print_r($this->generateTree($op)[0]);
-        // echo "</pre>";
-        // dd();
-        // $inat_tree = $this->inat_tree;
 
-        // dd($op);
-        // $inat_tree = $this->generateTree($op);
-        $inat_tree = [];
 
-        return view('inat.index', compact("inat_data", "inat_taxa", "inat_tree", "last_update"));
+        return view('inat.index', compact("inat_data", "inat_taxa", "last_update"));
     }
 
     public function generateTree($op)

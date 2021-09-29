@@ -21,7 +21,7 @@
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
 	@yield('style')
 </head>
-<body>
+<body style="overflow: hidden;">
 	<div id="app">
 		<main>
 			@yield('content')

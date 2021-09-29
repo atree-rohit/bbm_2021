@@ -58,7 +58,7 @@
 		stroke: red;
 		fill: pink;
 	}
-	#date-chart-continer svg g rect:hover {
+	#date-chart-continer svg g.main-date-chart rect:hover {
 	  fill: yellow;
 	  cursor: pointer;
 	  background: orangered;
@@ -372,8 +372,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(u, id) in userTableData" :class='userTableRowClass(id, u)' @click="seletUser(u)">
-								<td v-text="id + 1"></td>
+							<tr v-for="u in userTableData" :class='userTableRowClass(u)' @click="seletUser(u)">
+								<td v-text="u.sl_no"></td>
 								<td v-text="u.id"></td>
 								<td v-text="u.name"></td>
 								<td v-text="u.observations"></td>
@@ -395,7 +395,7 @@
                 <div id="taxon-level-filter">
 					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
 						<button
-							v-for="(t, tname) in taxa_table_data"
+							v-for="(t, tname) in taxaTableData"
 							class="btn m-2"
 							:key="tname"
 							:class="taxaLevelBtnClass(tname)"
@@ -436,11 +436,9 @@ import * as d3Legend from "d3-svg-legend"
 import country from '../country.json'
 	export default {
 		name:"i-nat",
-		props: ["inat_data", "inat_taxa", "inat_tree"],
+		props: ["inat_data", "inat_taxa"],
 		data() {
 			return{
-				user_data: {},
-				date_data: {},
 				state_data: {},
 
 				state_unmatched: [],
@@ -454,13 +452,8 @@ import country from '../country.json'
 				selected_point:  null,
 				selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
 				selected_taxa: '',
-				
-				date_table_data: [],
-				stats: {},
 
-				taxa_level: {},
-				taxa_table_data:{},
-				taxa_tree: this.inat_tree,
+				taxa_tree: {},
 				tabs: [
 					{title:"Location"},
 					{title:"Table"},
@@ -489,17 +482,25 @@ import country from '../country.json'
 			this.renderMap()
 			this.renderDateChart()
 			// this.renderTaxonomyChart()
+
+			this.nestTest()
 		},
 		watch: {
-			selected_users(){
-				this.renderMap();
+			selected_users () {
+				this.renderMap()
+				this.renderDateChart()
 			},
-			selected_dates(){
-				this.renderMap();
+			selected_dates () {
+				this.renderMap()
 			},
-			selected_taxa_levels(){
-				this.renderMap();
+			selected_taxa_levels () {
+				this.renderMap()
+				this.renderDateChart()
 			},
+			selected_state () {
+				// this.renderMap()
+				this.renderDateChart()
+			}
 		},
 		computed:{
 			filteredObservations(){
@@ -533,11 +534,11 @@ import country from '../country.json'
 			userTableData () {
 				let user_data = this.inat_data
 				let op = []
+				let sl_no = 1
 
 				if (this.selected_state != "All"){
 					user_data = user_data.filter(x => x.state === this.selected_state)
 				}
-
 
 				if(this.selected_dates.length > 0){
 					user_data = user_data.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
@@ -547,33 +548,31 @@ import country from '../country.json'
 				}
 				user_data = d3.nest().key(o => o.user_id).object(user_data)
 
-				
 				Object.keys(user_data).forEach(u => {
-					if(this.selected_state === user_data[u][0].state || this.selected_state === 'All'){
-						op.push({
-							id: u,
-							name: user_data[u][0].user_name,
-							observations: user_data[u].length,
-							state: user_data[u][0].state
-						})						
-					}
+					op.push({
+						id: u,
+						name: user_data[u][0].user_name,
+						observations: user_data[u].length,
+						state: user_data[u][0].state
+					})
 				})
-				console.log("BEGIN-user_data_section")
-				console.log(user_data)
-				console.log(op)
-				console.log("END-user_data_section")
 
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
+
+				op.forEach((o,id) => {
+					op[id].sl_no = sl_no
+					sl_no++;
+				})
+
 				return op
 			},
 			dateTableData () {
-				let observations = []
+				let observations = this.inat_data
 				let op = []
 				let date_data = {}
 
-				if (this.selected_state === "All"){
-					observations = this.inat_data
-				} else {
+				if (this.selected_state != "All"){
+
 					observations = this.inat_data.filter(x => x.state === this.selected_state)
 				}
 
@@ -604,15 +603,12 @@ import country from '../country.json'
 				return op;
 			},
 			stateObservations () {
-				let op = []
+				let state_observations = []
 				if(this.selected_state != ''){
-					this.inat_data.forEach(o => {
-						if(o.state == this.selected_state){
-							op.push(o)
-						}
-					})
+					state_observations = this.inat_data.filter(x => x.state === this.selected_state)
 				}
-				return op
+
+				return state_observations
 			},
 			stateData () {
 				let op = {}
@@ -649,6 +645,14 @@ import country from '../country.json'
 			},
 			stateSpeciesList () {
 				let op = []
+				let state_observations = []
+
+				if(this.selected_state != ''){
+					state_observations = this.inat_data.filter(x => x.state === this.selected_state)
+				}
+				let unique_taxa = d3.nest().key(o => o.taxa_name).object(state_observations)
+				let y = []
+
 				this.stateObservations.forEach(o => {
 					let new_flag = true
 					op.forEach((oo, oid) => {
@@ -665,8 +669,9 @@ import country from '../country.json'
 							users: new Set([o.user_id])
 						})
 				})
+
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
-				
+				console.log(unique_taxa, op)
 				return op
 			},
 			statesTableData () {
@@ -696,6 +701,16 @@ import country from '../country.json'
 				})
 				return op
 			},
+			taxaTableData () {
+				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
+				let taxa_level = d3.nest().key(o => o.taxa_rank).object(this.inat_data)
+
+				Object.keys(taxa_level).forEach(tl => {
+					if(taxa_level[tl] != undefined)
+						op[tl] = taxa_level[tl].length
+				})
+				return op
+			}
 		},
 		methods: {
 			nestTest(){
@@ -715,7 +730,7 @@ import country from '../country.json'
 					})
 					levels.forEach(l => {
 						if((hierrachy[l] == undefined) && levels.indexOf(o.taxa_rank) < levels.indexOf(l))
-							hierrachy[l] = ""
+							hierrachy[l] = "none"
 					})
 					
 					return hierrachy
@@ -723,7 +738,7 @@ import country from '../country.json'
 
 				let x = d3.nest().key(o => o.superfamily).key(o => o.family).key(o => o.subfamily).key(o => o.tribe).key(o => o.genus).key(o => o.species)
 
-				let y = x.object(obv_taxonomy)
+				let y = x.entries(obv_taxonomy)
 				
 				console.log(y)
 			},
@@ -834,16 +849,16 @@ import country from '../country.json'
 					this.selected_users.push(u.id)
 				}
 			},
-			userTableRowClass (id, u) {
+			userTableRowClass (u) {
 				let op = ""
 				if(this.selected_users.indexOf(u.id) !== -1){
 					op = "user-selected"
 				} else {
-					if(id < 10){
+					if(u.sl_no < 10){
 						op = "first-10"
-					} else if (id < 50){
+					} else if (u.sl_no < 50){
 						op = "second-50"
-					} else if (id < 100) {
+					} else if (u.sl_no < 100) {
 						op = "third-100"
 					}					
 				}
@@ -885,9 +900,7 @@ import country from '../country.json'
 				let width = this.svgWidth * .9 - margin.left - margin.right
 				let height = this.svgHeight * .6 - margin.top - margin.bottom
 				let height2 = this.svgHeight *.6 - margin2.top - margin2.bottom
-
 				let that = this
-
 
 				if (!d3.select("#date-chart-continer svg").empty()) {
 					d3.selectAll("#date-chart-continer svg").remove()
@@ -895,10 +908,12 @@ import country from '../country.json'
 
 				let svg = d3.select("#date-chart-continer").append("svg")
 					// .attr("viewBox", [0, 0, width, height])
-						.attr("width",width+margin.left+margin.right)
-						.attr("height",height+margin.top+margin.bottom);
+					.attr("viewBox", [0, 0, width+margin.left+margin.right, height+margin.top+margin.bottom])
+						// .attr("width",width+margin.left+margin.right)
+						// .attr("height",height+margin.top+margin.bottom);
 
 				let focus = svg.append("g")
+								.classed("main-date-chart", true)
 								.attr("transform", `translate(${margin.left}, ${margin.top})`)
 				let context = svg.append("g")
 								.attr("transform", `translate(${margin2.left}, ${margin2.top})`)
@@ -1028,7 +1043,7 @@ import country from '../country.json'
 
 					//relocate the position of brush area
 					var increment = 0;
-					var left=xScale2(d3.min(newInput));
+					var left = xScale2(d3.min(newInput));
 					var right = xScale2(d3.max(newInput))+xScale2.bandwidth();
 					that.selected_dates = newInput
 					d3.select(this).transition().call(d3.event.target.move,[left,right]);//The inner padding determines the ratio of the range that is reserved for blank space between bands.
@@ -1083,9 +1098,9 @@ import country from '../country.json'
 	  						that.tooltip.html(
 	  							`<table>
 	  							<tr><td>State</td><td>${s_name}</td></tr>
-	  							<tr><td>Observations</td><td>${that.stats[s_name].observations}</td></tr>
-	  							<tr><td>Users</td><td>${that.stats[s_name].users.size}</td></tr>
-	  							<tr><td>Unique Taxa</td><td>${that.stats[s_name].species.size}</td></tr>
+	  							<tr><td>Observations</td><td>${that.stateStats[s_name].observations}</td></tr>
+	  							<tr><td>Users</td><td>${that.stateStats[s_name].users.size}</td></tr>
+	  							<tr><td>Unique Taxa</td><td>${that.stateStats[s_name].species.size}</td></tr>
 	  							</table>`)
 	  							.style('visibility', 'visible');
 	  						})
@@ -1191,7 +1206,7 @@ import country from '../country.json'
 				let height = this.svgHeight
 				let width = this.svgWidth
 				let margin = 40
-				let data = this.taxa_table_data
+				let data = this.taxaTableData
 				let total_observations = this.inat_data.length
 				
   				var radius = Math.min(width, height) / 2 - margin
@@ -1281,45 +1296,18 @@ import country from '../country.json'
 				if (this.svgWidth > 800){
 					this.svgWidth = window.innerWidth / 2
 				}
-				this.stats['All'] = {
-						observations: 0,
-						users: new Set(),
-						species: new Set()
-					}
+
 				country.features.forEach(s => {
 					this.state_data[s.properties.ST_NM] = [];
-					this.stats[s.properties.ST_NM] = {
-						observations: 0,
-						users: new Set(),
-						species: new Set()
-					}
-				})
-
-				this.taxa_level = d3.nest().key(o => o.taxa_rank).object(this.inat_data)
-				// this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-
-				Object.keys(this.taxa_level).forEach(tl => {
-					if(this.taxa_level[tl] != undefined)
-						this.taxa_table_data[tl] = this.taxa_level[tl].length
-					else
-						this.taxa_table_data[tl] = 0
 				})
 
 				this.inat_data.forEach(o => {
-					this.stats['All'].observations++
-					this.stats['All'].users.add(o.user_id)
-					this.stats['All'].species.add(o.taxa_name)
-					
-
 					if(o.state == null){
 						this.state_unmatched.push(o);
 					} else if(Object.keys(this.state_data).indexOf(o.state) != -1){
 						this.state_data[o.state].push(o)
-						this.stats[o.state].observations++
-						this.stats[o.state].users.add(o.user_id)
-						this.stats[o.state].species.add(o.taxa_name)
 					} else {
-						this.$set(this.state_data,o.state,[o])
+						this.state_data[o.state].push(o)
 						console.log("strange state name", o.state, o)
 					}
 				});

@@ -2307,11 +2307,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "i-nat",
-  props: ["inat_data", "inat_taxa", "inat_tree"],
+  props: ["inat_data", "inat_taxa"],
   data: function data() {
     return {
-      user_data: {},
-      date_data: {},
       state_data: {},
       state_unmatched: [],
       all_states: [],
@@ -2323,11 +2321,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selected_point: null,
       selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
       selected_taxa: '',
-      date_table_data: [],
-      stats: {},
-      taxa_level: {},
-      taxa_table_data: {},
-      taxa_tree: this.inat_tree,
+      taxa_tree: {},
       tabs: [{
         title: "Location"
       }, {
@@ -2355,16 +2349,24 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   mounted: function mounted() {
     this.renderMap();
     this.renderDateChart(); // this.renderTaxonomyChart()
+
+    this.nestTest();
   },
   watch: {
     selected_users: function selected_users() {
       this.renderMap();
+      this.renderDateChart();
     },
     selected_dates: function selected_dates() {
       this.renderMap();
     },
     selected_taxa_levels: function selected_taxa_levels() {
       this.renderMap();
+      this.renderDateChart();
+    },
+    selected_state: function selected_state() {
+      // this.renderMap()
+      this.renderDateChart();
     }
   },
   computed: {
@@ -2411,6 +2413,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       var user_data = this.inat_data;
       var op = [];
+      var sl_no = 1;
 
       if (this.selected_state != "All") {
         user_data = user_data.filter(function (x) {
@@ -2434,34 +2437,30 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return o.user_id;
       }).object(user_data);
       Object.keys(user_data).forEach(function (u) {
-        if (_this2.selected_state === user_data[u][0].state || _this2.selected_state === 'All') {
-          op.push({
-            id: u,
-            name: user_data[u][0].user_name,
-            observations: user_data[u].length,
-            state: user_data[u][0].state
-          });
-        }
+        op.push({
+          id: u,
+          name: user_data[u][0].user_name,
+          observations: user_data[u].length,
+          state: user_data[u][0].state
+        });
       });
-      console.log("BEGIN-user_data_section");
-      console.log(user_data);
-      console.log(op);
-      console.log("END-user_data_section");
       op.sort(function (a, b) {
         return a.observations < b.observations ? 1 : b.observations < a.observations ? -1 : 0;
+      });
+      op.forEach(function (o, id) {
+        op[id].sl_no = sl_no;
+        sl_no++;
       });
       return op;
     },
     dateTableData: function dateTableData() {
       var _this3 = this;
 
-      var observations = [];
+      var observations = this.inat_data;
       var op = [];
       var date_data = {};
 
-      if (this.selected_state === "All") {
-        observations = this.inat_data;
-      } else {
+      if (this.selected_state != "All") {
         observations = this.inat_data.filter(function (x) {
           return x.state === _this3.selected_state;
         });
@@ -2499,17 +2498,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     stateObservations: function stateObservations() {
       var _this4 = this;
 
-      var op = [];
+      var state_observations = [];
 
       if (this.selected_state != '') {
-        this.inat_data.forEach(function (o) {
-          if (o.state == _this4.selected_state) {
-            op.push(o);
-          }
+        state_observations = this.inat_data.filter(function (x) {
+          return x.state === _this4.selected_state;
         });
       }
 
-      return op;
+      return state_observations;
     },
     stateData: function stateData() {
       var op = {};
@@ -2551,7 +2548,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     stateSpeciesList: function stateSpeciesList() {
+      var _this5 = this;
+
       var op = [];
+      var state_observations = [];
+
+      if (this.selected_state != '') {
+        state_observations = this.inat_data.filter(function (x) {
+          return x.state === _this5.selected_state;
+        });
+      }
+
+      var unique_taxa = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
+        return o.taxa_name;
+      }).object(state_observations);
+      var y = [];
       this.stateObservations.forEach(function (o) {
         var new_flag = true;
         op.forEach(function (oo, oid) {
@@ -2570,19 +2581,20 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       op.sort(function (a, b) {
         return a.count < b.count ? 1 : b.count < a.count ? -1 : 0;
       });
+      console.log(unique_taxa, op);
       return op;
     },
     statesTableData: function statesTableData() {
-      var _this5 = this;
+      var _this6 = this;
 
       var op = [];
       Object.keys(this.stateStats).forEach(function (s) {
         if (s != 'All') {
           op.push({
             state: s,
-            observations: _this5.stateStats[s].observations,
-            users: _this5.stateStats[s].users.size,
-            species: _this5.stateStats[s].species.size
+            observations: _this6.stateStats[s].observations,
+            users: _this6.stateStats[s].users.size,
+            species: _this6.stateStats[s].species.size
           });
         }
       });
@@ -2601,11 +2613,32 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         op[o.taxa_rank]++;
       });
       return op;
+    },
+    taxaTableData: function taxaTableData() {
+      var op = {
+        superfamily: 0,
+        family: 0,
+        subfamily: 0,
+        tribe: 0,
+        subtribe: 0,
+        genus: 0,
+        subgenus: 0,
+        species: 0,
+        subspecies: 0,
+        form: 0
+      };
+      var taxa_level = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
+        return o.taxa_rank;
+      }).object(this.inat_data);
+      Object.keys(taxa_level).forEach(function (tl) {
+        if (taxa_level[tl] != undefined) op[tl] = taxa_level[tl].length;
+      });
+      return op;
     }
   },
   methods: {
     nestTest: function nestTest() {
-      var _this6 = this;
+      var _this7 = this;
 
       var levels = ["species", "genus", "tribe", "subfamily", "family", "superfamily"];
       var obv_taxonomy = [];
@@ -2616,14 +2649,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         };
         hierrachy[o.taxa_rank] = o.taxa_name;
 
-        _this6.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
-          if (levels.indexOf(_this6.inat_taxa[id].rank) != -1) {
-            hierrachy[_this6.inat_taxa[id].rank] = _this6.inat_taxa[id].name;
+        _this7.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
+          if (levels.indexOf(_this7.inat_taxa[id].rank) != -1) {
+            hierrachy[_this7.inat_taxa[id].rank] = _this7.inat_taxa[id].name;
           }
         });
 
         levels.forEach(function (l) {
-          if (hierrachy[l] == undefined && levels.indexOf(o.taxa_rank) < levels.indexOf(l)) hierrachy[l] = "";
+          if (hierrachy[l] == undefined && levels.indexOf(o.taxa_rank) < levels.indexOf(l)) hierrachy[l] = "none";
         });
         return hierrachy;
       });
@@ -2640,7 +2673,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }).key(function (o) {
         return o.species;
       });
-      var y = x.object(obv_taxonomy);
+      var y = x.entries(obv_taxonomy);
       console.log(y);
     },
     idLevelBtnClass: function idLevelBtnClass(t) {
@@ -2716,10 +2749,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     onAccordionOpen: function onAccordionOpen(id) {
-      var _this7 = this;
+      var _this8 = this;
 
       Object.keys(this.accordions).forEach(function (key) {
-        _this7.accordions[key] = key == id; // eslint-disable-line eqeqeq
+        _this8.accordions[key] = key == id; // eslint-disable-line eqeqeq
       });
     },
     onAccordionClose: function onAccordionClose(key) {
@@ -2745,16 +2778,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
     },
     setMissingState: function setMissingState(p) {
-      var _this8 = this;
+      var _this9 = this;
 
       this.inat_data.forEach(function (o) {
         if (o.id == p[2]) {
-          _this8.selected_point = o;
+          _this9.selected_point = o;
 
           if (o.state == null) {
-            _this8.set_state = '';
+            _this9.set_state = '';
           } else {
-            _this8.set_state = o.state;
+            _this9.set_state = o.state;
           }
         }
       });
@@ -2769,17 +2802,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         this.selected_users.push(u.id);
       }
     },
-    userTableRowClass: function userTableRowClass(id, u) {
+    userTableRowClass: function userTableRowClass(u) {
       var op = "";
 
       if (this.selected_users.indexOf(u.id) !== -1) {
         op = "user-selected";
       } else {
-        if (id < 10) {
+        if (u.sl_no < 10) {
           op = "first-10";
-        } else if (id < 50) {
+        } else if (u.sl_no < 50) {
           op = "second-50";
-        } else if (id < 100) {
+        } else if (u.sl_no < 100) {
           op = "third-100";
         }
       }
@@ -2838,8 +2871,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
 
       var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#date-chart-continer").append("svg") // .attr("viewBox", [0, 0, width, height])
-      .attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom);
-      var focus = svg.append("g").attr("transform", "translate(".concat(margin.left, ", ").concat(margin.top, ")"));
+      .attr("viewBox", [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom]); // .attr("width",width+margin.left+margin.right)
+      // .attr("height",height+margin.top+margin.bottom);
+
+      var focus = svg.append("g").classed("main-date-chart", true).attr("transform", "translate(".concat(margin.left, ", ").concat(margin.top, ")"));
       var context = svg.append("g").attr("transform", "translate(".concat(margin2.left, ", ").concat(margin2.top, ")"));
       var dataset = this.dateTableData.map(function (d) {
         return d.value;
@@ -2973,7 +3008,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     renderMap: function renderMap() {
-      var _this9 = this;
+      var _this10 = this;
 
       var that = this;
       var height = this.svgHeight * .9;
@@ -2998,22 +3033,22 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var states = base.append("g").classed("states", true);
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
-        var that = _this9;
+        var that = _this10;
         var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
-          that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
+          that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
           that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageX + 10 + 'px');
         }).on('mouseout', function () {
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
 
-        if (_this9.stateData[s_name] == undefined) {
+        if (_this10.stateData[s_name] == undefined) {
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this9.stateData[s_name].length);
+            return colors(_this10.stateData[s_name].length);
           });
         }
       });
@@ -3123,7 +3158,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var height = this.svgHeight;
       var width = this.svgWidth;
       var margin = 40;
-      var data = this.taxa_table_data;
+      var data = this.taxaTableData;
       var total_observations = this.inat_data.length;
       var radius = Math.min(width, height) / 2 - margin;
       var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#taxonomy-chart-continer").append("svg").classed('doughnut-chart d-flex m-auto', true).attr("width", width).attr("height", height).append("g").classed('doughnut-chart', true).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); // set the color scale
@@ -3179,57 +3214,28 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.$refs[ref].close();
     },
     init: function init() {
-      var _this10 = this;
+      var _this11 = this;
 
       if (this.svgWidth > 800) {
         this.svgWidth = window.innerWidth / 2;
       }
 
-      this.stats['All'] = {
-        observations: 0,
-        users: new Set(),
-        species: new Set()
-      };
       _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
-        _this10.state_data[s.properties.ST_NM] = [];
-        _this10.stats[s.properties.ST_NM] = {
-          observations: 0,
-          users: new Set(),
-          species: new Set()
-        };
-      });
-      this.taxa_level = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
-        return o.taxa_rank;
-      }).object(this.inat_data); // this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-
-      Object.keys(this.taxa_level).forEach(function (tl) {
-        if (_this10.taxa_level[tl] != undefined) _this10.taxa_table_data[tl] = _this10.taxa_level[tl].length;else _this10.taxa_table_data[tl] = 0;
+        _this11.state_data[s.properties.ST_NM] = [];
       });
       this.inat_data.forEach(function (o) {
-        _this10.stats['All'].observations++;
-
-        _this10.stats['All'].users.add(o.user_id);
-
-        _this10.stats['All'].species.add(o.taxa_name);
-
         if (o.state == null) {
-          _this10.state_unmatched.push(o);
-        } else if (Object.keys(_this10.state_data).indexOf(o.state) != -1) {
-          _this10.state_data[o.state].push(o);
-
-          _this10.stats[o.state].observations++;
-
-          _this10.stats[o.state].users.add(o.user_id);
-
-          _this10.stats[o.state].species.add(o.taxa_name);
+          _this11.state_unmatched.push(o);
+        } else if (Object.keys(_this11.state_data).indexOf(o.state) != -1) {
+          _this11.state_data[o.state].push(o);
         } else {
-          _this10.$set(_this10.state_data, o.state, [o]);
+          _this11.state_data[o.state].push(o);
 
           console.log("strange state name", o.state, o);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
-        if (_this10.state_data[s].length > _this10.state_max) _this10.state_max = _this10.state_data[s].length;
+        if (_this11.state_data[s].length > _this11.state_max) _this11.state_max = _this11.state_data[s].length;
       });
       this.tooltip = d3__WEBPACK_IMPORTED_MODULE_1__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
       this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_3__.features.map(function (s) {
@@ -3282,7 +3288,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\n.ui-tabs > div, \n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table, \n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\theight: 60vh;\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n#observations-container {\n\t\theight: 75vh;\n\t\toverflow-y: scroll;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;  \n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\n.container-fluid,\n\t\t.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\n.ui-tabs > div, \n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table, \n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\theight: 60vh;\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n#observations-container {\n\t\theight: 75vh;\n\t\toverflow-y: scroll;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;  \n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\n.container-fluid,\n\t\t.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -76822,11 +76828,11 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "tbody",
-                    _vm._l(_vm.userTableData, function(u, id) {
+                    _vm._l(_vm.userTableData, function(u) {
                       return _c(
                         "tr",
                         {
-                          class: _vm.userTableRowClass(id, u),
+                          class: _vm.userTableRowClass(u),
                           on: {
                             click: function($event) {
                               return _vm.seletUser(u)
@@ -76835,7 +76841,7 @@ var render = function() {
                         },
                         [
                           _c("td", {
-                            domProps: { textContent: _vm._s(id + 1) }
+                            domProps: { textContent: _vm._s(u.sl_no) }
                           }),
                           _vm._v(" "),
                           _c("td", { domProps: { textContent: _vm._s(u.id) } }),
@@ -76913,7 +76919,7 @@ var render = function() {
                     staticClass: "d-flex flex-wrap justify-content-center",
                     attrs: { id: "taxa-level-btns" }
                   },
-                  _vm._l(_vm.taxa_table_data, function(t, tname) {
+                  _vm._l(_vm.taxaTableData, function(t, tname) {
                     return _c("button", {
                       key: tname,
                       staticClass: "btn m-2",
