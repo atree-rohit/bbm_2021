@@ -459,6 +459,7 @@ import country from '../country.json'
 				stats: {},
 
 				taxa_level: {},
+				taxa_table_data:{},
 				taxa_tree: this.inat_tree,
 				tabs: [
 					{title:"Location"},
@@ -530,17 +531,37 @@ import country from '../country.json'
 				return  this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			userTableData () {
+				let user_data = this.inat_data
 				let op = []
-				Object.keys(this.user_data).forEach(u => {
-					if(this.selected_state === this.user_data[u][0].state || this.selected_state === 'All'){
+
+				if (this.selected_state != "All"){
+					user_data = user_data.filter(x => x.state === this.selected_state)
+				}
+
+
+				if(this.selected_dates.length > 0){
+					user_data = user_data.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
+				}
+				if(this.selected_taxa_levels.length > 0){
+					user_data = user_data.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+				}
+				user_data = d3.nest().key(o => o.user_id).object(user_data)
+
+				
+				Object.keys(user_data).forEach(u => {
+					if(this.selected_state === user_data[u][0].state || this.selected_state === 'All'){
 						op.push({
 							id: u,
-							name: this.user_data[u][0].user_name,
-							observations: this.user_data[u].length,
-							state: this.user_data[u][0].state
+							name: user_data[u][0].user_name,
+							observations: user_data[u].length,
+							state: user_data[u][0].state
 						})						
 					}
 				})
+				console.log("BEGIN-user_data_section")
+				console.log(user_data)
+				console.log(op)
+				console.log("END-user_data_section")
 
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 				return op
@@ -677,6 +698,35 @@ import country from '../country.json'
 			},
 		},
 		methods: {
+			nestTest(){
+				let levels = ["species", "genus", "tribe", "subfamily", "family", "superfamily"]
+				let obv_taxonomy = []
+				obv_taxonomy = this.inat_data.map(o => {
+					let hierrachy = {
+						id: o.id,
+						rank: o.taxa_rank
+					}
+					hierrachy[o.taxa_rank] = o.taxa_name
+					
+					this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+						if(levels.indexOf(this.inat_taxa[id].rank) != -1){
+							hierrachy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+						}
+					})
+					levels.forEach(l => {
+						if((hierrachy[l] == undefined) && levels.indexOf(o.taxa_rank) < levels.indexOf(l))
+							hierrachy[l] = ""
+					})
+					
+					return hierrachy
+				})
+
+				let x = d3.nest().key(o => o.superfamily).key(o => o.family).key(o => o.subfamily).key(o => o.tribe).key(o => o.genus).key(o => o.species)
+
+				let y = x.object(obv_taxonomy)
+				
+				console.log(y)
+			},
 			idLevelBtnClass (t) {
 				let op = "btn-outline-secondary"
 				switch(t){
@@ -1244,21 +1294,22 @@ import country from '../country.json'
 						species: new Set()
 					}
 				})
+
+				this.taxa_level = d3.nest().key(o => o.taxa_rank).object(this.inat_data)
+				// this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
+
+				Object.keys(this.taxa_level).forEach(tl => {
+					if(this.taxa_level[tl] != undefined)
+						this.taxa_table_data[tl] = this.taxa_level[tl].length
+					else
+						this.taxa_table_data[tl] = 0
+				})
+
 				this.inat_data.forEach(o => {
 					this.stats['All'].observations++
 					this.stats['All'].users.add(o.user_id)
 					this.stats['All'].species.add(o.taxa_name)
-					if(Object.keys(this.user_data).indexOf(o.user_id) != -1){
-						this.user_data[o.user_id].push(o)
-					} else {
-						this.$set(this.user_data,o.user_id,[o])
-					}
-
-					if(Object.keys(this.date_data).indexOf(o.inat_created_at) != -1){
-						this.date_data[o.inat_created_at].push(o)
-					} else {
-						this.$set(this.date_data,o.inat_created_at,[o])
-					}
+					
 
 					if(o.state == null){
 						this.state_unmatched.push(o);
@@ -1271,12 +1322,6 @@ import country from '../country.json'
 						this.$set(this.state_data,o.state,[o])
 						console.log("strange state name", o.state, o)
 					}
-
-					if(Object.keys(this.taxa_level).indexOf(o.taxa_rank) != -1){
-						this.taxa_level[o.taxa_rank].push(o)
-					} else {
-						this.$set(this.taxa_level,o.taxa_rank,[o])
-					}
 				});
 
 				Object.keys(this.state_data).forEach(s => {
@@ -1284,17 +1329,8 @@ import country from '../country.json'
 						this.state_max = this.state_data[s].length;
 				})
 
-				this.taxa_table_data = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-				Object.keys(this.taxa_level).forEach(tl => {
-					this.taxa_table_data[tl] = this.taxa_level[tl].length
-				})
-				this.date_table_data = []
-				Object.keys(this.date_data).forEach(d => {
-					this.date_table_data.push({
-						name: d,
-						value: this.date_data[d].length
-					})
-				})
+				
+
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
