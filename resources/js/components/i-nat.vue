@@ -10,7 +10,7 @@
 	    /*overflow: hidden;*/
 	}
 
-	.ui-tabs > div, 
+	.ui-tabs > div,
 	.ui-tabs > div > div{
 		overflow-x: hidden;
 	}
@@ -94,7 +94,7 @@
 	.cards-table {
 		font-size: calc(1.5rem + 1.5vw);
 	}
-	.cards-table, 
+	.cards-table,
 	.cards-table td{
 		padding: 0;
 		margin: 0;
@@ -136,7 +136,7 @@
 		-moz-column-count:    3;
 		-moz-column-gap:      2px;
 		column-count:         3;
-		column-gap:           2px;  
+		column-gap:           2px;
 		overflow-y: scroll;
 	}
 
@@ -228,7 +228,7 @@
 			-moz-column-count:    2;
 			-moz-column-gap:      1px;
 			column-count:         2;
-			column-gap:           1px;  
+			column-gap:           1px;
 		}
 	}
 </style>
@@ -249,12 +249,13 @@
 				>
 					<div class="svg-container" v-if="tab.title === 'Location'">
 						<!-- <div id="map-container"></div> -->
-						<india-map :map_data="filteredObservations" 
+						<india-map :map_data="filteredObservations"
 								   :height="svgHeight * .9"
-								   :width="svgWidth" 
+								   :width="svgWidth"
 								   :selected_state="selected_state"
 								   :popup="tooltip"
 								   :stateStats="stateStats"
+								   @stateSelected='selectState'
 						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
@@ -440,8 +441,6 @@
 
 <script>
 import axios from 'axios';
-import * as d3 from "d3"
-import * as d3Legend from "d3-svg-legend"
 import country from '../country.json'
 import SpeciesSunburst from './species-sunburst'
 import IndiaMap from './india-map'
@@ -476,11 +475,11 @@ import IndiaMap from './india-map'
 
 				tree_data: this.nestTest(),
 				map_data:null,
-				
+
 				svgWidth: window.innerWidth * 0.6,
 				svgHeight: window.innerHeight * 0.9,
 				tooltip: null,
-				
+
 				observationsPerPage: 100,
 				observationsPageNo: 1,
 				accordions: {
@@ -599,7 +598,7 @@ import IndiaMap from './india-map'
 				if(this.selected_taxa_levels.length > 0){
 					observations = observations.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
 				}
-				for(var i = 1; i<31; i++){
+				for(var i = 0; i<31; i++){
 					date_data[i] = 0
 				}
 				observations.forEach(o => {
@@ -609,10 +608,10 @@ import IndiaMap from './india-map'
 				})
 
 				Object.keys(date_data).forEach(d => {
-					op.push({
+					op[d] = {
 						name: d,
 						value: date_data[d]
-					})
+					}
 				})
 
 
@@ -640,7 +639,7 @@ import IndiaMap from './india-map'
 					if(o.state !== null){
 						op[o.state].observations++
 						op[o.state].users.add(o.user_id)
-						op[o.state].species.add(o.taxa_name)						
+						op[o.state].species.add(o.taxa_name)
 					}
 				});
 
@@ -674,7 +673,7 @@ import IndiaMap from './india-map'
 				})
 
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
-				console.log(unique_taxa, op)
+				// console.log(unique_taxa, op)
 				return op
 			},
 			statesTableData () {
@@ -730,7 +729,7 @@ import IndiaMap from './india-map'
 						hierrachy[o.taxa_rank] = o.taxa_name
 						hierrachy.key = o.taxa_name
 						hierrachy[`id_${o.taxa_rank}`] = o.taxa_id
-						
+
 						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
 							if(levels.indexOf(this.inat_taxa[id].rank) != -1){
 								hierrachy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
@@ -741,7 +740,7 @@ import IndiaMap from './india-map'
 							if((hierrachy[l] == undefined) && levels.indexOf(o.taxa_rank) < levels.indexOf(l))
 								hierrachy[l] = "none"
 						})
-						
+
 						return hierrachy
 					})
 
@@ -756,7 +755,7 @@ import IndiaMap from './india-map'
 				})
 				return unique_species_taxonomy
 
-					
+
 				/*
 				let x = d3.nest().key(o => o.superfamily).key(o => o.family).key(o => o.subfamily).key(o => o.tribe).key(o => o.genus).key(o => o.species).entries(unique_species_taxonomy)
 				// console.log(x)
@@ -767,7 +766,7 @@ import IndiaMap from './india-map'
 					}
 
 				let h = d3.hierarchy(tree, item => item.values)
-				
+
 				console.log(h)
 				console.log(h.leaves())
 				*/
@@ -890,7 +889,7 @@ import IndiaMap from './india-map'
 						op = "second-50"
 					} else if (u.sl_no < 100) {
 						op = "third-100"
-					}					
+					}
 				}
 				return op;
 			},
@@ -902,7 +901,7 @@ import IndiaMap from './india-map'
 			taxaClick (t) {
 				if(this.selected_taxa != t)
 					this.selected_taxa = t
-				else 
+				else
 					this.selected_taxa = '';
 			},
 			fullDate (d) {
@@ -949,15 +948,14 @@ import IndiaMap from './india-map'
 								.attr("transform", `translate(${margin2.left}, ${margin2.top})`)
 
 				let dataset = this.dateTableData.map(d => d.value)
-				dataset.pop()
-				dataset.unshift(0)
+
 				var maxHeight=d3.max(dataset,function(d){return d})
                 var minHeight=d3.min(dataset,function(d){return d})
 
                 var yScale = d3.scaleLinear().range([0,height]).domain([maxHeight*1.1,0])
-				var xScale = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length+1,1)).padding(0.1)
+				var xScale = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length,1)).padding(0.1)
 				var yScale2 = d3.scaleLinear().range([0,height2]).domain([maxHeight*1.1,0])
-				var xScale2 = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length+1,1)).padding(0.1)
+				var xScale2 = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length,1)).padding(0.1)
 
 				var yAxis = d3.axisLeft(yScale).tickSize(-width)
 				var yAxisGroup = focus.append("g").call(yAxis)
@@ -970,9 +968,9 @@ import IndiaMap from './india-map'
 				var bars1 = focus.selectAll("rect").data(dataset).enter().append("rect")
 				bars1.attr("x",function(d,i){
 					return xScale(i)//i*(width/dataset.length)
-					})
+				})
 					.attr("y",function(d){
-					return yScale(d)
+						return yScale(d)
 					})//for bottom to top
 					.attr("width", xScale.bandwidth()/*width/dataset.length-barpadding*/)
 					.attr("height", function(d){
@@ -1225,10 +1223,11 @@ import IndiaMap from './india-map'
 				}
 			},
 			selectState (s) {
+				// console.log("Parent : selectState()", s)
 				if (this.selected_state == s) {
 					this.selected_state = 'All'
 				} else {
-					this.selected_state = s					
+					this.selected_state = s
 				}
 				// this.renderMap()
 			},
@@ -1238,7 +1237,7 @@ import IndiaMap from './india-map'
 				let margin = 40
 				let data = this.taxaTableData
 				let total_observations = this.inat_data.length
-				
+
   				var radius = Math.min(width, height) / 2 - margin
 
   				var svg = d3.select("#taxonomy-chart-continer")
@@ -1312,7 +1311,7 @@ import IndiaMap from './india-map'
 				if (this.selected_taxa_levels.indexOf(tname) != -1) {
 						op = "btn-success"
 				}
-				return op				
+				return op
 			},
 			openModal (ref) {
 				//
@@ -1347,7 +1346,7 @@ import IndiaMap from './india-map'
 						this.state_max = this.state_data[s].length;
 				})
 
-				
+
 
 				this.tooltip = d3.select('body')
 							    .append('div')
@@ -1360,7 +1359,7 @@ import IndiaMap from './india-map'
 							    .style('border-radius', '4px')
 							    .style('color', '#fff')
 							    .text('a simple tooltip');
-				
+
 				this.all_states = country.features.map(s => s.properties.ST_NM)
 			}
 		}

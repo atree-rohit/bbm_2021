@@ -1,17 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/@babel/runtime/regenerator/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
-  \**********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
-
-
-/***/ }),
-
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
@@ -1858,11 +1847,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
-/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
-/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
-/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
+/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
+/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2323,8 +2310,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-
-
+//
 
 
 
@@ -2333,8 +2319,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   name: "i-nat",
   props: ["inat_data", "inat_taxa"],
   components: {
-    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_4__.default,
-    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_5__.default
+    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_2__.default,
+    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_3__.default
   },
   data: function data() {
     return {
@@ -2461,7 +2447,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
       }
 
-      user_data = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
+      user_data = d3.nest().key(function (o) {
         return o.user_id;
       }).object(user_data);
       Object.keys(user_data).forEach(function (u) {
@@ -2506,7 +2492,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
       }
 
-      for (var i = 1; i < 31; i++) {
+      for (var i = 0; i < 31; i++) {
         date_data[i] = 0;
       }
 
@@ -2516,10 +2502,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
       });
       Object.keys(date_data).forEach(function (d) {
-        op.push({
+        op[d] = {
           name: d,
           value: date_data[d]
-        });
+        };
       });
       return op;
     },
@@ -2543,7 +2529,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         users: new Set(),
         species: new Set()
       };
-      _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         op[s.properties.ST_NM] = {
           observations: 0,
           users: new Set(),
@@ -2575,7 +2561,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
       }
 
-      var unique_taxa = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
+      var unique_taxa = d3.nest().key(function (o) {
         return o.taxa_name;
       }).object(state_observations);
       var y = [];
@@ -2596,8 +2582,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
       op.sort(function (a, b) {
         return a.count < b.count ? 1 : b.count < a.count ? -1 : 0;
-      });
-      console.log(unique_taxa, op);
+      }); // console.log(unique_taxa, op)
+
       return op;
     },
     statesTableData: function statesTableData() {
@@ -2643,7 +2629,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         subspecies: 0,
         form: 0
       };
-      var taxa_level = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
+      var taxa_level = d3.nest().key(function (o) {
         return o.taxa_rank;
       }).object(this.inat_data);
       Object.keys(taxa_level).forEach(function (tl) {
@@ -2704,8 +2690,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       		values: x
       	}
       	let h = d3.hierarchy(tree, item => item.values)
-      
-      console.log(h)
+      	console.log(h)
       console.log(h.leaves())
       */
     },
@@ -2899,11 +2884,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var height2 = this.svgHeight * .6 - margin2.top - margin2.bottom;
       var that = this;
 
-      if (!d3__WEBPACK_IMPORTED_MODULE_1__.select("#date-chart-continer svg").empty()) {
-        d3__WEBPACK_IMPORTED_MODULE_1__.selectAll("#date-chart-continer svg").remove();
+      if (!d3.select("#date-chart-continer svg").empty()) {
+        d3.selectAll("#date-chart-continer svg").remove();
       }
 
-      var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#date-chart-continer").append("svg") // .attr("viewBox", [0, 0, width, height])
+      var svg = d3.select("#date-chart-continer").append("svg") // .attr("viewBox", [0, 0, width, height])
       .attr("viewBox", [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom]); // .attr("width",width+margin.left+margin.right)
       // .attr("height",height+margin.top+margin.bottom);
 
@@ -2912,23 +2897,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var dataset = this.dateTableData.map(function (d) {
         return d.value;
       });
-      dataset.pop();
-      dataset.unshift(0);
-      var maxHeight = d3__WEBPACK_IMPORTED_MODULE_1__.max(dataset, function (d) {
+      var maxHeight = d3.max(dataset, function (d) {
         return d;
       });
-      var minHeight = d3__WEBPACK_IMPORTED_MODULE_1__.min(dataset, function (d) {
+      var minHeight = d3.min(dataset, function (d) {
         return d;
       });
-      var yScale = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().range([0, height]).domain([maxHeight * 1.1, 0]);
-      var xScale = d3__WEBPACK_IMPORTED_MODULE_1__.scaleBand().rangeRound([0, width]).domain(d3__WEBPACK_IMPORTED_MODULE_1__.range(1, dataset.length + 1, 1)).padding(0.1);
-      var yScale2 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().range([0, height2]).domain([maxHeight * 1.1, 0]);
-      var xScale2 = d3__WEBPACK_IMPORTED_MODULE_1__.scaleBand().rangeRound([0, width]).domain(d3__WEBPACK_IMPORTED_MODULE_1__.range(1, dataset.length + 1, 1)).padding(0.1);
-      var yAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisLeft(yScale).tickSize(-width);
+      var yScale = d3.scaleLinear().range([0, height]).domain([maxHeight * 1.1, 0]);
+      var xScale = d3.scaleBand().rangeRound([0, width]).domain(d3.range(1, dataset.length, 1)).padding(0.1);
+      var yScale2 = d3.scaleLinear().range([0, height2]).domain([maxHeight * 1.1, 0]);
+      var xScale2 = d3.scaleBand().rangeRound([0, width]).domain(d3.range(1, dataset.length, 1)).padding(0.1);
+      var yAxis = d3.axisLeft(yScale).tickSize(-width);
       var yAxisGroup = focus.append("g").call(yAxis);
-      var xAxis = d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(xScale);
+      var xAxis = d3.axisBottom(xScale);
       var xAxisGroup = focus.append("g").call(xAxis).attr("transform", "translate(0," + height + ")");
-      var xAxis2 = d3__WEBPACK_IMPORTED_MODULE_1__.axisBottom(xScale2);
+      var xAxis2 = d3.axisBottom(xScale2);
       var xAxisGroup2 = context.append("g").call(xAxis2).attr("transform", "translate(0," + height2 + ")");
       var bars1 = focus.selectAll("rect").data(dataset).enter().append("rect");
       bars1.attr("x", function (d, i) {
@@ -2944,7 +2927,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       bars1.attr("fill", "steelblue").on('mouseover', function (d, i) {
         that.tooltip.html("<div>".concat(d, " Observations</div>")).style('visibility', 'visible');
       }).on('mousemove', function () {
-        that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageX + 10 + 'px');
+        that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
       }).on('mouseout', function () {
         that.tooltip.html("").style('visibility', 'hidden');
       });
@@ -2960,22 +2943,22 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return height2 - yScale2(d);
       });
       bars2.attr("fill", "red");
-      var brush = d3__WEBPACK_IMPORTED_MODULE_1__.brushX().extent([[0, 0], [width, height2]]) //(x0,y0)  (x1,y1)
+      var brush = d3.brushX().extent([[0, 0], [width, height2]]) //(x0,y0)  (x1,y1)
       .on("brush", brushed) //when mouse up, move the selection to the exact tick //start(mouse down), brush(mouse move), end(mouse up)
       .on("end", brushend);
       context.append("g").attr("class", "brush").call(brush).call(brush.move, xScale2.range());
 
       function brushed() {
-        if (!d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent) return; // Only transition after input.
+        if (!d3.event.sourceEvent) return; // Only transition after input.
 
-        if (!d3__WEBPACK_IMPORTED_MODULE_1__.event.selection) return; // Ignore empty selections.
+        if (!d3.event.selection) return; // Ignore empty selections.
 
-        if (d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent && d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent.type === "zoom") return; // ignore brush-by-
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
         //scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
         //The idea here is to count all the bar chart in the brush area. And reset the domain
 
         var newInput = [];
-        var brushArea = d3__WEBPACK_IMPORTED_MODULE_1__.event.selection;
+        var brushArea = d3.event.selection;
         if (brushArea === null) brushArea = xScale.range();
         xScale2.domain().forEach(function (d) {
           var pos = xScale2(d) + xScale2.bandwidth() / 2;
@@ -3005,16 +2988,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
 
       function brushend() {
-        if (!d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent) return; // Only transition after input.
+        if (!d3.event.sourceEvent) return; // Only transition after input.
 
-        if (!d3__WEBPACK_IMPORTED_MODULE_1__.event.selection) return; // Ignore empty selections.
+        if (!d3.event.selection) return; // Ignore empty selections.
 
-        if (d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent && d3__WEBPACK_IMPORTED_MODULE_1__.event.sourceEvent.type === "zoom") return; // ignore brush-by-
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
         //scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
         //The idea here is to count all the bar chart in the brush area. And reset the domain
 
         var newInput = [];
-        var brushArea = d3__WEBPACK_IMPORTED_MODULE_1__.event.selection;
+        var brushArea = d3.event.selection;
         if (brushArea === null) brushArea = xScale.range();
         xScale2.domain().forEach(function (d) {
           var pos = xScale2(d) + xScale2.bandwidth() / 2;
@@ -3025,10 +3008,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }); //relocate the position of brush area
 
         var increment = 0;
-        var left = xScale2(d3__WEBPACK_IMPORTED_MODULE_1__.min(newInput));
-        var right = xScale2(d3__WEBPACK_IMPORTED_MODULE_1__.max(newInput)) + xScale2.bandwidth();
+        var left = xScale2(d3.min(newInput));
+        var right = xScale2(d3.max(newInput)) + xScale2.bandwidth();
         that.selected_dates = newInput;
-        d3__WEBPACK_IMPORTED_MODULE_1__.select(this).transition().call(d3__WEBPACK_IMPORTED_MODULE_1__.event.target.move, [left, right]); //The inner padding determines the ratio of the range that is reserved for blank space between bands.
+        d3.select(this).transition().call(d3.event.target.move, [left, right]); //The inner padding determines the ratio of the range that is reserved for blank space between bands.
       }
     },
     selectDate: function selectDate(d) {
@@ -3051,26 +3034,26 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         height /= 3;
       }
 
-      if (!d3__WEBPACK_IMPORTED_MODULE_1__.select("#map-container svg").empty()) {
-        d3__WEBPACK_IMPORTED_MODULE_1__.selectAll("#map-container svg").remove();
+      if (!d3.select("#map-container svg").empty()) {
+        d3.selectAll("#map-container svg").remove();
       }
 
-      var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
-      var projection = d3__WEBPACK_IMPORTED_MODULE_1__.geoMercator().scale(850).center([87, 25.5]);
-      var path = d3__WEBPACK_IMPORTED_MODULE_1__.geoPath().projection(projection);
-      var colors = d3__WEBPACK_IMPORTED_MODULE_1__.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
-      var legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__.legendColor().scale(colors).shapeWidth(55).labelFormat(d3__WEBPACK_IMPORTED_MODULE_1__.format(".0f")).orient('horizontal').cells(6);
+      var svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
+      var projection = d3.geoMercator().scale(850).center([87, 25.5]);
+      var path = d3.geoPath().projection(projection);
+      var colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
+      var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6);
       var base = svg.append("g").classed("map-boundary", true);
       var base_text = base.selectAll("text").append("g");
       base = base.selectAll("path").append("g");
       var states = base.append("g").classed("states", true);
-      _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (state) {
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
         var that = _this10;
         var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
           that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
-          that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageX + 10 + 'px');
+          that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
         }).on('mouseout', function () {
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
@@ -3085,8 +3068,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           });
         }
       });
-      var zoom = d3__WEBPACK_IMPORTED_MODULE_1__.zoom().scaleExtent([.25, 20]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
-        svg.selectAll('.poly_text').attr('transform', d3__WEBPACK_IMPORTED_MODULE_1__.event.transform), svg.selectAll('path').attr('transform', d3__WEBPACK_IMPORTED_MODULE_1__.event.transform), svg.selectAll('circle').attr('transform', d3__WEBPACK_IMPORTED_MODULE_1__.event.transform).attr("r", 2 / d3__WEBPACK_IMPORTED_MODULE_1__.event.transform.k);
+      var zoom = d3.zoom().scaleExtent([.25, 20]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
+        svg.selectAll('.poly_text').attr('transform', d3.event.transform), svg.selectAll('path').attr('transform', d3.event.transform), svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
       });
       svg.call(zoom);
       mapPoints();
@@ -3109,11 +3092,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         states.transition().style("fill", null);
 
         if (that.selected_state != 'All') {
-          d3__WEBPACK_IMPORTED_MODULE_1__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
+          d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
         }
 
         if (that.selected_state == state) {
-          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_3__);
+          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_1__);
 
           var _path$bounds2 = _slicedToArray(_path$bounds, 2);
 
@@ -3142,16 +3125,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           x1 = _path$bounds4$2[0];
           y1 = _path$bounds4$2[1];
           that.selected_state = state;
-          d3__WEBPACK_IMPORTED_MODULE_1__.select(this).transition().style("fill", "gold");
+          d3.select(this).transition().style("fill", "gold");
         }
 
-        svg.transition().duration(750).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_1__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
         mapPoints();
       }
 
       function mapPoints() {
-        if (!d3__WEBPACK_IMPORTED_MODULE_1__.select("#map-container .map-points").empty()) {
-          d3__WEBPACK_IMPORTED_MODULE_1__.selectAll(".map-points").remove();
+        if (!d3.select("#map-container .map-points").empty()) {
+          d3.selectAll(".map-points").remove();
         }
 
         var points = [];
@@ -3180,6 +3163,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     selectState: function selectState(s) {
+      // console.log("Parent : selectState()", s)
       if (this.selected_state == s) {
         this.selected_state = 'All';
       } else {
@@ -3194,15 +3178,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var data = this.taxaTableData;
       var total_observations = this.inat_data.length;
       var radius = Math.min(width, height) / 2 - margin;
-      var svg = d3__WEBPACK_IMPORTED_MODULE_1__.select("#taxonomy-chart-continer").append("svg").classed('doughnut-chart d-flex m-auto', true).attr("width", width).attr("height", height).append("g").classed('doughnut-chart', true).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); // set the color scale
+      var svg = d3.select("#taxonomy-chart-continer").append("svg").classed('doughnut-chart d-flex m-auto', true).attr("width", width).attr("height", height).append("g").classed('doughnut-chart', true).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); // set the color scale
 
-      var color = d3__WEBPACK_IMPORTED_MODULE_1__.scaleOrdinal().domain(data).range(d3__WEBPACK_IMPORTED_MODULE_1__.schemeSet2); // Compute the position of each group on the pie:
+      var color = d3.scaleOrdinal().domain(data).range(d3.schemeSet2); // Compute the position of each group on the pie:
 
-      var pie = d3__WEBPACK_IMPORTED_MODULE_1__.pie().value(function (d) {
+      var pie = d3.pie().value(function (d) {
         return d.value;
       });
-      var data_ready = pie(d3__WEBPACK_IMPORTED_MODULE_1__.entries(data));
-      var arcGenerator = d3__WEBPACK_IMPORTED_MODULE_1__.arc().innerRadius(50).outerRadius(radius); // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+      var data_ready = pie(d3.entries(data));
+      var arcGenerator = d3.arc().innerRadius(50).outerRadius(radius); // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
 
       var that = this;
       svg.selectAll('mySlices').data(data_ready).enter().append('path').attr('d', arcGenerator).attr('fill', function (d) {
@@ -3210,7 +3194,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }).attr("stroke", "black").style("stroke-width", ".25px").style("opacity", 0.7).on('mouseover', function (d, i) {
         that.tooltip.html("<div>Rank: ".concat(d.data.key, "</div><div>Observations: ").concat(Math.round(Math.exp(d.value)), "</div><div>Percent of Total: ").concat(Math.round(Math.round(Math.exp(d.value)) / total_observations * 10000) / 100, "%")).style('visibility', 'visible');
       }).on('mousemove', function () {
-        that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_1__.event.pageX + 10 + 'px');
+        that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
       }).on('mouseout', function () {
         that.tooltip.html("").style('visibility', 'hidden');
       });
@@ -3253,7 +3237,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         this.svgWidth = window.innerWidth / 2;
       }
 
-      _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         _this11.state_data[s.properties.ST_NM] = [];
       });
       this.inat_data.forEach(function (o) {
@@ -3270,8 +3254,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       Object.keys(this.state_data).forEach(function (s) {
         if (_this11.state_data[s].length > _this11.state_max) _this11.state_max = _this11.state_data[s].length;
       });
-      this.tooltip = d3__WEBPACK_IMPORTED_MODULE_1__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
-      this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_3__.features.map(function (s) {
+      this.tooltip = d3.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
+      this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_1__.features.map(function (s) {
         return s.properties.ST_NM;
       });
     }
@@ -3291,9 +3275,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
-/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -3310,8 +3292,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
-
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "india-map",
@@ -3330,7 +3319,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   computed: {
     stateData: function stateData() {
       var op = {};
-      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (s) {
+      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (s) {
         op[s.properties.ST_NM] = [];
       });
       this.map_data.forEach(function (o) {
@@ -3338,6 +3327,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           op[o.state].push(o);
         }
       });
+      return op;
+    },
+    selectedGeoJson: function selectedGeoJson() {
+      var _this = this;
+
+      var op = {
+        properties: {
+          ST_NM: 'All'
+        }
+      };
+
+      if (this.selected_state !== 'All') {
+        Object.keys(_country_json__WEBPACK_IMPORTED_MODULE_0__.features).forEach(function (c) {
+          if (_country_json__WEBPACK_IMPORTED_MODULE_0__.features[c].properties.ST_NM === _this.selected_state) {
+            op = _country_json__WEBPACK_IMPORTED_MODULE_0__.features[c];
+          }
+        });
+      }
+
       return op;
     }
   },
@@ -3348,30 +3356,27 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   methods: {
     init: function init() {
-      var _this = this;
+      var _this2 = this;
 
       this.map_first_render = true;
-      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (s) {
-        _this.state_data[s.properties.ST_NM] = [];
+      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (s) {
+        _this2.state_data[s.properties.ST_NM] = [];
       });
       this.map_data.forEach(function (o) {
-        if (Object.keys(_this.state_data).indexOf(o.state) != -1) {
-          _this.state_data[o.state].push(o);
+        if (Object.keys(_this2.state_data).indexOf(o.state) != -1) {
+          _this2.state_data[o.state].push(o);
         } else {
           console.log("unmatched state name", o.state, o);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
-        if (_this.state_data[s].length > _this.state_max) _this.state_max = _this.state_data[s].length;
+        if (_this2.state_data[s].length > _this2.state_max) _this2.state_max = _this2.state_data[s].length;
       });
-      this.tooltip = d3__WEBPACK_IMPORTED_MODULE_0__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
-      this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_2__.features.map(function (s) {
-        return s.properties.ST_NM;
-      });
+      this.tooltip = d3.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
       this.renderMap();
     },
     renderMap: function renderMap() {
-      var _this2 = this;
+      var _this3 = this;
 
       var that = this;
       var height = this.height;
@@ -3381,53 +3386,56 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         height /= 3;
       }
 
-      if (!d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container svg").empty()) {
-        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll("#map-container svg").remove();
+      if (!d3.select("#map-container svg").empty()) {
+        d3.selectAll("#map-container svg").remove();
       }
 
-      var svg = d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
-      var projection = d3__WEBPACK_IMPORTED_MODULE_0__.geoMercator().scale(850).center([87, 25.5]);
-      var path = d3__WEBPACK_IMPORTED_MODULE_0__.geoPath().projection(projection);
-      var colors = d3__WEBPACK_IMPORTED_MODULE_0__.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
-      var legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_1__.legendColor().scale(colors).shapeWidth(55).labelFormat(d3__WEBPACK_IMPORTED_MODULE_0__.format(".0f")).orient('horizontal').cells(6);
+      var svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
+      var projection = d3.geoMercator().scale(850).center([87, 25.5]);
+      var path = d3.geoPath().projection(projection);
+      var colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
+      var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6);
       var base = svg.append("g").classed("map-boundary", true);
       var base_text = base.selectAll("text").append("g");
       base = base.selectAll("path").append("g");
       var states = base.append("g").classed("states", true);
-      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (state) {
+      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
-        var that = _this2;
+        var that = _this3;
         var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
-          that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
+          that.tooltip.html("<table>\n\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
-          that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_0__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_0__.event.pageX + 10 + 'px');
+          that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
         }).on('mouseout', function () {
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
 
-        if (_this2.stateData[s_name] == undefined) {
+        if (_this3.stateData[s_name] == undefined) {
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
+        } else if (s_name == _this3.selected_state) {
+          current_state.classed("selected", true);
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this2.stateData[s_name].length);
+            return colors(_this3.stateData[s_name].length);
           });
         }
       });
-      var zoom = d3__WEBPACK_IMPORTED_MODULE_0__.zoom().scaleExtent([.25, 20]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
-        svg.selectAll('.poly_text').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform), svg.selectAll('path').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform), svg.selectAll('circle').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform).attr("r", 2 / d3__WEBPACK_IMPORTED_MODULE_0__.event.transform.k);
+      var zoom = d3.zoom().scaleExtent([.1, 50]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
+        svg.selectAll('.poly_text').attr('transform', d3.event.transform), svg.selectAll('path').attr('transform', d3.event.transform), svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
       });
       svg.call(zoom);
-      mapPoints();
 
       if (this.map_first_render) {
-        map_init();
+        // console.log(this.selected_state)
+        map_init(this.selectedGeoJson);
         this.map_first_render = false;
+        mapPoints();
       }
 
-      function map_init() {
-        var state = "All";
+      function map_init(d) {
+        var state = d.properties.ST_NM;
         var x0 = 0,
             y0 = 0,
             x1 = 0,
@@ -3435,11 +3443,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         states.transition().style("fill", null);
 
         if (that.selected_state != 'All') {
-          d3__WEBPACK_IMPORTED_MODULE_0__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
+          d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
         }
 
-        if (that.selected_state == state) {
-          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_2__);
+        if (that.selected_state == 'All') {
+          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_0__);
 
           var _path$bounds2 = _slicedToArray(_path$bounds, 2);
 
@@ -3452,7 +3460,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           x1 = _path$bounds2$2[0];
           y1 = _path$bounds2$2[1];
-          that.selected_state = 'All';
         } else {
           var _path$bounds3 = path.bounds(d);
 
@@ -3467,15 +3474,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           x1 = _path$bounds4$2[0];
           y1 = _path$bounds4$2[1];
-          that.selected_state = state;
-          d3__WEBPACK_IMPORTED_MODULE_0__.select(this).transition().style("fill", "gold");
+          d3.select(this).transition().style("fill", "gold");
         }
 
-        svg.transition().duration(1).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_0__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
-        mapPoints();
+        svg.transition().duration(751).call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
       }
 
       function clicked(d) {
+        that.tooltip.html("").style('visibility', 'hidden');
         var state = d.properties.ST_NM;
         var x0 = 0,
             y0 = 0,
@@ -3484,11 +3490,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         states.transition().style("fill", null);
 
         if (that.selected_state != 'All') {
-          d3__WEBPACK_IMPORTED_MODULE_0__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
+          d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
         }
 
         if (that.selected_state == state) {
-          var _path$bounds5 = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_2__);
+          var _path$bounds5 = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_0__);
 
           var _path$bounds6 = _slicedToArray(_path$bounds5, 2);
 
@@ -3501,7 +3507,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           x1 = _path$bounds6$2[0];
           y1 = _path$bounds6$2[1];
-          that.selected_state = 'All';
+          that.$emit('stateSelected', 'All');
         } else {
           var _path$bounds7 = path.bounds(d);
 
@@ -3516,23 +3522,22 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           x1 = _path$bounds8$2[0];
           y1 = _path$bounds8$2[1];
-          that.selected_state = state;
-          d3__WEBPACK_IMPORTED_MODULE_0__.select(this).transition().style("fill", "gold");
+          that.$emit('stateSelected', state);
+          d3.select(this).transition().style("fill", "gold");
         }
 
-        svg.transition().duration(750).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_0__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
-        mapPoints();
+        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
       }
 
       function mapPoints() {
-        if (!d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container .map-points").empty()) {
-          d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".map-points").remove();
+        if (!d3.select("#map-container .map-points").empty()) {
+          d3.selectAll(".map-points").remove();
         }
 
         var points = [];
 
         if (that.selected_state != 'All') {
-          console.log(that.selected_state);
+          // console.log(that.selected_state);
           that.state_data[that.selected_state].forEach(function (o) {
             var coords = o.location.split(",");
             points.push([coords[1], coords[0], o.id, o.place_guess]);
@@ -3564,61 +3569,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -3629,200 +3586,301 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   props: ["tree_data"],
   data: function data() {
     return {
-      width: 500,
-      height: 300,
-      padding: 4,
-      $dataset: null,
-
-      /** @type {d3.HierarchyPointNode} */
-      h: null,
-      intIndex: 28,
-      nestOrder: ['superfamily', 'family', 'subfamily', 'genus']
+      width: 600,
+      height: 600,
+      radius: 100,
+      margin: {
+        top: 50,
+        right: 50,
+        left: 50,
+        bottom: 50
+      },
+      g: "",
+      path: "",
+      parent: "",
+      label: "",
+      speciesData: [],
+      root: {}
     };
   },
-  filters: {
-    formatNumber: function formatNumber(val) {
-      return d3__WEBPACK_IMPORTED_MODULE_1__.format('.3~s')(val).replace(/G/gi, 'B');
-    },
-    noSpaces: function noSpaces(val) {
-      return val.replace(/\s/gi, '');
-    }
-  },
   computed: {
-    layout: function layout() {
-      var layout = d3__WEBPACK_IMPORTED_MODULE_1__.pack().size([this.width, this.height]).padding(this.padding); // .radius(v => v.value)
-
-      return layout;
-    },
-    extent: function extent() {
-      if (this.h) {
-        return d3__WEBPACK_IMPORTED_MODULE_1__.extent(this.h.descendants(), function (n) {
-          return n.value;
-        });
-      }
-    },
-
-    /**
-    * Map colors to the value of each node
-    */
-    colorScale: function colorScale() {
-      if (this.h) {
-        var values = this.h.descendants().map(function (n) {
-          return n.value;
-        });
-
-        var _d3$extent = d3__WEBPACK_IMPORTED_MODULE_1__.extent(values),
-            _d3$extent2 = _slicedToArray(_d3$extent, 2),
-            min = _d3$extent2[0],
-            max = _d3$extent2[1];
-
-        var count = values.length;
-        var colors = d3__WEBPACK_IMPORTED_MODULE_1__.schemePaired;
-        d3__WEBPACK_IMPORTED_MODULE_1__.shuffle(colors); // colors.push('red')
-
-        return d3__WEBPACK_IMPORTED_MODULE_1__.scaleThreshold().domain(d3__WEBPACK_IMPORTED_MODULE_1__.ticks(min, max * 1.5, count)).range(colors);
-      }
-    },
-    fontScale: function fontScale() {
-      if (this.h) {
-        return d3__WEBPACK_IMPORTED_MODULE_1__.scalePow() // .exponent(0.85)
-        .domain(this.extent).range([5, 100]).clamp(true);
-      }
-    },
-
-    /**
-    * The branch nodes to be rendered
-    */
-    nodes: function nodes() {
-      if (this.h) {
-        return this.h.descendants();
-      } else {
-        return null;
-      }
-    },
-    nester: function nester() {
-      var n = d3__WEBPACK_IMPORTED_MODULE_1__.nest();
-      this.nestOrder.forEach(function (str) {
-        n.key(function (node) {
-          return node[str];
-        });
-      });
-      return n;
+    color: function color() {
+      return d3__WEBPACK_IMPORTED_MODULE_0__.scaleOrdinal(d3__WEBPACK_IMPORTED_MODULE_0__.quantize(d3__WEBPACK_IMPORTED_MODULE_0__.interpolateWarm, this.speciesData.children.length + 4));
     }
   },
-  watch: {
-    layout: function layout() {
-      if (!this.h) return;
-      this.layout(this.h);
-    },
-    nester: function nester() {
-      this.initHierarchy(this.$data.$dataset);
-    }
-  },
+  watch: {},
   mounted: function mounted() {
-    var _this = this;
-
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
-      var data;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              // Assign Sizes
-              _this.updateSize(); // 1. Load the data
-
-
-              data = _this.tree_data;
-              _this.$data.$dataset = Object.freeze(data);
-
-              _this.initHierarchy(_this.$data.$dataset);
-
-              _this.initHierarchy(_this.tree_data);
-
-              window.myComponent = _this;
-
-              _this.$once('hook:beforeDestroy', function () {
-                delete window.myComponent;
-              });
-
-            case 7:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
+    var speciesTree = [];
+    this.tree_data.forEach(function (d) {
+      speciesTree.push([d.superfamily, d.family, d.subfamily, d.tribe, d.genus, d.species]);
+    });
+    this.speciesData = this.createTree(speciesTree, "Life");
+    this.root = this.partition(this.speciesData);
+    this.root.each(function (d) {
+      return d.current = d;
+    });
+    this.init();
   },
   methods: {
-    updateSize: function updateSize() {
-      var _this$$el$getBounding = this.$el.getBoundingClientRect(),
-          width = _this$$el$getBounding.width,
-          height = _this$$el$getBounding.height,
-          bottom = _this$$el$getBounding.bottom; // console.log(this.$el.getBoundingClientRect())
+    init: function init() {
+      var _this = this;
 
+      var svg = d3__WEBPACK_IMPORTED_MODULE_0__.select("#sunburstChart").append("svg").classed("bg-dark border boorder-primary rounded", true).attr("width", this.width).attr("height", this.height);
+      var arc = d3__WEBPACK_IMPORTED_MODULE_0__.arc().startAngle(function (d) {
+        return d.x0;
+      }).endAngle(function (d) {
+        return d.x1;
+      }).padAngle(function (d) {
+        return Math.min((d.x1 - d.x0) / 2, 0.01);
+      }).padRadius(this.radius * 1.5).innerRadius(function (d) {
+        return d.y0 * _this.radius;
+      }).outerRadius(function (d) {
+        return Math.max(d.y0 * _this.radius, d.y1 * _this.radius);
+      });
+      this.g = svg.append("g").attr("transform", "translate(".concat(this.width / 2, ",").concat(this.height / 2, ")"));
+      this.path = this.g.append("g").classed("d3-arcs", true).selectAll("path").data(this.root.descendants().slice(1)).join("path").attr("fill", function (d) {
+        while (d.depth > 2) {
+          d = d.parent;
+        }
 
-      this.width = width / 2;
-      this.height = bottom;
+        return _this.color(d.data.name);
+      }).attr("fill-opacity", function (d) {
+        return _this.arcVisible(d.current) ? d.children ? 0.3 : 0.1 : 0;
+      }).attr("stroke", "white").attr("stroke-width", function (d) {
+        return _this.arcVisible(d.current) ? d.children ? "1px" : "1px" : "0px";
+      }).attr("d", function (d) {
+        return arc(d.current);
+      });
+      this.path.filter(function (d) {
+        return d.current;
+      }).style("cursor", "pointer").on("mouseover", function (d) {
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(this).classed("selected", true);
+      }).on("mouseout", function (d) {
+        d3__WEBPACK_IMPORTED_MODULE_0__.select(this).classed("selected", false);
+      }).on("click", function (event, d) {
+        console.log(d);
+        if (_this.arcVisible(d.current)) _this.clicked(d);
+      });
+      this.path.append("title").text(function (d) {
+        return "".concat(d.ancestors().map(function (d) {
+          return d.data.name;
+        }).reverse().join(" > "), " - ").concat(d.value);
+      });
+      this.label = this.g.append("g").classed("d3-arcs-labels", true).attr("pointer-events", "none").attr("text-anchor", "middle") // .style("user-select", "none")
+      .selectAll("text").data(this.root.descendants().slice(1)).join("text").attr("dy", "0.35em").attr("fill-opacity", function (d) {
+        return +_this.labelVisible(d.current);
+      }).attr("transform", function (d) {
+        return _this.labelTransform(d.current);
+      }).text(function (d) {
+        return d.data.name;
+      });
+      this.parent = this.g.append("circle").datum(this.root).attr("r", this.radius).attr("fill", "none").attr("pointer-events", "all").on("click", function (event, d) {
+        _this.clicked(d);
+      });
     },
+    clicked: function clicked(p) {
+      var _this2 = this;
 
-    /** @param {d3.HierarchyCircularNode} node */
-    nodeClick: function nodeClick(node) {
-      var isLeaf = !node.children;
-      console.clear();
+      var selected_taxon = p.data.name;
+      console.log(p);
+      this.$emit('select-taxon', selected_taxon, p.depth);
+      this.breadcrumbs = this.populate_breadcrumbs(p, []);
+      var arc = d3__WEBPACK_IMPORTED_MODULE_0__.arc().startAngle(function (d) {
+        return d.x0;
+      }).endAngle(function (d) {
+        return d.x1;
+      }).padAngle(function (d) {
+        return Math.min((d.x1 - d.x0) / 2, 0.01);
+      }).padRadius(this.radius * 1.5).innerRadius(function (d) {
+        return d.y0 * _this2.radius;
+      }).outerRadius(function (d) {
+        return Math.max(d.y0 * _this2.radius, d.y1 * _this2.radius);
+      });
 
-      if (isLeaf) {
-        console.log(node.data.key, node.value);
+      if (p.children == undefined) {
+        window.location = "/biodiversity/species/" + this.getId(p.data.name);
+      }
+
+      this.parent.datum(p.parent || this.root);
+      this.root.each(function (d) {
+        return d.target = {
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.depth),
+          y1: Math.max(0, d.y1 - p.depth)
+        };
+      });
+      var t = this.g.transition().duration(750);
+      var that = this;
+      this.path.transition(t).tween("data", function (d) {
+        var i = d3__WEBPACK_IMPORTED_MODULE_0__.interpolate(d.current, d.target);
+        return function (t) {
+          return d.current = i(t);
+        };
+      }).filter(function (d) {
+        return +this.getAttribute("fill-opacity") || that.arcVisible(d.target);
+      }).attr("fill-opacity", function (d) {
+        return that.arcVisible(d.target) ? d.children ? 0.6 : 0.4 : 0;
+      }).attrTween("d", function (d) {
+        return function () {
+          return arc(d.current);
+        };
+      });
+      that.label.filter(function (d) {
+        return +this.getAttribute("fill-opacity") || that.labelVisible(d.target);
+      }).transition(t).attr("fill-opacity", function (d) {
+        return +that.labelVisible(d.target);
+      }).attrTween("transform", function (d) {
+        return function () {
+          return that.labelTransform(d.current);
+        };
+      });
+    },
+    arcVisible: function arcVisible(d) {
+      return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+    },
+    labelVisible: function labelVisible(d) {
+      return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+    },
+    labelTransform: function labelTransform(d) {
+      var x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+      var y = (d.y0 + d.y1) / 2 * this.radius;
+      return "rotate(".concat(x - 90, ") translate(").concat(y, ",0) rotate(").concat(x < 180 ? 0 : 180, ")");
+    },
+    arc: function arc(d) {
+      var _this3 = this;
+
+      d3__WEBPACK_IMPORTED_MODULE_0__.arc().startAngle(function (d) {
+        return d.x0;
+      }).endAngle(function (d) {
+        return d.x1;
+      }).padAngle(function (d) {
+        return Math.min((d.x1 - d.x0) / 2, 0.005);
+      }).padRadius(this.radius * 1.5).innerRadius(function (d) {
+        return d.y0 * _this3.radius;
+      }).outerRadius(function (d) {
+        return Math.max(d.y0 * _this3.radius, d.y1 * _this3.radius);
+      });
+    },
+    getId: function getId(n) {
+      var match = -1;
+      this.data.forEach(function (d) {
+        if (d.species == n) match = d.id;
+      });
+      return match;
+    },
+    format: function format(d) {
+      return d3__WEBPACK_IMPORTED_MODULE_0__.format(d);
+    },
+    partition: function partition(data) {
+      this.root = d3__WEBPACK_IMPORTED_MODULE_0__.hierarchy(data).sum(function (d) {
+        return 1;
+      }).sort(function (a, b) {
+        return b.value - a.value;
+      });
+      return d3__WEBPACK_IMPORTED_MODULE_0__.partition().size([2 * Math.PI, this.root.height + 1])(this.root);
+    },
+    createTree: function createTree(structure, topItem) {
+      var node = function node(name) {
+        return {
+          name: name,
+          children: []
+        };
+      };
+
+      var addNode = function addNode(parent, child) {
+        return parent.children.push(child), child;
+      };
+
+      var findNamedNode = function findNamedNode(name, parent) {
+        var _iterator = _createForOfIteratorHelper(parent.children),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var child = _step.value;
+
+            if (child.name === name) {
+              return child;
+            }
+
+            var found = findNamedNode(name, child);
+
+            if (found) {
+              return found;
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      };
+
+      var topName = topItem;
+      var top = node(topName);
+      var current;
+
+      var _iterator2 = _createForOfIteratorHelper(structure),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var children = _step2.value;
+          current = top;
+
+          var _iterator3 = _createForOfIteratorHelper(children),
+              _step3;
+
+          try {
+            for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+              var name = _step3.value;
+              var found = findNamedNode(name, current);
+              current = found ? found : addNode(current, node(name, current.name));
+            }
+          } catch (err) {
+            _iterator3.e(err);
+          } finally {
+            _iterator3.f();
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      return top;
+    },
+    populate_breadcrumbs: function populate_breadcrumbs(p, result) {
+      if (p.data != null) {
+        if (p.parent != null) {
+          result = this.populate_breadcrumbs(p.parent, result);
+        }
+
+        result.push(p.data.name);
       } else {
-        console.log(node.data.key, node.descendants().slice(1).sort(function (a, b) {
-          return d3__WEBPACK_IMPORTED_MODULE_1__.descending(a.value, b.value);
-        }).map(function (n) {
-          return "".concat(n.data.key, ": ").concat(n.value);
-        }));
-        this.h = this.layout(node);
+        alert("problem");
+      }
+
+      return result;
+    },
+    toggleSunburstModal: function toggleSunburstModal() {
+      if (this.sunburstModalToggle == "d-none") {
+        this.sunburstModalToggle = "d-block";
+        document.body.classList.add("modal-open");
+        var myDiv = document.createElement("div");
+        myDiv.id = 'modal_backdrop';
+        myDiv.className = "modal-backdrop fade show";
+        document.body.appendChild(myDiv);
+      } else {
+        this.sunburstModalToggle = "d-none";
+        document.body.classList.remove("modal-open");
+        document.getElementById("modal_backdrop").outerHTML = "";
       }
     },
-
-    /** @param {d3.HierarchyCircularNode} node */
-    computeStyle: function computeStyle(node) {
-      var x = node.x,
-          y = node.y,
-          r = node.r,
-          value = node.value;
-      var rx = x - r;
-      var ry = y - r;
-      var d = r * 2;
-      var color = node.depth < 1 ? 'black' : this.colorScale(value); // if (chroma.contrast(color, 'white') < 4.5) {
-      // 	color = chroma(color).darken(2)
-      // 	console.log(node.data.key)
-      // }
-
-      return {
-        transform: "translate3d(".concat(rx, "px, ").concat(ry, "px, 0)"),
-        backgroundColor: color,
-        width: "".concat(d, "px"),
-        height: "".concat(d, "px"),
-        fontSize: "".concat(this.fontScale(value), "px")
-      };
-    },
-    initHierarchy: function initHierarchy(data) {
-      var nestedData = {
-        key: 'root',
-        values: this.nester.entries(data || this.$data.$dataset)
-      }; // 3. Add Hierarchy to nested data
-
-      var h = d3__WEBPACK_IMPORTED_MODULE_1__.hierarchy(nestedData, function (v) {
-        return v.values;
-      }); // Calculate Totals and sort
-
-      h.sum(function (v) {
-        return v.value;
-      });
-      h.sort(function (a, b) {
-        return d3__WEBPACK_IMPORTED_MODULE_1__.ascending(a.value, b.value);
-      }); // 4. Apply a layout to the hierarchy
-
-      this.layout(h);
-      this.h = h;
+    resetSunburst: function resetSunburst() {
+      this.crumbClick("Life");
     }
   }
 });
@@ -3870,7 +3928,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\n.ui-tabs > div, \n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table, \n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\theight: 60vh;\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n#observations-container {\n\t\theight: 75vh;\n\t\toverflow-y: scroll;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;  \n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\n.container-fluid,\n\t\t.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\n.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\theight: 60vh;\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n#observations-container {\n\t\theight: 75vh;\n\t\toverflow-y: scroll;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\n.container-fluid,\n\t\t.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n#map-container .selected{\n\tfill: #afa;\n\tstroke: rgba(10,100,10,.75);\n\tstroke-width:.5px;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -76507,770 +76589,6 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./node_modules/regenerator-runtime/runtime.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/regenerator-runtime/runtime.js ***!
-  \*****************************************************/
-/***/ ((module) => {
-
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-var runtime = (function (exports) {
-  "use strict";
-
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  function define(obj, key, value) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-    return obj[key];
-  }
-  try {
-    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
-    define({}, "");
-  } catch (err) {
-    define = function(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  exports.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  define(IteratorPrototype, iteratorSymbol, function () {
-    return this;
-  });
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = GeneratorFunctionPrototype;
-  define(Gp, "constructor", GeneratorFunctionPrototype);
-  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
-  GeneratorFunction.displayName = define(
-    GeneratorFunctionPrototype,
-    toStringTagSymbol,
-    "GeneratorFunction"
-  );
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      define(prototype, method, function(arg) {
-        return this._invoke(method, arg);
-      });
-    });
-  }
-
-  exports.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  exports.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      define(genFun, toStringTagSymbol, "GeneratorFunction");
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  exports.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return PromiseImpl.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return PromiseImpl.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration.
-          result.value = unwrapped;
-          resolve(result);
-        }, function(error) {
-          // If a rejected Promise was yielded, throw the rejection back
-          // into the async generator function so it can be handled there.
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new PromiseImpl(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
-    return this;
-  });
-  exports.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    if (PromiseImpl === void 0) PromiseImpl = Promise;
-
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList),
-      PromiseImpl
-    );
-
-    return exports.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
-          context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
-          return {
-            value: record.arg,
-            done: context.done
-          };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
-  function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        // Note: ["return"] must be used for ES3 parsing compatibility.
-        if (delegate.iterator["return"]) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
-    var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  define(Gp, toStringTagSymbol, "Generator");
-
-  // A Generator should always return itself as the iterator object when the
-  // @@iterator function is called on it. Some browsers' implementations of the
-  // iterator prototype chain incorrectly implement this, causing the Generator
-  // object to not be returned from this call. This ensures that doesn't happen.
-  // See https://github.com/facebook/regenerator/issues/274 for more details.
-  define(Gp, iteratorSymbol, function() {
-    return this;
-  });
-
-  define(Gp, "toString", function() {
-    return "[object Generator]";
-  });
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  exports.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  exports.values = values;
-
-  function doneResult() {
-    return { value: undefined, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined;
-        }
-
-        return !! caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined;
-      }
-
-      return ContinueSentinel;
-    }
-  };
-
-  // Regardless of whether this script is executing as a CommonJS module
-  // or not, return the runtime object so that we can declare the variable
-  // regeneratorRuntime in the outer scope, which allows this module to be
-  // injected easily by `bin/regenerator --include-runtime script.js`.
-  return exports;
-
-}(
-  // If this script is executing as a CommonJS module, use module.exports
-  // as the regeneratorRuntime namespace. Otherwise create a new empty
-  // object. Either way, the resulting object will be used to initialize
-  // the regeneratorRuntime variable at the top of this file.
-   true ? module.exports : 0
-));
-
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  // This module should not be running in strict mode, so the above
-  // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, in modern engines
-  // we can explicitly access globalThis. In older engines we can escape
-  // strict mode using a global Function call. This could conceivably fail
-  // if a Content Security Policy forbids using Function, but in that case
-  // the proper solution is to fix the accidental strict mode problem. If
-  // you've misconfigured your bundler to force strict mode and applied a
-  // CSP to forbid Function, and you're not willing to fix either of those
-  // problems, please detail your unique predicament in a GitHub issue.
-  if (typeof globalThis === "object") {
-    globalThis.regeneratorRuntime = runtime;
-  } else {
-    Function("r", "regeneratorRuntime = r")(runtime);
-  }
-}
-
-
-/***/ }),
-
 /***/ "./node_modules/keen-ui/dist/keen-ui.css":
 /*!***********************************************!*\
   !*** ./node_modules/keen-ui/dist/keen-ui.css ***!
@@ -77328,6 +76646,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_i_nat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
 
 /***/ }),
 
@@ -77664,15 +77012,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./india-map.vue?vue&type=template&id=1e05f70b& */ "./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&");
 /* harmony import */ var _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./india-map.vue?vue&type=script&lang=js& */ "./resources/js/components/india-map.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./india-map.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
+;
 
 
 /* normalize component */
-;
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
   _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
   _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.render,
   _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
@@ -77790,6 +77140,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue?vue&type=template&id=56ee17fc&":
 /*!**************************************************************************!*\
   !*** ./resources/js/components/i-nat.vue?vue&type=template&id=56ee17fc& ***!
@@ -77899,7 +77262,8 @@ var render = function() {
                               selected_state: _vm.selected_state,
                               popup: _vm.tooltip,
                               stateStats: _vm.stateStats
-                            }
+                            },
+                            on: { stateSelected: _vm.selectState }
                           })
                         ],
                         1
@@ -78581,64 +77945,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "w-full h-full relative overflow-hidden" }, [
-    _vm.h
-      ? _c(
-          "div",
-          { staticClass: "html-version" },
-          _vm._l(_vm.nodes, function(node) {
-            return _c(
-              "div",
-              {
-                key: node.data.key,
-                staticClass: "html-element",
-                style: _vm.computeStyle(node),
-                attrs: { title: node.data.key + ": " + node.value },
-                on: {
-                  click: function($event) {
-                    if (
-                      !$event.type.indexOf("key") &&
-                      _vm._k($event.keyCode, "left", 37, $event.key, [
-                        "Left",
-                        "ArrowLeft"
-                      ])
-                    ) {
-                      return null
-                    }
-                    if ($event.target !== $event.currentTarget) {
-                      return null
-                    }
-                    if ("button" in $event && $event.button !== 0) {
-                      return null
-                    }
-                    return _vm.nodeClick(node)
-                  },
-                  contextmenu: function($event) {
-                    if ($event.target !== $event.currentTarget) {
-                      return null
-                    }
-                    $event.preventDefault()
-                    return _vm.nodeClick(node.parent)
-                  }
-                }
-              },
-              [
-                !node.children && _vm.fontScale(node.value) > 5
-                  ? _c("div", [
-                      _c("span", [_vm._v(_vm._s(node.data.key))]),
-                      _vm._v(" "),
-                      _c("small", [
-                        _vm._v(_vm._s(_vm._f("formatNumber")(node.value)))
-                      ])
-                    ])
-                  : _vm._e()
-              ]
-            )
-          }),
-          0
-        )
-      : _vm._e()
-  ])
+  return _c("div", { attrs: { id: "sunburstChart" } })
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -90915,24 +90222,30 @@ var __webpack_exports__ = {};
   !*** ./resources/js/inat.js ***!
   \******************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! keen-ui */ "./node_modules/keen-ui/dist/keen-ui.js");
-/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(keen_ui__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var keen_ui_dist_keen_ui_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! keen-ui/dist/keen-ui.css */ "./node_modules/keen-ui/dist/keen-ui.css");
-/* harmony import */ var _components_i_nat__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/i-nat */ "./resources/js/components/i-nat.vue");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
+/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! keen-ui */ "./node_modules/keen-ui/dist/keen-ui.js");
+/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(keen_ui__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var keen_ui_dist_keen_ui_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! keen-ui/dist/keen-ui.css */ "./node_modules/keen-ui/dist/keen-ui.css");
+/* harmony import */ var _components_i_nat__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/i-nat */ "./resources/js/components/i-nat.vue");
 
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_3__.default.use((keen_ui__WEBPACK_IMPORTED_MODULE_1___default()));
 
-vue__WEBPACK_IMPORTED_MODULE_3__.default.prototype.moment = (moment__WEBPACK_IMPORTED_MODULE_0___default());
-var app = new vue__WEBPACK_IMPORTED_MODULE_3__.default({
+
+vue__WEBPACK_IMPORTED_MODULE_5__.default.use((keen_ui__WEBPACK_IMPORTED_MODULE_3___default()));
+window.d3 = d3__WEBPACK_IMPORTED_MODULE_1__;
+window.d3Legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__;
+
+vue__WEBPACK_IMPORTED_MODULE_5__.default.prototype.moment = (moment__WEBPACK_IMPORTED_MODULE_0___default());
+var app = new vue__WEBPACK_IMPORTED_MODULE_5__.default({
   el: '#app',
   components: {
-    iNat: _components_i_nat__WEBPACK_IMPORTED_MODULE_4__.default
+    iNat: _components_i_nat__WEBPACK_IMPORTED_MODULE_6__.default
   },
   data: function data() {
     return {};

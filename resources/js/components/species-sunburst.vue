@@ -1,39 +1,5 @@
 <template>
-  <div class="w-full h-full relative overflow-hidden">
-
-    <!-- SVG Version -->
-    <!-- <svg width="100%"
-         height="100%">
-      <circle v-for="(node, index) in nodes"
-              :key="index"
-              :cx="node.x"
-              :cy="node.y"
-              :r="node.r"
-              fill="rgba(255,255,255,.5)"
-              @click="nodeClick(node)" />
-    </svg>-->
-
-    <!-- HTML Version -->
-    <div
-      v-if="h"
-      class="html-version">
-      <div
-        v-for="node in nodes"
-        :key="node.data.key"
-        class="html-element"
-        :style="computeStyle(node)"
-        :title="`${node.data.key}: ${node.value}`"
-        @click.self.left="nodeClick(node)"
-        @click.self.right.prevent="nodeClick(node.parent)">
-
-        <div v-if="!node.children && fontScale(node.value) > 5">
-          <span>{{ node.data.key }}</span>
-          <small>{{ node.value | formatNumber }}</small>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <div id="sunburstChart" class=""></div>
 </template>
 
 <script>
@@ -43,165 +9,243 @@
 		props: ["tree_data"],
 		data(){
 			return {
-				width:    500,
-				height:   300,
-				padding:  4,
-				$dataset: null,
-
-				/** @type {d3.HierarchyPointNode} */
-				h:         null,
-				intIndex:  28,
-				nestOrder: [ 'superfamily','family','subfamily', 'genus']				
-			}
-		},
-		filters: {
-			formatNumber(val) {
-				return d3.format('.3~s')(val).replace(/G/gi, 'B')
-			},
-			noSpaces(val) {
-				return val.replace(/\s/gi, '')
+                width: 600,
+        		height:600,
+        		radius: 100,
+        		margin: {
+        			top: 50,
+        			right: 50,
+        			left: 50,
+        			bottom: 50,
+        		},
+        		g:"",
+        		path:"",
+        		parent:"",
+        		label:"",
+        		speciesData:[],
+        		root:{}
 			}
 		},
 		computed: {
-			layout() {
-				const layout = d3
-								.pack()
-								.size([this.width, this.height])
-								.padding(this.padding)
-								// .radius(v => v.value)
-				return layout
-			},
-			extent() {
-				if (this.h) {
-					return d3.extent(this.h.descendants(), n => n.value)
-				}
-			},
-			/**
-			* Map colors to the value of each node
-			*/
-			colorScale() {
-				if (this.h) {
-					const values = this.h.descendants().map(n => n.value)
-					const [min, max] = d3.extent(values)
-					const count = values.length
-					const colors = d3.schemePaired
-					d3.shuffle(colors)
-					// colors.push('red')
-					return d3
-							.scaleThreshold()
-							.domain(d3.ticks(min, max * 1.5, count))
-							.range(colors)
-				}
-			},
-			fontScale() {
-				if (this.h) {
-					return d3
-						.scalePow()
-						// .exponent(0.85)
-						.domain(this.extent)
-						.range([5, 100])
-						.clamp(true)
-				}
-			},
-			/**
-			* The branch nodes to be rendered
-			*/
-			nodes() {
-				if (this.h) {
-					return this.h.descendants()
-				} else {
-					return null
-				}
-			},
-			nester() {
-				const n = d3.nest()
-				this.nestOrder.forEach(str => {
-					n.key(node => node[str])
-				})
-				return n
-			}
+            color () {
+                return d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, this.speciesData.children.length +4))
+            },
 		},
 		watch: {
-			layout() {
-				if (!this.h) return
-					this.layout(this.h)
-			},
-			nester() {
-				this.initHierarchy(this.$data.$dataset)
-			}
 		},
-		async mounted() {
-			// Assign Sizes
-			this.updateSize()
-			// 1. Load the data
-			const data = this.tree_data
-    		this.$data.$dataset = Object.freeze(data)
-    		this.initHierarchy(this.$data.$dataset)
-			
-			this.initHierarchy(this.tree_data)
-			window.myComponent = this
-			this.$once('hook:beforeDestroy', () => {
-				delete window.myComponent
-			})
+        mounted() {
+            var speciesTree = [];
+
+    		this.tree_data.forEach(d => {
+    			speciesTree.push([d.superfamily,d.family, d.subfamily, d.tribe, d.genus, d.species])
+    		});
+    		this.speciesData = this.createTree(speciesTree, "Life");
+    		this.root = this.partition(this.speciesData);
+    		this.root.each(d => d.current = d);
+
+    		this.init();
+
+
 		},
 		methods: {
-			updateSize() {
-				const { width, height, bottom } = this.$el.getBoundingClientRect()
-				// console.log(this.$el.getBoundingClientRect())
-				this.width = width /2
-				this.height = bottom
+            init () {
+            	const svg = d3.select("#sunburstChart")
+            		.append("svg")
+            		.classed("bg-dark border boorder-primary rounded", true)
+            		.attr("width", this.width)
+            		.attr("height", this.height)
+
+            	const arc = d3.arc()
+            		.startAngle(d => d.x0)
+            		.endAngle(d => d.x1)
+            		.padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.01))
+            		.padRadius(this.radius * 1.5)
+            		.innerRadius(d => d.y0 * this.radius)
+            		.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
+
+            	this.g = svg.append("g")
+            	         .attr("transform", `translate(${this.width / 2},${this.height / 2})`)
+
+            	this.path = this.g.append("g")
+            		.classed("d3-arcs", true)
+            		.selectAll("path")
+                        .data(this.root.descendants().slice(1))
+                        .join("path")
+                        .attr("fill", d => {
+                            while (d.depth > 2) d = d.parent; return this.color(d.data.name);
+                        })
+                        .attr("fill-opacity", d => this.arcVisible(d.current) ? (d.children ? 0.3 : 0.1) : 0)
+                        .attr("stroke", "white")
+            			.attr("stroke-width", d => this.arcVisible(d.current) ? (d.children ? "1px" : "1px") : "0px")
+            			.attr("d", d=> arc(d.current))
+
+            	this.path.filter(d => d.current)
+            	.style("cursor", "pointer")
+            		.on("mouseover", function (d){ d3.select(this).classed("selected", true)})
+            		.on("mouseout", function (d){ d3.select(this).classed("selected",false)})
+            		.on("click", (event, d) => {
+                        console.log(d)
+                        if(this.arcVisible(d.current))
+                            this.clicked(d)
+                        })
+
+            	this.path.append("title")
+            		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")} - ${d.value}`);
+
+            	this.label = this.g.append("g")
+            		.classed("d3-arcs-labels", true)
+            		.attr("pointer-events", "none")
+            		.attr("text-anchor", "middle")
+            		// .style("user-select", "none")
+            		.selectAll("text")
+                        .data(this.root.descendants().slice(1))
+            			.join("text")
+            			.attr("dy", "0.35em")
+            			.attr("fill-opacity", d => +this.labelVisible(d.current))
+            			.attr("transform", d => this.labelTransform(d.current))
+                            .text(d => d.data.name)
+
+                this.parent = this.g.append("circle")
+            		.datum(this.root)
+            		.attr("r", this.radius)
+            		.attr("fill", "none")
+            		.attr("pointer-events", "all")
+            		.on("click", (event, d) => {this.clicked(d)})
+            },
+            clicked(p) {
+                var selected_taxon = p.data.name
+                console.log(p)
+
+                this.$emit('select-taxon', selected_taxon, p.depth)
+                this.breadcrumbs = this.populate_breadcrumbs(p,[])
+                const arc = d3.arc()
+					.startAngle(d => d.x0)
+					.endAngle(d => d.x1)
+					.padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.01))
+					.padRadius(this.radius * 1.5)
+					.innerRadius(d => d.y0 * this.radius)
+					.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
+
+                if(p.children == undefined){
+                    window.location = "/biodiversity/species/" + this.getId(p.data.name)
+                }
+
+				this.parent.datum(p.parent || this.root);
+				this.root.each(d => d.target = {
+					x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+					x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+					y0: Math.max(0, d.y0 - p.depth),
+					y1: Math.max(0, d.y1 - p.depth)
+				})
+
+                const t = this.g.transition().duration(750)
+                const that = this
+                this.path.transition(t)
+					.tween("data", d => {
+						const i = d3.interpolate(d.current, d.target);
+						return t => d.current = i(t);
+					})
+					.filter(function(d) {
+						return +this.getAttribute("fill-opacity") || that.arcVisible(d.target)
+					})
+					.attr("fill-opacity", d => that.arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+					.attrTween("d", d => () => arc(d.current))
+    			that.label.filter(function(d) {
+					return +this.getAttribute("fill-opacity") || that.labelVisible(d.target)
+                }).transition(t)
+					.attr("fill-opacity", d => +that.labelVisible(d.target))
+					.attrTween("transform", d => () => that.labelTransform(d.current))
 			},
-			/** @param {d3.HierarchyCircularNode} node */
-			nodeClick(node) {
-				const isLeaf = !node.children
-				console.clear()
-				if (isLeaf) {
-					console.log(node.data.key, node.value)
-				} else {
-					console.log(
-						node.data.key,
-						node
-						.descendants()
-						.slice(1)
-						.sort((a, b) => d3.descending(a.value, b.value))
-						.map(n => `${n.data.key}: ${n.value}`)
-						)
-					this.h = this.layout(node)
+            arcVisible(d){
+                return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
+            },
+            labelVisible(d) {
+                return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
+            },
+            labelTransform(d) {
+                const x = (d.x0 + d.x1) / 2 * 180 / Math.PI
+                const y = (d.y0 + d.y1) / 2 * this.radius
+                return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
+            },
+            arc(d){
+                d3.arc()
+                    .startAngle(d => d.x0)
+                    .endAngle(d => d.x1)
+                    .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+                    .padRadius(this.radius * 1.5)
+                    .innerRadius(d => d.y0 * this.radius)
+                    .outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
+            },
+            getId(n){
+                var match = -1
+
+                this.data.forEach(d => {
+					if(d.species == n)
+						match = d.id
+				})
+				return match
+			},
+            format(d){
+                return d3.format(d)
+			},
+            partition(data) {
+                this.root = d3.hierarchy(data)
+                    .sum(d => 1)
+                    .sort((a, b) => b.value - a.value)
+                return d3.partition()
+                    .size([2 * Math.PI, this.root.height + 1])
+					(this.root);
+			},
+            createTree(structure, topItem) {
+                const node = (name) => ({name, children: []});
+                const addNode = (parent, child) => (parent.children.push(child), child);
+                const findNamedNode = (name, parent) => {
+                    for (const child of parent.children) {
+                        if (child.name === name) { return child }
+                        const found = findNamedNode(name, child);
+                        if (found) { return found }
+                    }
+				}
+                const topName = topItem;
+                const top = node(topName);
+                var current;
+                for (const children of structure) {
+                    current = top;
+                    for (const name of children) {
+                        const found = findNamedNode(name, current);
+                        current = found ? found : addNode(current, node(name, current.name));
+                    }
+                }
+                return top;
+            },
+            populate_breadcrumbs(p,result){
+                if(p.data != null){
+                    if(p.parent != null){
+                        result = this.populate_breadcrumbs(p.parent, result);
+                    }
+                    result.push(p.data.name)
+                } else {
+                    alert("problem");
+                }
+                return result
+            },
+            toggleSunburstModal(){
+                if(this.sunburstModalToggle == "d-none"){
+                    this.sunburstModalToggle = "d-block";
+                    document.body.classList.add("modal-open");
+                    var myDiv = document.createElement("div");
+                    myDiv.id = 'modal_backdrop';
+                    myDiv.className = "modal-backdrop fade show";
+                    document.body.appendChild(myDiv);
+                } else {
+                    this.sunburstModalToggle = "d-none";
+                    document.body.classList.remove("modal-open");
+					document.getElementById("modal_backdrop").outerHTML = "";
 				}
 			},
-			/** @param {d3.HierarchyCircularNode} node */
-			computeStyle(node) {
-				const { x, y, r, value } = node
-				const rx = (x - r)
-				const ry = (y - r)
-				const d = (r * 2)
-				let color = node.depth < 1 ? 'black' : this.colorScale(value)
-				// if (chroma.contrast(color, 'white') < 4.5) {
-				// 	color = chroma(color).darken(2)
-				// 	console.log(node.data.key)
-				// }
-				return {
-					transform:       `translate3d(${rx}px, ${ry}px, 0)`,
-					backgroundColor: color,
-					width:           `${d}px`,
-					height:          `${d}px`,
-					fontSize:        `${this.fontScale(value)}px`
-				}
-			},
-			initHierarchy(data) {
-				const nestedData = {
-					key:    'root',
-					values: this.nester.entries(data || this.$data.$dataset)
-				}
-				// 3. Add Hierarchy to nested data
-				const h = d3.hierarchy(nestedData, v => v.values)
-				// Calculate Totals and sort
-				h.sum(v => v.value)
-				h.sort((a, b) => d3.ascending(a.value, b.value))
-				// 4. Apply a layout to the hierarchy
-				this.layout(h)
-				this.h = h
+			resetSunburst(){
+				this.crumbClick("Life")
 			}
 		}
-	}
+    };
 </script>
