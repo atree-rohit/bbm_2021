@@ -9,6 +9,9 @@
 	    font-size: 100%;
 	    /*overflow: hidden;*/
 	}
+	body{
+		overflow: hidden;
+	}
 
 	.ui-tabs > div,
 	.ui-tabs > div > div{
@@ -215,6 +218,9 @@
 	}
 
 	@media screen and (max-width: 800px) {
+		body{
+			overflow: scroll;
+		}
 		.container-fluid,
 		.ui-tabs__body{
 			padding: 0;
@@ -422,8 +428,8 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :disableRipple="true" title="Taxon" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
-                <species-sunburst :tree_data="tree_data" />
+            <ui-collapsible :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
+                <species-sunburst :tree_data="treeData" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 		</div>
 		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
@@ -462,8 +468,9 @@ import IndiaMap from './india-map'
 				selected_state: "All",
 				selected_point:  null,
 				selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
-				selected_taxa: '',
+				selected_taxa: [],
 
+				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				taxa_tree: {},
 				tabs: [
 					{title:"Location"},
@@ -471,10 +478,6 @@ import IndiaMap from './india-map'
 					{title:"Observations"},
 				],
 				map_first_render:true,
-
-
-				tree_data: this.nestTest(),
-				map_data:null,
 
 				svgWidth: window.innerWidth * 0.6,
 				svgHeight: window.innerHeight * 0.9,
@@ -498,7 +501,6 @@ import IndiaMap from './india-map'
 			this.renderDateChart()
 			// this.renderTaxonomyChart()
 
-			// this.nestTest()
 		},
 		watch: {
 			// selected_users () {
@@ -520,7 +522,6 @@ import IndiaMap from './india-map'
 		computed:{
 			filteredObservations(){
 				let op = []
-
 				//filter state state
 				if (this.selected_state === "All"){
 					op = this.inat_data
@@ -538,6 +539,35 @@ import IndiaMap from './india-map'
 				if(this.selected_taxa_levels.length > 0){
 					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
 				}
+
+
+				if(this.selected_taxa.length > 1){
+					let taxa_match = []
+
+					op.forEach(o => {
+						let hierarchy = {}
+						let match_flag = true
+
+
+						hierarchy[o.taxa_rank] = o.taxa_name
+						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							}
+						})
+						this.selected_taxa.forEach((t,id)  => {
+							if(t != hierarchy[this.levels[id]] && t != 'none')
+								match_flag = false
+						})
+						if(match_flag){
+							taxa_match.push(o)
+						}
+					
+					})
+					op = taxa_match
+				}
+
+
 
 				op = op.reverse()
 				return op
@@ -712,36 +742,47 @@ import IndiaMap from './india-map'
 						op[tl] = taxa_level[tl].length
 				})
 				return op
-			}
-		},
-		methods: {
-			nestTest(){
-				let levels = ["species", "genus", "tribe", "subfamily", "family", "superfamily"]
+			},
+			treeData(){
+				let op = []
 				let obv_taxonomy = []
 				let unique_species_taxonomy = []
 
-				obv_taxonomy = this.inat_data.filter(o => o.taxa_rank == 'species')
+				if (this.selected_state === "All"){
+					op = this.inat_data
+				} else {
+					op = this.inat_data.filter(x => x.state === this.selected_state)
+				}
+
+				if(this.selected_users.length > 0){
+					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+
+				if(this.selected_dates.length > 0){
+					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
+				}
+
+				obv_taxonomy = op.filter(o => o.taxa_rank == 'species')
 					.map(o => {
-						let hierrachy = {
+						let hierarchy = {
 							id: o.id,
 							rank: o.taxa_rank
 						}
-						hierrachy[o.taxa_rank] = o.taxa_name
-						hierrachy.key = o.taxa_name
-						hierrachy[`id_${o.taxa_rank}`] = o.taxa_id
+						hierarchy[o.taxa_rank] = o.taxa_name
+						hierarchy.key = o.taxa_name
+						
 
 						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierrachy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-								// hierrachy[`id_${this.inat_taxa[id].rank}`] = this.inat_taxa[id].id
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
 							}
 						})
-						levels.forEach(l => {
-							if((hierrachy[l] == undefined) && levels.indexOf(o.taxa_rank) < levels.indexOf(l))
-								hierrachy[l] = "none"
+						this.levels.forEach(l => {
+							if(hierarchy[l] == undefined)
+								hierarchy[l] = "none"
 						})
 
-						return hierrachy
+						return hierarchy
 					})
 
 				const unique_species_list = [...new Set(obv_taxonomy.map(item => item.species))]
@@ -754,23 +795,9 @@ import IndiaMap from './india-map'
 					unique_species_taxonomy.push(sp_taxonomy)
 				})
 				return unique_species_taxonomy
-
-
-				/*
-				let x = d3.nest().key(o => o.superfamily).key(o => o.family).key(o => o.subfamily).key(o => o.tribe).key(o => o.genus).key(o => o.species).entries(unique_species_taxonomy)
-				// console.log(x)
-
-				let tree = {
-						key: 'root',
-						values: x
-					}
-
-				let h = d3.hierarchy(tree, item => item.values)
-
-				console.log(h)
-				console.log(h.leaves())
-				*/
 			},
+		},
+		methods: {
 			idLevelBtnClass (t) {
 				let op = "btn-outline-secondary"
 				switch(t){
@@ -824,6 +851,11 @@ import IndiaMap from './india-map'
 							op += "All selected"
 						}
 						break;
+					case 'taxon':
+						op = ""
+						if(this.selected_taxa.length > 1){
+
+						}
 				}
 				return op
 			},
@@ -1223,13 +1255,11 @@ import IndiaMap from './india-map'
 				}
 			},
 			selectState (s) {
-				// console.log("Parent : selectState()", s)
 				if (this.selected_state == s) {
 					this.selected_state = 'All'
 				} else {
 					this.selected_state = s
 				}
-				// this.renderMap()
 			},
 			renderTaxonomyChart () {
 				let height = this.svgHeight
@@ -1297,6 +1327,11 @@ import IndiaMap from './india-map'
 					.attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
 					.style("text-anchor", "middle")
 					.style("font-size", 15)
+			},
+			selectTaxon (t) {
+				// 
+				this.selected_taxa = t
+				console.log(this.selected_taxa)
 			},
 			selectTaxaLevel (tname) {
 				let op = this.selected_taxa_levels.indexOf(tname)
