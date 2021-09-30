@@ -121,15 +121,11 @@
             }
 		},
         mounted() {
-
-
     		this.init()
-
 
 		},
 		methods: {
             init () {
-                console.log("init-ing")
                 var speciesTree = [];
 
                 this.tree_data.forEach(d => {
@@ -307,7 +303,6 @@
             },
             crumbTitle(text, depth){
                 var taxon = ""
-                console.log(text)
                 if(depth > 0){
                     taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
                 }
