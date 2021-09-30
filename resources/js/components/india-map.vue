@@ -70,7 +70,7 @@ export default {
 				if(Object.keys(this.state_data).indexOf(o.state) != -1){
 					this.state_data[o.state].push(o)
 				} else {
-					console.log("unmatched state name", o.state, o)
+					// console.log("unmatched state name", o.state, o)
 				}
 			});
 
