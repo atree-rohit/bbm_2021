@@ -17,7 +17,9 @@
 	.ui-tabs > div > div{
 		overflow-x: hidden;
 	}
-
+	.filter-set .ui-collapsible__header{
+		background: #aea;
+	}
 	.species-table tbody tr.hover-row:hover{
 		background: #ff9;
 		cursor: pointer;
@@ -375,7 +377,7 @@
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
-			<ui-collapsible :disableRipple="true" :title="filterTitle('users')" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+			<ui-collapsible :class="filterClass('users')" :disableRipple="true" :title="filterTitle('users')" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
 				<div id="users-table-container">
 					<table class="table 5able-sm tableFixHead">
 						<thead class="table-secondary">
@@ -401,13 +403,13 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+            <ui-collapsible :class="filterClass('date')" :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
                 <div id="date-filter">
 					<div id="date-chart-continer" class="svg-container"></div>
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :disableRipple="true" :title="filterTitle('id_level')" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+            <ui-collapsible :class="filterClass('id_level')" :disableRipple="true" :title="filterTitle('id_level')" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
                 <div id="taxon-level-filter">
 					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
 						<button
@@ -417,6 +419,7 @@
 							:class="taxaLevelBtnClass(tname)"
 							v-text="`${tname} (${t})`"
 							@click="selectTaxaLevel(tname)"
+							v-if="t > 0"
 						>
 						</button>
 					</div>
@@ -428,7 +431,7 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
+            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
                 <species-sunburst :tree_data="treeData" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 		</div>
@@ -650,7 +653,7 @@ import IndiaMap from './india-map'
 			stateObservations () {
 				let state_observations = []
 				if(this.selected_state != ''){
-					state_observations = this.inat_data.filter(x => x.state === this.selected_state)
+					state_observations = this.filteredObservations.filter(x => x.state === this.selected_state)
 				}
 
 				return state_observations
@@ -677,13 +680,11 @@ import IndiaMap from './india-map'
 			},
 			stateSpeciesList () {
 				let op = []
-				let state_observations = []
+				// let state_observations = this.inat_data
 
-				if(this.selected_state != ''){
-					state_observations = this.inat_data.filter(x => x.state === this.selected_state)
-				}
-				let unique_taxa = d3.nest().key(o => o.taxa_name).object(state_observations)
-				let y = []
+
+				// let unique_taxa = d3.nest().key(o => o.taxa_name).object(state_observations)
+
 
 				this.stateObservations.forEach(o => {
 					let new_flag = true
@@ -735,7 +736,8 @@ import IndiaMap from './india-map'
 			},
 			taxaTableData () {
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-				let taxa_level = d3.nest().key(o => o.taxa_rank).object(this.inat_data)
+				
+				let taxa_level = d3.nest().key(o => o.taxa_rank).object(this.filteredObservations)
 
 				Object.keys(taxa_level).forEach(tl => {
 					if(taxa_level[tl] != undefined)
@@ -852,12 +854,23 @@ import IndiaMap from './india-map'
 						}
 						break;
 					case 'taxon':
-						op = ""
+						op = "Taxon: "
 						if(this.selected_taxa.length > 1){
-
+							op += this.selected_taxa.join(" - ")
+						} else {
+							op += "All selected"
 						}
 				}
 				return op
+			},
+			filterClass(f){
+				let op = ""
+				if(this.filterTitle(f).includes(": All selected")){
+					op = ""
+				} else {
+					op = "filter-set"
+				}
+				return op;
 			},
 			onAccordionOpen(id) {
 				Object.keys(this.accordions).forEach(key => {
