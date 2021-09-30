@@ -252,9 +252,6 @@
 						<india-map :map_data="filteredObservations" 
 								   :height="svgHeight * .9"
 								   :width="svgWidth" 
-								   :selected_state="selected_state"
-								   :popup="tooltip"
-								   :stateStats="stateStats"
 						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
@@ -502,21 +499,21 @@ import IndiaMap from './india-map'
 			// this.nestTest()
 		},
 		watch: {
-			// selected_users () {
-			// 	this.renderMap()
-			// 	this.renderDateChart()
-			// },
-			// selected_dates () {
-			// 	this.renderMap()
-			// },
-			// selected_taxa_levels () {
-			// 	this.renderMap()
-			// 	this.renderDateChart()
-			// },
-			// selected_state () {
-			// 	// this.renderMap()
-			// 	this.renderDateChart()
-			// }
+			selected_users () {
+				this.renderMap()
+				this.renderDateChart()
+			},
+			selected_dates () {
+				this.renderMap()
+			},
+			selected_taxa_levels () {
+				this.renderMap()
+				this.renderDateChart()
+			},
+			selected_state () {
+				// this.renderMap()
+				this.renderDateChart()
+			}
 		},
 		computed:{
 			filteredObservations(){
@@ -625,6 +622,19 @@ import IndiaMap from './india-map'
 				}
 
 				return state_observations
+			},
+			stateData () {
+				let op = {}
+
+				country.features.forEach(s => {
+					op[s.properties.ST_NM] = [];
+				})
+				this.filteredObservations.forEach(o => {
+					if(o.state !== null){
+						op[o.state].push(o)
+					}
+				})
+				return op
 			},
 			stateStats () {
 				let op = {}
@@ -1087,7 +1097,7 @@ import IndiaMap from './india-map'
 					this.selected_dates.push(d.name)
 				}
 			},
-			srenderMap () {
+			renderMap () {
 				let that = this
 				let height = this.svgHeight * .9
 				let width = this.svgWidth

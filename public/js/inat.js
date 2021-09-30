@@ -1,6 +1,17 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/@babel/runtime/regenerator/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
+  \**********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
+
+
+/***/ }),
+
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
@@ -1850,6 +1861,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 /* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
 /* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
+/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2301,6 +2314,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -2308,6 +2332,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "i-nat",
   props: ["inat_data", "inat_taxa"],
+  components: {
+    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_4__.default,
+    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_5__.default
+  },
   data: function data() {
     return {
       state_data: {},
@@ -2330,6 +2358,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         title: "Observations"
       }],
       map_first_render: true,
+      tree_data: this.nestTest(),
+      map_data: null,
       svgWidth: window.innerWidth * 0.6,
       svgHeight: window.innerHeight * 0.9,
       tooltip: null,
@@ -2339,7 +2369,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         0: false,
         1: false,
         2: false,
-        3: false
+        3: true
       }
     };
   },
@@ -2347,27 +2377,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     this.init();
   },
   mounted: function mounted() {
-    this.renderMap();
+    // this.renderMap()
     this.renderDateChart(); // this.renderTaxonomyChart()
-
-    this.nestTest();
+    // this.nestTest()
   },
-  watch: {
-    selected_users: function selected_users() {
-      this.renderMap();
-      this.renderDateChart();
-    },
-    selected_dates: function selected_dates() {
-      this.renderMap();
-    },
-    selected_taxa_levels: function selected_taxa_levels() {
-      this.renderMap();
-      this.renderDateChart();
-    },
-    selected_state: function selected_state() {
-      // this.renderMap()
-      this.renderDateChart();
-    }
+  watch: {// selected_users () {
+    // 	this.renderMap()
+    // 	this.renderDateChart()
+    // },
+    // selected_dates () {
+    // 	this.renderMap()
+    // },
+    // selected_taxa_levels () {
+    // 	this.renderMap()
+    // 	this.renderDateChart()
+    // },
+    // selected_state () {
+    // 	// this.renderMap()
+    // 	this.renderDateChart()
+    // }
   },
   computed: {
     filteredObservations: function filteredObservations() {
@@ -2508,18 +2536,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       return state_observations;
     },
-    stateData: function stateData() {
-      var op = {};
-      _country_json__WEBPACK_IMPORTED_MODULE_3__.features.forEach(function (s) {
-        op[s.properties.ST_NM] = [];
-      });
-      this.filteredObservations.forEach(function (o) {
-        if (o.state !== null) {
-          op[o.state].push(o);
-        }
-      });
-      return op;
-    },
     stateStats: function stateStats() {
       var op = {};
       op['All'] = {
@@ -2642,16 +2658,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       var levels = ["species", "genus", "tribe", "subfamily", "family", "superfamily"];
       var obv_taxonomy = [];
-      obv_taxonomy = this.inat_data.map(function (o) {
+      var unique_species_taxonomy = [];
+      obv_taxonomy = this.inat_data.filter(function (o) {
+        return o.taxa_rank == 'species';
+      }).map(function (o) {
         var hierrachy = {
           id: o.id,
           rank: o.taxa_rank
         };
         hierrachy[o.taxa_rank] = o.taxa_name;
+        hierrachy.key = o.taxa_name;
+        hierrachy["id_".concat(o.taxa_rank)] = o.taxa_id;
 
         _this7.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
           if (levels.indexOf(_this7.inat_taxa[id].rank) != -1) {
-            hierrachy[_this7.inat_taxa[id].rank] = _this7.inat_taxa[id].name;
+            hierrachy[_this7.inat_taxa[id].rank] = _this7.inat_taxa[id].name; // hierrachy[`id_${this.inat_taxa[id].rank}`] = this.inat_taxa[id].id
           }
         });
 
@@ -2660,21 +2681,33 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         });
         return hierrachy;
       });
-      var x = d3__WEBPACK_IMPORTED_MODULE_1__.nest().key(function (o) {
-        return o.superfamily;
-      }).key(function (o) {
-        return o.family;
-      }).key(function (o) {
-        return o.subfamily;
-      }).key(function (o) {
-        return o.tribe;
-      }).key(function (o) {
-        return o.genus;
-      }).key(function (o) {
-        return o.species;
+
+      var unique_species_list = _toConsumableArray(new Set(obv_taxonomy.map(function (item) {
+        return item.species;
+      })));
+
+      unique_species_list.forEach(function (s) {
+        var sp_taxonomy = obv_taxonomy.find(function (item) {
+          return item.species == s;
+        });
+        sp_taxonomy.value = 1;
+        delete sp_taxonomy.id;
+        delete sp_taxonomy.rank;
+        unique_species_taxonomy.push(sp_taxonomy);
       });
-      var y = x.entries(obv_taxonomy);
-      console.log(y);
+      return unique_species_taxonomy;
+      /*
+      let x = d3.nest().key(o => o.superfamily).key(o => o.family).key(o => o.subfamily).key(o => o.tribe).key(o => o.genus).key(o => o.species).entries(unique_species_taxonomy)
+      // console.log(x)
+      	let tree = {
+      		key: 'root',
+      		values: x
+      	}
+      	let h = d3.hierarchy(tree, item => item.values)
+      
+      console.log(h)
+      console.log(h.leaves())
+      */
     },
     idLevelBtnClass: function idLevelBtnClass(t) {
       var op = "btn-outline-secondary";
@@ -3007,7 +3040,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         this.selected_dates.push(d.name);
       }
     },
-    renderMap: function renderMap() {
+    srenderMap: function srenderMap() {
       var _this10 = this;
 
       var that = this;
@@ -3241,6 +3274,555 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_3__.features.map(function (s) {
         return s.properties.ST_NM;
       });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
+/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+//
+//
+//
+//
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "india-map",
+  props: ["map_data", "selected_state", "height", "width", "popup", "stateStats"],
+  data: function data() {
+    return {
+      state_data: {},
+      state_max: 0,
+      tooltip: this.popup,
+      map_first_render: true
+    };
+  },
+  mounted: function mounted() {
+    this.init();
+  },
+  computed: {
+    stateData: function stateData() {
+      var op = {};
+      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (s) {
+        op[s.properties.ST_NM] = [];
+      });
+      this.map_data.forEach(function (o) {
+        if (o.state !== null) {
+          op[o.state].push(o);
+        }
+      });
+      return op;
+    }
+  },
+  watch: {
+    map_data: function map_data() {
+      this.init(); // this.renderMap()
+    }
+  },
+  methods: {
+    init: function init() {
+      var _this = this;
+
+      this.map_first_render = true;
+      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (s) {
+        _this.state_data[s.properties.ST_NM] = [];
+      });
+      this.map_data.forEach(function (o) {
+        if (Object.keys(_this.state_data).indexOf(o.state) != -1) {
+          _this.state_data[o.state].push(o);
+        } else {
+          console.log("unmatched state name", o.state, o);
+        }
+      });
+      Object.keys(this.state_data).forEach(function (s) {
+        if (_this.state_data[s].length > _this.state_max) _this.state_max = _this.state_data[s].length;
+      });
+      this.tooltip = d3__WEBPACK_IMPORTED_MODULE_0__.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
+      this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_2__.features.map(function (s) {
+        return s.properties.ST_NM;
+      });
+      this.renderMap();
+    },
+    renderMap: function renderMap() {
+      var _this2 = this;
+
+      var that = this;
+      var height = this.height;
+      var width = this.width;
+
+      if (height > width) {
+        height /= 3;
+      }
+
+      if (!d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container svg").empty()) {
+        d3__WEBPACK_IMPORTED_MODULE_0__.selectAll("#map-container svg").remove();
+      }
+
+      var svg = d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
+      var projection = d3__WEBPACK_IMPORTED_MODULE_0__.geoMercator().scale(850).center([87, 25.5]);
+      var path = d3__WEBPACK_IMPORTED_MODULE_0__.geoPath().projection(projection);
+      var colors = d3__WEBPACK_IMPORTED_MODULE_0__.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
+      var legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_1__.legendColor().scale(colors).shapeWidth(55).labelFormat(d3__WEBPACK_IMPORTED_MODULE_0__.format(".0f")).orient('horizontal').cells(6);
+      var base = svg.append("g").classed("map-boundary", true);
+      var base_text = base.selectAll("text").append("g");
+      base = base.selectAll("path").append("g");
+      var states = base.append("g").classed("states", true);
+      _country_json__WEBPACK_IMPORTED_MODULE_2__.features.forEach(function (state) {
+        var s_name = state.properties.ST_NM;
+        var that = _this2;
+        var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
+          that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
+        }).on('mousemove', function () {
+          that.tooltip.style('top', d3__WEBPACK_IMPORTED_MODULE_0__.event.pageY - 10 + 'px').style('left', d3__WEBPACK_IMPORTED_MODULE_0__.event.pageX + 10 + 'px');
+        }).on('mouseout', function () {
+          return that.tooltip.html("").style('visibility', 'hidden');
+        }).on("click", clicked);
+
+        if (_this2.stateData[s_name] == undefined) {
+          current_state.attr("fill", function (d) {
+            return colors(-1);
+          });
+        } else {
+          current_state.attr("fill", function (d) {
+            return colors(_this2.stateData[s_name].length);
+          });
+        }
+      });
+      var zoom = d3__WEBPACK_IMPORTED_MODULE_0__.zoom().scaleExtent([.25, 20]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
+        svg.selectAll('.poly_text').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform), svg.selectAll('path').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform), svg.selectAll('circle').attr('transform', d3__WEBPACK_IMPORTED_MODULE_0__.event.transform).attr("r", 2 / d3__WEBPACK_IMPORTED_MODULE_0__.event.transform.k);
+      });
+      svg.call(zoom);
+      mapPoints();
+
+      if (this.map_first_render) {
+        map_init();
+        this.map_first_render = false;
+      }
+
+      function map_init() {
+        var state = "All";
+        var x0 = 0,
+            y0 = 0,
+            x1 = 0,
+            y1 = 0;
+        states.transition().style("fill", null);
+
+        if (that.selected_state != 'All') {
+          d3__WEBPACK_IMPORTED_MODULE_0__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
+        }
+
+        if (that.selected_state == state) {
+          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_2__);
+
+          var _path$bounds2 = _slicedToArray(_path$bounds, 2);
+
+          var _path$bounds2$ = _slicedToArray(_path$bounds2[0], 2);
+
+          x0 = _path$bounds2$[0];
+          y0 = _path$bounds2$[1];
+
+          var _path$bounds2$2 = _slicedToArray(_path$bounds2[1], 2);
+
+          x1 = _path$bounds2$2[0];
+          y1 = _path$bounds2$2[1];
+          that.selected_state = 'All';
+        } else {
+          var _path$bounds3 = path.bounds(d);
+
+          var _path$bounds4 = _slicedToArray(_path$bounds3, 2);
+
+          var _path$bounds4$ = _slicedToArray(_path$bounds4[0], 2);
+
+          x0 = _path$bounds4$[0];
+          y0 = _path$bounds4$[1];
+
+          var _path$bounds4$2 = _slicedToArray(_path$bounds4[1], 2);
+
+          x1 = _path$bounds4$2[0];
+          y1 = _path$bounds4$2[1];
+          that.selected_state = state;
+          d3__WEBPACK_IMPORTED_MODULE_0__.select(this).transition().style("fill", "gold");
+        }
+
+        svg.transition().duration(1).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_0__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+        mapPoints();
+      }
+
+      function clicked(d) {
+        var state = d.properties.ST_NM;
+        var x0 = 0,
+            y0 = 0,
+            x1 = 0,
+            y1 = 0;
+        states.transition().style("fill", null);
+
+        if (that.selected_state != 'All') {
+          d3__WEBPACK_IMPORTED_MODULE_0__.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
+        }
+
+        if (that.selected_state == state) {
+          var _path$bounds5 = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_2__);
+
+          var _path$bounds6 = _slicedToArray(_path$bounds5, 2);
+
+          var _path$bounds6$ = _slicedToArray(_path$bounds6[0], 2);
+
+          x0 = _path$bounds6$[0];
+          y0 = _path$bounds6$[1];
+
+          var _path$bounds6$2 = _slicedToArray(_path$bounds6[1], 2);
+
+          x1 = _path$bounds6$2[0];
+          y1 = _path$bounds6$2[1];
+          that.selected_state = 'All';
+        } else {
+          var _path$bounds7 = path.bounds(d);
+
+          var _path$bounds8 = _slicedToArray(_path$bounds7, 2);
+
+          var _path$bounds8$ = _slicedToArray(_path$bounds8[0], 2);
+
+          x0 = _path$bounds8$[0];
+          y0 = _path$bounds8$[1];
+
+          var _path$bounds8$2 = _slicedToArray(_path$bounds8[1], 2);
+
+          x1 = _path$bounds8$2[0];
+          y1 = _path$bounds8$2[1];
+          that.selected_state = state;
+          d3__WEBPACK_IMPORTED_MODULE_0__.select(this).transition().style("fill", "gold");
+        }
+
+        svg.transition().duration(750).call(zoom.transform, d3__WEBPACK_IMPORTED_MODULE_0__.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+        mapPoints();
+      }
+
+      function mapPoints() {
+        if (!d3__WEBPACK_IMPORTED_MODULE_0__.select("#map-container .map-points").empty()) {
+          d3__WEBPACK_IMPORTED_MODULE_0__.selectAll(".map-points").remove();
+        }
+
+        var points = [];
+
+        if (that.selected_state != 'All') {
+          console.log(that.selected_state);
+          that.state_data[that.selected_state].forEach(function (o) {
+            var coords = o.location.split(",");
+            points.push([coords[1], coords[0], o.id, o.place_guess]);
+          });
+        }
+
+        if (points.length > 0) {
+          var map_points = svg.append('g').classed('map-points', true).selectAll("circle").data(points).enter().append("circle").attr("cx", function (d) {
+            return projection(d)[0];
+          }).attr("cy", function (d) {
+            return projection(d)[1];
+          }).attr("r", "0px"); // map_points.on("click", (d) => that.setMissingState(d))
+        }
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "species-sunburst",
+  props: ["tree_data"],
+  data: function data() {
+    return {
+      width: 500,
+      height: 300,
+      padding: 4,
+      $dataset: null,
+
+      /** @type {d3.HierarchyPointNode} */
+      h: null,
+      intIndex: 28,
+      nestOrder: ['superfamily', 'family', 'subfamily', 'genus']
+    };
+  },
+  filters: {
+    formatNumber: function formatNumber(val) {
+      return d3__WEBPACK_IMPORTED_MODULE_1__.format('.3~s')(val).replace(/G/gi, 'B');
+    },
+    noSpaces: function noSpaces(val) {
+      return val.replace(/\s/gi, '');
+    }
+  },
+  computed: {
+    layout: function layout() {
+      var layout = d3__WEBPACK_IMPORTED_MODULE_1__.pack().size([this.width, this.height]).padding(this.padding); // .radius(v => v.value)
+
+      return layout;
+    },
+    extent: function extent() {
+      if (this.h) {
+        return d3__WEBPACK_IMPORTED_MODULE_1__.extent(this.h.descendants(), function (n) {
+          return n.value;
+        });
+      }
+    },
+
+    /**
+    * Map colors to the value of each node
+    */
+    colorScale: function colorScale() {
+      if (this.h) {
+        var values = this.h.descendants().map(function (n) {
+          return n.value;
+        });
+
+        var _d3$extent = d3__WEBPACK_IMPORTED_MODULE_1__.extent(values),
+            _d3$extent2 = _slicedToArray(_d3$extent, 2),
+            min = _d3$extent2[0],
+            max = _d3$extent2[1];
+
+        var count = values.length;
+        var colors = d3__WEBPACK_IMPORTED_MODULE_1__.schemePaired;
+        d3__WEBPACK_IMPORTED_MODULE_1__.shuffle(colors); // colors.push('red')
+
+        return d3__WEBPACK_IMPORTED_MODULE_1__.scaleThreshold().domain(d3__WEBPACK_IMPORTED_MODULE_1__.ticks(min, max * 1.5, count)).range(colors);
+      }
+    },
+    fontScale: function fontScale() {
+      if (this.h) {
+        return d3__WEBPACK_IMPORTED_MODULE_1__.scalePow() // .exponent(0.85)
+        .domain(this.extent).range([5, 100]).clamp(true);
+      }
+    },
+
+    /**
+    * The branch nodes to be rendered
+    */
+    nodes: function nodes() {
+      if (this.h) {
+        return this.h.descendants();
+      } else {
+        return null;
+      }
+    },
+    nester: function nester() {
+      var n = d3__WEBPACK_IMPORTED_MODULE_1__.nest();
+      this.nestOrder.forEach(function (str) {
+        n.key(function (node) {
+          return node[str];
+        });
+      });
+      return n;
+    }
+  },
+  watch: {
+    layout: function layout() {
+      if (!this.h) return;
+      this.layout(this.h);
+    },
+    nester: function nester() {
+      this.initHierarchy(this.$data.$dataset);
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      var data;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              // Assign Sizes
+              _this.updateSize(); // 1. Load the data
+
+
+              data = _this.tree_data;
+              _this.$data.$dataset = Object.freeze(data);
+
+              _this.initHierarchy(_this.$data.$dataset);
+
+              _this.initHierarchy(_this.tree_data);
+
+              window.myComponent = _this;
+
+              _this.$once('hook:beforeDestroy', function () {
+                delete window.myComponent;
+              });
+
+            case 7:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
+  },
+  methods: {
+    updateSize: function updateSize() {
+      var _this$$el$getBounding = this.$el.getBoundingClientRect(),
+          width = _this$$el$getBounding.width,
+          height = _this$$el$getBounding.height,
+          bottom = _this$$el$getBounding.bottom; // console.log(this.$el.getBoundingClientRect())
+
+
+      this.width = width / 2;
+      this.height = bottom;
+    },
+
+    /** @param {d3.HierarchyCircularNode} node */
+    nodeClick: function nodeClick(node) {
+      var isLeaf = !node.children;
+      console.clear();
+
+      if (isLeaf) {
+        console.log(node.data.key, node.value);
+      } else {
+        console.log(node.data.key, node.descendants().slice(1).sort(function (a, b) {
+          return d3__WEBPACK_IMPORTED_MODULE_1__.descending(a.value, b.value);
+        }).map(function (n) {
+          return "".concat(n.data.key, ": ").concat(n.value);
+        }));
+        this.h = this.layout(node);
+      }
+    },
+
+    /** @param {d3.HierarchyCircularNode} node */
+    computeStyle: function computeStyle(node) {
+      var x = node.x,
+          y = node.y,
+          r = node.r,
+          value = node.value;
+      var rx = x - r;
+      var ry = y - r;
+      var d = r * 2;
+      var color = node.depth < 1 ? 'black' : this.colorScale(value); // if (chroma.contrast(color, 'white') < 4.5) {
+      // 	color = chroma(color).darken(2)
+      // 	console.log(node.data.key)
+      // }
+
+      return {
+        transform: "translate3d(".concat(rx, "px, ").concat(ry, "px, 0)"),
+        backgroundColor: color,
+        width: "".concat(d, "px"),
+        height: "".concat(d, "px"),
+        fontSize: "".concat(this.fontScale(value), "px")
+      };
+    },
+    initHierarchy: function initHierarchy(data) {
+      var nestedData = {
+        key: 'root',
+        values: this.nester.entries(data || this.$data.$dataset)
+      }; // 3. Add Hierarchy to nested data
+
+      var h = d3__WEBPACK_IMPORTED_MODULE_1__.hierarchy(nestedData, function (v) {
+        return v.values;
+      }); // Calculate Totals and sort
+
+      h.sum(function (v) {
+        return v.value;
+      });
+      h.sort(function (a, b) {
+        return d3__WEBPACK_IMPORTED_MODULE_1__.ascending(a.value, b.value);
+      }); // 4. Apply a layout to the hierarchy
+
+      this.layout(h);
+      this.h = h;
     }
   }
 });
@@ -75925,6 +76507,770 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      define(prototype, method, function(arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  define(Gp, toStringTagSymbol, "Generator");
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  define(Gp, iteratorSymbol, function() {
+    return this;
+  });
+
+  define(Gp, "toString", function() {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : 0
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/keen-ui/dist/keen-ui.css":
 /*!***********************************************!*\
   !*** ./node_modules/keen-ui/dist/keen-ui.css ***!
@@ -76305,6 +77651,84 @@ component.options.__file = "resources/js/components/i-nat.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/india-map.vue":
+/*!***********************************************!*\
+  !*** ./resources/js/components/india-map.vue ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./india-map.vue?vue&type=template&id=1e05f70b& */ "./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&");
+/* harmony import */ var _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./india-map.vue?vue&type=script&lang=js& */ "./resources/js/components/india-map.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.render,
+  _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/india-map.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/species-sunburst.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/species-sunburst.vue ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./species-sunburst.vue?vue&type=template&id=67271390& */ "./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390&");
+/* harmony import */ var _species_sunburst_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./species-sunburst.vue?vue&type=script&lang=js& */ "./resources/js/components/species-sunburst.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _species_sunburst_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__.render,
+  _species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/species-sunburst.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue?vue&type=script&lang=js&":
 /*!********************************************************************!*\
   !*** ./resources/js/components/i-nat.vue?vue&type=script&lang=js& ***!
@@ -76318,6 +77742,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_i_nat_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./i-nat.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=script&lang=js&");
  /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_i_nat_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
+/***/ "./resources/js/components/india-map.vue?vue&type=script&lang=js&":
+/*!************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=script&lang=js& ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
+/***/ "./resources/js/components/species-sunburst.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/species-sunburst.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./species-sunburst.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
 
 /***/ }),
 
@@ -76347,6 +77803,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_i_nat_vue_vue_type_template_id_56ee17fc___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_i_nat_vue_vue_type_template_id_56ee17fc___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./i-nat.vue?vue&type=template&id=56ee17fc& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=template&id=56ee17fc&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b& ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=template&id=1e05f70b& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390& ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_template_id_67271390___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./species-sunburst.vue?vue&type=template&id=67271390& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390&");
 
 
 /***/ }),
@@ -76397,10 +77887,23 @@ var render = function() {
                 },
                 [
                   tab.title === "Location"
-                    ? _c("div", {
-                        staticClass: "svg-container",
-                        attrs: { id: "map-container" }
-                      })
+                    ? _c(
+                        "div",
+                        { staticClass: "svg-container" },
+                        [
+                          _c("india-map", {
+                            attrs: {
+                              map_data: _vm.filteredObservations,
+                              height: _vm.svgHeight * 0.9,
+                              width: _vm.svgWidth,
+                              selected_state: _vm.selected_state,
+                              popup: _vm.tooltip,
+                              stateStats: _vm.stateStats
+                            }
+                          })
+                        ],
+                        1
+                      )
                     : _vm._e(),
                   _vm._v(" "),
                   tab.title === "Table"
@@ -76985,7 +78488,8 @@ var render = function() {
                 }
               }
             },
-            [_vm._v("\n                Taxonomy\n            ")]
+            [_c("species-sunburst", { attrs: { tree_data: _vm.tree_data } })],
+            1
           )
         ],
         1
@@ -77028,6 +78532,113 @@ var render = function() {
     ],
     1
   )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b& ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "map-container" } })
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "w-full h-full relative overflow-hidden" }, [
+    _vm.h
+      ? _c(
+          "div",
+          { staticClass: "html-version" },
+          _vm._l(_vm.nodes, function(node) {
+            return _c(
+              "div",
+              {
+                key: node.data.key,
+                staticClass: "html-element",
+                style: _vm.computeStyle(node),
+                attrs: { title: node.data.key + ": " + node.value },
+                on: {
+                  click: function($event) {
+                    if (
+                      !$event.type.indexOf("key") &&
+                      _vm._k($event.keyCode, "left", 37, $event.key, [
+                        "Left",
+                        "ArrowLeft"
+                      ])
+                    ) {
+                      return null
+                    }
+                    if ($event.target !== $event.currentTarget) {
+                      return null
+                    }
+                    if ("button" in $event && $event.button !== 0) {
+                      return null
+                    }
+                    return _vm.nodeClick(node)
+                  },
+                  contextmenu: function($event) {
+                    if ($event.target !== $event.currentTarget) {
+                      return null
+                    }
+                    $event.preventDefault()
+                    return _vm.nodeClick(node.parent)
+                  }
+                }
+              },
+              [
+                !node.children && _vm.fontScale(node.value) > 5
+                  ? _c("div", [
+                      _c("span", [_vm._v(_vm._s(node.data.key))]),
+                      _vm._v(" "),
+                      _c("small", [
+                        _vm._v(_vm._s(_vm._f("formatNumber")(node.value)))
+                      ])
+                    ])
+                  : _vm._e()
+              ]
+            )
+          }),
+          0
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
