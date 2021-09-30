@@ -1,5 +1,88 @@
+<style scoped>
+    .breadcrumbs  a{
+        font-size:.7em;
+        height:30px;
+        line-height:30px;
+        vertical-align:middle;
+        text-align:center;
+        padding:0 7px;
+        position:relative;
+        display:inline-block;
+        background-color: #fff;
+        margin: 2px 0;
+        color:#000;
+        border:2px solid #8ab;
+        border-radius:7px;
+    }
+    .breadcrumb {
+        list-style: none;
+        overflow: hidden;
+        padding: 0;
+    }
+    .breadcrumb li a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 0 10px 55px;
+        background: brown; /* fallback color */
+        background: #004040;
+        position: relative;
+        display: block;
+        float: left;
+    }
+    .breadcrumb li a:after {
+        content: " ";
+        display: block;
+        width: 0;
+        height: 0;
+        border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+        border-bottom: 50px solid transparent;
+        border-left: 30px solid #004040;
+        position: absolute;
+        top: 50%;
+        margin-top: -50px;
+        left: 100%;
+        z-index: 2;
+    }
+    .breadcrumb li a:before {
+        content: " ";
+        display: block;
+        width: 0;
+        height: 0;
+        border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+        border-bottom: 50px solid transparent;
+        border-left: 30px solid white;
+        position: absolute;
+        top: 50%;
+        margin-top: -50px;
+        margin-left: 1px;
+        left: 100%;
+        z-index: 1;
+    }
+    .breadcrumb li:first-child a {
+        padding-left: 10px;
+    }
+    .breadcrumb li:last-child a {
+        background: rgb(200,200,0) !important;
+    }
+    .breadcrumb li:last-child a:after {
+        border-left: 30px solid rgb(200,200,0);
+    }
+
+    .breadcrumb li:hover a
+    {
+        color:#0ff;
+        text-decoration: underline;
+    }
+</style>
 <template>
-  <div id="sunburstChart" class=""></div>
+    <div>
+        <div class="breadcrumb text-center">
+            <li v-for="(crumb, i) in breadcrumbs">
+                <a href="#" :title="crumbTitle(crumb, i)" @click="crumbClick(crumb)">{{ crumb }}</a>
+            </li>
+        </div>        
+        <div id="sunburstChart" class=""></div>
+    </div>
 </template>
 
 <script>
@@ -9,9 +92,9 @@
 		props: ["tree_data"],
 		data(){
 			return {
-                width: 600,
+                width: 1200,
         		height:600,
-        		radius: 100,
+        		radius: 90,
         		margin: {
         			top: 50,
         			right: 50,
@@ -23,7 +106,8 @@
         		parent:"",
         		label:"",
         		speciesData:[],
-        		root:{}
+        		root:{},
+                breadcrumbs:[],
 			}
 		},
 		computed: {
@@ -32,28 +116,33 @@
             },
 		},
 		watch: {
+            tree_data () {
+                // this.init()
+            }
 		},
         mounted() {
-            var speciesTree = [];
 
-    		this.tree_data.forEach(d => {
-    			speciesTree.push([d.superfamily,d.family, d.subfamily, d.tribe, d.genus, d.species])
-    		});
-    		this.speciesData = this.createTree(speciesTree, "Life");
-    		this.root = this.partition(this.speciesData);
-    		this.root.each(d => d.current = d);
 
-    		this.init();
+    		this.init()
 
 
 		},
 		methods: {
             init () {
+                console.log("init-ing")
+                var speciesTree = [];
+
+                this.tree_data.forEach(d => {
+                    speciesTree.push([d.superfamily,d.family, d.subfamily, d.tribe, d.genus, d.species])
+                })
+                this.speciesData = this.createTree(speciesTree, "Reset")
+                this.root = this.partition(this.speciesData)
+                this.root.each(d => d.current = d)
+
             	const svg = d3.select("#sunburstChart")
             		.append("svg")
-            		.classed("bg-dark border boorder-primary rounded", true)
-            		.attr("width", this.width)
-            		.attr("height", this.height)
+            		.classed("bg-light text-center border boorder-primary rounded", true)
+            		.attr("viewBox", [0,0, this.width, this.height])
 
             	const arc = d3.arc()
             		.startAngle(d => d.x0)
@@ -83,11 +172,7 @@
             	.style("cursor", "pointer")
             		.on("mouseover", function (d){ d3.select(this).classed("selected", true)})
             		.on("mouseout", function (d){ d3.select(this).classed("selected",false)})
-            		.on("click", (event, d) => {
-                        console.log(d)
-                        if(this.arcVisible(d.current))
-                            this.clicked(d)
-                        })
+            		.on("click", this.clicked)
 
             	this.path.append("title")
             		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")} - ${d.value}`);
@@ -110,14 +195,13 @@
             		.attr("r", this.radius)
             		.attr("fill", "none")
             		.attr("pointer-events", "all")
-            		.on("click", (event, d) => {this.clicked(d)})
+            		.on("click", this.clicked)
             },
             clicked(p) {
                 var selected_taxon = p.data.name
-                console.log(p)
 
-                this.$emit('select-taxon', selected_taxon, p.depth)
-                this.breadcrumbs = this.populate_breadcrumbs(p,[])
+                this.breadcrumbs = this.populate_breadcrumbs(p,[]);
+                this.$emit('select-taxon', this.breadcrumbs)
                 const arc = d3.arc()
 					.startAngle(d => d.x0)
 					.endAngle(d => d.x1)
@@ -126,9 +210,6 @@
 					.innerRadius(d => d.y0 * this.radius)
 					.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
 
-                if(p.children == undefined){
-                    window.location = "/biodiversity/species/" + this.getId(p.data.name)
-                }
 
 				this.parent.datum(p.parent || this.root);
 				this.root.each(d => d.target = {
@@ -175,9 +256,6 @@
                     .padRadius(this.radius * 1.5)
                     .innerRadius(d => d.y0 * this.radius)
                     .outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
-            },
-            getId(n){
-                var match = -1
 
                 this.data.forEach(d => {
 					if(d.species == n)
@@ -219,30 +297,29 @@
                 return top;
             },
             populate_breadcrumbs(p,result){
-                if(p.data != null){
+                if(p.data != null && p.data.name != "Reset"){
                     if(p.parent != null){
                         result = this.populate_breadcrumbs(p.parent, result);
                     }
                     result.push(p.data.name)
-                } else {
-                    alert("problem");
-                }
+                } 
                 return result
             },
-            toggleSunburstModal(){
-                if(this.sunburstModalToggle == "d-none"){
-                    this.sunburstModalToggle = "d-block";
-                    document.body.classList.add("modal-open");
-                    var myDiv = document.createElement("div");
-                    myDiv.id = 'modal_backdrop';
-                    myDiv.className = "modal-backdrop fade show";
-                    document.body.appendChild(myDiv);
-                } else {
-                    this.sunburstModalToggle = "d-none";
-                    document.body.classList.remove("modal-open");
-					document.getElementById("modal_backdrop").outerHTML = "";
-				}
-			},
+            crumbTitle(text, depth){
+                var taxon = ""
+                console.log(text)
+                if(depth > 0){
+                    taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
+                }
+                return  taxon
+            },
+            crumbClick(text){
+                this.root.descendants().forEach(a => {
+                    if(a.data.name == text){
+                        this.clicked(a)
+                    }
+                })
+            },
 			resetSunburst(){
 				this.crumbClick("Life")
 			}
