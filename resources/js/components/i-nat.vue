@@ -114,19 +114,7 @@
 		background: #ffa;
 		cursor: pointer;
 	}
-	.species-data-table{
-		/*height: 100%;*/
-		overflow-y: scroll;
-	}
-	.tableFixHead{
-		overflow: auto;
-		height: 100px;
-	}
-	.tableFixHead thead th{
-		position: sticky;
-		top: 0;
-		z-index: 1;
-	}
+
 	.ui-tabs__body{
 		padding: 0;
 	}
@@ -134,6 +122,7 @@
 		height:  80vh;
 		overflow: hidden;
 	}
+
 	.ui-collapsible__body{
 		padding: 2px;
 	}
@@ -290,40 +279,14 @@
 							</table>
 						</div>
 						<div class="species-data-table">
-							<table class="table tableFixHead all-states-table" v-if="selected_state == 'All'">
-								<thead class="table-secondary">
-									<tr>
-										<th>State</th>
-										<th>Observations</th>
-										<th>Unique Taxa</th>
-										<th>Users</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="(row, state) in statesTableData" :key="state" @click='selectState(row.state)' v-if="state != 'All'">
-										<td v-text="row.state"></td>
-										<td v-text="row.observations"></t d>
-										<td v-text="row.species"></td>
-										<td v-text="row.users"></td>
-									</tr>
-								</tbody>
-							</table>
-							<table class="table tableFixHead" v-else>
-								<thead class="table-secondary">
-									<tr>
-										<th>Taxa Name</th>
-										<th>Observations</th>
-										<th>Users</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="row in stateSpeciesList">
-										<td v-text="row.name"></td>
-										<td v-text="row.count"></td>
-										<td v-text="row.users.size"></td>
-									</tr>
-								</tbody>
-							</table>
+							<data-table :data="statesTableData"
+										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
+										v-if="selected_state == 'All'"
+							/>
+							<data-table :data="stateSpeciesList"
+										:headers='[["Taxa Name","name"],["Observations","count"],["Users","user_count"]]'
+										v-else
+							/>
 						</div>
 					</div>
 					<div id="observations-container" v-if="tab.title === 'Observations'">
@@ -455,12 +418,13 @@
 <script>
 import axios from 'axios';
 import country from '../country.json'
+import DataTable from './data-table'
 import SpeciesSunburst from './species-sunburst'
 import IndiaMap from './india-map'
 	export default {
 		name:"i-nat",
 		props: ["inat_data", "inat_taxa"],
-		components: {SpeciesSunburst, IndiaMap},
+		components: { DataTable, SpeciesSunburst, IndiaMap },
 		data() {
 			return{
 				state_data: {},
@@ -569,7 +533,7 @@ import IndiaMap from './india-map'
 						if(match_flag){
 							taxa_match.push(o)
 						}
-					
+
 					})
 					op = taxa_match
 				}
@@ -684,12 +648,6 @@ import IndiaMap from './india-map'
 			},
 			stateSpeciesList () {
 				let op = []
-				// let state_observations = this.inat_data
-
-
-				// let unique_taxa = d3.nest().key(o => o.taxa_name).object(state_observations)
-
-
 				this.stateObservations.forEach(o => {
 					let new_flag = true
 					op.forEach((oo, oid) => {
@@ -708,6 +666,9 @@ import IndiaMap from './india-map'
 				})
 
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
+				op.forEach((s, id) => {
+					op[id].user_count = s.users.size
+				})
 				// console.log(unique_taxa, op)
 				return op
 			},
@@ -740,7 +701,7 @@ import IndiaMap from './india-map'
 			},
 			taxaTableData () {
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
-				
+
 				let taxa_level = d3.nest().key(o => o.taxa_rank).object(this.filteredObservations)
 
 				Object.keys(taxa_level).forEach(tl => {
@@ -761,7 +722,7 @@ import IndiaMap from './india-map'
 						}
 						hierarchy[o.taxa_rank] = o.taxa_name
 						hierarchy.key = o.taxa_name
-						
+
 
 						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
 							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
@@ -1333,7 +1294,7 @@ import IndiaMap from './india-map'
 					.style("font-size", 15)
 			},
 			selectTaxon (t) {
-				// 
+				//
 				this.selected_taxa = t
 				// console.log(this.selected_taxa)
 			},

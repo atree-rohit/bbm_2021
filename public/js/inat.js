@@ -1834,6 +1834,66 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "data-table",
+  props: ["data", "headers"]
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=script&lang=js&":
 /*!************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=script&lang=js& ***!
@@ -1848,8 +1908,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
-/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
-/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
+/* harmony import */ var _data_table__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data-table */ "./resources/js/components/data-table.vue");
+/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
+/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2287,43 +2348,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 
@@ -2332,8 +2357,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   name: "i-nat",
   props: ["inat_data", "inat_taxa"],
   components: {
-    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_2__.default,
-    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_3__.default
+    DataTable: _data_table__WEBPACK_IMPORTED_MODULE_2__.default,
+    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_3__.default,
+    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_4__.default
   },
   data: function data() {
     return {
@@ -2585,9 +2611,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     stateSpeciesList: function stateSpeciesList() {
-      var op = []; // let state_observations = this.inat_data
-      // let unique_taxa = d3.nest().key(o => o.taxa_name).object(state_observations)
-
+      var op = [];
       this.stateObservations.forEach(function (o) {
         var new_flag = true;
         op.forEach(function (oo, oid) {
@@ -2605,6 +2629,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
       op.sort(function (a, b) {
         return a.count < b.count ? 1 : b.count < a.count ? -1 : 0;
+      });
+      op.forEach(function (s, id) {
+        op[id].user_count = s.users.size;
       }); // console.log(unique_taxa, op)
 
       return op;
@@ -3236,7 +3263,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }).style("text-anchor", "middle").style("font-size", 15);
     },
     selectTaxon: function selectTaxon(t) {
-      // 
+      //
       this.selected_taxa = t; // console.log(this.selected_taxa)
     },
     selectTaxaLevel: function selectTaxaLevel(tname) {
@@ -3464,7 +3491,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           });
         }
       });
-      var zoom = d3.zoom().scaleExtent([.1, 50]).translateExtent([[-width, -height], [2 * width, 2 * height]]).on('zoom', function () {
+      var zoom = d3.zoom().scaleExtent([.5, 50]).translateExtent([[-0.5 * width, -0.75 * height], [2.5 * width, 2.5 * height]]).on('zoom', function () {
         svg.selectAll('.poly_text').attr('transform', d3.event.transform), svg.selectAll('path').attr('transform', d3.event.transform), svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
       });
       svg.call(zoom);
@@ -4053,6 +4080,30 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*!\n * Keen UI v1.3.1 (https://github
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    width:100%;\n    height: 60vh;\n    overflow: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css&":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css& ***!
@@ -4070,7 +4121,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.species-data-table{\n\t\t/*height: 100%;*/\n\t\toverflow-y: scroll;\n}\n.tableFixHead{\n\t\toverflow: auto;\n\t\theight: 100px;\n}\n.tableFixHead thead th{\n\t\tposition: sticky;\n\t\ttop: 0;\n\t\tz-index: 1;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow: hidden;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow: hidden;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -76785,6 +76836,36 @@ var update = _style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMP
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_style_index_0_id_79a76a14_lang_css_scoped_true___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_style_index_0_id_79a76a14_lang_css_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_style_index_0_id_79a76a14_lang_css_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css& ***!
@@ -77154,6 +77235,47 @@ module.exports = function (list, options) {
 
 /***/ }),
 
+/***/ "./resources/js/components/data-table.vue":
+/*!************************************************!*\
+  !*** ./resources/js/components/data-table.vue ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./data-table.vue?vue&type=template&id=79a76a14&scoped=true& */ "./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true&");
+/* harmony import */ var _data_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data-table.vue?vue&type=script&lang=js& */ "./resources/js/components/data-table.vue?vue&type=script&lang=js&");
+/* harmony import */ var _data_table_vue_vue_type_style_index_0_id_79a76a14_lang_css_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& */ "./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+;
+
+
+/* normalize component */
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
+  _data_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
+  _data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  "79a76a14",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/data-table.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue":
 /*!*******************************************!*\
   !*** ./resources/js/components/i-nat.vue ***!
@@ -77277,6 +77399,22 @@ component.options.__file = "resources/js/components/species-sunburst.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/data-table.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/data-table.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./data-table.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue?vue&type=script&lang=js&":
 /*!********************************************************************!*\
   !*** ./resources/js/components/i-nat.vue?vue&type=script&lang=js& ***!
@@ -77325,6 +77463,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& ***!
+  \*********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_style_index_0_id_79a76a14_lang_css_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=style&index=0&id=79a76a14&lang=css&scoped=true&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css&":
 /*!****************************************************************************!*\
   !*** ./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css& ***!
@@ -77360,6 +77511,23 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_style_index_0_id_67271390_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./species-sunburst.vue?vue&type=style&index=0&id=67271390&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=style&index=0&id=67271390&scoped=true&lang=css&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true& ***!
+  \*******************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_data_table_vue_vue_type_template_id_79a76a14_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./data-table.vue?vue&type=template&id=79a76a14&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true&");
 
 
 /***/ }),
@@ -77411,6 +77579,64 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_template_id_67271390_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_species_sunburst_vue_vue_type_template_id_67271390_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./species-sunburst.vue?vue&type=template&id=67271390&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/species-sunburst.vue?vue&type=template&id=67271390&scoped=true&");
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/data-table.vue?vue&type=template&id=79a76a14&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "table-container" }, [
+    _c("table", { staticClass: "table tableFixHead all-states-table" }, [
+      _c("thead", {}, [
+        _c(
+          "tr",
+          _vm._l(_vm.headers, function(h) {
+            return _c("th", {
+              key: h[1],
+              domProps: { textContent: _vm._s(h[0]) }
+            })
+          }),
+          0
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "tbody",
+        _vm._l(_vm.data, function(row, id) {
+          return _c(
+            "tr",
+            { key: id },
+            _vm._l(_vm.headers, function(h) {
+              return _c("td", {
+                key: h[1],
+                domProps: { textContent: _vm._s(row[h[1]]) }
+              })
+            }),
+            0
+          )
+        }),
+        0
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
 
 
 /***/ }),
@@ -77531,131 +77757,35 @@ var render = function() {
                           ]
                         ),
                         _vm._v(" "),
-                        _c("div", { staticClass: "species-data-table" }, [
-                          _vm.selected_state == "All"
-                            ? _c(
-                                "table",
-                                {
-                                  staticClass:
-                                    "table tableFixHead all-states-table"
-                                },
-                                [
-                                  _c(
-                                    "thead",
-                                    { staticClass: "table-secondary" },
-                                    [
-                                      _c("tr", [
-                                        _c("th", [_vm._v("State")]),
-                                        _vm._v(" "),
-                                        _c("th", [_vm._v("Observations")]),
-                                        _vm._v(" "),
-                                        _c("th", [_vm._v("Unique Taxa")]),
-                                        _vm._v(" "),
-                                        _c("th", [_vm._v("Users")])
-                                      ])
+                        _c(
+                          "div",
+                          { staticClass: "species-data-table" },
+                          [
+                            _vm.selected_state == "All"
+                              ? _c("data-table", {
+                                  attrs: {
+                                    data: _vm.statesTableData,
+                                    headers: [
+                                      ["State", "state"],
+                                      ["Observations", "observations"],
+                                      ["Unique Taxa", "species"],
+                                      ["Users", "users"]
                                     ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "tbody",
-                                    _vm._l(_vm.statesTableData, function(
-                                      row,
-                                      state
-                                    ) {
-                                      return state != "All"
-                                        ? _c(
-                                            "tr",
-                                            {
-                                              key: state,
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.selectState(
-                                                    row.state
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            [
-                                              _c("td", {
-                                                domProps: {
-                                                  textContent: _vm._s(row.state)
-                                                }
-                                              }),
-                                              _vm._v(" "),
-                                              _c("td", {
-                                                domProps: {
-                                                  textContent: _vm._s(
-                                                    row.observations
-                                                  )
-                                                }
-                                              }),
-                                              _c("td", {
-                                                domProps: {
-                                                  textContent: _vm._s(
-                                                    row.species
-                                                  )
-                                                }
-                                              }),
-                                              _vm._v(" "),
-                                              _c("td", {
-                                                domProps: {
-                                                  textContent: _vm._s(row.users)
-                                                }
-                                              })
-                                            ]
-                                          )
-                                        : _vm._e()
-                                    }),
-                                    0
-                                  )
-                                ]
-                              )
-                            : _c(
-                                "table",
-                                { staticClass: "table tableFixHead" },
-                                [
-                                  _c(
-                                    "thead",
-                                    { staticClass: "table-secondary" },
-                                    [
-                                      _c("tr", [
-                                        _c("th", [_vm._v("Taxa Name")]),
-                                        _vm._v(" "),
-                                        _c("th", [_vm._v("Observations")]),
-                                        _vm._v(" "),
-                                        _c("th", [_vm._v("Users")])
-                                      ])
+                                  }
+                                })
+                              : _c("data-table", {
+                                  attrs: {
+                                    data: _vm.stateSpeciesList,
+                                    headers: [
+                                      ["Taxa Name", "name"],
+                                      ["Observations", "count"],
+                                      ["Users", "user_count"]
                                     ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "tbody",
-                                    _vm._l(_vm.stateSpeciesList, function(row) {
-                                      return _c("tr", [
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.name)
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.count)
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(row.users.size)
-                                          }
-                                        })
-                                      ])
-                                    }),
-                                    0
-                                  )
-                                ]
-                              )
-                        ])
+                                  }
+                                })
+                          ],
+                          1
+                        )
                       ])
                     : _vm._e(),
                   _vm._v(" "),
