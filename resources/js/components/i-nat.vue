@@ -10,7 +10,7 @@
 	    /*overflow: hidden;*/
 	}
 	body{
-		overflow: hidden;
+		/*overflow: hidden;*/
 	}
 
 	.ui-tabs > div,
@@ -115,7 +115,7 @@
 		cursor: pointer;
 	}
 	.species-data-table{
-		height: 60vh;
+		/*height: 100%;*/
 		overflow-y: scroll;
 	}
 	.tableFixHead{
@@ -127,10 +127,15 @@
 		top: 0;
 		z-index: 1;
 	}
-
-	#observations-container {
-		height: 75vh;
-		overflow-y: scroll;
+	.ui-tabs__body{
+		padding: 0;
+	}
+	.ui-tab > div{
+		height:  80vh;
+		overflow: hidden;
+	}
+	.ui-collapsible__body{
+		padding: 2px;
 	}
 	#gallery{
 		/* Prevent vertical gaps */
@@ -223,9 +228,11 @@
 		body{
 			overflow: scroll;
 		}
-		.container-fluid,
 		.ui-tabs__body{
-			padding: 0;
+		padding: 0;
+	}
+		.ui-tab > div{
+			height: 50vh;
 		}
 		#report-page{
 			grid-template-columns: repeat(1, 1fr);
@@ -258,8 +265,6 @@
 					<div class="svg-container" v-if="tab.title === 'Location'">
 						<!-- <div id="map-container"></div> -->
 						<india-map :map_data="filteredObservations"
-								   :height="svgHeight * .9"
-								   :width="svgWidth"
 								   :selected_state="selected_state"
 								   :popup="tooltip"
 								   :stateStats="stateStats"
@@ -414,12 +419,11 @@
 					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
 						<button
 							v-for="(t, tname) in taxaTableData"
-							class="btn m-2"
+							class="btn btn-sm m-1"
 							:key="tname"
-							:class="taxaLevelBtnClass(tname)"
+							:class="taxaLevelBtnClass(tname, t)"
 							v-text="`${tname} (${t})`"
 							@click="selectTaxaLevel(tname)"
-							v-if="t > 0"
 						>
 						</button>
 					</div>
@@ -431,8 +435,8 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(1)">
-                <species-sunburst :tree_data="treeData" @select-taxon="selectTaxon"/>
+            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
+                <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 		</div>
 		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
@@ -492,7 +496,7 @@ import IndiaMap from './india-map'
 					0: false,
 					1: false,
 					2: false,
-					3: true,
+					3: false
 				}
 			}
 		},
@@ -750,22 +754,7 @@ import IndiaMap from './india-map'
 				let obv_taxonomy = []
 				let unique_species_taxonomy = []
 
-				if (this.selected_state === "All"){
-					op = this.inat_data
-				} else {
-					op = this.inat_data.filter(x => x.state === this.selected_state)
-				}
-
-				if(this.selected_users.length > 0){
-					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-
-				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}
-
-				obv_taxonomy = op.filter(o => o.taxa_rank == 'species')
-					.map(o => {
+				obv_taxonomy = this.filteredObservations.map(o => {
 						let hierarchy = {
 							id: o.id,
 							rank: o.taxa_rank
@@ -779,14 +768,16 @@ import IndiaMap from './india-map'
 								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
 							}
 						})
-						this.levels.forEach(l => {
-							if(hierarchy[l] == undefined)
+						this.levels.forEach((l, lid) => {
+							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(o.taxa_rank)) ){
 								hierarchy[l] = "none"
+							}
 						})
 
 						return hierarchy
 					})
 
+				//Modify this to handle higer taxa ids
 				const unique_species_list = [...new Set(obv_taxonomy.map(item => item.species))]
 
 				unique_species_list.forEach(s => {
@@ -1344,7 +1335,7 @@ import IndiaMap from './india-map'
 			selectTaxon (t) {
 				// 
 				this.selected_taxa = t
-				console.log(this.selected_taxa)
+				// console.log(this.selected_taxa)
 			},
 			selectTaxaLevel (tname) {
 				let op = this.selected_taxa_levels.indexOf(tname)
@@ -1354,10 +1345,16 @@ import IndiaMap from './india-map'
 					this.selected_taxa_levels.splice(op, 1)
 				}
 			},
-			taxaLevelBtnClass (tname) {
+			taxaLevelBtnClass (tname, no) {
 				let op = "btn-outline-secondary"
 				if (this.selected_taxa_levels.indexOf(tname) != -1) {
+					if( no == 0){
+						op = "btn-danger"
+					} else {
 						op = "btn-success"
+					}
+				} else if( no == 0) {
+					op = "btn-outline-danger"
 				}
 				return op
 			},

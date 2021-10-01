@@ -18,6 +18,7 @@
         list-style: none;
         overflow: hidden;
         padding: 0;
+        margin: 0;
     }
     .breadcrumb li a {
         color: white;
@@ -89,7 +90,7 @@
 	import * as d3 from "d3"
 	export default {
 		name:"species-sunburst",
-		props: ["tree_data"],
+		props: ["tree_data", "selected"],
 		data(){
 			return {
                 width: 1200,
@@ -108,6 +109,7 @@
         		speciesData:[],
         		root:{},
                 breadcrumbs:[],
+                watch_click:false,
 			}
 		},
 		computed: {
@@ -117,12 +119,16 @@
 		},
 		watch: {
             tree_data () {
-                // this.init()
+                this.init()
+                //click on selected
+                this.watch_click = true
+                this.crumbClick(this.selected[this.selected.length - 1])
+                this.watch_click = false
+                // this.crumbClick("Coliadinae")
             }
 		},
         mounted() {
     		this.init()
-
 		},
 		methods: {
             init () {
@@ -135,7 +141,11 @@
                 this.root = this.partition(this.speciesData)
                 this.root.each(d => d.current = d)
 
-            	const svg = d3.select("#sunburstChart")
+            
+            	if (!d3.select("#sunburstChart svg").empty()) {
+                    d3.selectAll("#sunburstChart svg").remove()
+                }
+                const svg = d3.select("#sunburstChart")
             		.append("svg")
             		.classed("bg-light text-center border boorder-primary rounded", true)
             		.attr("viewBox", [0,0, this.width, this.height])
@@ -168,7 +178,16 @@
             	.style("cursor", "pointer")
             		.on("mouseover", function (d){ d3.select(this).classed("selected", true)})
             		.on("mouseout", function (d){ d3.select(this).classed("selected",false)})
-            		.on("click", this.clicked)
+            		.on("click", (d) => {
+                        // console.log(d.data.children.length)
+                        if (d.data.children){
+                            if(d.data.children.length > 0){
+                                return this.clicked(d)
+                            } else {
+                                alert(d.data.name)
+                            }
+                        }
+                    })
 
             	this.path.append("title")
             		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")} - ${d.value}`);
@@ -197,7 +216,9 @@
                 var selected_taxon = p.data.name
 
                 this.breadcrumbs = this.populate_breadcrumbs(p,[]);
-                this.$emit('select-taxon', this.breadcrumbs)
+                if(this.watch_click == false ){
+                    this.$emit('select-taxon', this.breadcrumbs)
+                }
                 const arc = d3.arc()
 					.startAngle(d => d.x0)
 					.endAngle(d => d.x1)
@@ -234,9 +255,11 @@
 					.attrTween("transform", d => () => that.labelTransform(d.current))
 			},
             arcVisible(d){
+                // 
                 return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
             },
             labelVisible(d) {
+                // 
                 return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
             },
             labelTransform(d) {
@@ -260,6 +283,7 @@
 				return match
 			},
             format(d){
+                // 
                 return d3.format(d)
 			},
             partition(data) {
@@ -315,9 +339,7 @@
                     }
                 })
             },
-			resetSunburst(){
-				this.crumbClick("Life")
-			}
+
 		}
     };
 </script>

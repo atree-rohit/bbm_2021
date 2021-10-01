@@ -79,28 +79,15 @@ export default {
 				this.state_max = this.state_data[s].length;
 			})
 
-
-
-			this.tooltip = d3.select('body')
-			.append('div')
-			.attr('class', 'd3-tooltip')
-			.style('position', 'absolute')
-			.style('z-index', '10')
-			.style('visibility', 'hidden')
-			.style('padding', '10px')
-			.style('background', 'rgba(0,0,0,0.6)')
-			.style('border-radius', '4px')
-			.style('color', '#fff')
-			.text('a simple tooltip');
-
 			this.renderMap()
 		},
 		renderMap () {
 			let that = this
-			let height = this.height
-			let width = this.width
+			let height = window.innerHeight * 0.85
+			let width = window.innerWidth * 0.5
 			if(height > width){
-				height /= 3
+				height /= 1.7
+				width *= 2
 			}
 
 			if (!d3.select("#map-container svg").empty()) {
