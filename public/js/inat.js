@@ -3345,11 +3345,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "india-map",
-  props: ["map_data", "selected_state", "height", "width", "popup", "stateStats"],
+  props: ["map_data", "selected_state", "popup", "stateStats"],
   data: function data() {
     return {
       state_data: {},
       state_max: 0,
+      height: window.innerHeight * 0.8,
+      width: window.innerWidth * 0.5,
       tooltip: this.popup,
       map_first_render: true
     };
@@ -3418,19 +3420,19 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var _this3 = this;
 
       var that = this;
-      var height = window.innerHeight * 0.85;
-      var width = window.innerWidth * 0.5;
+      var height = this.height;
+      var width = this.width;
 
       if (height > width) {
         height /= 1.7;
-        width *= 2;
+        width *= 1.9;
       }
 
       if (!d3.select("#map-container svg").empty()) {
         d3.selectAll("#map-container svg").remove();
       }
 
-      var svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("viewBox", [0, 0, width, height]).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
+      var svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("width", width).attr("height", height).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
       var projection = d3.geoMercator().scale(850).center([87, 25.5]);
       var path = d3.geoPath().projection(projection);
       var colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);

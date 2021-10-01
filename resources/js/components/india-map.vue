@@ -15,11 +15,13 @@
 import country from '../country.json'
 export default {
 	name:"india-map",
-	props: ["map_data", "selected_state", "height", "width", "popup", "stateStats"],
+	props: ["map_data", "selected_state", "popup", "stateStats"],
 	data() {
 		return{
 			state_data: {},
 			state_max: 0,
+			height: window.innerHeight * 0.8,
+			width: window.innerWidth * 0.5,
 			tooltip:this.popup,
 			map_first_render:true,
 		}
@@ -83,20 +85,23 @@ export default {
 		},
 		renderMap () {
 			let that = this
-			let height = window.innerHeight * 0.85
-			let width = window.innerWidth * 0.5
+			let height = this.height
+			let width = this.width
 			if(height > width){
 				height /= 1.7
-				width *= 2
+				width *= 1.9
 			}
 
 			if (!d3.select("#map-container svg").empty()) {
 				d3.selectAll("#map-container svg").remove()
 			}
-			let svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
-			.attr("viewBox", [0,0, width, height])
-			.style("background-color", "rgb(190, 229, 235)")
-			.classed("svg-content d-flex m-auto", true)
+			let svg = d3.select("#map-container")
+						.append("svg")
+							.attr("preserveAspectRatio", "xMinYMin meet")
+							.attr("width", width)
+							.attr("height", height)
+							.style("background-color", "rgb(190, 229, 235)")
+							.classed("svg-content d-flex m-auto", true)
 
 			var projection = d3.geoMercator().scale(850).center([87, 25.5])
 			const path = d3.geoPath().projection(projection)
