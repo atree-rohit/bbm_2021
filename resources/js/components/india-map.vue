@@ -152,8 +152,8 @@ export default {
 			})
 
 			let zoom = d3.zoom()
-			.scaleExtent([.1, 50])
-			.translateExtent([[-width,-height],[2 * width,2 * height]])
+			.scaleExtent([.5, 50])
+			.translateExtent([[-0.5 * width,-0.75 * height],[2.5 * width, 2.5 * height]])
 			.on('zoom', function() {
 				svg.selectAll('.poly_text')
 				.attr('transform', d3.event.transform),
