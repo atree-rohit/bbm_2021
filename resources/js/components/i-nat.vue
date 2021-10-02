@@ -13,10 +13,10 @@
 		/*overflow: hidden;*/
 	}
 
-	.ui-tabs > div,
+	/*.ui-tabs > div,
 	.ui-tabs > div > div{
 		overflow-x: hidden;
-	}
+	}*/
 	.filter-set .ui-collapsible__header{
 		background: #aea;
 	}
@@ -132,7 +132,6 @@
 		-moz-column-gap:      2px;
 		column-count:         3;
 		column-gap:           2px;
-		overflow-y: scroll;
 	}
 
 	#gallery div {
