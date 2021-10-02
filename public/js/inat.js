@@ -2348,6 +2348,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
 
 
 
@@ -2372,7 +2374,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selected_dates: [],
       selected_state: "All",
       selected_point: null,
-      selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
+      selected_taxa_levels: [],
       selected_taxa: [],
       levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
       taxa_tree: {},
@@ -2483,8 +2485,58 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       //
       return this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * this.observationsPageNo);
     },
-    userTableData: function userTableData() {
+    mapData: function mapData() {
       var _this2 = this;
+
+      var op = this.inat_data; //filter state state
+
+      if (this.selected_users.length > 0) {
+        op = op.filter(function (x) {
+          return _this2.selected_users.indexOf(x.user_id) !== -1;
+        });
+      }
+
+      if (this.selected_dates.length > 0) {
+        op = op.filter(function (x) {
+          return _this2.selected_dates.indexOf(x.inat_created_at) !== -1;
+        });
+      }
+
+      if (this.selected_taxa_levels.length > 0) {
+        op = op.filter(function (x) {
+          return _this2.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
+        });
+      }
+
+      if (this.selected_taxa.length > 1) {
+        var taxa_match = [];
+        op.forEach(function (o) {
+          var hierarchy = {};
+          var match_flag = true;
+          hierarchy[o.taxa_rank] = o.taxa_name;
+
+          _this2.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
+            if (_this2.levels.indexOf(_this2.inat_taxa[id].rank) != -1) {
+              hierarchy[_this2.inat_taxa[id].rank] = _this2.inat_taxa[id].name;
+            }
+          });
+
+          _this2.selected_taxa.forEach(function (t, id) {
+            if (t != hierarchy[_this2.levels[id]] && t != 'none') match_flag = false;
+          });
+
+          if (match_flag) {
+            taxa_match.push(o);
+          }
+        });
+        op = taxa_match;
+      }
+
+      op = op.reverse();
+      return op;
+    },
+    userTableData: function userTableData() {
+      var _this3 = this;
 
       var user_data = this.inat_data;
       var op = [];
@@ -2492,19 +2544,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       if (this.selected_state != "All") {
         user_data = user_data.filter(function (x) {
-          return x.state === _this2.selected_state;
+          return x.state === _this3.selected_state;
         });
       }
 
       if (this.selected_dates.length > 0) {
         user_data = user_data.filter(function (x) {
-          return _this2.selected_dates.indexOf(x.inat_created_at) !== -1;
+          return _this3.selected_dates.indexOf(x.inat_created_at) !== -1;
         });
       }
 
       if (this.selected_taxa_levels.length > 0) {
         user_data = user_data.filter(function (x) {
-          return _this2.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
+          return _this3.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
         });
       }
 
@@ -2529,7 +2581,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     dateTableData: function dateTableData() {
-      var _this3 = this;
+      var _this4 = this;
 
       var observations = this.inat_data;
       var op = [];
@@ -2537,19 +2589,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       if (this.selected_state != "All") {
         observations = this.inat_data.filter(function (x) {
-          return x.state === _this3.selected_state;
+          return x.state === _this4.selected_state;
         });
       }
 
       if (this.selected_users.length > 0) {
         observations = observations.filter(function (x) {
-          return _this3.selected_users.indexOf(x.user_id) !== -1;
+          return _this4.selected_users.indexOf(x.user_id) !== -1;
         });
       }
 
       if (this.selected_taxa_levels.length > 0) {
         observations = observations.filter(function (x) {
-          return _this3.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
+          return _this4.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
         });
       }
 
@@ -2571,13 +2623,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     stateObservations: function stateObservations() {
-      var _this4 = this;
+      var _this5 = this;
 
       var state_observations = [];
 
       if (this.selected_state != '') {
         state_observations = this.filteredObservations.filter(function (x) {
-          return x.state === _this4.selected_state;
+          return x.state === _this5.selected_state;
         });
       }
 
@@ -2637,16 +2689,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     statesTableData: function statesTableData() {
-      var _this5 = this;
+      var _this6 = this;
 
       var op = [];
       Object.keys(this.stateStats).forEach(function (s) {
         if (s != 'All') {
           op.push({
             state: s,
-            observations: _this5.stateStats[s].observations,
-            users: _this5.stateStats[s].users.size,
-            species: _this5.stateStats[s].species.size
+            observations: _this6.stateStats[s].observations,
+            users: _this6.stateStats[s].users.size,
+            species: _this6.stateStats[s].species.size
           });
         }
       });
@@ -2667,6 +2719,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     taxaTableData: function taxaTableData() {
+      var _this7 = this;
+
+      var filtered_observations = [];
       var op = {
         superfamily: 0,
         family: 0,
@@ -2679,16 +2734,37 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         subspecies: 0,
         form: 0
       };
+
+      if (this.selected_state === "All") {
+        filtered_observations = this.inat_data;
+      } else {
+        filtered_observations = this.inat_data.filter(function (x) {
+          return x.state === _this7.selected_state;
+        });
+      }
+
+      if (this.selected_users.length > 0) {
+        filtered_observations = filtered_observations.filter(function (x) {
+          return _this7.selected_users.indexOf(x.user_id) !== -1;
+        });
+      }
+
+      if (this.selected_dates.length > 0) {
+        filtered_observations = filtered_observations.filter(function (x) {
+          return _this7.selected_dates.indexOf(x.inat_created_at) !== -1;
+        });
+      }
+
       var taxa_level = d3.nest().key(function (o) {
         return o.taxa_rank;
-      }).object(this.filteredObservations);
+      }).object(filtered_observations);
       Object.keys(taxa_level).forEach(function (tl) {
         if (taxa_level[tl] != undefined) op[tl] = taxa_level[tl].length;
       });
       return op;
     },
     treeData: function treeData() {
-      var _this6 = this;
+      var _this8 = this;
 
       var op = [];
       var obv_taxonomy = [];
@@ -2701,14 +2777,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         hierarchy[o.taxa_rank] = o.taxa_name;
         hierarchy.key = o.taxa_name;
 
-        _this6.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
-          if (_this6.levels.indexOf(_this6.inat_taxa[id].rank) != -1) {
-            hierarchy[_this6.inat_taxa[id].rank] = _this6.inat_taxa[id].name;
+        _this8.inat_taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
+          if (_this8.levels.indexOf(_this8.inat_taxa[id].rank) != -1) {
+            hierarchy[_this8.inat_taxa[id].rank] = _this8.inat_taxa[id].name;
           }
         });
 
-        _this6.levels.forEach(function (l, lid) {
-          if (hierarchy[l] == undefined && lid < _this6.levels.indexOf(o.taxa_rank)) {
+        _this8.levels.forEach(function (l, lid) {
+          if (hierarchy[l] == undefined && lid < _this8.levels.indexOf(o.taxa_rank)) {
             hierarchy[l] = "none";
           }
         });
@@ -2827,10 +2903,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     onAccordionOpen: function onAccordionOpen(id) {
-      var _this7 = this;
+      var _this9 = this;
 
       Object.keys(this.accordions).forEach(function (key) {
-        _this7.accordions[key] = key == id; // eslint-disable-line eqeqeq
+        _this9.accordions[key] = key == id; // eslint-disable-line eqeqeq
       });
     },
     onAccordionClose: function onAccordionClose(key) {
@@ -2856,16 +2932,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
     },
     setMissingState: function setMissingState(p) {
-      var _this8 = this;
+      var _this10 = this;
 
       this.inat_data.forEach(function (o) {
         if (o.id == p[2]) {
-          _this8.selected_point = o;
+          _this10.selected_point = o;
 
           if (o.state == null) {
-            _this8.set_state = '';
+            _this10.set_state = '';
           } else {
-            _this8.set_state = o.state;
+            _this10.set_state = o.state;
           }
         }
       });
@@ -3084,7 +3160,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     srenderMap: function srenderMap() {
-      var _this9 = this;
+      var _this11 = this;
 
       var that = this;
       var height = this.svgHeight * .9;
@@ -3109,7 +3185,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var states = base.append("g").classed("states", true);
       _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
-        var that = _this9;
+        var that = _this11;
         var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
           that.tooltip.html("<table>\n\t  \t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t  \t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t  \t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
@@ -3118,13 +3194,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           return that.tooltip.html("").style('visibility', 'hidden');
         }).on("click", clicked);
 
-        if (_this9.stateData[s_name] == undefined) {
+        if (_this11.stateData[s_name] == undefined) {
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this9.stateData[s_name].length);
+            return colors(_this11.stateData[s_name].length);
           });
         }
       });
@@ -3223,11 +3299,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     selectState: function selectState(s) {
-      if (this.selected_state == s) {
-        this.selected_state = 'All';
-      } else {
-        this.selected_state = s;
-      }
+      // if (this.selected_state == s) {
+      // 	this.selected_state = 'All'
+      // } else {
+      // }
+      this.selected_state = s;
     },
     renderTaxonomyChart: function renderTaxonomyChart() {
       var height = this.svgHeight;
@@ -3299,28 +3375,28 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.$refs[ref].close();
     },
     init: function init() {
-      var _this10 = this;
+      var _this12 = this;
 
       if (this.svgWidth > 800) {
         this.svgWidth = window.innerWidth / 2;
       }
 
       _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
-        _this10.state_data[s.properties.ST_NM] = [];
+        _this12.state_data[s.properties.ST_NM] = [];
       });
       this.inat_data.forEach(function (o) {
         if (o.state == null) {
-          _this10.state_unmatched.push(o);
-        } else if (Object.keys(_this10.state_data).indexOf(o.state) != -1) {
-          _this10.state_data[o.state].push(o);
+          _this12.state_unmatched.push(o);
+        } else if (Object.keys(_this12.state_data).indexOf(o.state) != -1) {
+          _this12.state_data[o.state].push(o);
         } else {
-          _this10.state_data[o.state].push(o);
+          _this12.state_data[o.state].push(o);
 
           console.log("strange state name", o.state, o);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
-        if (_this10.state_data[s].length > _this10.state_max) _this10.state_max = _this10.state_data[s].length;
+        if (_this12.state_data[s].length > _this12.state_max) _this12.state_max = _this12.state_data[s].length;
       });
       this.tooltip = d3.select('body').append('div').attr('class', 'd3-tooltip').style('position', 'absolute').style('z-index', '10').style('visibility', 'hidden').style('padding', '10px').style('background', 'rgba(0,0,0,0.6)').style('border-radius', '4px').style('color', '#fff').text('a simple tooltip');
       this.all_states = _country_json__WEBPACK_IMPORTED_MODULE_1__.features.map(function (s) {
@@ -3343,7 +3419,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
+/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -3369,12 +3446,21 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "india-map",
   props: ["map_data", "selected_state", "popup", "stateStats"],
   data: function data() {
     return {
+      states: null,
+      path: null,
+      svg: {},
+      projection: null,
       state_data: {},
       state_max: 0,
       height: window.innerHeight * 0.8,
@@ -3384,12 +3470,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     };
   },
   mounted: function mounted() {
-    this.init();
+    this.init(); // alert(`${this.width} x ${this.height}`)
   },
   computed: {
     stateData: function stateData() {
       var op = {};
-      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (s) {
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         op[s.properties.ST_NM] = [];
       });
       this.map_data.forEach(function (o) {
@@ -3409,19 +3495,32 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       };
 
       if (this.selected_state !== 'All') {
-        Object.keys(_country_json__WEBPACK_IMPORTED_MODULE_0__.features).forEach(function (c) {
-          if (_country_json__WEBPACK_IMPORTED_MODULE_0__.features[c].properties.ST_NM === _this.selected_state) {
-            op = _country_json__WEBPACK_IMPORTED_MODULE_0__.features[c];
+        Object.keys(_country_json__WEBPACK_IMPORTED_MODULE_1__.features).forEach(function (c) {
+          if (_country_json__WEBPACK_IMPORTED_MODULE_1__.features[c].properties.ST_NM === _this.selected_state) {
+            op = _country_json__WEBPACK_IMPORTED_MODULE_1__.features[c];
           }
         });
       }
 
       return op;
+    },
+    zoom: function zoom() {
+      var that = this;
+      return d3.zoom().scaleExtent([.5, 50]).translateExtent([[-0.5 * this.width, -0.75 * this.height], [2.5 * this.width, 2.5 * this.height]]).on('zoom', function () {
+        that.svg.selectAll('.poly_text').attr('transform', d3.event.transform), that.svg.selectAll('path').attr('transform', d3.event.transform), that.svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
+      });
     }
   },
   watch: {
     map_data: function map_data() {
       this.init(); // this.renderMap()
+    },
+    selected_state: function selected_state(newVal, oldVal) {
+      if (!d3.select("#map-container .map-points").empty()) {
+        d3.selectAll(".map-points").remove();
+      }
+
+      if (newVal != 'All') this.mapPoints();
     }
   },
   methods: {
@@ -3429,13 +3528,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var _this2 = this;
 
       this.map_first_render = true;
-      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (s) {
+      this.states = null;
+      this.path = null;
+      this.svg = {};
+      this.projection = null;
+      this.state_data = {};
+      this.state_max = 0;
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         _this2.state_data[s.properties.ST_NM] = [];
       });
       this.map_data.forEach(function (o) {
         if (Object.keys(_this2.state_data).indexOf(o.state) != -1) {
           _this2.state_data[o.state].push(o);
-        } else {// console.log("unmatched state name", o.state, o)
+        } else {
+          console.log("unmatched state name", o.state, o);
         }
       });
       Object.keys(this.state_data).forEach(function (s) {
@@ -3446,38 +3552,41 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     renderMap: function renderMap() {
       var _this3 = this;
 
-      var that = this;
-      var height = this.height;
-      var width = this.width;
-
-      if (height > width) {
-        height /= 1.7;
-        width *= 1.9;
+      if (this.height > this.width) {
+        this.height /= 1.7;
+        this.width *= 1.9;
       }
 
       if (!d3.select("#map-container svg").empty()) {
         d3.selectAll("#map-container svg").remove();
       }
 
-      var svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("width", width).attr("height", height).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
-      var projection = d3.geoMercator().scale(850).center([87, 25.5]);
-      var path = d3.geoPath().projection(projection);
-      var colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"]);
-      var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6);
-      var base = svg.append("g").classed("map-boundary", true);
+      this.svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("width", this.width).attr("height", this.height).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
+      this.projection = d3.geoMercator().scale(850).center([87, 25.5]);
+      this.path = d3.geoPath().projection(this.projection);
+      var colors = d3.scaleLinear().domain([0, 1, this.state_max * .5, this.state_max]).range(["#f77", "#696", "#8c8", "#9f9"]);
+      var legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__.legendColor().scale(colors).labelFormat(d3.format(".0f")).orient('horizontal').labelOffset(-10).labelAlign("start").shapeWidth(45).cells(5).shapePadding(47);
+
+      if (this.height > this.width) {
+        legend.shapeWidth(35).cells(4).shapePadding(37);
+      }
+
+      var base = this.svg.append("g").classed("map-boundary", true);
       var base_text = base.selectAll("text").append("g");
       base = base.selectAll("path").append("g");
-      var states = base.append("g").classed("states", true);
-      _country_json__WEBPACK_IMPORTED_MODULE_0__.features.forEach(function (state) {
+      this.states = base.append("g").classed("states", true);
+      var that = this;
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
         var s_name = state.properties.ST_NM;
         var that = _this3;
-        var current_state = states.append("g").data([state]).enter().append("path").attr("d", path).attr("id", s_name.replaceAll(" ", "_").replaceAll("&", "")).attr("title", s_name).on('mouseover', function (d, i) {
+
+        var current_state = _this3.states.append("g").data([state]).enter().append("path").attr("d", _this3.path).attr("id", _this3.stateID(s_name)).attr("title", s_name).on('mouseover', function (d, i) {
           that.tooltip.html("<table>\n\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t\t\t\t\t\t</table>")).style('visibility', 'visible');
         }).on('mousemove', function () {
           that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
         }).on('mouseout', function () {
           return that.tooltip.html("").style('visibility', 'hidden');
-        }).on("click", clicked);
+        }).on("click", _this3.clicked);
 
         if (_this3.stateData[s_name] == undefined) {
           current_state.attr("fill", function (d) {
@@ -3488,138 +3597,102 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         } else {
           current_state.attr("fill", function (d) {
             return colors(_this3.stateData[s_name].length);
-          });
+          }).text("FUCK");
         }
       });
-      var zoom = d3.zoom().scaleExtent([.5, 50]).translateExtent([[-0.5 * width, -0.75 * height], [2.5 * width, 2.5 * height]]).on('zoom', function () {
-        svg.selectAll('.poly_text').attr('transform', d3.event.transform), svg.selectAll('path').attr('transform', d3.event.transform), svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
-      });
-      svg.call(zoom);
+      this.svg.append("g").attr("transform", "translate(" + this.width * .5 + ", 50)").call(legend); // .append("text")
+      // .classed("map_label", true)
+      // .attr("dx", 5)
+      // .attr("dy", -10)
+      // .classed("h1", true)
+      // .text(this.selected_state)
+
+      this.svg.call(this.zoom);
 
       if (this.map_first_render) {
-        // console.log(this.selected_state)
-        map_init(this.selectedGeoJson);
+        this.clicked(this.selectedGeoJson);
         this.map_first_render = false;
-        mapPoints();
+      }
+    },
+    stateID: function stateID(s) {
+      return s.replaceAll(" ", "_").replaceAll("&", "");
+    },
+    clicked: function clicked(d) {
+      this.tooltip.html("").style('visibility', 'hidden');
+      var state = d.properties.ST_NM;
+      var x0 = 0,
+          y0 = 0,
+          x1 = 0,
+          y1 = 0;
+      this.states.transition().style("fill", null);
+
+      if (d3.select(".selected")["_groups"][0][0] != null) {
+        d3.select("#" + d3.select(".selected")["_groups"][0][0].id).attr("class", null);
       }
 
-      function map_init(d) {
-        var state = d.properties.ST_NM;
-        var x0 = 0,
-            y0 = 0,
-            x1 = 0,
-            y1 = 0;
-        states.transition().style("fill", null);
+      if (this.selected_state != 'All') {}
 
-        if (that.selected_state != 'All') {
-          d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
-        }
+      if (this.selected_state == state) {
+        var _this$path$bounds = this.path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_1__);
 
-        if (that.selected_state == 'All') {
-          var _path$bounds = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_0__);
+        var _this$path$bounds2 = _slicedToArray(_this$path$bounds, 2);
 
-          var _path$bounds2 = _slicedToArray(_path$bounds, 2);
+        var _this$path$bounds2$ = _slicedToArray(_this$path$bounds2[0], 2);
 
-          var _path$bounds2$ = _slicedToArray(_path$bounds2[0], 2);
+        x0 = _this$path$bounds2$[0];
+        y0 = _this$path$bounds2$[1];
 
-          x0 = _path$bounds2$[0];
-          y0 = _path$bounds2$[1];
+        var _this$path$bounds2$2 = _slicedToArray(_this$path$bounds2[1], 2);
 
-          var _path$bounds2$2 = _slicedToArray(_path$bounds2[1], 2);
+        x1 = _this$path$bounds2$2[0];
+        y1 = _this$path$bounds2$2[1];
+      } else {
+        var _this$path$bounds3 = this.path.bounds(d);
 
-          x1 = _path$bounds2$2[0];
-          y1 = _path$bounds2$2[1];
+        var _this$path$bounds4 = _slicedToArray(_this$path$bounds3, 2);
+
+        var _this$path$bounds4$ = _slicedToArray(_this$path$bounds4[0], 2);
+
+        x0 = _this$path$bounds4$[0];
+        y0 = _this$path$bounds4$[1];
+
+        var _this$path$bounds4$2 = _slicedToArray(_this$path$bounds4[1], 2);
+
+        x1 = _this$path$bounds4$2[0];
+        y1 = _this$path$bounds4$2[1];
+        d3.select("#" + this.stateID(state)).classed("selected", true);
+      }
+
+      if (!this.map_first_render) {
+        if (this.selected_state == state) {
+          this.$emit('stateSelected', 'All');
         } else {
-          var _path$bounds3 = path.bounds(d);
-
-          var _path$bounds4 = _slicedToArray(_path$bounds3, 2);
-
-          var _path$bounds4$ = _slicedToArray(_path$bounds4[0], 2);
-
-          x0 = _path$bounds4$[0];
-          y0 = _path$bounds4$[1];
-
-          var _path$bounds4$2 = _slicedToArray(_path$bounds4[1], 2);
-
-          x1 = _path$bounds4$2[0];
-          y1 = _path$bounds4$2[1];
-          d3.select(this).transition().style("fill", "gold");
+          this.$emit('stateSelected', state);
         }
-
-        svg.transition().duration(751).call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
       }
 
-      function clicked(d) {
-        that.tooltip.html("").style('visibility', 'hidden');
-        var state = d.properties.ST_NM;
-        var x0 = 0,
-            y0 = 0,
-            x1 = 0,
-            y1 = 0;
-        states.transition().style("fill", null);
+      this.svg.transition().duration(750).call(this.zoom.transform, d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.width, (y1 - y0) / this.height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+      /*
+      */
+    },
+    mapPoints: function mapPoints() {
+      var _this4 = this;
 
-        if (that.selected_state != 'All') {
-          d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
-        }
+      var points = [];
 
-        if (that.selected_state == state) {
-          var _path$bounds5 = path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_0__);
-
-          var _path$bounds6 = _slicedToArray(_path$bounds5, 2);
-
-          var _path$bounds6$ = _slicedToArray(_path$bounds6[0], 2);
-
-          x0 = _path$bounds6$[0];
-          y0 = _path$bounds6$[1];
-
-          var _path$bounds6$2 = _slicedToArray(_path$bounds6[1], 2);
-
-          x1 = _path$bounds6$2[0];
-          y1 = _path$bounds6$2[1];
-          that.$emit('stateSelected', 'All');
-        } else {
-          var _path$bounds7 = path.bounds(d);
-
-          var _path$bounds8 = _slicedToArray(_path$bounds7, 2);
-
-          var _path$bounds8$ = _slicedToArray(_path$bounds8[0], 2);
-
-          x0 = _path$bounds8$[0];
-          y0 = _path$bounds8$[1];
-
-          var _path$bounds8$2 = _slicedToArray(_path$bounds8[1], 2);
-
-          x1 = _path$bounds8$2[0];
-          y1 = _path$bounds8$2[1];
-          that.$emit('stateSelected', state);
-          d3.select(this).transition().style("fill", "gold");
-        }
-
-        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+      if (this.selected_state != 'All') {
+        this.state_data[this.selected_state].forEach(function (o) {
+          var coords = o.location.split(",");
+          points.push([coords[1], coords[0], o.id, o.place_guess]);
+        });
       }
 
-      function mapPoints() {
-        if (!d3.select("#map-container .map-points").empty()) {
-          d3.selectAll(".map-points").remove();
-        }
-
-        var points = [];
-
-        if (that.selected_state != 'All') {
-          // console.log(that.selected_state);
-          that.state_data[that.selected_state].forEach(function (o) {
-            var coords = o.location.split(",");
-            points.push([coords[1], coords[0], o.id, o.place_guess]);
-          });
-        }
-
-        if (points.length > 0) {
-          var map_points = svg.append('g').classed('map-points', true).selectAll("circle").data(points).enter().append("circle").attr("cx", function (d) {
-            return projection(d)[0];
-          }).attr("cy", function (d) {
-            return projection(d)[1];
-          }).attr("r", "0px"); // map_points.on("click", (d) => that.setMissingState(d))
-        }
+      if (points.length > 0) {
+        var map_points = this.svg.append('g').classed('map-points', true).selectAll("circle").data(points).enter().append("circle").attr("cx", function (d) {
+          return _this4.projection(d)[0];
+        }).attr("cy", function (d) {
+          return _this4.projection(d)[1];
+        }).attr("r", "0px"); // map_points.on("click", (d) => that.setMissingState(d))
       }
     }
   }
@@ -4036,8 +4109,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     crumbTitle: function crumbTitle(text, depth) {
       var taxon = "";
 
-      if (depth > 0) {
-        taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": ";
+      if (text != undefined) {
+        if (depth > 0) {
+          taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": ";
+        }
       }
 
       return taxon;
@@ -4145,7 +4220,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#map-container .selected{\n\tfill: #afa;\n\tstroke: rgba(10,100,10,.75);\n\tstroke-width:.5px;\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#map-container .selected{\n\t/*fill: #afa;*/\n\tfill: #ff5;\n\tstroke: rgba(255,50,0,.5);\n\tstroke-width:.5px;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -77693,7 +77768,7 @@ var render = function() {
                         [
                           _c("india-map", {
                             attrs: {
-                              map_data: _vm.filteredObservations,
+                              map_data: _vm.mapData,
                               selected_state: _vm.selected_state,
                               popup: _vm.tooltip,
                               stateStats: _vm.stateStats
@@ -78017,61 +78092,25 @@ var render = function() {
               }
             },
             [
-              _c("div", { attrs: { id: "users-table-container" } }, [
-                _c("table", { staticClass: "table 5able-sm tableFixHead" }, [
-                  _c("thead", { staticClass: "table-secondary" }, [
-                    _c("tr", [
-                      _c("th", [_vm._v("Sl No")]),
-                      _vm._v(" "),
-                      _c("th", [_vm._v("User ID")]),
-                      _vm._v(" "),
-                      _c("th", [_vm._v("User Name")]),
-                      _vm._v(" "),
-                      _c("th", [_vm._v("Observations")]),
-                      _vm._v(" "),
-                      _c("th", [_vm._v("State")])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "tbody",
-                    _vm._l(_vm.userTableData, function(u) {
-                      return _c(
-                        "tr",
-                        {
-                          class: _vm.userTableRowClass(u),
-                          on: {
-                            click: function($event) {
-                              return _vm.seletUser(u)
-                            }
-                          }
-                        },
-                        [
-                          _c("td", {
-                            domProps: { textContent: _vm._s(u.sl_no) }
-                          }),
-                          _vm._v(" "),
-                          _c("td", { domProps: { textContent: _vm._s(u.id) } }),
-                          _vm._v(" "),
-                          _c("td", {
-                            domProps: { textContent: _vm._s(u.name) }
-                          }),
-                          _vm._v(" "),
-                          _c("td", {
-                            domProps: { textContent: _vm._s(u.observations) }
-                          }),
-                          _vm._v(" "),
-                          _c("td", {
-                            domProps: { textContent: _vm._s(u.state) }
-                          })
-                        ]
-                      )
-                    }),
-                    0
-                  )
-                ])
-              ])
-            ]
+              _c("data-table", {
+                attrs: {
+                  data: _vm.userTableData,
+                  headers: [
+                    ["Sl No", "sl_no"],
+                    ["User ID", "id"],
+                    ["User Name", "name"],
+                    ["Observations", "observations"],
+                    ["State", "state"]
+                  ]
+                },
+                on: {
+                  rowClick: function($event) {
+                    return _vm.seletUser(_vm.u)
+                  }
+                }
+              })
+            ],
+            1
           ),
           _vm._v(" "),
           _c(
@@ -78268,7 +78307,10 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "map-container" } })
+  return _c("div", [
+    _vm._v("\n" + _vm._s(_vm.selected_state) + "\t\n"),
+    _c("div", { attrs: { id: "map-container" } })
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -90594,30 +90636,27 @@ var __webpack_exports__ = {};
   !*** ./resources/js/inat.js ***!
   \******************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
-/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! keen-ui */ "./node_modules/keen-ui/dist/keen-ui.js");
-/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(keen_ui__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var keen_ui_dist_keen_ui_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! keen-ui/dist/keen-ui.css */ "./node_modules/keen-ui/dist/keen-ui.css");
-/* harmony import */ var _components_i_nat__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/i-nat */ "./resources/js/components/i-nat.vue");
+/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! keen-ui */ "./node_modules/keen-ui/dist/keen-ui.js");
+/* harmony import */ var keen_ui__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(keen_ui__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var keen_ui_dist_keen_ui_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! keen-ui/dist/keen-ui.css */ "./node_modules/keen-ui/dist/keen-ui.css");
+/* harmony import */ var _components_i_nat__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/i-nat */ "./resources/js/components/i-nat.vue");
 
 
 
 
 
-
-vue__WEBPACK_IMPORTED_MODULE_5__.default.use((keen_ui__WEBPACK_IMPORTED_MODULE_3___default()));
+vue__WEBPACK_IMPORTED_MODULE_4__.default.use((keen_ui__WEBPACK_IMPORTED_MODULE_2___default()));
 window.d3 = d3__WEBPACK_IMPORTED_MODULE_1__;
-window.d3Legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_2__;
 
-vue__WEBPACK_IMPORTED_MODULE_5__.default.prototype.moment = (moment__WEBPACK_IMPORTED_MODULE_0___default());
-var app = new vue__WEBPACK_IMPORTED_MODULE_5__.default({
+vue__WEBPACK_IMPORTED_MODULE_4__.default.prototype.moment = (moment__WEBPACK_IMPORTED_MODULE_0___default());
+var app = new vue__WEBPACK_IMPORTED_MODULE_4__.default({
   el: '#app',
   components: {
-    iNat: _components_i_nat__WEBPACK_IMPORTED_MODULE_6__.default
+    iNat: _components_i_nat__WEBPACK_IMPORTED_MODULE_5__.default
   },
   data: function data() {
     return {};
