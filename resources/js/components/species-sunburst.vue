@@ -129,6 +129,7 @@
 		},
         mounted() {
     		this.init()
+            this.crumbClick("Papilionoidea")
 		},
 		methods: {
             init () {
@@ -214,6 +215,7 @@
             },
             clicked(p) {
                 var selected_taxon = p.data.name
+                // console.log(selected_taxon, p)
 
                 this.breadcrumbs = this.populate_breadcrumbs(p,[]);
                 if(this.watch_click == false ){
