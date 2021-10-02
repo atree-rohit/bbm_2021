@@ -327,8 +327,10 @@
             },
             crumbTitle(text, depth){
                 var taxon = ""
-                if(depth > 0){
-                    taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
+                if(text != undefined){
+                    if(depth > 0){
+                        taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
+                    }                    
                 }
                 return  taxon
             },
