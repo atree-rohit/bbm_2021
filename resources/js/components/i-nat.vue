@@ -116,7 +116,7 @@
 	}
 	.ui-tab > div{
 		height:  80vh;
-		overflow: hidden;
+		overflow-y: scroll;
 	}
 
 	.ui-collapsible__body{
