@@ -253,7 +253,7 @@
 				>
 					<div class="svg-container" v-if="tab.title === 'Location'">
 						<!-- <div id="map-container"></div> -->
-						<india-map :map_data="filteredObservations"
+						<india-map :map_data="mapData"
 								   :selected_state="selected_state"
 								   :popup="tooltip"
 								   :stateStats="stateStats"
@@ -346,29 +346,31 @@
 		</div>
 		<div id="map-filters">
 			<ui-collapsible :class="filterClass('users')" :disableRipple="true" :title="filterTitle('users')" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
-				<div id="users-table-container">
-					<table class="table 5able-sm tableFixHead">
-						<thead class="table-secondary">
-							<tr>
-								<th>Sl No</th>
-								<th>User ID</th>
-								<th>User Name</th>
-								<th>Observations</th>
-								<th>State</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="u in userTableData" :class='userTableRowClass(u)' @click="seletUser(u)">
-								<td v-text="u.sl_no"></td>
-								<td v-text="u.id"></td>
-								<td v-text="u.name"></td>
-								<td v-text="u.observations"></td>
-								<td v-text="u.state"></td>
-							</tr>
-						</tbody>
+				<data-table :data="userTableData"
+							:headers='[["Sl No","sl_no"],["User ID","id"],["User Name","name"],["Observations","observations"],["State","state"]]'
+							@rowClick="seletUser(u)"
+					/>
+				<!-- <table class="table table-sm tableFixHead">
+					<thead class="table-secondary">
+						<tr>
+							<th>Sl No</th>
+							<th>User ID</th>
+							<th>User Name</th>
+							<th>Observations</th>
+							<th>State</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="u in userTableData" :class='userTableRowClass(u)' @click="seletUser(u)">
+							<td v-text="u.sl_no"></td>
+							<td v-text="u.id"></td>
+							<td v-text="u.name"></td>
+							<td v-text="u.observations"></td>
+							<td v-text="u.state"></td>
+						</tr>
+					</tbody>
 
-					</table>
-				</div>
+				</table> -->
             </ui-collapsible>
 
             <ui-collapsible :class="filterClass('date')" :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
@@ -438,7 +440,7 @@ import IndiaMap from './india-map'
 				selected_dates: [],
 				selected_state: "All",
 				selected_point:  null,
-				selected_taxa_levels: ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"],
+				selected_taxa_levels: [],
 				selected_taxa: [],
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
@@ -546,6 +548,54 @@ import IndiaMap from './india-map'
 			filteredObservationsPaginated(){
 				//
 				return  this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
+			},
+			mapData(){
+				let op = this.inat_data
+				//filter state state
+				
+
+				if(this.selected_users.length > 0){
+					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+
+				if(this.selected_dates.length > 0){
+					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
+				}
+				if(this.selected_taxa_levels.length > 0){
+					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+				}
+
+
+				if(this.selected_taxa.length > 1){
+					let taxa_match = []
+
+					op.forEach(o => {
+						let hierarchy = {}
+						let match_flag = true
+
+
+						hierarchy[o.taxa_rank] = o.taxa_name
+						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							}
+						})
+						this.selected_taxa.forEach((t,id)  => {
+							if(t != hierarchy[this.levels[id]] && t != 'none')
+								match_flag = false
+						})
+						if(match_flag){
+							taxa_match.push(o)
+						}
+
+					})
+					op = taxa_match
+				}
+
+
+
+				op = op.reverse()
+				return op
 			},
 			userTableData () {
 				let user_data = this.inat_data
@@ -700,9 +750,25 @@ import IndiaMap from './india-map'
 				return op
 			},
 			taxaTableData () {
+				let filtered_observations = []
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
 
-				let taxa_level = d3.nest().key(o => o.taxa_rank).object(this.filteredObservations)
+				if (this.selected_state === "All"){
+					filtered_observations = this.inat_data
+				} else {
+					filtered_observations = this.inat_data.filter(x => x.state === this.selected_state)
+				}
+
+				if(this.selected_users.length > 0){
+					filtered_observations = filtered_observations.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+
+				if(this.selected_dates.length > 0){
+					filtered_observations = filtered_observations.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
+				}
+
+
+				let taxa_level = d3.nest().key(o => o.taxa_rank).object(filtered_observations)
 
 				Object.keys(taxa_level).forEach(tl => {
 					if(taxa_level[tl] != undefined)
@@ -1220,11 +1286,11 @@ import IndiaMap from './india-map'
 				}
 			},
 			selectState (s) {
-				if (this.selected_state == s) {
-					this.selected_state = 'All'
-				} else {
+				// if (this.selected_state == s) {
+				// 	this.selected_state = 'All'
+				// } else {
+				// }
 					this.selected_state = s
-				}
 			},
 			renderTaxonomyChart () {
 				let height = this.svgHeight
