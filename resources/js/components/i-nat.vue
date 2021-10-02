@@ -110,10 +110,6 @@
 	.map-data-title{
 		font-size: calc(1rem + 1vw);
 	}
-	.all-states-table tbody tr:hover{
-		background: #ffa;
-		cursor: pointer;
-	}
 
 	.ui-tabs__body{
 		padding: 0;
@@ -282,6 +278,7 @@
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
 										v-if="selected_state == 'All'"
+										@rowClick="tableTelectState"
 							/>
 							<data-table :data="stateSpeciesList"
 										:headers='[["Taxa Name","name"],["Observations","count"],["Users","user_count"]]'
@@ -438,7 +435,7 @@ import IndiaMap from './india-map'
 
 				selected_users: [],
 				selected_dates: [],
-				selected_state: "All",
+				selected_state: "Goa",
 				selected_point:  null,
 				selected_taxa_levels: [],
 				selected_taxa: [],
@@ -473,6 +470,7 @@ import IndiaMap from './india-map'
 			// this.renderMap()
 			this.renderDateChart()
 			// this.renderTaxonomyChart()
+			this.selected_state = "All"
 
 		},
 		watch: {
@@ -1286,11 +1284,15 @@ import IndiaMap from './india-map'
 				}
 			},
 			selectState (s) {
-				// if (this.selected_state == s) {
-				// 	this.selected_state = 'All'
-				// } else {
-				// }
 					this.selected_state = s
+			},
+			tableTelectState(s){
+				let selected = this.statesTableData[s].state
+				if (this.selected_state == selected) {
+					this.selected_state = 'All'
+				} else {
+					this.selected_state = selected
+				}
 			},
 			renderTaxonomyChart () {
 				let height = this.svgHeight
