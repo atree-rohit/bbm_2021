@@ -23,8 +23,9 @@ export default {
 			states: null,
 			path: null,
 			svg: {},
-			projection: null,
-
+			projection: {},
+			colors: {},
+			legend: {},
 
 			state_data: {},
 			state_max: 0,
@@ -36,6 +37,8 @@ export default {
 	},
 	mounted(){
 		this.init()
+		this.clicked(this.selectedGeoJson)
+		this.map_first_render = false
 		// alert(`${this.width} x ${this.height}`)
 	},
 	computed:{
@@ -89,8 +92,10 @@ export default {
 			if (!d3.select("#map-container .map-points").empty()) {
 				d3.selectAll(".map-points").remove()
 			}
-			if(newVal != 'All')
+			this.renderMap()
+			if(newVal != 'All'){
 				this.mapPoints()
+			}
 		}
 	},
 	methods:{
@@ -99,11 +104,18 @@ export default {
 			this.states = null
 			this.path = null
 			this.svg = {}
-			this.projection = null
+			this.projection = {}
+			this.colors = {}
+			this.legend = {}
 
 
 			this.state_data = {}
 			this.state_max = 0
+
+			if(this.height > this.width){
+				this.height /= 1.7
+				this.width *= 1.9
+			}
 			country.features.forEach(s => {
 				this.state_data[s.properties.ST_NM] = [];
 			})
@@ -120,14 +132,26 @@ export default {
 				if(this.state_data[s].length > this.state_max)
 				this.state_max = this.state_data[s].length;
 			})
+			this.colors = d3.scaleLinear()
+				.domain([0, 1, this.state_max*.5, this.state_max])
+				.range(["#f77","#696", "#8c8", "#9f9"])
+
+			this.legend = d3Legend.legendColor()
+								.shapeWidth(45)
+								.scale(this.colors)
+								.labelFormat(d3.format(".0f"))
+								.orient('horizontal')
+								.labelOffset(-10)
+								.labelAlign("start")
+								.cells(5)
+								// .shapePadding(47)
 
 			this.renderMap()
 		},
 		renderMap () {
-			if(this.height > this.width){
-				this.height /= 1.7
-				this.width *= 1.9
-			}
+			// if(!this.map_first_render){
+			// 	this.legend.shapePadding(2).labelOffset(-25)
+			// }
 
 			if (!d3.select("#map-container svg").empty()) {
 				d3.selectAll("#map-container svg").remove()
@@ -142,23 +166,12 @@ export default {
 
 			this.projection = d3.geoMercator().scale(850).center([87, 25.5])
 			this.path = d3.geoPath().projection(this.projection)
-			const colors = d3.scaleLinear()
-							.domain([0, 1, this.state_max*.5, this.state_max])
-							.range(["#f77","#696", "#8c8", "#9f9"])
-			let legend = d3Legend.legendColor()
-								.scale(colors)
-								.labelFormat(d3.format(".0f"))
-								.orient('horizontal')
-								.labelOffset(-10)
-								.labelAlign("start")
-								.shapeWidth(45)
-								.cells(5)
-								.shapePadding(47)
+
 
 			if(this.height > this.width){
-				legend.shapeWidth(35)
+				this.this.legend.shapeWidth(35)
 				.cells(4)
-				.shapePadding(37)
+				// .shapePadding(37)
 			}
 
 
@@ -203,13 +216,29 @@ export default {
 					} else if (s_name == this.selected_state) {
 						current_state.classed("selected", true)
 					} else {
-						current_state.attr("fill", (d) => colors(this.stateData[s_name].length)).text("FUCK")
+						current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
 					}
+
 			})
+			if(this.selected_state == "All"){
+				country.features.forEach(state=> {
+					let s_name = state.properties.ST_NM
+					let label = base_text.append("g")
+						.data([state])
+						.enter().append("text")
+						.classed("poly_text", true)
+						.attr("x", (h) => this.path.centroid(h)[0] )
+						.attr("y", (h) => this.path.centroid(h)[1] )
+						.attr("text-anchor", "middle")
+						.attr("font-size",12)
+						.text(this.stateData[s_name].length)
+						.on("click", this.clicked)
+				})				
+			}
 
 			this.svg.append("g")
 				.attr("transform", "translate("+this.width*.5+", 50)")
-				.call(legend)
+				.call(this.legend)
 				// .append("text")
 				// .classed("map_label", true)
 				// .attr("dx", 5)
@@ -219,11 +248,11 @@ export default {
 
 			this.svg.call(this.zoom)
 
-			if(this.map_first_render){
-				this.clicked(this.selectedGeoJson)
-				this.map_first_render = false
+			// if(this.map_first_render){
+			// 	this.clicked(this.selectedGeoJson)
+			// 	this.map_first_render = false
 				
-			}
+			// }
 		},
 		stateID(s){
 			return s.replaceAll(" ", "_").replaceAll("&", "")
@@ -231,6 +260,11 @@ export default {
 		clicked(d) {
 			this.tooltip.html(``).style('visibility', 'hidden')
 			let state = d.properties.ST_NM
+			
+			if(state == this.selected_state && state != 'All')
+				if (!d3.select("#map-container .poly_text").empty()) {
+					d3.selectAll("#map-container .poly_text").remove()
+				}
 			let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 
 			this.states.transition().style("fill", null)
