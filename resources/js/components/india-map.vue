@@ -28,6 +28,7 @@ export default {
 			legend: {},
 
 			state_data: {},
+			selected:"Goa",
 			state_max: 0,
 			height: window.innerHeight * 0.8,
 			width: window.innerWidth * 0.5,
@@ -57,9 +58,9 @@ export default {
 		},
 		selectedGeoJson () {
 			let op = {properties:{ST_NM: 'All'}}
-			if (this.selected_state !== 'All') {
+			if (this.selected !== 'All') {
 				Object.keys(country.features).forEach(c => {
-					if (country.features[c].properties.ST_NM === this.selected_state) {
+					if (country.features[c].properties.ST_NM === this.selected) {
 						op = country.features[c]
 					}
 				})
@@ -149,9 +150,7 @@ export default {
 			this.renderMap()
 		},
 		renderMap () {
-			// if(!this.map_first_render){
-			// 	this.legend.shapePadding(2).labelOffset(-25)
-			// }
+			this.selected = this.selected_state
 
 			if (!d3.select("#map-container svg").empty()) {
 				d3.selectAll("#map-container svg").remove()
@@ -213,14 +212,14 @@ export default {
 
 					if(this.stateData[s_name] == undefined){
 						current_state.attr("fill", (d) => colors(-1))
-					} else if (s_name == this.selected_state) {
+					} else if (s_name == this.selected) {
 						current_state.classed("selected", true)
 					} else {
 						current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
 					}
 
 			})
-			if(this.selected_state == "All"){
+			if(this.selected == "All"){
 				country.features.forEach(state=> {
 					let s_name = state.properties.ST_NM
 					let label = base_text.append("g")
@@ -244,7 +243,7 @@ export default {
 				// .attr("dx", 5)
 				// .attr("dy", -10)
 				// .classed("h1", true)
-				// .text(this.selected_state)
+				// .text(this.selected)
 
 			this.svg.call(this.zoom)
 
@@ -260,8 +259,9 @@ export default {
 		clicked(d) {
 			this.tooltip.html(``).style('visibility', 'hidden')
 			let state = d.properties.ST_NM
+			// console.log(state, this.map_first_render)
 			
-			if(state == this.selected_state && state != 'All')
+			if(state == this.selected && state != 'All')
 				if (!d3.select("#map-container .poly_text").empty()) {
 					d3.selectAll("#map-container .poly_text").remove()
 				}
@@ -274,9 +274,9 @@ export default {
 				
 			}
 			
-			if(this.selected_state != 'All'){
+			if(this.selected != 'All'){
 			}
-			if(this.selected_state == state){
+			if(this.selected == state){
 				[[x0, y0], [x1, y1]] = this.path.bounds(country)
 			} else {
 				[[x0, y0], [x1, y1]] = this.path.bounds(d)
@@ -284,7 +284,7 @@ export default {
 				
 			}
 			if(!this.map_first_render){
-				if(this.selected_state == state){
+				if(this.selected == state){
 					this.$emit('stateSelected', 'All')
 				} else {
 					this.$emit('stateSelected', state)
@@ -304,8 +304,8 @@ export default {
 		mapPoints(){
 			let points = []
 
-			if(this.selected_state != 'All'){
-				this.state_data[this.selected_state].forEach(o => {
+			if(this.selected != 'All'){
+				this.state_data[this.selected].forEach(o => {
 					let coords = o.location.split(",")
 					points.push([coords[1], coords[0], o.id, o.place_guess]);
 				})

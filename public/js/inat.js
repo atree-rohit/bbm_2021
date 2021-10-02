@@ -2379,7 +2379,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       state_max: 0,
       selected_users: [],
       selected_dates: [],
-      selected_state: "Goa",
+      selected_state: "All",
       selected_point: null,
       selected_taxa_levels: [],
       selected_taxa: [],
@@ -2412,8 +2412,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   mounted: function mounted() {
     // this.renderMap()
     this.renderDateChart(); // this.renderTaxonomyChart()
-
-    this.selected_state = "All";
   },
   watch: {// selected_users () {
     // 	this.renderMap()
@@ -2623,8 +2621,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           date_data[o.inat_created_at]++;
         }
       });
-      Object.keys(date_data).forEach(function (d) {
-        op[d] = {
+      op = Object.keys(date_data).map(function (d) {
+        return {
           name: d,
           value: date_data[d]
         };
@@ -3475,6 +3473,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       colors: {},
       legend: {},
       state_data: {},
+      selected: "Goa",
       state_max: 0,
       height: window.innerHeight * 0.8,
       width: window.innerWidth * 0.5,
@@ -3509,9 +3508,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         }
       };
 
-      if (this.selected_state !== 'All') {
+      if (this.selected !== 'All') {
         Object.keys(_country_json__WEBPACK_IMPORTED_MODULE_1__.features).forEach(function (c) {
-          if (_country_json__WEBPACK_IMPORTED_MODULE_1__.features[c].properties.ST_NM === _this.selected_state) {
+          if (_country_json__WEBPACK_IMPORTED_MODULE_1__.features[c].properties.ST_NM === _this.selected) {
             op = _country_json__WEBPACK_IMPORTED_MODULE_1__.features[c];
           }
         });
@@ -3582,9 +3581,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     renderMap: function renderMap() {
       var _this3 = this;
 
-      // if(!this.map_first_render){
-      // 	this.legend.shapePadding(2).labelOffset(-25)
-      // }
+      this.selected = this.selected_state;
+
       if (!d3.select("#map-container svg").empty()) {
         d3.selectAll("#map-container svg").remove();
       }
@@ -3618,7 +3616,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           current_state.attr("fill", function (d) {
             return colors(-1);
           });
-        } else if (s_name == _this3.selected_state) {
+        } else if (s_name == _this3.selected) {
           current_state.classed("selected", true);
         } else {
           current_state.attr("fill", function (d) {
@@ -3627,7 +3625,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         }
       });
 
-      if (this.selected_state == "All") {
+      if (this.selected == "All") {
         _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
           var s_name = state.properties.ST_NM;
           var label = base_text.append("g").data([state]).enter().append("text").classed("poly_text", true).attr("x", function (h) {
@@ -3643,7 +3641,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       // .attr("dx", 5)
       // .attr("dy", -10)
       // .classed("h1", true)
-      // .text(this.selected_state)
+      // .text(this.selected)
 
       this.svg.call(this.zoom); // if(this.map_first_render){
       // 	this.clicked(this.selectedGeoJson)
@@ -3655,8 +3653,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     clicked: function clicked(d) {
       this.tooltip.html("").style('visibility', 'hidden');
-      var state = d.properties.ST_NM;
-      if (state == this.selected_state && state != 'All') if (!d3.select("#map-container .poly_text").empty()) {
+      var state = d.properties.ST_NM; // console.log(state, this.map_first_render)
+
+      if (state == this.selected && state != 'All') if (!d3.select("#map-container .poly_text").empty()) {
         d3.selectAll("#map-container .poly_text").remove();
       }
       var x0 = 0,
@@ -3669,9 +3668,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         d3.select("#" + d3.select(".selected")["_groups"][0][0].id).attr("class", null);
       }
 
-      if (this.selected_state != 'All') {}
+      if (this.selected != 'All') {}
 
-      if (this.selected_state == state) {
+      if (this.selected == state) {
         var _this$path$bounds = this.path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_1__);
 
         var _this$path$bounds2 = _slicedToArray(_this$path$bounds, 2);
@@ -3703,7 +3702,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }
 
       if (!this.map_first_render) {
-        if (this.selected_state == state) {
+        if (this.selected == state) {
           this.$emit('stateSelected', 'All');
         } else {
           this.$emit('stateSelected', state);
@@ -3719,8 +3718,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
       var points = [];
 
-      if (this.selected_state != 'All') {
-        this.state_data[this.selected_state].forEach(function (o) {
+      if (this.selected != 'All') {
+        this.state_data[this.selected].forEach(function (o) {
           var coords = o.location.split(",");
           points.push([coords[1], coords[0], o.id, o.place_guess]);
         });
@@ -3966,8 +3965,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     clicked: function clicked(p) {
       var _this2 = this;
 
-      var selected_taxon = p.data.name;
-      console.log(selected_taxon, p);
+      var selected_taxon = p.data.name; // console.log(selected_taxon, p)
+
       this.breadcrumbs = this.populate_breadcrumbs(p, []);
 
       if (this.watch_click == false) {

@@ -435,7 +435,7 @@ import IndiaMap from './india-map'
 
 				selected_users: [],
 				selected_dates: [],
-				selected_state: "Goa",
+				selected_state: "All",
 				selected_point:  null,
 				selected_taxa_levels: [],
 				selected_taxa: [],
@@ -470,7 +470,6 @@ import IndiaMap from './india-map'
 			// this.renderMap()
 			this.renderDateChart()
 			// this.renderTaxonomyChart()
-			this.selected_state = "All"
 
 		},
 		watch: {
@@ -656,13 +655,8 @@ import IndiaMap from './india-map'
 					}
 				})
 
-				Object.keys(date_data).forEach(d => {
-					op[d] = {
-						name: d,
-						value: date_data[d]
-					}
-				})
 
+				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
 
 				return op;
 			},
@@ -1009,6 +1003,7 @@ import IndiaMap from './india-map'
 								.attr("transform", `translate(${margin2.left}, ${margin2.top})`)
 
 				let dataset = this.dateTableData.map(d => d.value)
+
 
 				var maxHeight=d3.max(dataset,function(d){return d})
                 var minHeight=d3.min(dataset,function(d){return d})
