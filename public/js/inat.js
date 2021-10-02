@@ -1887,6 +1887,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "data-table",
   props: ["data", "headers"]
@@ -2347,9 +2357,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
-//
 
 
 
@@ -2372,7 +2379,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       state_max: 0,
       selected_users: [],
       selected_dates: [],
-      selected_state: "All",
+      selected_state: "Goa",
       selected_point: null,
       selected_taxa_levels: [],
       selected_taxa: [],
@@ -2405,6 +2412,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   mounted: function mounted() {
     // this.renderMap()
     this.renderDateChart(); // this.renderTaxonomyChart()
+
+    this.selected_state = "All";
   },
   watch: {// selected_users () {
     // 	this.renderMap()
@@ -3299,11 +3308,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     selectState: function selectState(s) {
-      // if (this.selected_state == s) {
-      // 	this.selected_state = 'All'
-      // } else {
-      // }
       this.selected_state = s;
+    },
+    tableTelectState: function tableTelectState(s) {
+      var selected = this.statesTableData[s].state;
+
+      if (this.selected_state == selected) {
+        this.selected_state = 'All';
+      } else {
+        this.selected_state = selected;
+      }
     },
     renderTaxonomyChart: function renderTaxonomyChart() {
       var height = this.svgHeight;
@@ -3447,9 +3461,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
-//
-//
-//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -3460,7 +3471,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       states: null,
       path: null,
       svg: {},
-      projection: null,
+      projection: {},
+      colors: {},
+      legend: {},
       state_data: {},
       state_max: 0,
       height: window.innerHeight * 0.8,
@@ -3470,7 +3483,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     };
   },
   mounted: function mounted() {
-    this.init(); // alert(`${this.width} x ${this.height}`)
+    this.init();
+    this.clicked(this.selectedGeoJson);
+    this.map_first_render = false; // alert(`${this.width} x ${this.height}`)
   },
   computed: {
     stateData: function stateData() {
@@ -3520,7 +3535,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         d3.selectAll(".map-points").remove();
       }
 
-      if (newVal != 'All') this.mapPoints();
+      this.renderMap();
+
+      if (newVal != 'All') {
+        this.mapPoints();
+      }
     }
   },
   methods: {
@@ -3531,9 +3550,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.states = null;
       this.path = null;
       this.svg = {};
-      this.projection = null;
+      this.projection = {};
+      this.colors = {};
+      this.legend = {};
       this.state_data = {};
       this.state_max = 0;
+
+      if (this.height > this.width) {
+        this.height /= 1.7;
+        this.width *= 1.9;
+      }
+
       _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         _this2.state_data[s.properties.ST_NM] = [];
       });
@@ -3547,16 +3574,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       Object.keys(this.state_data).forEach(function (s) {
         if (_this2.state_data[s].length > _this2.state_max) _this2.state_max = _this2.state_data[s].length;
       });
+      this.colors = d3.scaleLinear().domain([0, 1, this.state_max * .5, this.state_max]).range(["#f77", "#696", "#8c8", "#9f9"]);
+      this.legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__.legendColor().shapeWidth(45).scale(this.colors).labelFormat(d3.format(".0f")).orient('horizontal').labelOffset(-10).labelAlign("start").cells(5); // .shapePadding(47)
+
       this.renderMap();
     },
     renderMap: function renderMap() {
       var _this3 = this;
 
-      if (this.height > this.width) {
-        this.height /= 1.7;
-        this.width *= 1.9;
-      }
-
+      // if(!this.map_first_render){
+      // 	this.legend.shapePadding(2).labelOffset(-25)
+      // }
       if (!d3.select("#map-container svg").empty()) {
         d3.selectAll("#map-container svg").remove();
       }
@@ -3564,11 +3592,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("width", this.width).attr("height", this.height).style("background-color", "rgb(190, 229, 235)").classed("svg-content d-flex m-auto", true);
       this.projection = d3.geoMercator().scale(850).center([87, 25.5]);
       this.path = d3.geoPath().projection(this.projection);
-      var colors = d3.scaleLinear().domain([0, 1, this.state_max * .5, this.state_max]).range(["#f77", "#696", "#8c8", "#9f9"]);
-      var legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__.legendColor().scale(colors).labelFormat(d3.format(".0f")).orient('horizontal').labelOffset(-10).labelAlign("start").shapeWidth(45).cells(5).shapePadding(47);
 
       if (this.height > this.width) {
-        legend.shapeWidth(35).cells(4).shapePadding(37);
+        this["this"].legend.shapeWidth(35).cells(4); // .shapePadding(37)
       }
 
       var base = this.svg.append("g").classed("map-boundary", true);
@@ -3596,23 +3622,33 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           current_state.classed("selected", true);
         } else {
           current_state.attr("fill", function (d) {
-            return colors(_this3.stateData[s_name].length);
-          }).text("FUCK");
+            return _this3.colors(_this3.stateData[s_name].length);
+          });
         }
       });
-      this.svg.append("g").attr("transform", "translate(" + this.width * .5 + ", 50)").call(legend); // .append("text")
+
+      if (this.selected_state == "All") {
+        _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
+          var s_name = state.properties.ST_NM;
+          var label = base_text.append("g").data([state]).enter().append("text").classed("poly_text", true).attr("x", function (h) {
+            return _this3.path.centroid(h)[0];
+          }).attr("y", function (h) {
+            return _this3.path.centroid(h)[1];
+          }).attr("text-anchor", "middle").attr("font-size", 12).text(_this3.stateData[s_name].length).on("click", _this3.clicked);
+        });
+      }
+
+      this.svg.append("g").attr("transform", "translate(" + this.width * .5 + ", 50)").call(this.legend); // .append("text")
       // .classed("map_label", true)
       // .attr("dx", 5)
       // .attr("dy", -10)
       // .classed("h1", true)
       // .text(this.selected_state)
 
-      this.svg.call(this.zoom);
-
-      if (this.map_first_render) {
-        this.clicked(this.selectedGeoJson);
-        this.map_first_render = false;
-      }
+      this.svg.call(this.zoom); // if(this.map_first_render){
+      // 	this.clicked(this.selectedGeoJson)
+      // 	this.map_first_render = false
+      // }
     },
     stateID: function stateID(s) {
       return s.replaceAll(" ", "_").replaceAll("&", "");
@@ -3620,6 +3656,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     clicked: function clicked(d) {
       this.tooltip.html("").style('visibility', 'hidden');
       var state = d.properties.ST_NM;
+      if (state == this.selected_state && state != 'All') if (!d3.select("#map-container .poly_text").empty()) {
+        d3.selectAll("#map-container .poly_text").remove();
+      }
       var x0 = 0,
           y0 = 0,
           x1 = 0,
@@ -3847,6 +3886,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   mounted: function mounted() {
     this.init();
+    this.crumbClick("Papilionoidea");
   },
   methods: {
     init: function init() {
@@ -3927,6 +3967,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this2 = this;
 
       var selected_taxon = p.data.name;
+      console.log(selected_taxon, p);
       this.breadcrumbs = this.populate_breadcrumbs(p, []);
 
       if (this.watch_click == false) {
@@ -4172,7 +4213,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    width:100%;\n    height: 60vh;\n    overflow: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    width:100%;\n    max-width:50vw;\n    height: 60vh;\n    overflow: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4196,7 +4237,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.all-states-table tbody tr:hover{\n\t\tbackground: #ffa;\n\t\tcursor: pointer;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow: hidden;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n}\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow: hidden;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n\t\toverflow-y: scroll;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -77675,7 +77716,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "table-container" }, [
-    _c("table", { staticClass: "table tableFixHead all-states-table" }, [
+    _c("table", { staticClass: "table tableFixHead" }, [
       _c("thead", {}, [
         _c(
           "tr",
@@ -77694,7 +77735,14 @@ var render = function() {
         _vm._l(_vm.data, function(row, id) {
           return _c(
             "tr",
-            { key: id },
+            {
+              key: id,
+              on: {
+                click: function($event) {
+                  return _vm.$emit("rowClick", id)
+                }
+              }
+            },
             _vm._l(_vm.headers, function(h) {
               return _c("td", {
                 key: h[1],
@@ -77846,7 +77894,8 @@ var render = function() {
                                       ["Unique Taxa", "species"],
                                       ["Users", "users"]
                                     ]
-                                  }
+                                  },
+                                  on: { rowClick: _vm.tableTelectState }
                                 })
                               : _c("data-table", {
                                   attrs: {
@@ -78307,10 +78356,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _vm._v("\n" + _vm._s(_vm.selected_state) + "\t\n"),
-    _c("div", { attrs: { id: "map-container" } })
-  ])
+  return _c("div", { attrs: { id: "map-container" } })
 }
 var staticRenderFns = []
 render._withStripped = true
