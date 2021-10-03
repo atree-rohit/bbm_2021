@@ -21,7 +21,6 @@
 
 <template>
 	<div>
-		{{selected_state}}
 		<div id="map-container"></div>
 	</div>
 </template>

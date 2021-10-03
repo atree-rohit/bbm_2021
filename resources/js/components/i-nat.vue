@@ -234,7 +234,6 @@
 <template>
 	<div class="container-fluid" id="report-page">
 		<div id="locations-tab">
-			{{selected_state}}
 			<ui-tabs
 				:fullwidth="true"
 				:raised="true"
