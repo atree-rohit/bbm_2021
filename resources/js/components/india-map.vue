@@ -5,11 +5,25 @@
 		stroke: rgba(255,50,0,.5);
 		stroke-width:.5px;
 	}
+	.poly_text{
+		fill: #303;
+		font-size: 0.5vw;
+		transition: fill,text-shadow .125s;
+	}
+	.poly_text:hover{
+		fill: #00c;
+		text-shadow: 0px 0px 5px #fff;
+		cursor: pointer;
+		font-weight: 1000;
+	}
 
 </style>
 
 <template>
-	<div id="map-container"></div>
+	<div>
+		{{selected_state}}
+		<div id="map-container"></div>
+	</div>
 </template>
 
 <script>
@@ -38,8 +52,8 @@ export default {
 	},
 	mounted(){
 		this.init()
-		this.clicked(this.selectedGeoJson)
-		this.map_first_render = false
+		// this.clicked(this.selectedGeoJson)
+		// this.map_first_render = false
 		// alert(`${this.width} x ${this.height}`)
 	},
 	computed:{
@@ -87,16 +101,14 @@ export default {
 	watch: {
 		map_data () {
 			this.init()
-			// this.renderMap()
+			
 		},
 		selected_state (newVal, oldVal) {
 			if (!d3.select("#map-container .map-points").empty()) {
 				d3.selectAll(".map-points").remove()
 			}
-			this.renderMap()
-			if(newVal != 'All'){
-				this.mapPoints()
-			}
+			
+			this.init()
 		}
 	},
 	methods:{
@@ -148,6 +160,8 @@ export default {
 								// .shapePadding(47)
 
 			this.renderMap()
+			this.clicked(this.selectedGeoJson)
+			this.map_first_render = false
 		},
 		renderMap () {
 			this.selected = this.selected_state
@@ -168,7 +182,7 @@ export default {
 
 
 			if(this.height > this.width){
-				this.this.legend.shapeWidth(35)
+				this.legend.shapeWidth(35)
 				.cells(4)
 				// .shapePadding(37)
 			}
@@ -202,21 +216,22 @@ export default {
 						</table>`)
 						.style('visibility', 'visible');
 					})
-					.on('mousemove', function () {
-						that.tooltip
-						.style('top', d3.event.pageY - 10 + 'px')
-						.style('left', d3.event.pageX + 10 + 'px');
-					})
-					.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
-					.on("click", this.clicked);
+				.on('mousemove', function () {
+					that.tooltip
+					.style('top', d3.event.pageY - 10 + 'px')
+					.style('left', d3.event.pageX + 10 + 'px');
+				})
+				.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
+				.on("click", this.clicked)
 
-					if(this.stateData[s_name] == undefined){
-						current_state.attr("fill", (d) => colors(-1))
-					} else if (s_name == this.selected) {
-						current_state.classed("selected", true)
-					} else {
-						current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
-					}
+
+				if(this.stateData[s_name] == undefined){
+					current_state.attr("fill", (d) => colors(-1))
+				} else if (s_name == this.selected) {
+					current_state.classed("selected", true)
+				} else {
+					current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
+				}
 
 			})
 			if(this.selected == "All"){
@@ -229,8 +244,23 @@ export default {
 						.attr("x", (h) => this.path.centroid(h)[0] )
 						.attr("y", (h) => this.path.centroid(h)[1] )
 						.attr("text-anchor", "middle")
-						.attr("font-size",12)
 						.text(this.stateData[s_name].length)
+						.on('mouseover', function (d, i) {
+							that.tooltip.html(
+								`<table>
+								<tr><td>State</td><td>${s_name}</td></tr>
+								<tr><td>Observations</td><td>${that.stateStats[s_name].observations}</td></tr>
+								<tr><td>Users</td><td>${that.stateStats[s_name].users.size}</td></tr>
+								<tr><td>Unique Taxa</td><td>${that.stateStats[s_name].species.size}</td></tr>
+								</table>`)
+								.style('visibility', 'visible');
+							})
+						.on('mousemove', function () {
+							that.tooltip
+							.style('top', d3.event.pageY - 10 + 'px')
+							.style('left', d3.event.pageX + 10 + 'px');
+						})
+						.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
 						.on("click", this.clicked)
 				})				
 			}
@@ -246,6 +276,7 @@ export default {
 				// .text(this.selected)
 
 			this.svg.call(this.zoom)
+			this.mapPoints()
 
 			// if(this.map_first_render){
 			// 	this.clicked(this.selectedGeoJson)
@@ -259,7 +290,6 @@ export default {
 		clicked(d) {
 			this.tooltip.html(``).style('visibility', 'hidden')
 			let state = d.properties.ST_NM
-			// console.log(state, this.map_first_render)
 			
 			if(state == this.selected && state != 'All')
 				if (!d3.select("#map-container .poly_text").empty()) {
@@ -274,22 +304,27 @@ export default {
 				
 			}
 			
-			if(this.selected != 'All'){
-			}
-			if(this.selected == state){
-				[[x0, y0], [x1, y1]] = this.path.bounds(country)
+			if(this.map_first_render){
+				if(state == "All"){
+					[[x0, y0], [x1, y1]] = this.path.bounds(country)
+				} else {
+					[[x0, y0], [x1, y1]] = this.path.bounds(d)
+					d3.select("#" + this.stateID(state)).classed("selected", true)
+				}
 			} else {
-				[[x0, y0], [x1, y1]] = this.path.bounds(d)
-				d3.select("#" + this.stateID(state)).classed("selected", true)
-				
-			}
-			if(!this.map_first_render){
+				if(this.selected == state){
+					[[x0, y0], [x1, y1]] = this.path.bounds(country)
+				} else {
+					[[x0, y0], [x1, y1]] = this.path.bounds(d)
+					d3.select("#" + this.stateID(state)).classed("selected", true)
+				}
 				if(this.selected == state){
 					this.$emit('stateSelected', 'All')
 				} else {
 					this.$emit('stateSelected', state)
 				}
 			}
+			
 			
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
