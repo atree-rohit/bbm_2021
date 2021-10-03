@@ -234,6 +234,7 @@
 <template>
 	<div class="container-fluid" id="report-page">
 		<div id="locations-tab">
+			{{selected_state}}
 			<ui-tabs
 				:fullwidth="true"
 				:raised="true"
@@ -371,7 +372,8 @@
 
             <ui-collapsible :class="filterClass('date')" :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
                 <div id="date-filter">
-					<div id="date-chart-continer" class="svg-container"></div>
+					<!-- <div id="date-chart-continer" class="svg-container"></div> -->
+					<date-chart :dateTableData="dateTableData" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
 				</div>
             </ui-collapsible>
 
@@ -417,12 +419,13 @@
 import axios from 'axios';
 import country from '../country.json'
 import DataTable from './data-table'
-import SpeciesSunburst from './species-sunburst'
 import IndiaMap from './india-map'
+import SpeciesSunburst from './species-sunburst'
+import DateChart from './date-chart'
 	export default {
 		name:"i-nat",
 		props: ["inat_data", "inat_taxa"],
-		components: { DataTable, SpeciesSunburst, IndiaMap },
+		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
 		data() {
 			return{
 				state_data: {},
@@ -467,7 +470,7 @@ import IndiaMap from './india-map'
 		},
 		mounted() {
 			// this.renderMap()
-			this.renderDateChart()
+			// this.renderDateChart()
 			// this.renderTaxonomyChart()
 
 		},
@@ -629,12 +632,13 @@ import IndiaMap from './india-map'
 				return op
 			},
 			dateTableData () {
-				let observations = this.inat_data
+				let observations = []
 				let op = []
 				let date_data = {}
 
-				if (this.selected_state != "All"){
-
+				if (this.selected_state === "All"){
+					observations = this.inat_data
+				} else {
 					observations = this.inat_data.filter(x => x.state === this.selected_state)
 				}
 
@@ -645,6 +649,35 @@ import IndiaMap from './india-map'
 				if(this.selected_taxa_levels.length > 0){
 					observations = observations.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
 				}
+
+
+				if(this.selected_taxa.length > 1){
+					let taxa_match = []
+
+					observations.forEach(o => {
+						let hierarchy = {}
+						let match_flag = true
+
+
+						hierarchy[o.taxa_rank] = o.taxa_name
+						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							}
+						})
+						this.selected_taxa.forEach((t,id)  => {
+							if(t != hierarchy[this.levels[id]] && t != 'none')
+								match_flag = false
+						})
+						if(match_flag){
+							taxa_match.push(o)
+						}
+
+					})
+					observations = taxa_match
+				}
+
+
 				for(var i = 0; i<31; i++){
 					date_data[i] = 0
 				}
@@ -1140,6 +1173,9 @@ import IndiaMap from './india-map'
 					this.selected_dates.push(d.name)
 				}
 			},
+			selectDateRange(d){
+				this.selected_dates = d
+			},
 			srenderMap () {
 				let that = this
 				let height = this.svgHeight * .9
@@ -1278,7 +1314,8 @@ import IndiaMap from './india-map'
 				}
 			},
 			selectState (s) {
-					this.selected_state = s
+				console.log("emit setter", s)
+				this.selected_state = s
 			},
 			tableTelectState(s){
 				let selected = this.statesTableData[s].state
