@@ -1313,7 +1313,7 @@ import DateChart from './date-chart'
 				}
 			},
 			selectState (s) {
-				console.log("emit setter", s)
+				// console.log("emit setter", s)
 				this.selected_state = s
 			},
 			tableTelectState(s){
