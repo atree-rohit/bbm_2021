@@ -789,6 +789,33 @@ import DateChart from './date-chart'
 				if(this.selected_dates.length > 0){
 					filtered_observations = filtered_observations.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
 				}
+				
+
+				if(this.selected_taxa.length > 1){
+					let taxa_match = []
+
+					filtered_observations.forEach(o => {
+						let hierarchy = {}
+						let match_flag = true
+
+
+						hierarchy[o.taxa_rank] = o.taxa_name
+						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							}
+						})
+						this.selected_taxa.forEach((t,id)  => {
+							if(t != hierarchy[this.levels[id]] && t != 'none')
+								match_flag = false
+						})
+						if(match_flag){
+							taxa_match.push(o)
+						}
+
+					})
+					filtered_observations = taxa_match
+				}
 
 
 				let taxa_level = d3.nest().key(o => o.taxa_rank).object(filtered_observations)
@@ -1009,308 +1036,9 @@ import DateChart from './date-chart'
 				let url = 'https://www.inaturalist.org/observations/' + o.id;
 				window.open(url, '_blank').focus();
 			},
-			renderDateChart () {
-				let margin = {top: 20, right: 20, bottom: 90, left: 50}
-				let margin2 = {top: this.svgHeight * .6 - 70, right: 20, bottom: 30, left: 50}
-				let width = this.svgWidth * .9 - margin.left - margin.right
-				let height = this.svgHeight * .6 - margin.top - margin.bottom
-				let height2 = this.svgHeight *.6 - margin2.top - margin2.bottom
-				let that = this
-
-				if (!d3.select("#date-chart-continer svg").empty()) {
-					d3.selectAll("#date-chart-continer svg").remove()
-				}
-
-				let svg = d3.select("#date-chart-continer").append("svg")
-					// .attr("viewBox", [0, 0, width, height])
-					.attr("viewBox", [0, 0, width+margin.left+margin.right, height+margin.top+margin.bottom])
-						// .attr("width",width+margin.left+margin.right)
-						// .attr("height",height+margin.top+margin.bottom);
-
-				let focus = svg.append("g")
-								.classed("main-date-chart", true)
-								.attr("transform", `translate(${margin.left}, ${margin.top})`)
-				let context = svg.append("g")
-								.attr("transform", `translate(${margin2.left}, ${margin2.top})`)
-
-				let dataset = this.dateTableData.map(d => d.value)
-
-
-				var maxHeight=d3.max(dataset,function(d){return d})
-                var minHeight=d3.min(dataset,function(d){return d})
-
-                var yScale = d3.scaleLinear().range([0,height]).domain([maxHeight*1.1,0])
-				var xScale = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length,1)).padding(0.1)
-				var yScale2 = d3.scaleLinear().range([0,height2]).domain([maxHeight*1.1,0])
-				var xScale2 = d3.scaleBand().rangeRound([0,width]).domain(d3.range(1,dataset.length,1)).padding(0.1)
-
-				var yAxis = d3.axisLeft(yScale).tickSize(-width)
-				var yAxisGroup = focus.append("g").call(yAxis)
-				var xAxis = d3.axisBottom(xScale)
-				var xAxisGroup = focus.append("g").call(xAxis).attr("transform", "translate(0,"+height+")")
-
-				var xAxis2 = d3.axisBottom(xScale2)
-				var xAxisGroup2 = context.append("g").call(xAxis2).attr("transform", "translate(0,"+height2+")")
-
-				var bars1 = focus.selectAll("rect").data(dataset).enter().append("rect")
-				bars1.attr("x",function(d,i){
-					return xScale(i)//i*(width/dataset.length)
-				})
-					.attr("y",function(d){
-						return yScale(d)
-					})//for bottom to top
-					.attr("width", xScale.bandwidth()/*width/dataset.length-barpadding*/)
-					.attr("height", function(d){
-						return height-yScale(d)
-					})
-
-				bars1.attr("fill","steelblue")
-					.on('mouseover', function (d, i) {
-  						that.tooltip.html(`<div>${d} Observations</div>`)
-  							.style('visibility', 'visible')
-  						})
-  					.on('mousemove', function () {
-  						that.tooltip
-  							.style('top', d3.event.pageY - 10 + 'px')
-  							.style('left', d3.event.pageX + 10 + 'px')
-  						})
-  					.on('mouseout', function () {
-  						that.tooltip.html(``).style('visibility', 'hidden')
-  						})
-
-				var bars2 = context.selectAll("rect").data(dataset).enter().append("rect");
-				bars2.attr("x",function(d,i){
-					return xScale2(i);//i*(width/dataset.length);
-				})
-					.attr("y",function(d){
-						return yScale2(d);
-					})//for bottom to top
-						.attr("width", xScale2.bandwidth()/*width/dataset.length-barpadding*/)
-						.attr("height", function(d){
-						return height2-yScale2(d);
-					})
-				bars2.attr("fill", "red")
-
-				var brush = d3.brushX()
-						.extent([[0,0],[width,height2]])//(x0,y0)  (x1,y1)
-						.on("brush",brushed)//when mouse up, move the selection to the exact tick //start(mouse down), brush(mouse move), end(mouse up)
-						.on("end",brushend);
-				context.append("g")
-				.attr("class","brush")
-				.call(brush)
-				.call(brush.move,xScale2.range());
-
-
-
-				function brushed(){
-					if (!d3.event.sourceEvent) return; // Only transition after input.
-					if (!d3.event.selection) return; // Ignore empty selections.
-					if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
-						//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
-						//The idea here is to count all the bar chart in the brush area. And reset the domain
-					var newInput = [];
-					var brushArea = d3.event.selection;
-					if(brushArea === null) brushArea = xScale.range();
-
-					xScale2.domain().forEach(function(d){
-						var pos = xScale2(d) + xScale2.bandwidth()/2;
-						if (pos >= brushArea[0] && pos <= brushArea[1]){
-						  newInput.push(d);
-						}
-					});
-
-					xScale.domain(newInput);
-					//	console.log(xScale.domain());
-					//realocate the bar chart
-					bars1.attr("x",function(d,i){//data set is still data
-						return xScale(i)/*xScale(xScale.domain().indexOf(i))*/;
-					})
-						.attr("y",function(d){
-							return yScale(d);
-						})//for bottom to top
-						.attr("width", xScale.bandwidth())//if you want to change the width of bar. Set the width to xScale.bandwidth(); If you want a fixed width, use xScale2.bandwidth(). Note because we use padding() in the scale, we should use xScale.bandwidth()
-						.attr("height", function(d,i){
-							if(xScale.domain().indexOf(i) === -1){
-								return 0;
-							}
-							else
-								return height-yScale(d);
-						})
-
-					xAxisGroup.call(xAxis);
-				}
-				function brushend(){
-					if (!d3.event.sourceEvent) return; // Only transition after input.
-					if (!d3.event.selection) return; // Ignore empty selections.
-					if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
-						//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
-						//The idea here is to count all the bar chart in the brush area. And reset the domain
-					var newInput = []
-					var brushArea = d3.event.selection
-					if(brushArea === null) brushArea = xScale.range()
-
-					xScale2.domain().forEach(function(d){
-						var pos = xScale2(d) + xScale2.bandwidth()/2;
-						if (pos >= brushArea[0] && pos <= brushArea[1]){
-							newInput.push(d);
-						}
-					})
-
-					//relocate the position of brush area
-					var increment = 0;
-					var left = xScale2(d3.min(newInput));
-					var right = xScale2(d3.max(newInput))+xScale2.bandwidth();
-					that.selected_dates = newInput
-					d3.select(this).transition().call(d3.event.target.move,[left,right]);//The inner padding determines the ratio of the range that is reserved for blank space between bands.
-				}
-			},
-			selectDate (d) {
-				var index = this.selected_dates.indexOf(d.name);
-				if (index !== -1) {
-					this.selected_dates.splice(index, 1);
-				} else {
-					this.selected_dates.push(d.name)
-				}
-			},
 			selectDateRange(d){
+				// 
 				this.selected_dates = d
-			},
-			srenderMap () {
-				let that = this
-				let height = this.svgHeight * .9
-				let width = this.svgWidth
-				if(height > width){
-					height /= 3
-				}
-
-				if (!d3.select("#map-container svg").empty()) {
-					d3.selectAll("#map-container svg").remove()
-				}
-				let svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet")
-					.attr("viewBox", [0,0, width, height])
-					.style("background-color", "rgb(190, 229, 235)")
-					.classed("svg-content d-flex m-auto", true)
-
-				var projection = d3.geoMercator().scale(850).center([87, 25.5])
-				const path = d3.geoPath().projection(projection)
-				const colors = d3.scaleLinear().domain([0, 1, this.state_max]).range(["#f77", "#6a8", "#7f9"])
-				var legend = d3Legend.legendColor().scale(colors).shapeWidth(55).labelFormat(d3.format(".0f")).orient('horizontal').cells(6)
-				let base = svg.append("g")
-					.classed("map-boundary", true)
-
-				let base_text = base.selectAll("text").append("g")
-				base = base.selectAll("path").append("g")
-				let states = base.append("g").classed("states", true)
-
-				country.features.forEach(state=> {
-					let s_name = state.properties.ST_NM
-					let that = this
-
-					let current_state = states.append("g")
-						.data([state])
-						.enter().append("path")
-						.attr("d", path)
-						.attr("id", s_name.replaceAll(" ", "_").replaceAll("&", ""))
-						.attr("title", s_name)
-						.on('mouseover', function (d, i) {
-	  						that.tooltip.html(
-	  							`<table>
-	  							<tr><td>State</td><td>${s_name}</td></tr>
-	  							<tr><td>Observations</td><td>${that.stateStats[s_name].observations}</td></tr>
-	  							<tr><td>Users</td><td>${that.stateStats[s_name].users.size}</td></tr>
-	  							<tr><td>Unique Taxa</td><td>${that.stateStats[s_name].species.size}</td></tr>
-	  							</table>`)
-	  							.style('visibility', 'visible');
-	  						})
-	  					.on('mousemove', function () {
-	  						that.tooltip
-	  							.style('top', d3.event.pageY - 10 + 'px')
-	  							.style('left', d3.event.pageX + 10 + 'px');
-	  						})
-	  					.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
-	  					.on("click", clicked);
-
-					if(this.stateData[s_name] == undefined){
-						current_state.attr("fill", (d) => colors(-1))
-					} else {
-						current_state.attr("fill", (d) => colors(this.stateData[s_name].length))
-					}
-				})
-				let zoom = d3.zoom()
-					.scaleExtent([.25, 20])
-					.translateExtent([[-width,-height],[2 * width,2 * height]])
-					.on('zoom', function() {
-						svg.selectAll('.poly_text')
-							.attr('transform', d3.event.transform),
-						svg.selectAll('path')
-							.attr('transform', d3.event.transform),
-						svg.selectAll('circle')
-							.attr('transform', d3.event.transform)
-							.attr("r", 2 / d3.event.transform.k);
-					});
-				svg.call(zoom);
-
-				mapPoints()
-				if(this.map_first_render){
-					clicked({properties:{ST_NM: this.selected_state}})
-					this.map_first_render = false
-				}
-
-				function clicked(d) {
-					let state = d.properties.ST_NM
-					let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
-				    states.transition().style("fill", null);
-					if(that.selected_state != 'All'){
-						d3.select("#" + that.selected_state.replaceAll(" ", "_").replaceAll("&", "")).transition().style("fill", null);
-					}
-					if(that.selected_state == state){
-						[[x0, y0], [x1, y1]] = path.bounds(country)
-						that.selected_state = 'All'
-					} else {
-				    	[[x0, y0], [x1, y1]] = path.bounds(d);
-						that.selected_state = state
-						d3.select(this).transition().style("fill", "gold");
-					}
-				    svg.transition().duration(750).call(
-				      zoom.transform,
-				      d3.zoomIdentity
-				        .translate(width / 2, height / 2)
-				        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
-				        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-				    );
-				    mapPoints()
-				}
-
-				function mapPoints(){
-					if (!d3.select("#map-container .map-points").empty()) {
-						d3.selectAll(".map-points").remove()
-					}
-					let points = [];
-					if(that.selected_state == 'All'){
-						that.state_unmatched.forEach(o => {
-							let coords = o.location.split(",")
-							points.push([coords[1], coords[0], o.id, o.place_guess]);
-						})
-					}
-					if(that.selected_state != 'All'){
-						that.state_data[that.selected_state].forEach(o => {
-							let coords = o.location.split(",")
-							points.push([coords[1], coords[0], o.id, o.place_guess]);
-						})
-					}
-					if(points.length > 0){
-						let map_points = svg.append('g')
-							.classed('map-points', true)
-							.selectAll("circle")
-							.data(points).enter()
-							.append("circle")
-							.attr("cx", (d) => projection(d)[0])
-							.attr("cy", (d) => projection(d)[1])
-							.attr("r", "0px")
-
-						// map_points.on("click", (d) => that.setMissingState(d))
-					}
-				}
 			},
 			selectState (s) {
 				// console.log("emit setter", s)
@@ -1323,73 +1051,6 @@ import DateChart from './date-chart'
 				} else {
 					this.selected_state = selected
 				}
-			},
-			renderTaxonomyChart () {
-				let height = this.svgHeight
-				let width = this.svgWidth
-				let margin = 40
-				let data = this.taxaTableData
-				let total_observations = this.inat_data.length
-
-  				var radius = Math.min(width, height) / 2 - margin
-
-  				var svg = d3.select("#taxonomy-chart-continer")
-  							.append("svg")
-  							.classed('doughnut-chart d-flex m-auto', true)
-  							.attr("width", width)
-  							.attr("height", height)
-  							.append("g")
-  								.classed('doughnut-chart', true)
-  								.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-  				// set the color scale
-  				var color = d3.scaleOrdinal()
-  								.domain(data)
-  								.range(d3.schemeSet2);
-
-  				// Compute the position of each group on the pie:
-  				var pie = d3.pie()
-  					.value(function(d) {return d.value; })
-  				var data_ready = pie(d3.entries(data))
-
-  				var arcGenerator = d3.arc()
-										.innerRadius(50)
-										.outerRadius(radius)
-
-
-
-  				// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-  				let that = this
-				svg.selectAll('mySlices')
-					.data(data_ready)
-					.enter()
-					.append('path')
-					.attr('d', arcGenerator)
-					.attr('fill', function(d){ return(color(d.data.key)) })
-					.attr("stroke", "black")
-					.style("stroke-width", ".25px")
-					.style("opacity", 0.7)
-					.on('mouseover', function (d, i) {
-  						that.tooltip.html(`<div>Rank: ${d.data.key}</div><div>Observations: ${Math.round(Math.exp(d.value))}</div><div>Percent of Total: ${Math.round(Math.round(Math.exp(d.value))/total_observations*10000)/100}%`)
-  							.style('visibility', 'visible');
-  						})
-  					.on('mousemove', function () {
-  						that.tooltip
-  							.style('top', d3.event.pageY - 10 + 'px')
-  							.style('left', d3.event.pageX + 10 + 'px');
-  						})
-  					.on('mouseout', function () {
-  						that.tooltip.html(``).style('visibility', 'hidden');
-  					});
-				svg.append('g')
-					.classed('doughnut-labels', true)
-					.selectAll('mySlices')
-					.data(data_ready)
-					.enter()
-					.append('text')
-					.text(function(d){ return d.data.key})
-					.attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
-					.style("text-anchor", "middle")
-					.style("font-size", 15)
 			},
 			selectTaxon (t) {
 				//
