@@ -15,8 +15,8 @@ export default {
 	data() {
 		return{
 			tooltip:this.popup,
-			width: window.innerWidth,
-			height: window.innerHeight,
+			width: window.innerWidth * 0.45,
+			height: window.innerHeight * 0.45,
 			xScale: {},
 			xScale2: {},
 			yScale: {},
@@ -28,20 +28,21 @@ export default {
 		}
 	},
 	mounted(){
-		// this.init()
 	},
 	computed:{
-		
+
 	},
 	watch: {
 		dateTableData(){
+			this.watch_init_flag = true
 			this.init()
+			this.watch_init_flag = false
 		}
 	},
 	methods:{
 		init () {
-			this.width = window.innerWidth * .45
-			this.height = window.innerHeight *.54
+			this.width = window.innerWidth * 0.45
+			this.height = window.innerHeight * 0.45
 			this.xScale = {}
 			this.xScale2 = {}
 			this.yScale = {}
@@ -63,7 +64,6 @@ export default {
 			this.height = this.height - margin.top - margin.bottom
 			let height2 = 50
 			let that = this
-
 
 			if (!d3.select("#date-chart-continer svg").empty()) {
 				d3.selectAll("#date-chart-continer svg").remove()
@@ -125,16 +125,21 @@ export default {
 					.extent([[0,0],[this.width,height2]])//(x0,y0)  (x1,y1)
 					.on("brush",this.brushed)//when mouse up, move the selection to the exact tick //start(mouse down), brush(mouse move), end(mouse up)
 					.on("end",this.brushend)
-			
-			context.append("g")
-				.attr("class","brush")
-				.call(brush)
-				.call(brush.move,this.xScale2.range());
 
-			// context.append("g")
-			// 	.attr("class","brush")
-			// 	.call(brush)
-			// 	.call(brush.move,this.xScale2.range());
+			if (this.watch_init_flag && this.selected_dates.length > 0) {
+				let extent = [this.xScale2(Math.min(...this.selected_dates)), this.xScale2(Math.max(...this.selected_dates))]
+				this.renderBrushedChart(this.selected_dates)
+				context.append("g")
+					.attr("class","brush")
+					.call(brush)
+					.call(brush.move,extent);
+			} else {
+				context.append("g")
+					.attr("class","brush")
+					.call(brush)
+					.call(brush.move,this.xScale2.range());
+			}
+
 		},
 		brushed () {
 			if (!d3.event.sourceEvent) return // Only transition after input.
@@ -146,8 +151,6 @@ export default {
 			var brushArea = d3.event.selection
 			let that = this
 
-			
-
 			if(brushArea === null) brushArea = this.xScale.range()
 
 			this.xScale2.domain().forEach((d) => {
@@ -157,21 +160,7 @@ export default {
 				}
 			})
 
-			this.xScale.domain(newInput)
-			//	console.log(this.xScale.domain())
-			//realocate the bar chart
-			this.bars1.attr("x",(d,i) => that.xScale(i))
-					.attr("y",(d) => that.yScale(d))//for bottom to top
-				.attr("width", this.xScale.bandwidth())//if you want to change the width of bar. Set the width to this.xScale.bandwidth() If you want a fixed width, use this.xScale2.bandwidth(). Note because we use padding() in the scale, we should use this.xScale.bandwidth()
-				.attr("height", (d,i) => {
-					if(that.xScale.domain().indexOf(i) === -1){
-						return 0
-					}
-					else
-						return that.height-that.yScale(d)
-				})
-
-			this.xAxisGroup.call(this.xAxis)
+			this.renderBrushedChart(newInput)
 		},
 		brushend () {
 			if (!d3.event.sourceEvent) return; // Only transition after input.
@@ -190,10 +179,6 @@ export default {
 					newInput.push(d);
 				}
 			})
-			console.log("brushend")
-			if(this.selected_dates.length > 0 )
-				newInput = this.selected_dates
-			console.log(newInput)
 
 			//relocate the position of brush area
 			var increment = 0;
@@ -201,8 +186,26 @@ export default {
 			var right = this.xScale2(d3.max(newInput))+this.xScale2.bandwidth();
 			this.emitDate(newInput)
 		},
+		renderBrushedChart (data){
+			this.xScale.domain(data)
+			let that = this
+
+			this.bars1.attr("x",(d,i) => that.xScale(i))
+					.attr("y",(d) => that.yScale(d))
+				.attr("width", this.xScale.bandwidth())//if you want to change the width of bar. Set the width to this.xScale.bandwidth() If you want a fixed width, use this.xScale2.bandwidth(). Note because we use padding() in the scale, we should use this.xScale.bandwidth()
+				.attr("height", (d,i) => {
+					if(that.xScale.domain().indexOf(i) === -1){
+						return 0
+					}
+					else
+						return that.height-that.yScale(d)
+				})
+			this.xAxisGroup.call(this.xAxis)
+		},
 		emitDate(d){
-			this.$emit('dateRangeSelected', d)
+			if(this.watch_init_flag == false){
+					this.$emit('dateRangeSelected', d)
+			}
 		}
 	}
 };
