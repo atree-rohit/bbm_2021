@@ -43,8 +43,8 @@ export default {
 			state_data: {},
 			selected:"Goa",
 			state_max: 0,
-			height: window.innerHeight * 0.8,
-			width: window.innerWidth * 0.5,
+			height: window.innerHeight ,
+			width: window.innerWidth,
 			tooltip:this.popup,
 			map_first_render:true,
 		}
@@ -100,13 +100,13 @@ export default {
 	watch: {
 		map_data () {
 			this.init()
-			
+
 		},
 		selected_state (newVal, oldVal) {
 			if (!d3.select("#map-container .map-points").empty()) {
 				d3.selectAll(".map-points").remove()
 			}
-			
+
 			this.init()
 		}
 	},
@@ -125,10 +125,12 @@ export default {
 			this.state_max = 0
 			this.height = window.innerHeight * 0.8
 			this.width = window.innerWidth * 0.5
-			if(this.height > this.width){
-				this.height /= 1.7
-				this.width *= 1.9
+			if(window.innerWidth < 800){
+				this.height = window.innerHeight * 0.5
+				this.width = window.innerWidth * 0.9
 			}
+			console.log(window.innerWidth, window.innerHeight)
+			console.log(this.width, this.height)
 			country.features.forEach(s => {
 				this.state_data[s.properties.ST_NM] = [];
 			})
@@ -262,7 +264,7 @@ export default {
 						})
 						.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
 						.on("click", this.clicked)
-				})				
+				})
 			}
 
 			this.svg.append("g")
@@ -281,7 +283,7 @@ export default {
 			// if(this.map_first_render){
 			// 	this.clicked(this.selectedGeoJson)
 			// 	this.map_first_render = false
-				
+
 			// }
 		},
 		stateID(s){
@@ -290,7 +292,7 @@ export default {
 		clicked(d) {
 			this.tooltip.html(``).style('visibility', 'hidden')
 			let state = d.properties.ST_NM
-			
+
 			if(state == this.selected && state != 'All')
 				if (!d3.select("#map-container .poly_text").empty()) {
 					d3.selectAll("#map-container .poly_text").remove()
@@ -301,9 +303,9 @@ export default {
 
 			if(d3.select(".state-selected")["_groups"][0][0] != null){
 				d3.select("#" + d3.select(".state-selected")["_groups"][0][0].id).attr("class", null)
-				
+
 			}
-			
+
 			if(this.map_first_render){
 				if(state == "All"){
 					[[x0, y0], [x1, y1]] = this.path.bounds(country)
@@ -324,8 +326,8 @@ export default {
 					this.$emit('stateSelected', state)
 				}
 			}
-			
-			
+
+
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
 				d3.zoomIdentity
@@ -345,7 +347,7 @@ export default {
 					points.push([coords[1], coords[0], o.id, o.place_guess]);
 				})
 			}
-			
+
 			if(points.length > 0){
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
