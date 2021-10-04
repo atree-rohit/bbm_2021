@@ -1,5 +1,5 @@
 <style>
-	#map-container .selected{
+	#map-container .state-selected{
 		/*fill: #afa;*/
 		fill: #ff5;
 		stroke: rgba(255,50,0,.5);
@@ -228,7 +228,7 @@ export default {
 				if(this.stateData[s_name] == undefined){
 					current_state.attr("fill", (d) => colors(-1))
 				} else if (s_name == this.selected) {
-					current_state.classed("selected", true)
+					current_state.classed("state-selected", true)
 				} else {
 					current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
 				}
@@ -299,8 +299,8 @@ export default {
 
 			this.states.transition().style("fill", null)
 
-			if(d3.select(".selected")["_groups"][0][0] != null){
-				d3.select("#" + d3.select(".selected")["_groups"][0][0].id).attr("class", null)
+			if(d3.select(".state-selected")["_groups"][0][0] != null){
+				d3.select("#" + d3.select(".state-selected")["_groups"][0][0].id).attr("class", null)
 				
 			}
 			
@@ -309,14 +309,14 @@ export default {
 					[[x0, y0], [x1, y1]] = this.path.bounds(country)
 				} else {
 					[[x0, y0], [x1, y1]] = this.path.bounds(d)
-					d3.select("#" + this.stateID(state)).classed("selected", true)
+					d3.select("#" + this.stateID(state)).classed("state-selected", true)
 				}
 			} else {
 				if(this.selected == state){
 					[[x0, y0], [x1, y1]] = this.path.bounds(country)
 				} else {
 					[[x0, y0], [x1, y1]] = this.path.bounds(d)
-					d3.select("#" + this.stateID(state)).classed("selected", true)
+					d3.select("#" + this.stateID(state)).classed("state-selected", true)
 				}
 				if(this.selected == state){
 					this.$emit('stateSelected', 'All')
