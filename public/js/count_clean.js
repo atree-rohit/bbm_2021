@@ -1861,13 +1861,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "i-nat-taxa",
@@ -39535,31 +39528,24 @@ var render = function() {
   return _c("div", [
     _c("table", { staticClass: "table table-sm" }, [
       _c(
+        "thead",
+        _vm._l(_vm.count_rows[0], function(r, h) {
+          return _c("th", { domProps: { textContent: _vm._s(h) } })
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c(
         "tbody",
         _vm._l(_vm.count_rows, function(row) {
-          return _c("tr", { key: row.id }, [
-            _c("td", { domProps: { textContent: _vm._s(row.id) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.count_id) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.user_name) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.state) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.place_guess) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.location) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.date) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.taxa_id) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.taxa_name) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.taxa_rank) } }),
-            _vm._v(" "),
-            _c("td", { domProps: { textContent: _vm._s(row.individuals) } })
-          ])
+          return _c(
+            "tr",
+            { key: row.id },
+            _vm._l(_vm.count_rows[0], function(r, h) {
+              return _c("td", { domProps: { textContent: _vm._s(row[h]) } })
+            }),
+            0
+          )
         }),
         0
       )

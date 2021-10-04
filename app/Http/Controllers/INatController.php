@@ -45,7 +45,11 @@ class INatController extends Controller
     }
 
     public function clean(){
-        $forms = CountForm::select("id", "name as user_name", "location as place_guess", "coordinates as location", "date", "state","flag")->where("flag", 0)->with("rows_cleaned")->get();
+        $forms = CountForm::select("id", "name as user_name", "location as place_guess", "coordinates as location", "date", "state","flag")
+                            ->where("flag", 0)
+                            ->with("rows")
+                            ->get()
+                            ->where("rows.scientific_name", null);
         $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
 
@@ -60,17 +64,10 @@ class INatController extends Controller
             foreach($form_fields as $f){
                 $x[$f] = $form->{$f};
             }
-            $x["count_id"] = $form->id;
             foreach($form->rows_cleaned as $s){
                 if($s->flag == 0){
-                    $z = $x;
-                    $z["id"] = $s->id;
-                    $z["taxa_id"] = $inat_taxa[$s->scientific_name]["id"] ?? "not-there";
-                    $z["taxa_name"] = $s["scientific_name"];
-                    $z["taxa_rank"] = "species";
-                    $z["individuals"] = $s["individuals"];
 
-                    $count_rows[] = $z;
+                    $count_rows[] = array_merge($x, $s->toArray());
                 }
             }
         }

@@ -1,19 +1,12 @@
 <template>
     <div>
         <table class="table table-sm">
+            <thead>
+                <th v-for="(r,h) in count_rows[0]" v-text="h"></th>
+            </thead>
             <tbody>
                 <tr v-for="row in count_rows" :key="row.id">
-                    <td v-text="row.id"></td>
-                    <td v-text="row.count_id"></td>
-                    <td v-text="row.user_name"></td>
-                    <td v-text="row.state"></td>
-                    <td v-text="row.place_guess"></td>
-                    <td v-text="row.location"></td>
-                    <td v-text="row.date"></td>
-                    <td v-text="row.taxa_id"></td>
-                    <td v-text="row.taxa_name"></td>
-                    <td v-text="row.taxa_rank"></td>
-                    <td v-text="row.individuals"></td>
+                    <td v-for="(r,h) in count_rows[0]" v-text="row[h]"></td>
                 </tr>
             </tbody>
         </table>
