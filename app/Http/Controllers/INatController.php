@@ -45,62 +45,34 @@ class INatController extends Controller
     }
 
     public function clean(){
-        $forms = CountForm::select("id", "name as user_name", "location as place_guess", "coordinates as location", "date", "state","flag")
-                            ->where("flag", 0)
-                            ->with("rows")
-                            ->get()
-                            ->where("rows.scientific_name", null);
+        $forms = CountForm::where("flag", 0)
+                            // ->with("rows")
+                            ->limit(-1)
+                            ->get();
         $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
 
-        $form_fields = ["count_id", "user_name", "state", "place_guess", "location", "date", ];
-        $species_fields = ["common_name", "scientific_name", "individuals"];
+        $unset_fields = ["rows", "phone", "photo_link", "affiliation", "email", "team_members", "duplicate", "updated_at"];
 
         $x = [];
 
         $count_rows = [];
 
         foreach($forms as $form){
-            foreach($form_fields as $f){
-                $x[$f] = $form->{$f};
-            }
-            foreach($form->rows_cleaned as $s){
-                if($s->flag == 0){
+            $x = $form->toArray();
+            foreach($unset_fields as $uf)
+                unset($x[$uf]);
+            
+            // foreach($form->rows as $s){
+            //     if($s->flag == 0){
 
-                    $count_rows[] = array_merge($x, $s->toArray());
-                }
-            }
+            //         $count_rows[] = array_merge($x, $s->toArray());
+            //     }
+            // }
+            $count_rows[] = $x;
         }
 
 
-        // echo "<table border=1>";
-        // echo "<tr><td><pre>";
-        // // print_r($forms->first()->toArray());
-        // // print_r($forms->last()->toArray());
-        // print_r($count_rows[0]);
-        // echo "</pre></td>";
-        // echo "<td><pre>";
-        // print_r($inat_data->first()->toArray());
-        // echo "</pre></td></tr>";
-        //
-        // echo "</table>";
-        /*
-        echo "<table border=1>";
-        echo "<thead><th>SL No</th>";
-        foreach($count_rows[0] as $k => $v){
-            echo "<th>$k</th>";
-        }
-        echo "</thead>";
-        echo "<tbody>";
-        foreach($count_rows as $k => $row){
-            echo "<tr><td>$k</td><td>";
-            echo implode("</td><td>", $row);
-            echo "</td></tr>";
-        }
-        echo "</tbody>";
-        echo "</table>";
-        dd();
-        */
         return view('butterfly_count.clean', compact("count_rows", "inat_taxa"));
     }
     public function index()
