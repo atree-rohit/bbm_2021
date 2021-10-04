@@ -129,8 +129,6 @@ export default {
 				this.height = window.innerHeight * 0.5
 				this.width = window.innerWidth * 0.9
 			}
-			console.log(window.innerWidth, window.innerHeight)
-			console.log(this.width, this.height)
 			country.features.forEach(s => {
 				this.state_data[s.properties.ST_NM] = [];
 			})
