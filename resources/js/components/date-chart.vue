@@ -11,10 +11,9 @@
 <script>
 export default {
 	name:"date-chart",
-	props: [ "dateTableData", "popup" ],
+	props: [ "dateTableData", "selected_dates", "popup" ],
 	data() {
 		return{
-			selected_dates: [],
 			tooltip:this.popup,
 			width: window.innerWidth,
 			height: window.innerHeight,
@@ -25,10 +24,11 @@ export default {
 			bars1: {},
 			xAxis: {},
 			xAxisGroup: {},
+			watch_init_flag: false,
 		}
 	},
 	mounted(){
-		this.renderChart()
+		// this.init()
 	},
 	computed:{
 		
@@ -130,6 +130,11 @@ export default {
 				.attr("class","brush")
 				.call(brush)
 				.call(brush.move,this.xScale2.range());
+
+			// context.append("g")
+			// 	.attr("class","brush")
+			// 	.call(brush)
+			// 	.call(brush.move,this.xScale2.range());
 		},
 		brushed () {
 			if (!d3.event.sourceEvent) return // Only transition after input.
@@ -140,6 +145,8 @@ export default {
 			var newInput = []
 			var brushArea = d3.event.selection
 			let that = this
+
+			
 
 			if(brushArea === null) brushArea = this.xScale.range()
 
@@ -183,6 +190,10 @@ export default {
 					newInput.push(d);
 				}
 			})
+			console.log("brushend")
+			if(this.selected_dates.length > 0 )
+				newInput = this.selected_dates
+			console.log(newInput)
 
 			//relocate the position of brush area
 			var increment = 0;

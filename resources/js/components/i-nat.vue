@@ -372,7 +372,7 @@
             <ui-collapsible :class="filterClass('date')" :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
                 <div id="date-filter">
 					<!-- <div id="date-chart-continer" class="svg-container"></div> -->
-					<date-chart :dateTableData="dateTableData" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
+					<date-chart :dateTableData="dateTableData" :selected_dates="selected_dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
 				</div>
             </ui-collapsible>
 
