@@ -120,11 +120,11 @@
 		watch: {
             tree_data () {
                 this.init()
-                //click on selected
+                
                 this.watch_click = true
                 this.crumbClick(this.selected[this.selected.length - 1])
                 this.watch_click = false
-                // this.crumbClick("Coliadinae")
+                
             }
 		},
         mounted() {
@@ -177,18 +177,10 @@
 
             	this.path.filter(d => d.current)
             	.style("cursor", "pointer")
-            		.on("mouseover", function (d){ d3.select(this).classed("selected", true)})
-            		.on("mouseout", function (d){ d3.select(this).classed("selected",false)})
-            		.on("click", (d) => {
-                        // console.log(d.data.children.length)
-                        if (d.data.children){
-                            if(d.data.children.length > 0){
-                                return this.clicked(d)
-                            } else {
-                                alert(d.data.name)
-                            }
-                        }
-                    })
+            		.on("mouseover", function (d){ d3.select(this).classed("taxa-selected", true)})
+            		.on("mouseout", function (d){ d3.select(this).classed("taxa-selected",false)})
+            		.on("click", d =>  this.clicked(d))
+                        
 
             	this.path.append("title")
             		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")} - ${d.value}`);
@@ -216,45 +208,52 @@
             clicked(p) {
                 var selected_taxon = p.data.name
                 // console.log(selected_taxon, p)
+                
+                if(selected_taxon == 'Reset'){
+                    alert("Root of the Tree")
+                } else if (p.data.children.length == 0){
+                    alert(p.data.name)
+                } else {
+                    this.breadcrumbs = this.populate_breadcrumbs(p,[]);
+                    if(this.watch_click == false ){
+                        this.$emit('select-taxon', this.breadcrumbs)
+                    }
+                    const arc = d3.arc()
+    					.startAngle(d => d.x0)
+    					.endAngle(d => d.x1)
+    					.padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.01))
+    					.padRadius(this.radius * 1.5)
+    					.innerRadius(d => d.y0 * this.radius)
+    					.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
 
-                this.breadcrumbs = this.populate_breadcrumbs(p,[]);
-                if(this.watch_click == false ){
-                    this.$emit('select-taxon', this.breadcrumbs)
-                }
-                const arc = d3.arc()
-					.startAngle(d => d.x0)
-					.endAngle(d => d.x1)
-					.padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.01))
-					.padRadius(this.radius * 1.5)
-					.innerRadius(d => d.y0 * this.radius)
-					.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
 
+    				this.parent.datum(p.parent || this.root);
+    				this.root.each(d => d.target = {
+    					x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+    					x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+    					y0: Math.max(0, d.y0 - p.depth),
+    					y1: Math.max(0, d.y1 - p.depth)
+    				})
 
-				this.parent.datum(p.parent || this.root);
-				this.root.each(d => d.target = {
-					x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-					x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
-					y0: Math.max(0, d.y0 - p.depth),
-					y1: Math.max(0, d.y1 - p.depth)
-				})
+                    const t = this.g.transition().duration(750)
+                    const that = this
+                    this.path.transition(t)
+    					.tween("data", d => {
+    						const i = d3.interpolate(d.current, d.target);
+    						return t => d.current = i(t);
+    					})
+    					.filter(function(d) {
+    						return +this.getAttribute("fill-opacity") || that.arcVisible(d.target)
+    					})
+    					.attr("fill-opacity", d => that.arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+    					.attrTween("d", d => () => arc(d.current))
+        			that.label.filter(function(d) {
+    					return +this.getAttribute("fill-opacity") || that.labelVisible(d.target)
+                    }).transition(t)
+    					.attr("fill-opacity", d => +that.labelVisible(d.target))
+    					.attrTween("transform", d => () => that.labelTransform(d.current))                    
+                }                    
 
-                const t = this.g.transition().duration(750)
-                const that = this
-                this.path.transition(t)
-					.tween("data", d => {
-						const i = d3.interpolate(d.current, d.target);
-						return t => d.current = i(t);
-					})
-					.filter(function(d) {
-						return +this.getAttribute("fill-opacity") || that.arcVisible(d.target)
-					})
-					.attr("fill-opacity", d => that.arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
-					.attrTween("d", d => () => arc(d.current))
-    			that.label.filter(function(d) {
-					return +this.getAttribute("fill-opacity") || that.labelVisible(d.target)
-                }).transition(t)
-					.attr("fill-opacity", d => +that.labelVisible(d.target))
-					.attrTween("transform", d => () => that.labelTransform(d.current))
 			},
             arcVisible(d){
                 // 
