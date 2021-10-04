@@ -1915,6 +1915,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //
 //
 //
@@ -1931,8 +1943,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       tooltip: this.popup,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: window.innerWidth * 0.45,
+      height: window.innerHeight * 0.45,
       xScale: {},
       xScale2: {},
       yScale: {},
@@ -1943,18 +1955,19 @@ __webpack_require__.r(__webpack_exports__);
       watch_init_flag: false
     };
   },
-  mounted: function mounted() {// this.init()
-  },
+  mounted: function mounted() {},
   computed: {},
   watch: {
     dateTableData: function dateTableData() {
+      this.watch_init_flag = true;
       this.init();
+      this.watch_init_flag = false;
     }
   },
   methods: {
     init: function init() {
-      this.width = window.innerWidth * .45;
-      this.height = window.innerHeight * .54;
+      this.width = window.innerWidth * 0.45;
+      this.height = window.innerHeight * 0.45;
       this.xScale = {};
       this.xScale2 = {};
       this.yScale = {};
@@ -2051,10 +2064,14 @@ __webpack_require__.r(__webpack_exports__);
       var brush = d3.brushX().extent([[0, 0], [this.width, height2]]) //(x0,y0)  (x1,y1)
       .on("brush", this.brushed) //when mouse up, move the selection to the exact tick //start(mouse down), brush(mouse move), end(mouse up)
       .on("end", this.brushend);
-      context.append("g").attr("class", "brush").call(brush).call(brush.move, this.xScale2.range()); // context.append("g")
-      // 	.attr("class","brush")
-      // 	.call(brush)
-      // 	.call(brush.move,this.xScale2.range());
+
+      if (this.watch_init_flag && this.selected_dates.length > 0) {
+        var extent = [this.xScale2(Math.min.apply(Math, _toConsumableArray(this.selected_dates))), this.xScale2(Math.max.apply(Math, _toConsumableArray(this.selected_dates)))];
+        this.renderBrushedChart(this.selected_dates);
+        context.append("g").attr("class", "brush").call(brush).call(brush.move, extent);
+      } else {
+        context.append("g").attr("class", "brush").call(brush).call(brush.move, this.xScale2.range());
+      }
     },
     brushed: function brushed() {
       if (!d3.event.sourceEvent) return; // Only transition after input.
@@ -2076,21 +2093,7 @@ __webpack_require__.r(__webpack_exports__);
           newInput.push(d);
         }
       });
-      this.xScale.domain(newInput); //	console.log(this.xScale.domain())
-      //realocate the bar chart
-
-      this.bars1.attr("x", function (d, i) {
-        return that.xScale(i);
-      }).attr("y", function (d) {
-        return that.yScale(d);
-      }) //for bottom to top
-      .attr("width", this.xScale.bandwidth()) //if you want to change the width of bar. Set the width to this.xScale.bandwidth() If you want a fixed width, use this.xScale2.bandwidth(). Note because we use padding() in the scale, we should use this.xScale.bandwidth()
-      .attr("height", function (d, i) {
-        if (that.xScale.domain().indexOf(i) === -1) {
-          return 0;
-        } else return that.height - that.yScale(d);
-      });
-      this.xAxisGroup.call(this.xAxis);
+      this.renderBrushedChart(newInput);
     },
     brushend: function brushend() {
       if (!d3.event.sourceEvent) return; // Only transition after input.
@@ -2111,18 +2114,32 @@ __webpack_require__.r(__webpack_exports__);
         if (pos >= brushArea[0] && pos <= brushArea[1]) {
           newInput.push(d);
         }
-      });
-      console.log("brushend");
-      if (this.selected_dates.length > 0) newInput = this.selected_dates;
-      console.log(newInput); //relocate the position of brush area
+      }); //relocate the position of brush area
 
       var increment = 0;
       var left = this.xScale2(d3.min(newInput));
       var right = this.xScale2(d3.max(newInput)) + this.xScale2.bandwidth();
       this.emitDate(newInput);
     },
+    renderBrushedChart: function renderBrushedChart(data) {
+      this.xScale.domain(data);
+      var that = this;
+      this.bars1.attr("x", function (d, i) {
+        return that.xScale(i);
+      }).attr("y", function (d) {
+        return that.yScale(d);
+      }).attr("width", this.xScale.bandwidth()) //if you want to change the width of bar. Set the width to this.xScale.bandwidth() If you want a fixed width, use this.xScale2.bandwidth(). Note because we use padding() in the scale, we should use this.xScale.bandwidth()
+      .attr("height", function (d, i) {
+        if (that.xScale.domain().indexOf(i) === -1) {
+          return 0;
+        } else return that.height - that.yScale(d);
+      });
+      this.xAxisGroup.call(this.xAxis);
+    },
     emitDate: function emitDate(d) {
-      this.$emit('dateRangeSelected', d);
+      if (this.watch_init_flag == false) {
+        this.$emit('dateRangeSelected', d);
+      }
     }
   }
 });
@@ -2599,7 +2616,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       state_max: 0,
       selected_users: [],
       selected_dates: [],
-      selected_state: "All",
+      selected_state: "Goa",
       selected_point: null,
       selected_taxa_levels: [],
       selected_taxa: [],
@@ -2629,9 +2646,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   created: function created() {
     this.init();
   },
-  mounted: function mounted() {// this.renderMap()
-    // this.renderDateChart()
-    // this.renderTaxonomyChart()
+  mounted: function mounted() {
+    this.selected_state = "All";
   },
   watch: {// selected_users () {
     // 	this.renderMap()
@@ -3280,7 +3296,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       window.open(url, '_blank').focus();
     },
     selectDateRange: function selectDateRange(d) {
-      // 
+      //
       this.selected_dates = d;
     },
     selectState: function selectState(s) {
@@ -3434,8 +3450,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       state_data: {},
       selected: "Goa",
       state_max: 0,
-      height: window.innerHeight * 0.8,
-      width: window.innerWidth * 0.5,
+      height: window.innerHeight,
+      width: window.innerWidth,
       tooltip: this.popup,
       map_first_render: true
     };
@@ -3512,11 +3528,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.height = window.innerHeight * 0.8;
       this.width = window.innerWidth * 0.5;
 
-      if (this.height > this.width) {
-        this.height /= 1.7;
-        this.width *= 1.9;
+      if (window.innerWidth < 800) {
+        this.height = window.innerHeight * 0.5;
+        this.width = window.innerWidth * 0.9;
       }
 
+      console.log(window.innerWidth, window.innerHeight);
+      console.log(this.width, this.height);
       _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
         _this2.state_data[s.properties.ST_NM] = [];
       });
@@ -4228,7 +4246,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n\n\t/*.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n\t}*/\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow-y: scroll;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n\n\t/*.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n\t}*/\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n.overflow-div{\n\t\tmax-height: 95vh;\n\t\toverflow: scroll;\n}\n#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n}\n#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n}\n#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n}\n#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n}\n#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n}\n#users-table-container .third-100 {\n\t\tbackground: #fdd;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow-y: scroll;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
