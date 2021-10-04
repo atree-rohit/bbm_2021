@@ -213,8 +213,8 @@
 			overflow: scroll;
 		}
 		.ui-tabs__body{
-		padding: 0;
-	}
+			padding: 0;
+		}
 		.ui-tab > div{
 			height: 50vh;
 		}
@@ -436,7 +436,7 @@ import DateChart from './date-chart'
 
 				selected_users: [],
 				selected_dates: [],
-				selected_state: "All",
+				selected_state: "Goa",
 				selected_point:  null,
 				selected_taxa_levels: [],
 				selected_taxa: [],
@@ -468,10 +468,7 @@ import DateChart from './date-chart'
 			this.init()
 		},
 		mounted() {
-			// this.renderMap()
-			// this.renderDateChart()
-			// this.renderTaxonomyChart()
-
+			this.selected_state = "All"
 		},
 		watch: {
 			// selected_users () {
@@ -550,7 +547,7 @@ import DateChart from './date-chart'
 			mapData(){
 				let op = this.inat_data
 				//filter state state
-				
+
 
 				if(this.selected_users.length > 0){
 					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
@@ -789,7 +786,7 @@ import DateChart from './date-chart'
 				if(this.selected_dates.length > 0){
 					filtered_observations = filtered_observations.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
 				}
-				
+
 
 				if(this.selected_taxa.length > 1){
 					let taxa_match = []
@@ -1037,7 +1034,7 @@ import DateChart from './date-chart'
 				window.open(url, '_blank').focus();
 			},
 			selectDateRange(d){
-				// 
+				//
 				this.selected_dates = d
 			},
 			selectState (s) {
