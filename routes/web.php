@@ -32,6 +32,7 @@ Route::post('/butterfly_count/validate', [CountFormController::class, 'validate_
 Route::post('/butterfly_count/pwa_post', [CountFormController::class, 'pwa_post']);
 Route::get('/butterfly_count/pwa_app', [CountFormController::class, 'pwa_app']);
 Route::get('/butterfly_count/forms', [CountFormController::class, 'forms'])->middleware('auth');
+
 Route::get('/calendar', [CountFormController::class, 'calendar']);
 Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'])->middleware('auth');
 Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'])->middleware('auth');
@@ -43,7 +44,7 @@ Route::post('/inat/update_observation', [INatController::class, 'update_observat
 Route::post('/inat/update_state', [INatController::class, 'update_state'])->name('inat.update_state');
 Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('inat.store_taxon')->middleware('auth');;
 Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->middleware('auth');;
-
+Route::get('/butterfly_count/clean', [INatController::class, 'clean'])->middleware('auth');
 
 Route::resource('/butterfly_count', CountFormController::class);
 Route::resource('/inat', INatController::class);

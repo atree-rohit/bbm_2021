@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\iNat;
 use App\Models\iNatTaxa;
+use App\Models\CountForm;
 use Illuminate\Http\Request;
 
 class INatController extends Controller
@@ -43,6 +44,68 @@ class INatController extends Controller
         return view("inat.pull", compact("inat_data", "all_taxa", "saved_taxa", "ancestors"));
     }
 
+    public function clean(){
+        $forms = CountForm::select("id", "name as user_name", "location as place_guess", "coordinates as location", "date", "state","flag")->where("flag", 0)->with("rows_cleaned")->get();
+        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
+        $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
+
+        $form_fields = ["count_id", "user_name", "state", "place_guess", "location", "date", ];
+        $species_fields = ["common_name", "scientific_name", "individuals"];
+
+        $x = [];
+
+        $count_rows = [];
+
+        foreach($forms as $form){
+            foreach($form_fields as $f){
+                $x[$f] = $form->{$f};
+            }
+            $x["count_id"] = $form->id;
+            foreach($form->rows_cleaned as $s){
+                if($s->flag == 0){
+                    $z = $x;
+                    $z["id"] = $s->id;
+                    $z["taxa_id"] = $inat_taxa[$s->scientific_name]["id"] ?? "not-there";
+                    $z["taxa_name"] = $s["scientific_name"];
+                    $z["taxa_rank"] = "species";
+                    $z["individuals"] = $s["individuals"];
+
+                    $count_rows[] = $z;
+                }
+            }
+        }
+
+
+        // echo "<table border=1>";
+        // echo "<tr><td><pre>";
+        // // print_r($forms->first()->toArray());
+        // // print_r($forms->last()->toArray());
+        // print_r($count_rows[0]);
+        // echo "</pre></td>";
+        // echo "<td><pre>";
+        // print_r($inat_data->first()->toArray());
+        // echo "</pre></td></tr>";
+        //
+        // echo "</table>";
+        /*
+        echo "<table border=1>";
+        echo "<thead><th>SL No</th>";
+        foreach($count_rows[0] as $k => $v){
+            echo "<th>$k</th>";
+        }
+        echo "</thead>";
+        echo "<tbody>";
+        foreach($count_rows as $k => $row){
+            echo "<tr><td>$k</td><td>";
+            echo implode("</td><td>", $row);
+            echo "</td></tr>";
+        }
+        echo "</tbody>";
+        echo "</table>";
+        dd();
+        */
+        return view('butterfly_count.clean', compact("count_rows", "inat_taxa"));
+    }
     public function index()
     {
         $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;
@@ -52,6 +115,7 @@ class INatController extends Controller
                         ->limit(-1)
                         ->get()->toArray();
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("id");
+        $forms = CountForm::with("rows")->get();
         $this->inat_taxa = $inat_taxa;
         $this->inat_tree = [];
         $ancestors = [];
@@ -62,81 +126,8 @@ class INatController extends Controller
         }
 
 
-        return view('inat.index', compact("inat_data", "inat_taxa", "last_update"));
+        return view('inat.index', compact("inat_data", "inat_taxa", "forms", "last_update"));
     }
-
-    public function generateTree($op)
-    {
-        $x = [];
-        foreach ($op as $k => $v) {
-            if (is_array($v)) {
-                $x[] = (object) [
-                    "name" => $k,
-                    "children" => $this->generateTree($v)
-                ];
-            } else {
-                $x["name"] = $v;
-            }
-        }
-        return $x;
-    }
-
-    public function get_ancestry($taxa_id)
-    {
-        $current = $this->inat_taxa[$taxa_id];
-        $ancestry_levels = [ "superfamily", "family", "subfamily", "tribe", "genus", "species"];
-        $ancestors_ids = [];
-        if ($current) {
-            $ancestors_ids = explode("/", $current["ancestry"]);
-        }
-        $ancestors = [];
-        foreach ($ancestry_levels as $a) {
-            $ancestors[$a] = "none";
-        }
-        foreach ($ancestors_ids as $a) {
-            if (in_array($this->inat_taxa[$a]["rank"], $ancestry_levels)) {
-                $ancestors[$this->inat_taxa[$a]["rank"]] = $this->inat_taxa[$a]["name"];
-            }
-        }
-        $ancestors[$current["rank"]] = $current["name"];
-
-        $erase_flag = true;
-        foreach (array_reverse($ancestors) as $l=>$n) {
-            if ($n != "none") {
-                $erase_flag = false;
-            }
-            if ($erase_flag && $n == "none") {
-                unset($ancestors[$l]);
-            }
-        }
-
-        return $ancestors;
-    }
-    public function generateTree0($id_tree)
-    {
-        $op = [];
-        foreach ($id_tree as $row) {
-            $parts = explode("+", $row[0]);
-            foreach ($parts as $k => $p) {
-
-                // $op[];
-            }
-        }
-        dd($op);
-    }
-
-    public function add_to_tree($observation)
-    {
-        // $ancestry = $this->inat_taxa[$observation["taxa_id"]]->ancestry;
-        // $ancestry = str_replace("48460/1/47120/372739/47158/184884/", "", $ancestry);
-        // $ancestry = str_replace("/", ",", $ancestry);
-        $ancestry = $this->get_ancestry($observation["taxa_id"]);
-        // dd($ancestry);
-        if (!in_array($ancestry, $this->inat_tree)) {
-            $this->inat_tree[] = $ancestry;
-        }
-    }
-
 
     /**
      * Show the form for creating a new resource.
