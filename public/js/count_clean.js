@@ -1982,6 +1982,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2003,10 +2014,22 @@ __webpack_require__.r(__webpack_exports__);
       selected_row: {},
       table_rows: this.count_rows,
       table_switch: false,
-      rows_filter_switch: false
+      rows_filter_switch: false,
+      forms_filter_switch: false
     };
   },
   mounted: function mounted() {},
+  watch: {
+    forms_filter_switch: function forms_filter_switch() {
+      if (this.forms_filter_switch) {
+        this.table_rows = this.table_rows.filter(function (f) {
+          return f.latitude == null || f.longitude == null || f.date_cleaned == null;
+        });
+      } else {
+        this.table_rows = this.count_rows;
+      }
+    }
+  },
   computed: {
     form_rows: function form_rows() {
       var op = [];
@@ -40171,6 +40194,85 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
+      _vm.table_switch == false
+        ? _c(
+            "div",
+            { staticClass: "d-flex justify-content-center my-3 switch-div" },
+            [
+              _c(
+                "span",
+                {
+                  staticClass: "switch-label",
+                  class: !_vm.forms_filter_switch ? "switch-selected" : "",
+                  on: {
+                    click: function($event) {
+                      _vm.forms_filter_switch = false
+                    }
+                  }
+                },
+                [_vm._v("All Forms")]
+              ),
+              _vm._v(" "),
+              _c("label", { staticClass: "switch mx-3 my-auto" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.forms_filter_switch,
+                      expression: "forms_filter_switch"
+                    }
+                  ],
+                  attrs: { type: "checkbox" },
+                  domProps: {
+                    checked: Array.isArray(_vm.forms_filter_switch)
+                      ? _vm._i(_vm.forms_filter_switch, null) > -1
+                      : _vm.forms_filter_switch
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.forms_filter_switch,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = null,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            (_vm.forms_filter_switch = $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            (_vm.forms_filter_switch = $$a
+                              .slice(0, $$i)
+                              .concat($$a.slice($$i + 1)))
+                        }
+                      } else {
+                        _vm.forms_filter_switch = $$c
+                      }
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("div")
+              ]),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  staticClass: "switch-label",
+                  class: _vm.forms_filter_switch ? "switch-selected" : "",
+                  on: {
+                    click: function($event) {
+                      _vm.forms_filter_switch = true
+                    }
+                  }
+                },
+                [_vm._v("Filtered Forms")]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
       _vm.table_switch
         ? _c(
             "div",
@@ -40249,6 +40351,18 @@ var render = function() {
             ]
           )
         : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "d-flex justify-content-center my-3 switch-div" },
+        [
+          _vm.table_switch == false
+            ? _c("div", [
+                _vm._v(" " + _vm._s(_vm.table_rows.length) + " Forms")
+              ])
+            : _c("div", [_vm._v(" " + _vm._s(_vm.form_rows.length) + " Rows")])
+        ]
+      ),
       _vm._v(" "),
       _c(
         "div",

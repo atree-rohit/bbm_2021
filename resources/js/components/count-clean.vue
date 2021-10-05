@@ -70,12 +70,23 @@
             </label>
             <span class="switch-label" :class="table_switch?'switch-selected':''" @click="table_switch=true">Form Rows</span>
         </div>
+        <div class="d-flex justify-content-center my-3 switch-div" v-if="table_switch==false">
+            <span class="switch-label" :class="!forms_filter_switch?'switch-selected':''" @click="forms_filter_switch=false">All Forms</span>
+            <label class="switch mx-3 my-auto"><input type="checkbox" v-model="forms_filter_switch"/>
+                <div></div>
+            </label>
+            <span class="switch-label" :class="forms_filter_switch?'switch-selected':''" @click="forms_filter_switch=true">Filtered Forms</span>
+        </div>
         <div class="d-flex justify-content-center my-3 switch-div" v-if="table_switch">
             <span class="switch-label" :class="!rows_filter_switch?'switch-selected':''" @click="rows_filter_switch=false">All Rows</span>
             <label class="switch mx-3 my-auto"><input type="checkbox" v-model="rows_filter_switch"/>
                 <div></div>
             </label>
             <span class="switch-label" :class="rows_filter_switch?'switch-selected':''" @click="rows_filter_switch=true">Filtered Rows</span>
+        </div>
+        <div class="d-flex justify-content-center my-3 switch-div">
+            <div v-if="table_switch == false"> {{table_rows.length}} Forms</div>
+            <div v-else> {{form_rows.length}} Rows</div>
         </div>
 
 
@@ -177,9 +188,19 @@ import DataTable from './data-table'
                 table_rows: this.count_rows,
                 table_switch: false,
                 rows_filter_switch:false,
+                forms_filter_switch: false,
             }
         },
         mounted(){
+        },
+        watch:{
+            forms_filter_switch(){
+                if(this.forms_filter_switch){
+                    this.table_rows = this.table_rows.filter(f => ( (f.latitude == null) || (f.longitude == null) || (f.date_cleaned == null) ))
+                } else {
+                    this.table_rows = this.count_rows
+                }
+            }
         },
         computed:{
             form_rows () {
