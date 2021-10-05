@@ -1,11 +1,12 @@
 <style lang="css" scoped>
     .table-container{
-        width:100%;
-        height: 100%;
-        /*max-width:50vw;
-        height: 60vh;*/
+        max-height:62vh;
         overflow: auto;
     }
+    /* .table-container .tableFixHead{
+        height:100%;
+        overflow: scroll;
+    } */
     .tableFixHead{
         /* overflow: auto; */
         height: 100px;
@@ -53,7 +54,7 @@
 
 <script>
 export default {
-    name:"data-table",
-    props: ["data", "headers"],
+    name: "data-table",
+    props: ["data", "headers"]
 }
 </script>
