@@ -52,7 +52,7 @@ class INatController extends Controller
         $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
 
-        $unset_fields = ["rows", "phone", "photo_link", "affiliation", "email", "team_members", "duplicate", "updated_at"];
+        $unset_fields = ["phone", "photo_link", "affiliation", "email", "team_members", "duplicate", "updated_at"];
 
         $x = [];
 
@@ -69,6 +69,7 @@ class INatController extends Controller
             //         $count_rows[] = array_merge($x, $s->toArray());
             //     }
             // }
+
             $count_rows[] = $x;
         }
 
