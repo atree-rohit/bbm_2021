@@ -1,4 +1,4 @@
-@extends('layouts.blank')
+@extends('layouts.app')
 
 @section('style')
 <link rel="stylesheet" href="{{asset('/css/keen-ui.min.css')}}">
@@ -7,7 +7,7 @@
 
 
 @section('content')
-<div id="app">
+<div id="app" class="">
 	<count-clean :count_rows='@json($count_rows)' :inat_taxa='@json($inat_taxa)' />
 </div>
 @endsection
