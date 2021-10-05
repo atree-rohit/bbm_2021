@@ -123,7 +123,7 @@ export default {
 
 			this.state_data = {}
 			this.state_max = 0
-			this.height = window.innerHeight * 0.8
+			this.height = window.innerHeight * 0.85
 			this.width = window.innerWidth * 0.5
 			if(window.innerWidth < 800){
 				this.height = window.innerHeight * 0.5
