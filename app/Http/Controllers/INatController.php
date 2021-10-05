@@ -44,38 +44,6 @@ class INatController extends Controller
         return view("inat.pull", compact("inat_data", "all_taxa", "saved_taxa", "ancestors"));
     }
 
-    public function clean(){
-        $forms = CountForm::where("flag", 0)
-                            // ->with("rows")
-                            ->limit(-1)
-                            ->get();
-        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
-        $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
-
-        $unset_fields = ["phone", "photo_link", "affiliation", "email", "team_members", "duplicate", "updated_at"];
-
-        $x = [];
-
-        $count_rows = [];
-
-        foreach($forms as $form){
-            $x = $form->toArray();
-            foreach($unset_fields as $uf)
-                unset($x[$uf]);
-            
-            // foreach($form->rows as $s){
-            //     if($s->flag == 0){
-
-            //         $count_rows[] = array_merge($x, $s->toArray());
-            //     }
-            // }
-
-            $count_rows[] = $x;
-        }
-
-
-        return view('butterfly_count.clean', compact("count_rows", "inat_taxa"));
-    }
     public function index()
     {
         $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;

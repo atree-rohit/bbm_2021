@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\FormRow;
 use App\Models\CountForm;
+use App\Models\iNat;
+use App\Models\iNatTaxa;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -81,7 +83,7 @@ class CountFormController extends Controller
             $form = CountForm::where("id", $form_id)->select($form_cols)->get()->first();
             $form_data = $form->toArray();
             $rows = $form->rows;
-            return view('butterfly_count.validate', compact('form_data', 'rows', "form_cols"));            
+            return view('butterfly_count.validate', compact('form_data', 'rows', "form_cols"));
         } else {
             $code = str_replace('count_file/', '', $path);
             $code = str_replace('.xlsx', '', $code);
@@ -117,7 +119,7 @@ class CountFormController extends Controller
             ['individuals', 'No. of individuals'],
             ['remarks', 'Remarks (Male/Female/seasonal form etc.)']
         ];
-        
+
         foreach ($spreadsheet as $sheet) {
             if (isset($sheet[5][2])) {
                 $form = new CountForm();
@@ -173,7 +175,6 @@ class CountFormController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-
     public function validate_form(Request $request)
     {
         $row_cols = ["sl_no", "common_name", "scientific_name", "individuals", "remarks"];
@@ -199,10 +200,91 @@ class CountFormController extends Controller
 
         return response()->json("success", 200);
     }
-    
-    public function calendar(){
+
+    public function calendar()
+    {
         return view('butterfly_count.calendar');
     }
+
+    public function clean()
+    {
+        $forms = CountForm::where("flag", 0)
+                            ->with("rows")
+                            ->limit(-1)
+                            ->get();
+        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")->get();
+        $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("name")->toArray();
+
+        $unset_fields = ["phone", "photo_link", "affiliation", "email", "team_members", "duplicate", "updated_at"];
+
+        $x = [];
+
+        $count_rows = [];
+
+        foreach($forms as $form){
+            $x = $form->toArray();
+            foreach($unset_fields as $uf){
+                unset($x[$uf]);
+            }
+            $count_rows[] = $x;
+        }
+
+
+        return view('butterfly_count.clean', compact("count_rows", "inat_taxa"));
+    }
+
+    public function update_count(Request $request)
+    {
+        $update_fields = ["latitude", "longitude", "date_cleaned", "flag", "validated"];
+        $form = CountForm::with("rows")->find($request["id"]);
+        foreach($update_fields as $uf){
+            if($form->{$uf} != $request[$uf]){
+                $form->{$uf} = $request[$uf];
+            }
+        }
+        $form->save();
+
+        return response()->json($form, 200);
+    }
+
+    public function update_row(Request $request)
+    {
+        $update_fields = ["scientific_name_cleaned", "id_quality", "no_of_individuals_cleaned", "flag"];
+        $row = FormRow::find($request["row_id"]);
+        foreach($update_fields as $uf){
+            if($row->{$uf} != $request[$uf]){
+                $row->{$uf} = $request[$uf];
+            }
+        }
+        $row->save();
+        return response()->json($row, 200);
+    }
+
+    public function clean_rows()
+    {
+        $rows = FormRow::get();
+        $count = 0;
+        foreach($rows as $row){
+            if(!$row->flag){
+                if($row->scientific_name != null){
+                    $row->scientific_name_cleaned = $row->scientific_name;
+                    $sci_name_words = explode(" ", $row->scientific_name);
+                    if(count($sci_name_words) == 2){
+                        $row->id_quality = "species";
+                    }
+                }
+                if(is_numeric($row->individuals)){
+                    $row->no_of_individuals_cleaned = (int) $row->individuals;
+                }
+                if($row->isDirty()){
+                    $row->save();
+                    $count++;
+                }
+            }
+        }
+        dd("$count rows cleaned!!");
+    }
+
     public function create()
     {
         //
