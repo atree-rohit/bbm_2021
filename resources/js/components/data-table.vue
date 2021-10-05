@@ -1,8 +1,9 @@
 <style lang="css" scoped>
     .table-container{
         width:100%;
-        max-width:50vw;
-        height: 60vh;
+        height: 100%;
+        /*max-width:50vw;
+        height: 60vh;*/
         overflow: auto;
     }
     .tableFixHead{
