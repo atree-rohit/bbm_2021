@@ -20,39 +20,6 @@
 	.filter-set .ui-collapsible__header{
 		background: #aea;
 	}
-	.species-table tbody tr.hover-row:hover{
-		background: #ff9;
-		cursor: pointer;
-	}
-	
-	#map-filters{
-		max-height: 90vh;
-		overflow: scroll;
-	}
-	/*#users-table-container {
-		max-height: 50vh;
-		overflow-y: scroll;
-	}
-	#users-table-container tbody tr:hover {
-		background: #ffd !important;
-		cursor: pointer;
-	}
-	#users-table-container .user-selected {
-		background: #080;
-		color: #ffa;
-		font-weight: 600;
-	}
-	#users-table-container .first-10 {
-		background: #d7f3e3;
-	}
-	#users-table-container .second-50 {
-		background: #e2f0fb;
-	}
-	#users-table-container .third-100 {
-		background: #fdd;
-	}*/
-
-
 
 	#date-chart-continer svg g rect,
 	.map-boundary path,
@@ -66,19 +33,7 @@
 		stroke: red;
 		fill: pink;
 	}
-	#date-chart-continer svg g.main-date-chart rect:hover {
-	  fill: yellow;
-	  cursor: pointer;
-	  background: orangered;
-	}
-	.y-grid .tick line{
-		stroke: #ccc;
-	}
-	.x-ticks .tick text{
-		text-anchor: end;
-		transform: rotate(-20deg);
-		font-size: .5vw;
-	}
+
 	.map-boundary path{
 		stroke: #333;
 		stroke-linejoin: round;
@@ -98,6 +53,7 @@
 		display: grid;
   		grid-template-columns: repeat(2, 1fr);
   		font-size: .8rem;
+		height:100vh;
   	}
 	.cards-table {
 		font-size: calc(1.5rem + 1.5vw);
@@ -116,10 +72,6 @@
 
 	.ui-tabs__body{
 		padding: 0;
-	}
-	.ui-tab > div{
-		height:  80vh;
-		overflow-y: scroll;
 	}
 
 	.ui-collapsible__body{
