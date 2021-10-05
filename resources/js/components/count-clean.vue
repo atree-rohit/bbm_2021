@@ -1,37 +1,52 @@
 <style scoped>
+    .table-container{
+        max-height: 90vh;
+        overflow: scroll;
+    }
     .table th, 
     .table td{
         white-space: nowrap;
     }
-    .ui-modal__body{
+    /*.ui-modal__body{
         height: 75vh;
-    }
+    }*/
 </style>
 <template>
     <div>
-        <table class="table table-sm">
+        <div id="table-container">
+            <data-table :data="count_rows"
+                :headers='form_headers'
+                @rowClick="selectRow"
+            />
+            
+        </div>
+        <!-- <table class="table table-sm">
             <thead>
-                <th v-for="h in cols" v-text="h"></th>
+                <th v-for="h in form_cols" v-text="h"></th>
             </thead>
             <tbody>
                 <tr v-for="row in count_rows" :key="row.id" @click="selectRow(row)" v-if="row.latitude == null">
-                    <td v-for="h in cols" v-text="row[h]" :class="cellClass(row, h)"></td>
-                    <td v-text="latLong(row)"></td>
+                    <td v-for="h in form_cols" v-text="row[h]" :class="cellClass(row, h)"></td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
         <ui-modal ref="update-data-modal" title="Set / Update Count Form Details">
-            <ui-textbox disabled label="id" v-model="selected_row.id"></ui-textbox>
-            <ui-textbox disabled label="name" v-model="selected_row.name"></ui-textbox>
-            <ui-textbox disabled label="location" v-model="selected_row.location"></ui-textbox>
-            <ui-textbox disabled label="state" v-model="selected_row.state"></ui-textbox>
-            <ui-textbox disabled label="coordinates" v-model="selected_row.coordinates"></ui-textbox>
-            <ui-textbox label="latitude" v-model="selected_row.latitude"></ui-textbox>
-            <ui-textbox label="longitude" v-model="selected_row.longitude"></ui-textbox>
-            <ui-textbox disabled label="date" v-model="selected_row.date"></ui-textbox>
-            <ui-textbox label="date_cleaned" v-model="selected_row.date_cleaned"></ui-textbox>
-            <ui-textbox disabled label="validated" v-model="selected_row.validated"></ui-textbox>
-            <ui-textbox disabled label="created_at" v-model="selected_row.created_at"></ui-textbox>
+            <template v-for="fc in form_cols">
+                <ui-textbox v-model="selected_row[fc]"
+                            disabled
+                            :key="fc"
+                            v-if="form_edit_fields.indexOf(fc) == -1"
+                            :label="fc"
+                            ></ui-textbox>
+                <ui-textbox v-model="selected_row[fc]"
+                            :key="fc"
+                            v-else
+                            :label="fc"
+                            class="bg-success"
+                            ></ui-textbox>
+            </template>
+
+            
              <!-- <pre>
                  {{selected_row}}
                  {{latLong(selected_row)}}
@@ -43,26 +58,36 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import DataTable from './data-table'
 	export default {
 		name:"i-nat-taxa",
 		props: ["count_rows", "inat_taxa"],
+        components: { DataTable },
 		data() {
             return {
-                cols:["id", "name", "location", "state", "coordinates", "latitude", "longitude"],
+                form_cols:["id","name","location","state","coordinates","latitude","longitude","date","date_cleaned","start_time","end_time","altitude","distance","weather","comments","file","original_filename","flag","validated","created_at"],
+                form_headers: [["ID", "id"], ["Name", "name"], ["Location", "location"], ["State", "state"], ["Coordinates", "coordinates"], ["Latitude", "latitude"], ["Longitude", "longitude"], ["Date", "date"], ["Date Cleaned", "date_cleaned"], ["Start Time", "start_time"], ["End Time", "end_time"], ["Altitude", "altitude"], ["Distance", "distance"], ["Weather", "weather"], ["Comments", "comments"], ["File", "file"], ["Original File", "original_filename"], ["Flag", "flag"], ["Validated", "validated"], ["Created at", "created_at"]],
                 skip_cell_class_array: ["latitude", "longitude"],
+                form_edit_fields: ["latitude", "longitude", "date_cleaned", "flag", "validated"],
                 selected_row:{}
             }
         },
         mounted(){
         },
         methods:{
-            selectRow(row){
+            selectRow(row_id){
+                let row = this.count_rows[row_id]
+                
                 this.selected_row = row
                 if(this.latLong(row) != undefined){
                     this.selected_row.latitude = this.latLong(row)[0]
                     this.selected_row.longitude = this.latLong(row)[1]
                 }
-                this.selected_row.date_cleaned = moment(row.date).format("DD-MM-YYYY")
+                if(moment(row.date).isValid){
+                    this.selected_row.date_cleaned = moment(row.date).format("DD-MM-YYYY")
+                } else {
+                    alert(row.date)
+                }
                 this.openModal('update-data-modal')
             },
             cellClass (row, h) {
