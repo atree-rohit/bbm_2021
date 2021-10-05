@@ -1898,6 +1898,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "data-table",
   props: ["data", "headers"]
@@ -1928,6 +1929,18 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2177,54 +2190,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -3529,7 +3494,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.legend = {};
       this.state_data = {};
       this.state_max = 0;
-      this.height = window.innerHeight * 0.8;
+      this.height = window.innerHeight * 0.85;
       this.width = window.innerWidth * 0.5;
 
       if (window.innerWidth < 800) {
@@ -4224,7 +4189,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    width:100%;\n    height: 100%;\n    /*max-width:50vw;\n    height: 60vh;*/\n    overflow: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    max-height:62vh;\n    overflow: auto;\n}\n/* .table-container .tableFixHead{\n    height:100%;\n    overflow: scroll;\n} */\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n#date-chart-continer svg g.main-date-chart rect[data-v-28f3abec]:hover {\n  fill: yellow;\n  cursor: pointer;\n  background: orangered;\n}\n.y-grid .tick line[data-v-28f3abec]{\n\tstroke: #ccc;\n}\n.x-ticks .tick text[data-v-28f3abec]{\n\ttext-anchor: end;\n\ttransform: rotate(-20deg);\n\tfont-size: .5vw;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4248,7 +4237,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n\n\t/*.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n\t}*/\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n.species-table tbody tr.hover-row:hover{\n\t\tbackground: #ff9;\n\t\tcursor: pointer;\n}\n#map-filters{\n\t\tmax-height: 90vh;\n\t\toverflow: scroll;\n}\n\t/*#users-table-container {\n\t\tmax-height: 50vh;\n\t\toverflow-y: scroll;\n\t}\n\t#users-table-container tbody tr:hover {\n\t\tbackground: #ffd !important;\n\t\tcursor: pointer;\n\t}\n\t#users-table-container .user-selected {\n\t\tbackground: #080;\n\t\tcolor: #ffa;\n\t\tfont-weight: 600;\n\t}\n\t#users-table-container .first-10 {\n\t\tbackground: #d7f3e3;\n\t}\n\t#users-table-container .second-50 {\n\t\tbackground: #e2f0fb;\n\t}\n\t#users-table-container .third-100 {\n\t\tbackground: #fdd;\n\t}*/\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n#date-chart-continer svg g.main-date-chart rect:hover {\n\t  fill: yellow;\n\t  cursor: pointer;\n\t  background: orangered;\n}\n.y-grid .tick line{\n\t\tstroke: #ccc;\n}\n.x-ticks .tick text{\n\t\ttext-anchor: end;\n\t\ttransform: rotate(-20deg);\n\t\tfont-size: .5vw;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\theight:  80vh;\n\t\toverflow-y: scroll;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*,\n\t*::before,\n\t*::after {\n\t    box-sizing: border-box;\n}\nhtml {\n\t    font-size: 100%;\n\t    /*overflow: hidden;*/\n}\nbody{\n\t\t/*overflow: hidden;*/\n}\n\n\t/*.ui-tabs > div,\n\t.ui-tabs > div > div{\n\t\toverflow-x: hidden;\n\t}*/\n.filter-set .ui-collapsible__header{\n\t\tbackground: #aea;\n}\n#date-chart-continer svg g rect,\n\t.map-boundary path,\n\t.map-points circle,\n\t.doughnut-chart path\n\t{\n\t\ttransition: fill .5s;\n}\n.map-points circle{\n\t\tstroke-width: .5px;\n\t\tstroke: red;\n\t\tfill: pink;\n}\n.map-boundary path{\n\t\tstroke: #333;\n\t\tstroke-linejoin: round;\n\t\tstroke-width: .1;\n}\n.map-boundary path:hover{\n\t\tcursor: pointer;\n\t\tfill: beige;\n}\n.doughnut-chart path:hover,\n\t.map-points circle:hover{\n\t\tcursor: pointer;\n\t\tstroke: yellow;\n\t\tfill: red;\n}\n#report-page{\n\t\tdisplay: grid;\n  \t\tgrid-template-columns: repeat(2, 1fr);\n  \t\tfont-size: .8rem;\n\t\theight:100vh;\n}\n.cards-table {\n\t\tfont-size: calc(1.5rem + 1.5vw);\n}\n.cards-table,\n\t.cards-table td{\n\t\tpadding: 0;\n\t\tmargin: 0;\n}\n.card-values{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.map-data-title{\n\t\tfont-size: calc(1rem + 1vw);\n}\n.ui-tabs__body{\n\t\tpadding: 0;\n}\n.ui-collapsible__body{\n\t\tpadding: 2px;\n}\n#gallery{\n\t\t/* Prevent vertical gaps */\n\t\t/*line-height: 0;*/\n\n\t\t-webkit-column-count: 3;\n\t\t-webkit-column-gap:   2px;\n\t\t-moz-column-count:    3;\n\t\t-moz-column-gap:      2px;\n\t\tcolumn-count:         3;\n\t\tcolumn-gap:           2px;\n}\n#gallery div {\n\t\t/* Just in case there are inline attributes */\n\t\twidth: 100% !important;\n\t\theight: auto !important;\n\t\tmargin: 2px;\n}\n.observation-img{\n\t\tposition: relative;\n}\n.observation-img .gallery-item-overlay {\n\t\tbackground: rgba(0,0,0,0.7);\n\t\tposition: absolute;\n\t\theight: 99%;\n\t\twidth: 100%;\n\t\tleft: 0;\n\t\ttop: 0;\n\t\tbottom: 0;\n\t\tright: 0;\n\t\topacity: 0;\n\t\ttransition: all 0.3s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-overlay{\n\t\topacity: 1;\n}\n.observation-img .gallery-item-image{\n\t\twidth: 100%;\n}\n.observation-img .gallery-item-details {\n\t\tposition: absolute;\n\t\ttext-align: center;\n\t\tpadding-left: 1em;\n\t\tpadding-right: 1em;\n\t\twidth: 100%;\n\t\ttop: 180%;\n\t\tleft: 50%;\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%);\n\t\ttransition: all 0.2s ease-in-out 0s;\n}\n.observation-img:hover .gallery-item-details{\n\t\ttop: 50%;\n\t\tleft: 50%;\n\t\topacity: 1;\n\t\tcolor:  #aaa;\n}\n.gallery-item-details .table-sm,\n\t.gallery-item-details tr,\n\t.gallery-item-details td\n\t{\n\t\tpadding: 1px;\n\t\tmargin: 0;\n}\n.place-cell{\n\t\tfont-size: .6rem;\n}\n.gallery-caption-icon{\n\t\tfont-size: .9rem;\n}\n#date-chart-continer .tick line{\n\t\tstroke:  #aaa;\n\t\tstroke-width: 0.5px;\n}\n@media screen and (max-width: 800px) {\nbody{\n\t\t\toverflow: scroll;\n}\n.ui-tabs__body{\n\t\t\tpadding: 0;\n}\n.ui-tab > div{\n\t\t\theight: 50vh;\n}\n#report-page{\n\t\t\tgrid-template-columns: repeat(1, 1fr);\n}\n#gallery {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -76993,6 +76982,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_style_index_0_id_28f3abec_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_style_index_0_id_28f3abec_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_style_index_0_id_28f3abec_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css& ***!
@@ -77414,23 +77433,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./date-chart.vue?vue&type=template&id=28f3abec& */ "./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&");
+/* harmony import */ var _date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./date-chart.vue?vue&type=template&id=28f3abec&scoped=true& */ "./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true&");
 /* harmony import */ var _date_chart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./date-chart.vue?vue&type=script&lang=js& */ "./resources/js/components/date-chart.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _date_chart_vue_vue_type_style_index_0_id_28f3abec_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& */ "./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
+;
 
 
 /* normalize component */
-;
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
   _date_chart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
-  _date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__.render,
-  _date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  _date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
+  _date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
-  null,
+  "28f3abec",
   null
   
 )
@@ -77658,6 +77679,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& ***!
+  \*********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_style_index_0_id_28f3abec_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=style&index=0&id=28f3abec&scoped=true&lang=css&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css&":
 /*!****************************************************************************!*\
   !*** ./resources/js/components/i-nat.vue?vue&type=style&index=0&lang=css& ***!
@@ -77714,19 +77748,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec& ***!
-  \*******************************************************************************/
+/***/ "./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true& ***!
+  \*******************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./date-chart.vue?vue&type=template&id=28f3abec& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&");
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_date_chart_vue_vue_type_template_id_28f3abec_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./date-chart.vue?vue&type=template&id=28f3abec&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true&");
 
 
 /***/ }),
@@ -77847,10 +77881,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&":
-/*!**********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec& ***!
-  \**********************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/date-chart.vue?vue&type=template&id=28f3abec&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";

@@ -1907,6 +1907,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1918,42 +1984,140 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      form_cols: ["id", "name", "location", "state", "coordinates", "latitude", "longitude", "date", "date_cleaned", "start_time", "end_time", "altitude", "distance", "weather", "comments", "file", "original_filename", "flag", "validated", "created_at"],
-      form_headers: [["ID", "id"], ["Name", "name"], ["Location", "location"], ["State", "state"], ["Coordinates", "coordinates"], ["Latitude", "latitude"], ["Longitude", "longitude"], ["Date", "date"], ["Date Cleaned", "date_cleaned"], ["Start Time", "start_time"], ["End Time", "end_time"], ["Altitude", "altitude"], ["Distance", "distance"], ["Weather", "weather"], ["Comments", "comments"], ["File", "file"], ["Original File", "original_filename"], ["Flag", "flag"], ["Validated", "validated"], ["Created at", "created_at"]],
-      skip_cell_class_array: ["latitude", "longitude"],
+      form_cols: ["id", "name", "location", "state", "coordinates", "latitude", "longitude", "date", "date_cleaned", "comments", "flag", "validated", "created_at"],
+      form_headers: [["ID", "id"], ["Name", "name"], ["Location", "location"], ["State", "state"], ["Coordinates", "coordinates"], ["Latitude", "latitude"], ["Longitude", "longitude"], ["Date", "date"], ["Date Cleaned", "date_cleaned"], ["Comments", "comments"], ["Flag", "flag"], ["Validated", "validated"], ["Created at", "created_at"]],
       form_edit_fields: ["latitude", "longitude", "date_cleaned", "flag", "validated"],
-      selected_row: {}
+      row_cols: ["row_id", "common_name", "scientific_name", "scientific_name_cleaned", "id_quality", "individuals", "no_of_individuals_cleaned", "flag"],
+      row_headers: [["Form ID", "form_id"], ["Row ID", "row_id"], ["Sl No", "sl_no"], ["Common Name", "common_name"], ["Scientific Name", "scientific_name"], ["Scientific Name Cleaned", "scientific_name_cleaned"], ["Individuals", "individuals"], ["Individuals Cleaned", "no_of_individuals_cleaned"], ["ID Rank", "id_quality"], ["Remarks", "remarks"], ["Flag", "flag"]],
+      row_edit_fields: ["scientific_name_cleaned", "id_quality", "no_of_individuals_cleaned", "flag"],
+      selected_form: {},
+      selected_row: {},
+      table_rows: [],
+      table_switch: true
     };
   },
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    this.table_rows = this.count_rows;
+  },
+  computed: {
+    form_rows: function form_rows() {
+      var op = [];
+      this.table_rows.forEach(function (f) {
+        f.rows.forEach(function (r) {
+          if (r.flag == 0) {
+            op.push({
+              form_id: f.id,
+              row_id: r.id,
+              sl_no: r.sl_no,
+              common_name: r.common_name,
+              scientific_name: r.scientific_name,
+              scientific_name_cleaned: r.scientific_name_cleaned,
+              individuals: r.individuals,
+              no_of_individuals_cleaned: r.no_of_individuals_cleaned,
+              id_quality: r.id_quality,
+              remarks: r.remarks,
+              flag: r.flag
+            });
+          }
+        });
+      });
+      return op;
+    }
+  },
   methods: {
-    selectRow: function selectRow(row_id) {
-      var row = this.count_rows[row_id];
-      this.selected_row = row;
+    selectFormRow: function selectFormRow(row_id) {
+      // let row = JSON.parse(JSON.stringify(this.table_rows[row_id]))
+      var row = this.table_rows[row_id];
+      this.selected_form = row;
 
       if (this.latLong(row) != undefined) {
-        this.selected_row.latitude = this.latLong(row)[0];
-        this.selected_row.longitude = this.latLong(row)[1];
+        if (this.selected_form.latitude == null) {
+          this.selected_form.latitude = this.latLong(row)[0];
+        }
+
+        if (this.selected_form.longitude == null) {
+          this.selected_form.longitude = this.latLong(row)[1];
+        }
       }
 
       if (moment__WEBPACK_IMPORTED_MODULE_1___default()(row.date).isValid) {
-        this.selected_row.date_cleaned = moment__WEBPACK_IMPORTED_MODULE_1___default()(row.date).format("DD-MM-YYYY");
+        this.selected_form.date_cleaned = moment__WEBPACK_IMPORTED_MODULE_1___default()(row.date).format("DD-MM-YYYY");
       } else {
         alert(row.date);
       }
 
-      this.openModal('update-data-modal');
+      this.openModal('update-form-modal');
     },
-    cellClass: function cellClass(row, h) {
-      var op = row[h];
+    updateForm: function updateForm() {
+      var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
-      if (this.skip_cell_class_array.indexOf(h) == -1) {
-        if (row[h] == null) {
-          op = "bg-danger";
+      var post_data = this.selected_form;
+      var that = this;
+      axios.post('/butterfly_count/update_count', post_data).then(function (response) {
+        if (response.status == 200) {
+          that.updateFormData(response.data);
+          that.closeModal('update-form-modal');
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    updateFormData: function updateFormData(d) {
+      var _this = this;
+
+      this.table_rows.forEach(function (r, k) {
+        if (r.id == d.id) {
+          _this.table_rows[k] = d; // console.log(this.table_rows[k])
+        }
+      });
+    },
+    selectRowRow: function selectRowRow(row_id) {
+      var row = this.form_rows[row_id];
+      this.selected_row = row;
+
+      if (row.scientific_name != null) {
+        this.selected_row.scientific_name_cleaned = row.scientific_name;
+
+        if (row.scientific_name.split(" ").length > 1) {
+          this.selected_row.id_quality = "species";
         }
       }
 
-      return op;
+      if (row.individuals != null) {
+        this.selected_row.no_of_individuals_cleaned = parseInt(row.individuals);
+      }
+
+      this.openModal('update-row-modal');
+    },
+    updateRow: function updateRow() {
+      var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+      var post_data = this.selected_row;
+      var that = this;
+      axios.post('/butterfly_count/update_row', post_data).then(function (response) {
+        if (response.status == 200) {
+          that.updateRowData(response.data);
+          that.closeModal('update-row-modal');
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      }).then(function () {
+        return location.reload();
+      });
+    },
+    updateRowData: function updateRowData(d) {
+      var _this2 = this;
+
+      console.log(d);
+      this.table_rows.forEach(function (r, k) {
+        if (r.id == d.count_form_id) {
+          _this2.table_rows[k].rows.forEach(function (s, sno) {
+            if (_this2.table_rows[k].rows[sno].id == d.id) {
+              _this2.table_rows[k].rows[sno] = d;
+            }
+          });
+        }
+      });
     },
     latLong: function latLong(row) {
       var op = row.coordinates;
@@ -1969,7 +2133,8 @@ __webpack_require__.r(__webpack_exports__);
       this.$refs[ref].open();
     },
     closeModal: function closeModal(ref) {
-      //
+      this.selected_form = {};
+      this.selected_row = {};
       this.$refs[ref].close();
     }
   }
@@ -1988,6 +2153,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
 //
 //
 //
@@ -2089,7 +2255,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-41d51990]{\n    max-height: 90vh;\n    overflow: scroll;\n}\n.table th[data-v-41d51990], \n.table td[data-v-41d51990]{\n    white-space: nowrap;\n}\n/*.ui-modal__body{\n    height: 75vh;\n}*/\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.table th[data-v-41d51990],\n.table td[data-v-41d51990]{\n    white-space: nowrap;\n}\n.highlight-cell[data-v-41d51990]{\n    background: #dfd;\n    padding:10px 2px;\n    border: 2px solid #9f9;\n    border-radius: 10px;\n    margin-bottom:2px;\n}\n.switch input[data-v-41d51990] {\n    position: absolute;\n    opacity: 0;\n}\n.switch[data-v-41d51990] {\n    display: inline-block;\n    font-size: 20px; /* 1 */\n    height: 1em;\n    width: 2em;\n    background: #BDB9A6;\n    border-radius: 1em;\n}\n.switch div[data-v-41d51990] {\n    height: 1em;\n    width: 1em;\n    border-radius: 1em;\n    background: #FFF;\n    box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.3);\n    transition: all 300ms;\n}\n.switch input:checked + div[data-v-41d51990] {\n    transform: translate3d(100%, 0, 0);\n}\n.switch-label[data-v-41d51990]{\n    padding: 5px;\n    border-radius: 5px;\n    transition: all .5s;\n}\n.switch-selected[data-v-41d51990]{\n    background: #beb;\n}\n#table-toggle-div > span[data-v-41d51990],\n#table-toggle-div > label[data-v-41d51990]{\n    transition: all .25s;\n}\n#table-toggle-div > span[data-v-41d51990]:hover,\n#table-toggle-div > label[data-v-41d51990]:hover{\n    cursor: pointer;\n\n    box-shadow: 2px 2px 5px #550;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2113,7 +2279,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    width:100%;\n    height: 100%;\n    /*max-width:50vw;\n    height: 60vh;*/\n    overflow: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.table-container[data-v-79a76a14]{\n    max-height:62vh;\n    overflow: auto;\n}\n/* .table-container .tableFixHead{\n    height:100%;\n    overflow: scroll;\n} */\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #ccf;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -39916,12 +40082,99 @@ var render = function() {
     [
       _c(
         "div",
-        { attrs: { id: "table-container" } },
+        {
+          staticClass: "d-flex justify-content-center my-3",
+          attrs: { id: "table-toggle-div" }
+        },
         [
-          _c("data-table", {
-            attrs: { data: _vm.count_rows, headers: _vm.form_headers },
-            on: { rowClick: _vm.selectRow }
-          })
+          _c(
+            "span",
+            {
+              staticClass: "switch-label",
+              class: !_vm.table_switch ? "switch-selected" : "",
+              on: {
+                click: function($event) {
+                  _vm.table_switch = false
+                }
+              }
+            },
+            [_vm._v("Count Forms")]
+          ),
+          _vm._v(" "),
+          _c("label", { staticClass: "switch mx-3 my-auto" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.table_switch,
+                  expression: "table_switch"
+                }
+              ],
+              attrs: { type: "checkbox" },
+              domProps: {
+                checked: Array.isArray(_vm.table_switch)
+                  ? _vm._i(_vm.table_switch, null) > -1
+                  : _vm.table_switch
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.table_switch,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = null,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.table_switch = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.table_switch = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.table_switch = $$c
+                  }
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("div")
+          ]),
+          _vm._v(" "),
+          _c(
+            "span",
+            {
+              staticClass: "switch-label",
+              class: _vm.table_switch ? "switch-selected" : "",
+              on: {
+                click: function($event) {
+                  _vm.table_switch = true
+                }
+              }
+            },
+            [_vm._v("Form Rows")]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        [
+          !_vm.table_switch
+            ? _c("data-table", {
+                attrs: { data: _vm.table_rows, headers: _vm.form_headers },
+                on: { rowClick: _vm.selectFormRow }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.table_switch
+            ? _c("data-table", {
+                attrs: { data: _vm.form_rows, headers: _vm.row_headers },
+                on: { rowClick: _vm.selectRowRow }
+              })
+            : _vm._e()
         ],
         1
       ),
@@ -39929,7 +40182,7 @@ var render = function() {
       _c(
         "ui-modal",
         {
-          ref: "update-data-modal",
+          ref: "update-form-modal",
           attrs: { title: "Set / Update Count Form Details" }
         },
         [
@@ -39938,25 +40191,25 @@ var render = function() {
               _vm.form_edit_fields.indexOf(fc) == -1
                 ? _c("ui-textbox", {
                     key: fc,
-                    attrs: { disabled: "", label: fc },
+                    attrs: { disabled: "", "floating-label": "", label: fc },
                     model: {
-                      value: _vm.selected_row[fc],
+                      value: _vm.selected_form[fc],
                       callback: function($$v) {
-                        _vm.$set(_vm.selected_row, fc, $$v)
+                        _vm.$set(_vm.selected_form, fc, $$v)
                       },
-                      expression: "selected_row[fc]"
+                      expression: "selected_form[fc]"
                     }
                   })
                 : _c("ui-textbox", {
                     key: fc,
-                    staticClass: "bg-success",
+                    staticClass: "highlight-cell",
                     attrs: { label: fc },
                     model: {
-                      value: _vm.selected_row[fc],
+                      value: _vm.selected_form[fc],
                       callback: function($$v) {
-                        _vm.$set(_vm.selected_row, fc, $$v)
+                        _vm.$set(_vm.selected_form, fc, $$v)
                       },
-                      expression: "selected_row[fc]"
+                      expression: "selected_form[fc]"
                     }
                   })
             ]
@@ -39966,7 +40219,55 @@ var render = function() {
             "ui-button",
             {
               attrs: { color: "green", raised: "" },
-              on: { click: function($event) {} }
+              on: { click: _vm.updateForm }
+            },
+            [_vm._v("Submit")]
+          )
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c(
+        "ui-modal",
+        {
+          ref: "update-row-modal",
+          attrs: { title: "Set / Update Form Row Details" }
+        },
+        [
+          _vm._l(_vm.row_cols, function(rc) {
+            return [
+              _vm.row_edit_fields.indexOf(rc) == -1
+                ? _c("ui-textbox", {
+                    key: rc,
+                    attrs: { disabled: "", "floating-label": "", label: rc },
+                    model: {
+                      value: _vm.selected_row[rc],
+                      callback: function($$v) {
+                        _vm.$set(_vm.selected_row, rc, $$v)
+                      },
+                      expression: "selected_row[rc]"
+                    }
+                  })
+                : _c("ui-textbox", {
+                    key: rc,
+                    staticClass: "highlight-cell",
+                    attrs: { label: rc },
+                    model: {
+                      value: _vm.selected_row[rc],
+                      callback: function($$v) {
+                        _vm.$set(_vm.selected_row, rc, $$v)
+                      },
+                      expression: "selected_row[rc]"
+                    }
+                  })
+            ]
+          }),
+          _vm._v(" "),
+          _c(
+            "ui-button",
+            {
+              attrs: { color: "green", raised: "" },
+              on: { click: _vm.updateRow }
             },
             [_vm._v("Submit")]
           )
