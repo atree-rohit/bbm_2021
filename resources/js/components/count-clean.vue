@@ -289,18 +289,19 @@ import DataTable from './data-table'
                 // .then( () => location.reload() )
             },
             updateRowData (d) {
-                console.log(d)
                 this.table_rows.forEach((r,k) => {
                     if ( r.id == d.count_form_id ){
                         this.table_rows[k].rows.forEach((s,sno) => {
                             if(this.table_rows[k].rows[sno].id == d.id){
-                                console.log(this.table_rows[k].rows[sno], d)
                                 this.table_rows[k].rows[sno] = d
                             }
 
                         })
                     }
                 })
+                let x = this.table_rows
+                this.table_rows = []
+                this.table_rows = x
             },
             latLong (row) {
                 let op = row.coordinates
