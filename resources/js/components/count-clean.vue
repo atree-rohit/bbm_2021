@@ -49,12 +49,12 @@
     .switch-selected{
         background: #beb;
     }
-    #table-toggle-div > span,
-    #table-toggle-div > label{
+    .switch-div > span,
+    .switch-div > label{
         transition: all .25s;
     }
-    #table-toggle-div > span:hover,
-    #table-toggle-div > label:hover{
+    .switch-div > span:hover,
+    .switch-div > label:hover{
         cursor: pointer;
 
         box-shadow: 2px 2px 5px #550;
@@ -63,13 +63,22 @@
 </style>
 <template>
     <div>
-        <div id="table-toggle-div" class="d-flex justify-content-center my-3">
+        <div class="d-flex justify-content-center my-3 switch-div">
             <span class="switch-label" :class="!table_switch?'switch-selected':''" @click="table_switch=false">Count Forms</span>
             <label class="switch mx-3 my-auto"><input type="checkbox" v-model="table_switch"/>
                 <div></div>
             </label>
             <span class="switch-label" :class="table_switch?'switch-selected':''" @click="table_switch=true">Form Rows</span>
         </div>
+        <div class="d-flex justify-content-center my-3 switch-div" v-if="table_switch">
+            <span class="switch-label" :class="!rows_filter_switch?'switch-selected':''" @click="rows_filter_switch=false">All Rows</span>
+            <label class="switch mx-3 my-auto"><input type="checkbox" v-model="rows_filter_switch"/>
+                <div></div>
+            </label>
+            <span class="switch-label" :class="rows_filter_switch?'switch-selected':''" @click="rows_filter_switch=true">Filtered Rows</span>
+        </div>
+
+
         <div>
             <data-table :data="table_rows"
                 :headers='form_headers'
@@ -126,7 +135,7 @@ import axios from 'axios'
 import moment from 'moment'
 import DataTable from './data-table'
 	export default {
-		name:"i-nat-taxa",
+		name:"count-clean",
 		props: ["count_rows", "inat_taxa"],
         components: { DataTable },
 		data() {
@@ -165,19 +174,19 @@ import DataTable from './data-table'
                 row_edit_fields: ["scientific_name_cleaned", "id_quality", "no_of_individuals_cleaned", "flag"],
                 selected_form:{},
                 selected_row:{},
-                table_rows: [],
-                table_switch: true,
+                table_rows: this.count_rows,
+                table_switch: false,
+                rows_filter_switch:false,
             }
         },
         mounted(){
-            this.table_rows = this.count_rows
         },
         computed:{
             form_rows () {
                 let op = []
                 this.table_rows.forEach(f => {
                     f.rows.forEach(r => {
-                        if(r.flag == 0){
+                        if(r.flag == 0 && f.flag==0){
                             op.push({
                                 form_id: f.id,
                                 row_id: r.id,
@@ -195,6 +204,9 @@ import DataTable from './data-table'
                     })
 
                 })
+                if(this.rows_filter_switch){
+                    op = op.filter(o => ( (o.scientific_name_cleaned == null) || o.no_of_individuals_cleaned == 0) || (o.id_quality == null) )
+                }
 
                 return op
             }
@@ -240,7 +252,6 @@ import DataTable from './data-table'
                 this.table_rows.forEach((r,k) => {
                     if ( r.id == d.id ){
                         this.table_rows[k] = d
-                        // console.log(this.table_rows[k])
                     }
                 })
             },
@@ -275,7 +286,7 @@ import DataTable from './data-table'
 				.catch((error) => {
 					console.log(error)
 				})
-                .then( () => location.reload() )
+                // .then( () => location.reload() )
             },
             updateRowData (d) {
                 console.log(d)
@@ -283,6 +294,7 @@ import DataTable from './data-table'
                     if ( r.id == d.count_form_id ){
                         this.table_rows[k].rows.forEach((s,sno) => {
                             if(this.table_rows[k].rows[sno].id == d.id){
+                                console.log(this.table_rows[k].rows[sno], d)
                                 this.table_rows[k].rows[sno] = d
                             }
 
