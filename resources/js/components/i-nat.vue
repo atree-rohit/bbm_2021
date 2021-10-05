@@ -24,11 +24,12 @@
 		background: #ff9;
 		cursor: pointer;
 	}
-	.overflow-div{
-		max-height: 95vh;
+	
+	#map-filters{
+		max-height: 90vh;
 		overflow: scroll;
 	}
-	#users-table-container {
+	/*#users-table-container {
 		max-height: 50vh;
 		overflow-y: scroll;
 	}
@@ -49,7 +50,9 @@
 	}
 	#users-table-container .third-100 {
 		background: #fdd;
-	}
+	}*/
+
+
 
 	#date-chart-continer svg g rect,
 	.map-boundary path,
