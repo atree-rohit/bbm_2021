@@ -1,5 +1,17 @@
-<style>
-
+<style scoped>
+#date-chart-continer svg g.main-date-chart rect:hover {
+  fill: yellow;
+  cursor: pointer;
+  background: orangered;
+}
+.y-grid .tick line{
+	stroke: #ccc;
+}
+.x-ticks .tick text{
+	text-anchor: end;
+	transform: rotate(-20deg);
+	font-size: .5vw;
+}
 </style>
 
 <template>
