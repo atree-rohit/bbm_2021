@@ -14,12 +14,19 @@ class ResultController extends Controller
     {
         $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;
         $last_update = date("d M Y, h:i:s A", $last_update);
-        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")
-                        // ->where("taxa_rank", "family")
-                        ->limit(-1)
-                        ->get()->toArray();
+
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("id");
-        $forms = CountForm::where("flag", 0)->with("rows")->get()->toArray();
+        
+        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")
+                        // ->limit(100)
+                        ->get()
+                        ->toArray();
+        $forms = CountForm::where("flag", 0)
+                        // ->limit(10)
+                        ->with("rows")
+                        ->get()
+                        ->toArray();
+        
         $form_data = [];
 
         foreach ($inat_data as $k=>$id) {
