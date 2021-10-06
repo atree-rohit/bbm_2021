@@ -142,7 +142,6 @@
                 }
                 this.radius = Math.min(this.height, this.width) * 0.15
 
-                    console.log(`${this.width} x ${this.height}`)
                 var speciesTree = [];
 
                 this.tree_data.forEach(d => {
@@ -195,7 +194,7 @@
                         
 
             	this.path.append("title")
-            		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ")} - ${d.value}`);
+            		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ").replace("Reset > ", "")} - ${d.value}`);
 
             	this.label = this.g.append("g")
             		.classed("d3-arcs-labels", true)
@@ -223,8 +222,8 @@
                 
                 if(selected_taxon == 'Reset'){
                     alert("Root of the Tree")
-                } else if (p.data.children.length == 0){
-                    alert(p.data.name)
+                // } else if (p.data.children.length == 0){
+                //     alert(p.data.name)
                 } else {
                     this.breadcrumbs = this.populate_breadcrumbs(p,[]);
                     if(this.watch_click == false ){
