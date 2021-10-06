@@ -46,22 +46,6 @@ class INatController extends Controller
 
     public function index()
     {
-        $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;
-        $last_update = date("d M Y, h:i:s A", $last_update);
-        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")
-                        // ->where("taxa_rank", "family")
-                        ->limit(-1)
-                        ->get()->toArray();
-        $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("id");
-        $form_data = CountForm::with("rows")->get();
-
-        foreach ($inat_data as $k=>$id) {
-            $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
-            $inat_data[$k]["inat_created_at"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
-        }
-
-
-        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update"));
     }
 
     /**
