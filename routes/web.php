@@ -40,10 +40,10 @@ Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'
 Route::post('/butterfly_count/set_duplicate', [CountFormController::class, 'set_duplicate'])->middleware('auth');
 Route::post('/butterfly_count/set_row_flag', [FormRowController::class, 'set_flag'])->middleware('auth');
 Route::get('/butterfly_count/set_taxa_id', [FormRowController::class, 'add_inat_taxa_id'])->middleware('auth');
-Route::get('/butterfly_count/clean', [CountFormController::class, 'clean'])->middleware('auth');
-Route::post('/butterfly_count/update_count', [CountFormController::class, 'update_count'])->middleware('auth');
-Route::post('/butterfly_count/update_row', [CountFormController::class, 'update_row'])->middleware('auth');
-Route::get('/butterfly_count/clean_rows', [CountFormController::class, 'clean_rows'])->middleware('auth');
+// Route::get('/butterfly_count/clean', [CountFormController::class, 'clean'])->middleware('auth');
+// Route::post('/butterfly_count/update_count', [CountFormController::class, 'update_count'])->middleware('auth');
+// Route::post('/butterfly_count/update_row', [CountFormController::class, 'update_row'])->middleware('auth');
+// Route::get('/butterfly_count/clean_rows', [CountFormController::class, 'clean_rows'])->middleware('auth');
 
 Route::post('/inat/store_observation', [INatController::class, 'store_observation'])->name('inat.store_observation');
 Route::post('/inat/update_observation', [INatController::class, 'update_observation'])->name('inat.update_observation');
@@ -54,5 +54,5 @@ Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->mi
 Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 
 Route::resource('/butterfly_count', CountFormController::class);
-Route::resource('/inat', INatController::class);
+// Route::resource('/inat', INatController::class);
 // Route::resource('/species', SpeciesController::class);
