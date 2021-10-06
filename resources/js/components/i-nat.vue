@@ -289,11 +289,11 @@
 			>
 				<ui-tab
 					:key="tab.title"
-					:selected="tab.title === 'Table'"
+					:selected="tab.title === 'Location'"
 					:title="tab.title"
 					v-for="tab in tabs"
 				>
-					<div class="svg-container" v-if="tab.title === 'Location'">
+					<div id="map-container" v-if="tab.title === 'Location'">
 						<!-- <div id="map-container"></div> -->
 						<india-map :map_data="mapData"
 								   :selected_state="selected_state"
@@ -331,7 +331,7 @@
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
 										v-if="!table_switch"
-										@rowClick="tableTelectState"
+										@rowClick="tableSelectState"
 							/>
 							<data-table :data="stateSpeciesList"
 										:headers='speciesTableHeaders'
@@ -371,7 +371,7 @@
 									 					<span class="material-icons">
 									 						calendar_today
 									 					</span>
-									 				</td><td v-text="fullDate(o.inat_created_at)"></td>
+									 				</td><td v-text="fullDate(o.created_at)"></td>
 									 			</tr>
 									 			<tr>
 									 				<td class='gallery-caption-icon'>
@@ -404,7 +404,10 @@
 						{{filterTitle('portals')}}
 					</div>
 				</div>
-				PORTALS
+				<div class="d-flex justify-content-center">
+					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="togglePortal('counts')">Butterfly Counts</button>
+					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="togglePortal('inat')">iNaturalist</button>
+				</div>
             </ui-collapsible>
 
             <ui-collapsible :class="filterClass('users')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
@@ -499,18 +502,16 @@ import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
 	export default {
 		name:"i-nat",
-		props: ["inat_data", "inat_taxa"],
+		props: ["inat_data", "inat_taxa", "form_data"],
 		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
 		data() {
 			return{
 				table_switch:false,
-				state_data: {},
-
-				state_unmatched: [],
+				all_data:[],
 				all_states: [],
 				set_state: "",
-				state_max: 0,
 
+				selected_portals: ["counts", "inat"],
 				selected_users: [],
 				selected_dates: [],
 				selected_state: "Goa",
@@ -548,230 +549,84 @@ import DateChart from './date-chart'
 			this.selected_state = "All"
 		},
 		watch: {
-			// selected_users () {
-			// 	this.renderMap()
-			// 	this.renderDateChart()
-			// },
-			// selected_dates () {
-			// 	this.renderMap()
-			// },
-			// selected_taxa_levels () {
-			// 	this.renderMap()
-			// 	this.renderDateChart()
-			// },
-			// selected_state () {
-			// 	// this.renderMap()
-			// 	this.renderDateChart()
-			// }
 		},
 		computed:{
 			filteredObservations(){
-				let op = []
-				//filter state state
-				if (this.selected_state === "All"){
-					op = this.inat_data
-				} else {
-					op = this.inat_data.filter(x => x.state === this.selected_state)
-				}
+				let op = this.all_data
 
-				if(this.selected_users.length > 0){
-					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-
-				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}
-				if(this.selected_taxa_levels.length > 0){
-					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
-				}
-
-
-				if(this.selected_taxa.length > 1){
-					let taxa_match = []
-
-					op.forEach(o => {
-						let hierarchy = {}
-						let match_flag = true
-
-
-						hierarchy[o.taxa_rank] = o.taxa_name
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-							}
-						})
-						this.selected_taxa.forEach((t,id)  => {
-							if(t != hierarchy[this.levels[id]] && t != 'none')
-								match_flag = false
-						})
-						if(match_flag){
-							taxa_match.push(o)
-						}
-
-					})
-					op = taxa_match
-				}
-
-
-
+				op = this.filterPortal(op)
+				op = this.filterState(op)
+				op = this.filterUsers(op)
+				op = this.filterDates(op)
+				op = this.filterTaxaLevels(op)
+				op = this.filterTaxa(op)
 				op = op.reverse()
+
 				return op
 			},
 			filteredObservationsPaginated(){
 				//
-				return  this.filteredObservations.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
+				return  this.filteredObservations.filter(o => o.img_url != '')
+							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			mapData(){
-				let op = this.inat_data
-				//filter state state
+				let op = this.all_data
 
+				op = this.filterPortal(op)
+				op = this.filterUsers(op)
+				op = this.filterDates(op)
+				op = this.filterTaxaLevels(op)
+				op = this.filterTaxa(op)
 
-				if(this.selected_users.length > 0){
-					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-
-				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}
-				if(this.selected_taxa_levels.length > 0){
-					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
-				}
-
-
-				if(this.selected_taxa.length > 1){
-					let taxa_match = []
-
-					op.forEach(o => {
-						let hierarchy = {}
-						let match_flag = true
-
-
-						hierarchy[o.taxa_rank] = o.taxa_name
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-							}
-						})
-						this.selected_taxa.forEach((t,id)  => {
-							if(t != hierarchy[this.levels[id]] && t != 'none')
-								match_flag = false
-						})
-						if(match_flag){
-							taxa_match.push(o)
-						}
-
-					})
-					op = taxa_match
-				}
-
-
-
-				op = op.reverse()
 				return op
 			},
 			userTableData () {
-				let user_data = this.inat_data
+				let user_data = this.all_data
 				let op = []
-				let sl_no = 1
 
-				if (this.selected_state != "All"){
-					user_data = user_data.filter(x => x.state === this.selected_state)
-				}
-
-				if(this.selected_dates.length > 0){
-					user_data = user_data.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}
-				if(this.selected_taxa_levels.length > 0){
-					user_data = user_data.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
-				}
+				user_data = this.filterPortal(user_data)
+				user_data = this.filterState(user_data)
+				user_data = this.filterDates(user_data)
+				user_data = this.filterTaxaLevels(user_data)
+				user_data = this.filterTaxa(user_data)
 				user_data = d3.nest().key(o => o.user_id).object(user_data)
 
-				Object.keys(user_data).forEach(u => {
-					op.push({
-						id: u,
-						name: user_data[u][0].user_name,
-						observations: user_data[u].length,
-						state: user_data[u][0].state
-					})
-				})
-
+				op = Object.keys(user_data)
+						.map((u) => {return {
+									id: u,
+									name: user_data[u][0].user_name,
+									observations: user_data[u].length,
+									state: user_data[u][0].state
+								}})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 
-				op.forEach((o,id) => {
-					op[id].sl_no = sl_no
-					sl_no++;
+				op = op.map((o,id) => {
+					o.sl_no = id + 1
+					return o
 				})
 
 				return op
 			},
 			dateTableData () {
-				let observations = []
-				let op = []
+				let op = this.all_data
 				let date_data = {}
 
-				if (this.selected_state === "All"){
-					observations = this.inat_data
-				} else {
-					observations = this.inat_data.filter(x => x.state === this.selected_state)
-				}
-
-				if(this.selected_users.length > 0){
-					observations = observations.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-
-				if(this.selected_taxa_levels.length > 0){
-					observations = observations.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
-				}
-
-
-				if(this.selected_taxa.length > 1){
-					let taxa_match = []
-
-					observations.forEach(o => {
-						let hierarchy = {}
-						let match_flag = true
-
-
-						hierarchy[o.taxa_rank] = o.taxa_name
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-							}
-						})
-						this.selected_taxa.forEach((t,id)  => {
-							if(t != hierarchy[this.levels[id]] && t != 'none')
-								match_flag = false
-						})
-						if(match_flag){
-							taxa_match.push(o)
-						}
-
-					})
-					observations = taxa_match
-				}
-
-
+				op = this.filterPortal(op)
+				op = this.filterState(op)
+				op = this.filterUsers(op)
+				op = this.filterTaxaLevels(op)
+				op = this.filterTaxa(op)
 				for(var i = 0; i<31; i++){
 					date_data[i] = 0
 				}
-				observations.forEach(o => {
-					if(Object.keys(date_data).indexOf(o.inat_created_at.toString()) != -1){
-						date_data[o.inat_created_at]++
+				op.forEach(o => {
+					if(Object.keys(date_data).indexOf(o.created_at.toString()) != -1){
+						date_data[o.created_at]++
 					}
 				})
-
-
 				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
 
 				return op;
-			},
-			stateObservations () {
-				let state_observations = this.filteredObservations
-				if(this.selected_state != 'All'){
-					state_observations = state_observations.filter(x => x.state === this.selected_state)
-				}
-
-				return state_observations
 			},
 			stateStats () {
 				let op = {}
@@ -785,17 +640,18 @@ import DateChart from './date-chart'
 					op['All'].users.add(o.user_id)
 					op['All'].species.add(o.taxa_name)
 					if(o.state !== null){
+						// console.log(`+${o.state}+`)
 						op[o.state].observations++
 						op[o.state].users.add(o.user_id)
 						op[o.state].species.add(o.taxa_name)
 					}
-				});
+				})
 
 				return op
 			},
 			stateSpeciesList () {
 				let op = []
-				this.stateObservations.forEach(o => {
+				this.filteredObservations.forEach(o => {
 					let new_flag = true
 					op.forEach((oo, oid) => {
 						if (o.taxa_name == oo.name){
@@ -805,22 +661,30 @@ import DateChart from './date-chart'
 							op[oid].states.add(o.state)
 						}
 					})
-					if(new_flag)
-						op.push({
+					if(new_flag){
+						let x = {
 							name: o.taxa_name,
-							common_name: this.inat_taxa[o.taxa_id].common_name,
 							count: 1,
 							users: new Set([o.user_id]),
 							states: new Set([o.state])
-						})
+						}
+						let common_name = ""
+						if(this.inat_taxa[o.taxa_id] != undefined){
+							common_name = this.inat_taxa[o.taxa_id].common_name
+						}
+						else{
+							console.log(o.id, o.taxa_id, "Not found")
+						}
+						x.common_name = common_name
+						op.push(x)
+					}
 				})
-
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
 				op.forEach((s, id) => {
 					op[id].user_count = s.users.size
 					op[id].state_count = s.states.size
 				})
-				// console.log(unique_taxa, op)
+
 				return op
 			},
 			statesTableData () {
@@ -845,63 +709,26 @@ import DateChart from './date-chart'
 				levels.forEach(t => {
 					op[t] = 0
 				})
-				this.filteredObservations.forEach(o => {
-					op[o.taxa_rank]++;
-				})
+				this.filteredObservations.map(o => { op[o.taxa_rank]++ })
 				return op
 			},
 			taxaTableData () {
-				let filtered_observations = []
+				let filtered_observations = this.all_data
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
+				let taxa_level = {}
 
-				if (this.selected_state === "All"){
-					filtered_observations = this.inat_data
-				} else {
-					filtered_observations = this.inat_data.filter(x => x.state === this.selected_state)
-				}
-
-				if(this.selected_users.length > 0){
-					filtered_observations = filtered_observations.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-
-				if(this.selected_dates.length > 0){
-					filtered_observations = filtered_observations.filter(x => this.selected_dates.indexOf(x.inat_created_at) !== -1)
-				}
-
-
-				if(this.selected_taxa.length > 1){
-					let taxa_match = []
-
-					filtered_observations.forEach(o => {
-						let hierarchy = {}
-						let match_flag = true
-
-
-						hierarchy[o.taxa_rank] = o.taxa_name
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-							}
-						})
-						this.selected_taxa.forEach((t,id)  => {
-							if(t != hierarchy[this.levels[id]] && t != 'none')
-								match_flag = false
-						})
-						if(match_flag){
-							taxa_match.push(o)
-						}
-
-					})
-					filtered_observations = taxa_match
-				}
-
-
-				let taxa_level = d3.nest().key(o => o.taxa_rank).object(filtered_observations)
-
+				filtered_observations = this.filterPortal(filtered_observations)
+				filtered_observations = this.filterState(filtered_observations)
+				filtered_observations = this.filterUsers(filtered_observations)
+				filtered_observations = this.filterDates(filtered_observations)
+				filtered_observations = this.filterTaxa(filtered_observations)
+				taxa_level = d3.nest().key(o => o.taxa_rank).object(filtered_observations)
 				Object.keys(taxa_level).forEach(tl => {
-					if(taxa_level[tl] != undefined)
+					if(taxa_level[tl] != undefined){
 						op[tl] = taxa_level[tl].length
+					}
 				})
+
 				return op
 			},
 			treeData(){
@@ -917,12 +744,13 @@ import DateChart from './date-chart'
 						hierarchy[o.taxa_rank] = o.taxa_name
 						hierarchy.key = o.taxa_name
 
-
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-							}
-						})
+						if(this.inat_taxa[o.taxa_id] != undefined){
+							this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+								if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+									hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+								}
+							})
+						}
 						this.levels.forEach((l, lid) => {
 							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(o.taxa_rank)) ){
 								hierarchy[l] = "none"
@@ -953,6 +781,83 @@ import DateChart from './date-chart'
 			}
 		},
 		methods: {
+			portalBtnClass (p) {
+				let op = "btn-outline-primary"
+				if(this.selected_portals.indexOf(p) != -1)
+					op = "btn-success"
+				return op
+			},
+			togglePortal (p) {
+				let pos = this.selected_portals.indexOf(p)
+				if(pos == -1){
+					this.selected_portals.push(p)
+				} else {
+					this.selected_portals.splice(pos, 1)
+				}
+			},
+			filterPortal(ar){
+				let op = ar
+				if (this.selected_portals.length > 0) {
+					op = op.filter(o => this.selected_portals.indexOf(o.portal) !== -1)
+				}
+				return op
+			},
+			filterState(ar){
+				let op = ar
+				if (this.selected_state != 'All') {
+					op = op.filter(o => o.state == this.selected_state)
+				}
+				return op
+			},
+			filterUsers(ar){
+				let op = ar
+				if(this.selected_users.length > 0){
+					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
+				}
+				return op
+			},
+			filterDates(ar){
+				let op = ar
+				if(this.selected_dates.length > 0){
+					op = op.filter(x => this.selected_dates.indexOf(x.created_at) !== -1)
+				}
+				return op
+			},
+			filterTaxaLevels(ar){
+				let op = ar
+				if(this.selected_taxa_levels.length > 0){
+					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+				}
+				return op
+			},
+			filterTaxa(ar){
+				let op = ar
+				if(this.selected_taxa.length > 1){
+					let taxa_match = []
+
+					op.forEach(o => {
+						let hierarchy = {}
+						let match_flag = true
+
+						hierarchy[o.taxa_rank] = o.taxa_name
+						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							}
+						})
+						this.selected_taxa.forEach((t,id)  => {
+							if(t != hierarchy[this.levels[id]] && t != 'none')
+								match_flag = false
+						})
+						if(match_flag){
+							taxa_match.push(o)
+						}
+
+					})
+					op = taxa_match
+				}
+				return op
+			},
 			idLevelBtnClass (t) {
 				let op = "btn-outline-secondary"
 				switch(t){
@@ -984,7 +889,11 @@ import DateChart from './date-chart'
 				switch(f){
 					case 'portals': 
 						op = "Portals : "
-						op += "All selected"
+						if (this.selected_portals.length == 2){
+							op += "All selected"
+						} else {
+							op += `${this.selected_portals.length} selected`
+						}
 						break
 					case'users':
 						op = "Users : "
@@ -1080,31 +989,10 @@ import DateChart from './date-chart'
 					this.selected_users.push(u.id)
 				}
 			},
-			userTableRowClass (u) {
-				let op = ""
-				if(this.selected_users.indexOf(u.id) !== -1){
-					op = "user-selected"
-				} else {
-					if(u.sl_no < 10){
-						op = "first-10"
-					} else if (u.sl_no < 50){
-						op = "second-50"
-					} else if (u.sl_no < 100) {
-						op = "third-100"
-					}
-				}
-				return op;
-			},
 			imgUrl (url) {
 				// let op = ""
 				let op = url.replace("square", "medium")
 				return op
-			},
-			taxaClick (t) {
-				if(this.selected_taxa != t)
-					this.selected_taxa = t
-				else
-					this.selected_taxa = '';
 			},
 			fullDate (d) {
 				let op = `${d} Sept, 21`
@@ -1133,7 +1021,7 @@ import DateChart from './date-chart'
 				// console.log("emit setter", s)
 				this.selected_state = s
 			},
-			tableTelectState(s){
+			tableSelectState(s){
 				let selected = this.statesTableData[s].state
 				if (this.selected_state == selected) {
 					this.selected_state = 'All'
@@ -1169,39 +1057,14 @@ import DateChart from './date-chart'
 			},
 			openModal (ref) {
 				//
-				this.$refs[ref].open();
+				this.$refs[ref].open()
 			},
 			closeModal (ref) {
 				//
-				this.$refs[ref].close();
+				this.$refs[ref].close()
 			},
 			init () {
-				if (this.svgWidth > 800){
-					this.svgWidth = window.innerWidth / 2
-				}
-
-				country.features.forEach(s => {
-					this.state_data[s.properties.ST_NM] = [];
-				})
-
-				this.inat_data.forEach(o => {
-					if(o.state == null){
-						this.state_unmatched.push(o);
-					} else if(Object.keys(this.state_data).indexOf(o.state) != -1){
-						this.state_data[o.state].push(o)
-					} else {
-						this.state_data[o.state].push(o)
-						console.log("strange state name", o.state, o)
-					}
-				});
-
-				Object.keys(this.state_data).forEach(s => {
-					if(this.state_data[s].length > this.state_max)
-						this.state_max = this.state_data[s].length;
-				})
-
-
-
+				this.all_data = this.inat_data.concat(this.form_data)
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
@@ -1212,7 +1075,7 @@ import DateChart from './date-chart'
 							    .style('background', 'rgba(0,0,0,0.6)')
 							    .style('border-radius', '4px')
 							    .style('color', '#fff')
-							    .text('a simple tooltip');
+							    .text('a simple tooltip')
 
 				this.all_states = country.features.map(s => s.properties.ST_NM)
 			}
