@@ -38,6 +38,7 @@ Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'
 Route::post('/butterfly_count/set_flag', [CountFormController::class, 'set_flag'])->middleware('auth');
 Route::post('/butterfly_count/set_duplicate', [CountFormController::class, 'set_duplicate'])->middleware('auth');
 Route::post('/butterfly_count/set_row_flag', [FormRowController::class, 'set_flag'])->middleware('auth');
+Route::get('/butterfly_count/set_taxa_id', [FormRowController::class, 'add_inat_taxa_id'])->middleware('auth');
 Route::get('/butterfly_count/clean', [CountFormController::class, 'clean'])->middleware('auth');
 Route::post('/butterfly_count/update_count', [CountFormController::class, 'update_count'])->middleware('auth');
 Route::post('/butterfly_count/update_row', [CountFormController::class, 'update_row'])->middleware('auth');

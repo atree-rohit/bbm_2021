@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FormRow;
+use App\Models\iNatTaxa;
 use Illuminate\Http\Request;
 
 class FormRowController extends Controller
@@ -24,6 +25,23 @@ class FormRowController extends Controller
         $row->save();
 
         return response()->json("success", 200);
+    }
+
+    public function add_inat_taxa_id()
+    {
+        $rows = FormRow::where("flag", 0)->where("inat_taxa_id", null)->get();
+        $inat_taxa = iNatTaxa::get()->keyBy("name");
+        $unmatched = [];
+        foreach($rows as $row){
+            if(isset($inat_taxa[$row->scientific_name_cleaned])){
+                // dd($row, $inat_taxa[$row->scientific_name]);
+                $row->inat_taxa_id = $inat_taxa[$row->scientific_name_cleaned]->id;
+                $row->save();
+            } else {
+                $unmatched[] = $row;
+            }
+        }
+        dd($unmatched);
     }
 
     /**
