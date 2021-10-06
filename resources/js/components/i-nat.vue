@@ -13,10 +13,8 @@
 		/*overflow: hidden;*/
 	}
 
-	/*.ui-tabs > div,
-	.ui-tabs > div > div{
-		overflow-x: hidden;
-	}*/
+
+
 	.filter-set .ui-collapsible__header{
 		background: #cea;
 	}
@@ -35,9 +33,28 @@
 
 	#map-filters{
 		max-height: 92vh;
-		overflow-y: scroll;
+		overflow-y: auto;
 		overflow-x: auto;
 	}
+	#map-filters::-webkit-scrollbar-track
+    {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color: #F5F5F5;
+    }
+
+    #map-filters::-webkit-scrollbar
+    {
+        width: 7px;
+        background-color: #F5F5F5;
+    }
+
+    #map-filters::-webkit-scrollbar-thumb
+    {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #a7c;
+    }
 
 
 
@@ -86,17 +103,21 @@
   		grid-template-columns: repeat(2, 1fr);
   		font-size: .8rem;
   	}
-	.cards-table {
+	.cards-table,
+	.cards-table td {
+	    padding: 0;
+	    margin: 0;
+	    line-height: 1.25;
+	    background: #eef;
+	}
+	.card-values {
 		font-size: calc(1.5rem + 1.5vw);
 	}
-	.cards-table,
-	.cards-table td{
-		padding: 0;
-		margin: 0;
-	}
-	.card-values{
+	.card-labels{
 		font-size: calc(1rem + 1vw);
 	}
+
+
 	.map-data-title{
 		font-size: calc(1rem + 1vw);
 	}
@@ -206,6 +227,10 @@
 		stroke-width: 0.5px;
 	}
 
+	.switch-div{
+		background: #ecf;
+	}
+
 	.switch input {
         position: absolute;
         opacity: 0;
@@ -242,7 +267,7 @@
         transition: all .5s;
     }
     .switch-selected{
-        background: #beb;
+        background: #9e7;
     }
     .switch-div > span,
     .switch-div > label{
@@ -251,7 +276,7 @@
     .switch-div > span:hover,
     .switch-div > label:hover{
         cursor: pointer;
-
+        background: #fef;
         box-shadow: 2px 2px 5px #550;
     }
 
@@ -306,12 +331,12 @@
 						<div class="d-flex justify-content-around text-center">
 							<table class="table cards-table">
 								<tbody>
-									<tr>
+									<tr class="card-values">
 										<td v-text="stateStats[selected_state].observations"></td>
 										<td v-text="stateStats[selected_state].users.size"></td>
 										<td v-text="stateStats[selected_state].species.size"></td>
 									</tr>
-									<tr class="card-values">
+									<tr class="card-labels">
 										<td>Observations</td>
 										<td>Users</td>
 										<td>Unique Taxa</td>
@@ -320,7 +345,7 @@
 								</tbody>
 							</table>
 						</div>
-				        <div class="d-flex justify-content-center my-3 switch-div">
+				        <div class="d-flex justify-content-center py-1 switch-div">
 							<span class="switch-label" :class="!table_switch?'switch-selected':''" @click="table_switch=false">States</span>
 							<label class="switch mx-3 my-auto"><input type="checkbox" v-model="table_switch"/>
 							<div></div>
@@ -330,11 +355,16 @@
 						<div class="species-data-table">
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
-										v-if="!table_switch"
+										:selected='[selected_state]'
+										:selected_col="'state'"
 										@rowClick="tableSelectState"
+										v-if="!table_switch"
 							/>
 							<data-table :data="stateSpeciesList"
 										:headers='speciesTableHeaders'
+										:selected="[]"
+										:selected_col="''"
+										@rowClick="tableSelectTaxa"
 										v-else
 							/>
 						</div>
@@ -421,7 +451,9 @@
 				</div>
 				<data-table :data="userTableData"
 							:headers='[["Sl No","sl_no"],["User ID","id"],["User Name","name"],["Observations","observations"],["State","state"]]'
-							@rowClick="seletUser(u)"
+							:selected='selected_users'
+							:selected_col="'id'"
+							@rowClick="seletUser"
 					/>
             </ui-collapsible>
 
@@ -735,8 +767,14 @@ import DateChart from './date-chart'
 				let op = []
 				let obv_taxonomy = []
 				let unique_species_taxonomy = []
+				let filtered_observations = this.all_data
 
-				obv_taxonomy = this.filteredObservations.map(o => {
+				filtered_observations = this.filterPortal(filtered_observations)
+				filtered_observations = this.filterState(filtered_observations)
+				filtered_observations = this.filterUsers(filtered_observations)
+				filtered_observations = this.filterDates(filtered_observations)
+
+				obv_taxonomy = filtered_observations.map(o => {
 						let hierarchy = {
 							id: o.id,
 							rank: o.taxa_rank
@@ -984,11 +1022,12 @@ import DateChart from './date-chart'
 				this.openModal('update-state-Modal')
 			},
 			seletUser(u){
-				var index = this.selected_users.indexOf(u.id);
+				let selected = this.userTableData[u]
+				let index = this.selected_users.indexOf(selected.id)
 				if (index !== -1) {
 					this.selected_users.splice(index, 1);
 				} else {
-					this.selected_users.push(u.id)
+					this.selected_users.push(selected.id)
 				}
 			},
 			imgUrl (url) {
@@ -1043,6 +1082,11 @@ import DateChart from './date-chart'
 				} else {
 					this.selected_taxa_levels.splice(op, 1)
 				}
+			},
+			tableSelectTaxa (t) {
+				// let selected = this.stateSpeciesList[t].name
+				console.log(this.stateSpeciesList[t])
+				// this.selected_taxa.push(selected)
 			},
 			taxaLevelBtnClass (tname, no) {
 				let op = "btn-outline-secondary"
