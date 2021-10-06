@@ -93,9 +93,9 @@
 		props: ["tree_data", "selected"],
 		data(){
 			return {
-                width: 1200,
-        		height:600,
-        		radius: 90,
+                width: 0,
+        		height:0,
+        		radius: 0,
         		margin: {
         			top: 50,
         			right: 50,
@@ -133,6 +133,16 @@
 		},
 		methods: {
             init () {
+                if(window.innerWidth < 800){
+                    this.width = window.innerWidth * 2
+                    this.height = window.innerHeight * 0.8
+                } else {
+                    this.width = window.innerWidth * 0.5
+                    this.height = window.innerHeight * 0.6
+                }
+                this.radius = Math.min(this.height, this.width) * 0.15
+
+                    console.log(`${this.width} x ${this.height}`)
                 var speciesTree = [];
 
                 this.tree_data.forEach(d => {
@@ -149,6 +159,8 @@
                 const svg = d3.select("#sunburstChart")
             		.append("svg")
             		.classed("bg-light text-center border boorder-primary rounded", true)
+                    // .attr("width", this.width)
+                    // .attr("height", this.height)
             		.attr("viewBox", [0,0, this.width, this.height])
 
             	const arc = d3.arc()
