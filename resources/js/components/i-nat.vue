@@ -18,8 +18,28 @@
 		overflow-x: hidden;
 	}*/
 	.filter-set .ui-collapsible__header{
-		background: #aea;
+		background: #cea;
 	}
+	.filter-set .ui-collapsible__header:hover{
+		background: #ed9 !important;
+	}
+	.ui-collapsible__header-content span.material-icons{
+		color: #777;
+		margin: 0 10px;
+		transition: all .4s;
+	}
+	.ui-collapsible:hover .ui-collapsible__header-content span.material-icons{
+		color: darkgreen;
+	}
+
+
+	#map-filters{
+		max-height: 92vh;
+		overflow-y: scroll;
+		overflow-x: auto;
+	}
+
+
 
 	#date-chart-continer svg g rect,
 	.map-boundary path,
@@ -33,7 +53,19 @@
 		stroke: red;
 		fill: pink;
 	}
-
+	#date-chart-continer svg g.main-date-chart rect:hover {
+	  fill: yellow;
+	  cursor: pointer;
+	  background: orangered;
+	}
+	.y-grid .tick line{
+		stroke: #ccc;
+	}
+	.x-ticks .tick text{
+		text-anchor: end;
+		transform: rotate(-20deg);
+		font-size: .5vw;
+	}
 	.map-boundary path{
 		stroke: #333;
 		stroke-linejoin: round;
@@ -53,7 +85,6 @@
 		display: grid;
   		grid-template-columns: repeat(2, 1fr);
   		font-size: .8rem;
-		height:100vh;
   	}
 	.cards-table {
 		font-size: calc(1.5rem + 1.5vw);
@@ -73,9 +104,21 @@
 	.ui-tabs__body{
 		padding: 0;
 	}
+	.ui-tab > div{
+		height:  87vh;
+		overflow-y: hidden;
+	}
 
 	.ui-collapsible__body{
 		padding: 2px;
+	}
+	/*#observations-container{
+		max-height: 82vh;
+		overflow-y: scroll;
+	}*/
+
+	#observations-container{
+		overflow-y: scroll;
 	}
 	#gallery{
 		/* Prevent vertical gaps */
@@ -163,6 +206,55 @@
 		stroke-width: 0.5px;
 	}
 
+	.switch input {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .switch {
+        display: inline-block;
+        font-size: 20px; /* 1 */
+        height: 1em;
+        width: 2em;
+        background: #BDB9A6;
+        border-radius: 1em;
+    }
+
+    .switch div {
+        height: 1em;
+        width: 1em;
+        border-radius: 1em;
+        background: #FFF;
+        box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.3);
+        -webkit-transition: all 300ms;
+         -moz-transition: all 300ms;
+              transition: all 300ms;
+    }
+
+    .switch input:checked + div {
+        -webkit-transform: translate3d(100%, 0, 0);
+         -moz-transform: translate3d(100%, 0, 0);
+              transform: translate3d(100%, 0, 0);
+    }
+    .switch-label{
+        padding: 5px;
+        border-radius: 5px;
+        transition: all .5s;
+    }
+    .switch-selected{
+        background: #beb;
+    }
+    .switch-div > span,
+    .switch-div > label{
+        transition: all .25s;
+    }
+    .switch-div > span:hover,
+    .switch-div > label:hover{
+        cursor: pointer;
+
+        box-shadow: 2px 2px 5px #550;
+    }
+
 	@media screen and (max-width: 800px) {
 		body{
 			overflow: scroll;
@@ -197,7 +289,7 @@
 			>
 				<ui-tab
 					:key="tab.title"
-					:selected="tab.title === 'Location'"
+					:selected="tab.title === 'Table'"
 					:title="tab.title"
 					v-for="tab in tabs"
 				>
@@ -228,14 +320,21 @@
 								</tbody>
 							</table>
 						</div>
+				        <div class="d-flex justify-content-center my-3 switch-div">
+							<span class="switch-label" :class="!table_switch?'switch-selected':''" @click="table_switch=false">States</span>
+							<label class="switch mx-3 my-auto"><input type="checkbox" v-model="table_switch"/>
+							<div></div>
+							</label>
+							<span class="switch-label" :class="table_switch?'switch-selected':''" @click="table_switch=true">Species</span>
+						</div>
 						<div class="species-data-table">
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
-										v-if="selected_state == 'All'"
+										v-if="!table_switch"
 										@rowClick="tableTelectState"
 							/>
 							<data-table :data="stateSpeciesList"
-										:headers='[["Taxa Name","name"],["Observations","count"],["Users","user_count"]]'
+										:headers='speciesTableHeaders'
 										v-else
 							/>
 						</div>
@@ -296,42 +395,56 @@
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
-			<ui-collapsible :class="filterClass('users')" :disableRipple="true" :title="filterTitle('users')" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+			<ui-collapsible :class="filterClass('portals')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+				<div slot="header" class="d-flex">
+					<span class="material-icons">
+						pages
+					</span>
+					<div>
+						{{filterTitle('portals')}}
+					</div>
+				</div>
+				PORTALS
+            </ui-collapsible>
+
+            <ui-collapsible :class="filterClass('users')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+            	<div slot="header" class="d-flex">
+					<span class="material-icons">
+						people
+					</span>
+					<div>
+						{{filterTitle('users')}}
+					</div>
+				</div>
 				<data-table :data="userTableData"
 							:headers='[["Sl No","sl_no"],["User ID","id"],["User Name","name"],["Observations","observations"],["State","state"]]'
 							@rowClick="seletUser(u)"
 					/>
-				<!-- <table class="table table-sm tableFixHead">
-					<thead class="table-secondary">
-						<tr>
-							<th>Sl No</th>
-							<th>User ID</th>
-							<th>User Name</th>
-							<th>Observations</th>
-							<th>State</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for="u in userTableData" :class='userTableRowClass(u)' @click="seletUser(u)">
-							<td v-text="u.sl_no"></td>
-							<td v-text="u.id"></td>
-							<td v-text="u.name"></td>
-							<td v-text="u.observations"></td>
-							<td v-text="u.state"></td>
-						</tr>
-					</tbody>
-
-				</table> -->
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('date')" :disableRipple="true" :title="filterTitle('date')" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+            <ui-collapsible :class="filterClass('date')" :disableRipple="true" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+                <div slot="header" class="d-flex">
+					<span class="material-icons">
+						today
+					</span>
+					<div>
+						{{filterTitle('date')}}
+					</div>
+				</div>
                 <div id="date-filter">
-					<!-- <div id="date-chart-continer" class="svg-container"></div> -->
 					<date-chart :dateTableData="dateTableData" :selected_dates="selected_dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('id_level')" :disableRipple="true" :title="filterTitle('id_level')" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+            <ui-collapsible :class="filterClass('id_level')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
+                <div slot="header" class="d-flex">
+					<span class="material-icons">
+						account_tree
+					</span>
+					<div>
+						{{filterTitle('id_level')}}
+					</div>
+				</div>
                 <div id="taxon-level-filter">
 					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
 						<button
@@ -352,7 +465,15 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :title="filterTitle('taxon')" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
+            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :open="accordions[4]" @open="onAccordionOpen(4)" @close="onAccordionClose(4)">
+                <div slot="header" class="d-flex">
+					<span class="material-icons">
+						data_usage
+					</span>
+					<div>
+						{{filterTitle('taxon')}}
+					</div>
+				</div>
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 		</div>
@@ -382,6 +503,7 @@ import DateChart from './date-chart'
 		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
 		data() {
 			return{
+				table_switch:false,
 				state_data: {},
 
 				state_unmatched: [],
@@ -644,9 +766,9 @@ import DateChart from './date-chart'
 				return op;
 			},
 			stateObservations () {
-				let state_observations = []
-				if(this.selected_state != ''){
-					state_observations = this.filteredObservations.filter(x => x.state === this.selected_state)
+				let state_observations = this.filteredObservations
+				if(this.selected_state != 'All'){
+					state_observations = state_observations.filter(x => x.state === this.selected_state)
 				}
 
 				return state_observations
@@ -680,19 +802,23 @@ import DateChart from './date-chart'
 							new_flag = false
 							op[oid].count++
 							op[oid].users.add(o.user_id)
+							op[oid].states.add(o.state)
 						}
 					})
 					if(new_flag)
 						op.push({
 							name: o.taxa_name,
+							common_name: this.inat_taxa[o.taxa_id].common_name,
 							count: 1,
-							users: new Set([o.user_id])
+							users: new Set([o.user_id]),
+							states: new Set([o.state])
 						})
 				})
 
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
 				op.forEach((s, id) => {
 					op[id].user_count = s.users.size
+					op[id].state_count = s.states.size
 				})
 				// console.log(unique_taxa, op)
 				return op
@@ -818,6 +944,13 @@ import DateChart from './date-chart'
 				})
 				return unique_species_taxonomy
 			},
+			speciesTableHeaders() {
+				let op = [["Taxa Name","name"], ["Common Name","common_name"],["Observations","count"],["Users","user_count"]]
+				if(this.selected_state == "All"){
+					op.push(["States", "state_count"])
+				}
+				return op
+			}
 		},
 		methods: {
 			idLevelBtnClass (t) {
@@ -849,6 +982,10 @@ import DateChart from './date-chart'
 			filterTitle(f){
 				let op = ""
 				switch(f){
+					case 'portals': 
+						op = "Portals : "
+						op += "All selected"
+						break
 					case'users':
 						op = "Users : "
 						if(this.selected_users.length > 0) {
@@ -856,7 +993,7 @@ import DateChart from './date-chart'
 						} else {
 							op += "All selected"
 						}
-						break;
+						break
 					case 'date':
 						op = "Upload Date : "
 						if(this.selected_dates.length > 0 && this.selected_dates.length < 30) {
@@ -864,7 +1001,7 @@ import DateChart from './date-chart'
 						} else {
 							op += "All selected"
 						}
-						break;
+						break
 					case 'id_level':
 						op = "ID Level : "
 						if(this.selected_taxa_levels.length > 0 && this.selected_taxa_levels.length < 10) {
@@ -872,7 +1009,7 @@ import DateChart from './date-chart'
 						} else {
 							op += "All selected"
 						}
-						break;
+						break
 					case 'taxon':
 						op = "Taxon: "
 						if(this.selected_taxa.length > 1){
