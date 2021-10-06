@@ -41,10 +41,10 @@ export default {
 			legend: {},
 
 			state_data: {},
-			selected:"Goa",
+			selected:"All",
 			state_max: 0,
-			height: window.innerHeight ,
-			width: window.innerWidth,
+			height: 600 ,
+			width: 800,
 			tooltip:this.popup,
 			map_first_render:true,
 		}
@@ -324,7 +324,6 @@ export default {
 					this.$emit('stateSelected', state)
 				}
 			}
-
 
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
