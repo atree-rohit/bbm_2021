@@ -836,21 +836,23 @@ import DateChart from './date-chart'
 					let taxa_match = []
 
 					op.forEach(o => {
-						let hierarchy = {}
-						let match_flag = true
+						if(this.inat_taxa[o.taxa_id] != undefined){
+							let hierarchy = {}
+							let match_flag = true
 
-						hierarchy[o.taxa_rank] = o.taxa_name
-						this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+							hierarchy[o.taxa_rank] = o.taxa_name
+							this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+								if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+									hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
+								}
+							})
+							this.selected_taxa.forEach((t,id)  => {
+								if(t != hierarchy[this.levels[id]] && t != 'none')
+									match_flag = false
+							})
+							if(match_flag){
+								taxa_match.push(o)
 							}
-						})
-						this.selected_taxa.forEach((t,id)  => {
-							if(t != hierarchy[this.levels[id]] && t != 'none')
-								match_flag = false
-						})
-						if(match_flag){
-							taxa_match.push(o)
 						}
 
 					})
