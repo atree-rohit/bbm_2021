@@ -1,7 +1,8 @@
 <style lang="css" scoped>
-    .table-container{
-        max-height:62vh;
-        overflow: auto;
+    #table-container{
+        height:  62vh;
+        overflow-y: scroll;
+        overflow-x: auto;
     }
     /* .table-container .tableFixHead{
         height:100%;
@@ -33,28 +34,55 @@
 </style>
 
 <template>
-    <div class="table-container">
-        <table class="table tableFixHead">
-            <thead class="">
-                <tr>
-                    <th v-for="h in headers" :key="h[1]" v-text="h[0]"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(row, id) in data" :key="id" @click="$emit('rowClick', id)">
-                    <td v-for="h in headers"
-                        :key="h[1]"
-                        v-text="row[h[1]]"
-                        ></td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="table-container">
+        <div class="table-height"
+             :style="{
+                'max-height': `calc(100% - ${tableHeight}px)`
+                }"
+        >
+            
+            <table class="table tableFixHead"ref="container">
+                <thead class="">
+                    <tr>
+                        <th v-for="h in headers" :key="h[1]" v-text="h[0]"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(row, id) in data" :key="id" @click="$emit('rowClick', id)">
+                        <td v-for="h in headers"
+                            :key="h[1]"
+                            v-text="row[h[1]]"
+                            ></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
     name: "data-table",
-    props: ["data", "headers"]
+    props: ["data", "headers"],
+    mounted() {
+        this.updateHeight()
+    },
+    data(){
+        return {
+            height: 0
+        }
+    },
+    computed: {
+        tableHeight() {
+            const tableDOM = document.getElementById("table-container");
+            return tableDOM ? tableDOM.offsetHeight : 0;
+        },
+    },
+    methods:{
+        updateHeight(){
+            // this.height = this.$refs.container.offsetTop
+            this.height = this.$refs.container.getBoundingClientRect().top
+        }
+    }
 }
 </script>
