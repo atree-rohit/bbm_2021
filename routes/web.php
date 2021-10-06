@@ -6,6 +6,7 @@ use App\Http\Controllers\FormRowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\INatController;
 use App\Http\Controllers\SpeciesController;
+use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,8 +48,10 @@ Route::get('/butterfly_count/clean_rows', [CountFormController::class, 'clean_ro
 Route::post('/inat/store_observation', [INatController::class, 'store_observation'])->name('inat.store_observation');
 Route::post('/inat/update_observation', [INatController::class, 'update_observation'])->name('inat.update_observation');
 Route::post('/inat/update_state', [INatController::class, 'update_state'])->name('inat.update_state');
-Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('inat.store_taxon')->middleware('auth');;
-Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->middleware('auth');;
+Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('inat.store_taxon')->middleware('auth');
+Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->middleware('auth');
+
+Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 
 Route::resource('/butterfly_count', CountFormController::class);
 Route::resource('/inat', INatController::class);
