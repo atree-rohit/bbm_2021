@@ -53,10 +53,7 @@ class INatController extends Controller
                         ->limit(-1)
                         ->get()->toArray();
         $inat_taxa = iNatTaxa::limit(-1)->get()->keyBy("id");
-        $forms = CountForm::with("rows")->get();
-        $this->inat_taxa = $inat_taxa;
-        $this->inat_tree = [];
-        $ancestors = [];
+        $form_data = CountForm::with("rows")->get();
 
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($inat_data[$k]["inat_created_at"]);
@@ -64,7 +61,7 @@ class INatController extends Controller
         }
 
 
-        return view('inat.index', compact("inat_data", "inat_taxa", "forms", "last_update"));
+        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update"));
     }
 
     /**
