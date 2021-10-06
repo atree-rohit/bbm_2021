@@ -3999,9 +3999,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   props: ["tree_data", "selected"],
   data: function data() {
     return {
-      width: 1200,
-      height: 600,
-      radius: 90,
+      width: 0,
+      height: 0,
+      radius: 0,
       margin: {
         top: 50,
         right: 50,
@@ -4040,13 +4040,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _this = this;
 
       if (window.innerWidth < 800) {
-        this.width = window.innerWidth * 0.9;
-        this.height = window.innerHeight * 0.5;
+        this.width = window.innerWidth * 2;
+        this.height = window.innerHeight * 0.8;
       } else {
         this.width = window.innerWidth * 0.5;
-        this.height = window.innerHeight * .7;
+        this.height = window.innerHeight * 0.6;
       }
 
+      this.radius = Math.min(this.height, this.width) * 0.15;
       console.log("".concat(this.width, " x ").concat(this.height));
       var speciesTree = [];
       this.tree_data.forEach(function (d) {
