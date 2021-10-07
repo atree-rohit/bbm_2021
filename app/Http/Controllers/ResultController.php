@@ -65,7 +65,7 @@ class ResultController extends Controller
                 "img_url" => "",
             ];
             foreach ($f["rows"] as $r) {
-                if ($r["flag"] == 0) {
+                if ($r["flag"] == 0 && $r["inat_taxa_id"] != null) {
                     $d1 = $d;
                     $d1["id"] = $r["id"];
                     $d1["taxa_id"] = $r["inat_taxa_id"];
