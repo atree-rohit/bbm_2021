@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\iNat;
+use App\Models\IBP;
 use App\Models\iNatTaxa;
 use App\Models\CountForm;
 use App\Models\FormRow;
@@ -19,9 +20,13 @@ class ResultController extends Controller
                                 ->limit(-1)
                                 ->get()
                                 ->keyBy("id");
-        
-        $inat_data = iNat::select("id", "uuid", "observed_on", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "quality_grade", "license_code", "inat_created_at")
+
+        $inat_data = iNat::select("id", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "inat_created_at")
                         // ->limit(1000)
+                        ->get()
+                        ->toArray();
+        $ibp_data = IBP::select("id", "createdBy as user_id", "placeName as place_guess", "createdOn", "associatedMedia as img_url", "locationLat as lat", "locationLon as long", "rank as taxa_rank", "scientific_name_cleaned  as taxa_name", "inat_taxa_id as taxa_id", "state")
+                        ->whereNotNull("state")
                         ->get()
                         ->toArray();
         $forms = CountForm::where("flag", 0)
@@ -29,18 +34,25 @@ class ResultController extends Controller
                         ->with("rows")
                         ->get()
                         ->toArray();
-        
-        $inat_unset_fields = ["uuid", "observed_on", "quality_grade", "license_code", "inat_created_at"];
+
+        $inat_unset_fields = ["inat_created_at"];
         $form_data = [];
 
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($id["inat_created_at"]);
-            $inat_data[$k]["created_at"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
-            $inat_data[$k]["portal"] = "inat";
+            $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
             $inat_data[$k]["individuals"] = 1;
-            foreach($inat_unset_fields as $iuf){
-                unset($inat_data[$k][$iuf]);
+            unset($inat_data[$k]["inat_created_at"]);
+        }
+        foreach($ibp_data as $k=>$id){
+            if($id["state"] == null){
+                dd($id);                
             }
+            $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
+            $ibp_data[$k]["created_date"] = $id["createdOn"];
+            unset($ibp_data[$k]["lat"]);
+            unset($ibp_data[$k]["long"]);
+            unset($ibp_data[$k]["createdOn"]);
         }
         foreach ($forms as $f) {
             $created = explode("-", $f["date_cleaned"]);
@@ -49,9 +61,8 @@ class ResultController extends Controller
                 "user_name" => $f["name"],
                 "state" => $f["state"],
                 "location" => $f["latitude"] . ",". $f["longitude"],
-                "created_at" => $created[0],
+                "created_date" => $created[0],
                 "img_url" => "",
-                "portal" => "counts"
             ];
             foreach ($f["rows"] as $r) {
                 if ($r["flag"] == 0) {
@@ -65,8 +76,13 @@ class ResultController extends Controller
                 }
             }
         }
+        $all_portal_data = [
+            "inat" => $inat_data,
+            "ibp" => $ibp_data,
+            "counts" => $form_data
+        ];
 
 
-        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update"));
+        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
     }
 }
