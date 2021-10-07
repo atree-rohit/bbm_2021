@@ -45,14 +45,13 @@ class ResultController extends Controller
             unset($inat_data[$k]["inat_created_at"]);
         }
         foreach($ibp_data as $k=>$id){
-            if($id["state"] == null){
-                dd($id);                
+            if($id["state"] != null){
+                $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
+                $ibp_data[$k]["created_date"] = $id["createdOn"];
+                unset($ibp_data[$k]["lat"]);
+                unset($ibp_data[$k]["long"]);
+                unset($ibp_data[$k]["createdOn"]);
             }
-            $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
-            $ibp_data[$k]["created_date"] = $id["createdOn"];
-            unset($ibp_data[$k]["lat"]);
-            unset($ibp_data[$k]["long"]);
-            unset($ibp_data[$k]["createdOn"]);
         }
         foreach ($forms as $f) {
             $created = explode("-", $f["date_cleaned"]);
