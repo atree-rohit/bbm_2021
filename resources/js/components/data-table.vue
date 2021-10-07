@@ -5,7 +5,7 @@
         overflow-x: auto;
     }
     
-    #table-container::-webkit-scrollbar-track
+    /*#table-container::-webkit-scrollbar-track
     {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         border-radius: 10px;
@@ -23,7 +23,7 @@
         border-radius: 10px;
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
         background-color: #a7c;
-    }
+    }*/
     .tableFixHead{
         /* overflow: auto; */
         height: 100px;
