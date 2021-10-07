@@ -516,16 +516,6 @@
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 		</div>
-		<ui-modal ref="update-state-Modal" title="Set / Update Observation State" :alignTop="true">
-			 <ui-select
-                has-search
-                label="Select State"
-                placeholder="Select State"
-                :options="all_states"
-                v-model="set_state"
-            ></ui-select>
-            <ui-button color="green" raised @click="updateState">Submit</ui-button>
-        </ui-modal>
 	</div>
 </template>
 
@@ -544,7 +534,6 @@ import DateChart from './date-chart'
 			return{
 				table_switch:false,
 				all_data:[],
-				all_states: [],
 				set_state: "",
 
 				selected_portals: ["counts", "inat", "ibp"],
@@ -606,7 +595,7 @@ import DateChart from './date-chart'
 							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			mapData(){
-				let op = this.filterPortal(op)
+				let op = this.filterPortal()
 
 				op = this.filterUsers(op)
 				op = this.filterDates(op)
@@ -1111,7 +1100,6 @@ import DateChart from './date-chart'
 				this.$refs[ref].close()
 			},
 			init () {
-				this.all_data = this.inat_data.concat(this.form_data)
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
@@ -1123,8 +1111,6 @@ import DateChart from './date-chart'
 							    .style('border-radius', '4px')
 							    .style('color', '#fff')
 							    .text('a simple tooltip')
-
-				this.all_states = country.features.map(s => s.properties.ST_NM)
 			}
 		}
 	};
