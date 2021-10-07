@@ -27,7 +27,7 @@
 	html {
 	    font-size: 100%;
 	}
-	
+
 	.filter-set .ui-collapsible__header{
 		background: #0a5;
 		color: white;
@@ -377,7 +377,7 @@
 							<div v-for="o in filteredObservationsPaginated">
 								<div class="observation-img">
 									 <div class="gallery-item-overlay"></div>
-									 <img class="gallery-item-image" :src="imgUrl(o.img_url)">
+									 <img class="gallery-item-image" :src="imgUrl(o)">
 									 <div class="gallery-item-details">
 									 	<table class="table table-sm text-light">
 									 		<tbody>
@@ -404,7 +404,7 @@
 									 					<span class="material-icons">
 									 						calendar_today
 									 					</span>
-									 				</td><td v-text="fullDate(o.created_at)"></td>
+									 				</td><td v-text="fullDate(o.created_date)"></td>
 									 			</tr>
 									 			<tr>
 									 				<td class='gallery-caption-icon'>
@@ -440,6 +440,7 @@
 				<div class="d-flex justify-content-center">
 					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="togglePortal('counts')">Butterfly Counts</button>
 					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="togglePortal('inat')">iNaturalist</button>
+					<button class="mx-2 btn" :class="portalBtnClass('ibp')" @click="togglePortal('ibp')">India Biodiversity Portal</button>
 				</div>
             </ui-collapsible>
 
@@ -537,7 +538,7 @@ import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
 	export default {
 		name:"i-nat",
-		props: ["inat_data", "inat_taxa", "form_data"],
+		props: ["inat_data", "inat_taxa", "form_data", "all_portal_data"],
 		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
 		data() {
 			return{
@@ -546,7 +547,7 @@ import DateChart from './date-chart'
 				all_states: [],
 				set_state: "",
 
-				selected_portals: ["counts", "inat"],
+				selected_portals: ["counts", "inat", "ibp"],
 				selected_users: [],
 				selected_dates: [],
 				selected_state: "Goa",
@@ -588,9 +589,8 @@ import DateChart from './date-chart'
 		},
 		computed:{
 			filteredObservations(){
-				let op = this.all_data
+				let op =  this.filterPortal(op)
 
-				op = this.filterPortal(op)
 				op = this.filterState(op)
 				op = this.filterUsers(op)
 				op = this.filterDates(op)
@@ -606,9 +606,8 @@ import DateChart from './date-chart'
 							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			mapData(){
-				let op = this.all_data
+				let op = this.filterPortal(op)
 
-				op = this.filterPortal(op)
 				op = this.filterUsers(op)
 				op = this.filterDates(op)
 				op = this.filterTaxaLevels(op)
@@ -617,10 +616,8 @@ import DateChart from './date-chart'
 				return op
 			},
 			userTableData () {
-				let user_data = this.all_data
 				let op = []
-
-				user_data = this.filterPortal(user_data)
+				let user_data = this.filterPortal()
 				user_data = this.filterState(user_data)
 				user_data = this.filterDates(user_data)
 				user_data = this.filterTaxaLevels(user_data)
@@ -644,10 +641,8 @@ import DateChart from './date-chart'
 				return op
 			},
 			dateTableData () {
-				let op = this.all_data
 				let date_data = {}
-
-				op = this.filterPortal(op)
+				let op = this.filterPortal()
 				op = this.filterState(op)
 				op = this.filterUsers(op)
 				op = this.filterTaxaLevels(op)
@@ -656,8 +651,8 @@ import DateChart from './date-chart'
 					date_data[i] = 0
 				}
 				op.forEach(o => {
-					if(Object.keys(date_data).indexOf(o.created_at.toString()) != -1){
-						date_data[o.created_at]++
+					if(Object.keys(date_data).indexOf(o.created_date.toString()) != -1){
+						date_data[o.created_date]++
 					}
 				})
 				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
@@ -709,7 +704,7 @@ import DateChart from './date-chart'
 							}
 							let common_name = ""
 								common_name = this.inat_taxa[o.taxa_id].common_name
-							
+
 							x.common_name = common_name
 							op.push(x)
 						}
@@ -751,11 +746,9 @@ import DateChart from './date-chart'
 				return op
 			},
 			taxaTableData () {
-				let filtered_observations = this.all_data
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
 				let taxa_level = {}
-
-				filtered_observations = this.filterPortal(filtered_observations)
+				let filtered_observations = this.filterPortal()
 				filtered_observations = this.filterState(filtered_observations)
 				filtered_observations = this.filterUsers(filtered_observations)
 				filtered_observations = this.filterDates(filtered_observations)
@@ -771,9 +764,7 @@ import DateChart from './date-chart'
 			},
 			treeData(){
 				let op = []
-				let filtered_observations = this.all_data
-
-				filtered_observations = this.filterPortal(filtered_observations)
+				let filtered_observations = this.filterPortal()
 				filtered_observations = this.filterState(filtered_observations)
 				filtered_observations = this.filterUsers(filtered_observations)
 				filtered_observations = this.filterDates(filtered_observations)
@@ -801,7 +792,7 @@ import DateChart from './date-chart'
 					}
 				})
 
-				
+
 				return op
 			},
 			speciesTableHeaders() {
@@ -827,11 +818,25 @@ import DateChart from './date-chart'
 					this.selected_portals.splice(pos, 1)
 				}
 			},
-			filterPortal(ar){
-				let op = ar
-				if (this.selected_portals.length > 0) {
-					op = op.filter(o => this.selected_portals.indexOf(o.portal) !== -1)
+			filterPortal(){
+				let op = []
+				let that = this
+				if(this.selected_portals.length == 0){
+					Object.keys(that.all_portal_data).forEach(p => {
+						op = op.concat(that.all_portal_data[p].map(o => {
+							o["portal"] = p
+							return o
+						}))
+					})
+				} else {
+					this.selected_portals.forEach(p => {
+						op = op.concat(that.all_portal_data[p].map(o => {
+							o["portal"] = p
+							return o
+						}))
+					})
 				}
+
 				return op
 			},
 			filterState(ar){
@@ -851,7 +856,7 @@ import DateChart from './date-chart'
 			filterDates(ar){
 				let op = ar
 				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.created_at) !== -1)
+					op = op.filter(x => this.selected_dates.indexOf(x.created_date) !== -1)
 				}
 				return op
 			},
@@ -921,7 +926,7 @@ import DateChart from './date-chart'
 			filterTitle(f){
 				let op = ""
 				switch(f){
-					case 'portals': 
+					case 'portals':
 						op = "Portals : "
 						if (this.selected_portals.length == 2){
 							op += "All selected"
@@ -1024,9 +1029,11 @@ import DateChart from './date-chart'
 					this.selected_users.push(selected.id)
 				}
 			},
-			imgUrl (url) {
-				// let op = ""
-				let op = url.replace("square", "medium")
+			imgUrl (o) {
+				let op = ""
+				if(o.portal == "inat"){
+					op = o.img_url.replace("square", "medium")
+				}
 				return op
 			},
 			fullDate (d) {
