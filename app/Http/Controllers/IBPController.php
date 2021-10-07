@@ -14,10 +14,7 @@ class IBPController extends Controller
      */
     public function index()
     {
-        $x = file_get_contents(public_path("./data/obv_1633067166524.csv"));
-        $y = explode("\n", $x);
-
-        dd($y);
+        //
     }
 
     /**
@@ -27,7 +24,9 @@ class IBPController extends Controller
      */
     public function create()
     {
-        //
+        $json_string = file_get_contents(public_path("./data/ibp.json"));
+        $y = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $json_string), true );
+        dd($y);
     }
 
     /**
