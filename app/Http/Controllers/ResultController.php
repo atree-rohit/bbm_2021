@@ -27,6 +27,7 @@ class ResultController extends Controller
                         ->toArray();
         $ibp_data = IBP::select("id", "createdBy as user_id", "placeName as place_guess", "createdOn", "associatedMedia as img_url", "locationLat as lat", "locationLon as long", "rank as taxa_rank", "scientific_name_cleaned  as taxa_name", "inat_taxa_id as taxa_id", "state")
                         ->whereNotNull("state")
+                        ->whereNotNull("inat_taxa_id")
                         ->get()
                         ->toArray();
         $forms = CountForm::where("flag", 0)
