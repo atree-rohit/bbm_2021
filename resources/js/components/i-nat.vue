@@ -4,28 +4,47 @@
 	*::after {
 	    box-sizing: border-box;
 	}
+	*::-webkit-scrollbar-track
+    {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color: #F5F5F5;
+    }
+
+    *::-webkit-scrollbar
+    {
+        width: 7px;
+        background-color: #F5F5F5;
+    }
+
+    *::-webkit-scrollbar-thumb
+    {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #a7c;
+    }
 
 	html {
 	    font-size: 100%;
-	    /*overflow: hidden;*/
 	}
-	body{
-		/*overflow: hidden;*/
-	}
-
-
-
+	
 	.filter-set .ui-collapsible__header{
-		background: #cea;
+		background: #0a5;
+		color: white;
 	}
 	.filter-set .ui-collapsible__header:hover{
-		background: #ed9 !important;
+		background: #3A8 !important;
 	}
+
 	.ui-collapsible__header-content span.material-icons{
 		color: #777;
 		margin: 0 10px;
 		transition: all .4s;
 	}
+	.filter-set span.material-icons{
+		color: white;
+	}
+
 	.ui-collapsible:hover .ui-collapsible__header-content span.material-icons{
 		color: darkgreen;
 	}
@@ -36,27 +55,6 @@
 		overflow-y: auto;
 		overflow-x: auto;
 	}
-	#map-filters::-webkit-scrollbar-track
-    {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        border-radius: 10px;
-        background-color: #F5F5F5;
-    }
-
-    #map-filters::-webkit-scrollbar
-    {
-        width: 7px;
-        background-color: #F5F5F5;
-    }
-
-    #map-filters::-webkit-scrollbar-thumb
-    {
-        border-radius: 10px;
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-        background-color: #a7c;
-    }
-
-
 
 	#date-chart-continer svg g rect,
 	.map-boundary path,
@@ -346,6 +344,11 @@
 							</table>
 						</div>
 				        <div class="d-flex justify-content-center py-1 switch-div">
+				        	<div class="me-5" v-if="selected_state != 'All'">
+				        		<button class="btn btn-sm btn-outline-danger" @click="selected_state = 'All'">
+				        			Back to All States
+				        		</button>
+				        	</div>
 							<span class="switch-label" :class="!table_switch?'switch-selected':''" @click="table_switch=false">States</span>
 							<label class="switch mx-3 my-auto"><input type="checkbox" v-model="table_switch"/>
 							<div></div>
@@ -570,7 +573,8 @@ import DateChart from './date-chart'
 					0: false,
 					1: false,
 					2: false,
-					3: false
+					3: false,
+					4: false
 				}
 			}
 		},
@@ -670,12 +674,12 @@ import DateChart from './date-chart'
 				this.filteredObservations.forEach(o => {
 					op['All'].observations++
 					op['All'].users.add(o.user_id)
-					op['All'].species.add(o.taxa_name)
+					op['All'].species.add(o.taxa_id)
 					if(o.state !== null){
 						// console.log(`+${o.state}+`)
 						op[o.state].observations++
 						op[o.state].users.add(o.user_id)
-						op[o.state].species.add(o.taxa_name)
+						op[o.state].species.add(o.taxa_id)
 					}
 				})
 
@@ -685,30 +689,32 @@ import DateChart from './date-chart'
 				let op = []
 				this.filteredObservations.forEach(o => {
 					let new_flag = true
-					op.forEach((oo, oid) => {
-						if (o.taxa_name == oo.name){
-							new_flag = false
-							op[oid].count++
-							op[oid].users.add(o.user_id)
-							op[oid].states.add(o.state)
+					let taxa_name = ""
+					if (this.inat_taxa[o.taxa_id] != undefined){
+						taxa_name = this.inat_taxa[o.taxa_id].name
+						op.forEach((oo, oid) => {
+							if (taxa_name == oo.name){
+								new_flag = false
+								op[oid].count++
+								op[oid].users.add(o.user_id)
+								op[oid].states.add(o.state)
+							}
+						})
+						if(new_flag){
+							let x = {
+								name: taxa_name,
+								count: 1,
+								users: new Set([o.user_id]),
+								states: new Set([o.state])
+							}
+							let common_name = ""
+								common_name = this.inat_taxa[o.taxa_id].common_name
+							
+							x.common_name = common_name
+							op.push(x)
 						}
-					})
-					if(new_flag){
-						let x = {
-							name: o.taxa_name,
-							count: 1,
-							users: new Set([o.user_id]),
-							states: new Set([o.state])
-						}
-						let common_name = ""
-						if(this.inat_taxa[o.taxa_id] != undefined){
-							common_name = this.inat_taxa[o.taxa_id].common_name
-						}
-						else{
-							console.log(o.id, o.taxa_id, "Not found")
-						}
-						x.common_name = common_name
-						op.push(x)
+					} else {
+						console.log(o.id, o.taxa_id, "Not found")
 					}
 				})
 				op.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
@@ -765,8 +771,6 @@ import DateChart from './date-chart'
 			},
 			treeData(){
 				let op = []
-				let obv_taxonomy = []
-				let unique_species_taxonomy = []
 				let filtered_observations = this.all_data
 
 				filtered_observations = this.filterPortal(filtered_observations)
@@ -774,41 +778,31 @@ import DateChart from './date-chart'
 				filtered_observations = this.filterUsers(filtered_observations)
 				filtered_observations = this.filterDates(filtered_observations)
 
-				obv_taxonomy = filtered_observations.map(o => {
-						let hierarchy = {
-							id: o.id,
-							rank: o.taxa_rank
-						}
-						hierarchy[o.taxa_rank] = o.taxa_name
-						hierarchy.key = o.taxa_name
-
-						if(this.inat_taxa[o.taxa_id] != undefined){
-							this.inat_taxa[o.taxa_id].ancestry.split("/").forEach(id => {
-								if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
-									hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
-								}
-							})
-						}
-						this.levels.forEach((l, lid) => {
-							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(o.taxa_rank)) ){
-								hierarchy[l] = "none"
+				filtered_observations.forEach(o => {
+					if(o.taxa_id != undefined && this.inat_taxa[o.taxa_id].rank == "species"){
+						let taxa = this.inat_taxa[o.taxa_id]
+						let hierarchy = {}
+						hierarchy[taxa.rank] = taxa.name
+						hierarchy.key = taxa.name
+						this.inat_taxa[taxa.id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.inat_taxa[id].rank) != -1){
+								hierarchy[this.inat_taxa[id].rank] = this.inat_taxa[id].name
 							}
 						})
-
-						return hierarchy
-					})
-
-				//Modify this to handle higer taxa ids
-				const unique_species_list = [...new Set(obv_taxonomy.map(item => item.species))]
-
-				unique_species_list.forEach(s => {
-					let sp_taxonomy = obv_taxonomy.find(item => item.species == s)
-					sp_taxonomy.value = 1
-					delete sp_taxonomy.id
-					delete sp_taxonomy.rank
-					unique_species_taxonomy.push(sp_taxonomy)
+						this.levels.forEach((l, lid) => {
+							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
+								hierarchy[l] = "Incertae sedis"
+							}
+						})
+						if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
+							hierarchy.value = 1
+							op.push(hierarchy)
+						}
+					}
 				})
-				return unique_species_taxonomy
+
+				
+				return op
 			},
 			speciesTableHeaders() {
 				let op = [["Taxa Name","name"], ["Common Name","common_name"],["Observations","count"],["Users","user_count"]]
@@ -885,7 +879,7 @@ import DateChart from './date-chart'
 								}
 							})
 							this.selected_taxa.forEach((t,id)  => {
-								if(t != hierarchy[this.levels[id]] && t != 'none')
+								if(t != hierarchy[this.levels[id]] && t != 'Incertae sedis')
 									match_flag = false
 							})
 							if(match_flag){
