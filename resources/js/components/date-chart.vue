@@ -27,8 +27,8 @@ export default {
 	data() {
 		return{
 			tooltip:this.popup,
-			width: window.innerWidth * 0.45,
-			height: window.innerHeight * 0.45,
+			width: window.innerWidth * 0.5,
+			height: window.innerHeight * 0.5,
 			xScale: {},
 			xScale2: {},
 			yScale: {},
@@ -53,8 +53,8 @@ export default {
 	},
 	methods:{
 		init () {
-			this.width = window.innerWidth * 0.45
-			this.height = window.innerHeight * 0.45
+			this.width = window.innerWidth * 0.48
+			this.height = window.innerHeight * 0.48
 			this.xScale = {}
 			this.xScale2 = {}
 			this.yScale = {}
