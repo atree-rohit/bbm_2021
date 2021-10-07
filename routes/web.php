@@ -5,6 +5,7 @@ use App\Http\Controllers\CountFormController;
 use App\Http\Controllers\FormRowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\INatController;
+use App\Http\Controllers\IBPController;
 use App\Http\Controllers\SpeciesController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -55,4 +56,5 @@ Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 
 Route::resource('/butterfly_count', CountFormController::class);
 // Route::resource('/inat', INatController::class);
+Route::resource('/ibp', IBPController::class);
 // Route::resource('/species', SpeciesController::class);
