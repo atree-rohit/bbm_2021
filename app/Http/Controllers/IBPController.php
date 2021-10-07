@@ -153,6 +153,43 @@ class IBPController extends Controller
         dd($added_count);
     }
 
+    public function missingTaxa()
+    {
+        $ibps = IBP::where("inat_taxa_id", null)->get()->groupBy("scientific_name_cleaned");
+        $fields = ["id", "name", "rank", "ancestry"];
+        $inat_taxa = iNatTaxa::get()->keyBy("name");
+        $taxa_url = "https://api.inaturalist.org/v1/taxa?q=";
+        $added_count = 0;
+
+        echo "<h1>".count($ibps)."</h1>";
+        // dd($ibps);
+        foreach($ibps as $name => $obvs){
+            $url = $taxa_url . str_replace(" ", "%20", $name);
+            $data = json_decode(file_get_contents($url));
+
+            if(count($data->results) > 0){
+                if(!isset($inat_taxa[$data->results[0]->name])){
+                    $taxon = new iNatTaxa();
+                    foreach ($fields as $f) {
+                        $taxon->{$f} = $data->results[0]->{$f};
+                    }
+                    $taxon->common_name = $data->results[0]->preferred_common_name ?? null;
+
+                    $taxon->save();
+                    $taxon_id = $taxon->id;
+                    $added_count++;
+                }else {
+                    $taxon_id = $inat_taxa[$data->results[0]->name]->id;
+                }
+                foreach($obvs as $o){
+                    $o->inat_taxa_id = $taxon_id;
+                    $o->save();
+                }
+            }
+        }
+        dd($added_count);
+    }
+
     /**
     * Store a newly created resource in storage.
     *
