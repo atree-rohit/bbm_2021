@@ -15,7 +15,73 @@ class IBPController extends Controller
     */
     public function index()
     {
+        $ibps = IBP::get();
 
+        foreach($ibps as $i){
+            if($i->state == ""){
+                $state = $this->get_point_state($i->locationLat, $i->locationLon);
+                if($state){
+                    $i->state = $state;
+                    $i->save();
+                }
+            } else {
+                $i->state = ucwords(strtolower($i->state));
+                $i->save();
+            }
+        }
+
+        $ibps = IBP::get()->groupBy("state");
+        echo "<h1>" . count($ibps[""]) . "</h1>";
+        $y = $ibps[""]->groupBy("placeName");
+        $known_states = ["Uttar Pradesh", "West Bengal", "Gujarat", "Karnataka"];
+
+        foreach($y as $s => $obs){
+            foreach($known_states as $ks){
+                if(strpos($s, $ks)) {
+                    foreach($obs as $o){
+                        $o->state = $ks;
+                        $o->save();
+                    }
+                }
+            }
+        }
+
+    }
+
+    public function get_point_state($lat, $long)
+    {
+        $point = [$lat, $long];
+        $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
+        $op = false;
+        foreach ($geojson->features as $state) {
+            $state_name = $state->properties->ST_NM;
+            foreach ($state->geometry->coordinates as $polygon) {
+
+                if ($this->in_polygon($polygon, $point)) {
+                    $op = $state_name;
+                }
+            }
+        }
+        return $op;
+    }
+
+    // $points_polygon, $vertices_x, $vertices_y, $longitude_x, $latitude_y)
+    public function in_polygon($polygon, $point)
+    {
+        $points_polygon = count($polygon);
+        $longitude_x = $point[1];
+        $latitude_y = $point[0];
+        $vertices_x = array_column($polygon, 0);
+        $vertices_y = array_column($polygon, 1);
+        $i = $j = $c = 0;
+
+        for ($i = 0, $j = $points_polygon-1 ; $i < $points_polygon; $j = $i++) {
+            if ((($vertices_y[$i] > $latitude_y != ($vertices_y[$j] > $latitude_y)) &&
+                ($longitude_x < ($vertices_x[$j] - $vertices_x[$i]) * ($latitude_y - $vertices_y[$i]) / ($vertices_y[$j] - $vertices_y[$i]) + $vertices_x[$i]))) {
+                $c = !$c;
+            }
+        }
+        return $c;
     }
 
     /**
