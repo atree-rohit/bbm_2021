@@ -928,7 +928,7 @@ import DateChart from './date-chart'
 				switch(f){
 					case 'portals':
 						op = "Portals : "
-						if (this.selected_portals.length == 2){
+						if (this.selected_portals.length == 3){
 							op += "All selected"
 						} else {
 							op += `${this.selected_portals.length} selected`
