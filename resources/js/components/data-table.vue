@@ -4,26 +4,7 @@
         overflow-y: scroll;
         overflow-x: auto;
     }
-    
-    /*#table-container::-webkit-scrollbar-track
-    {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        border-radius: 10px;
-        background-color: #F5F5F5;
-    }
 
-    #table-container::-webkit-scrollbar
-    {
-        width: 7px;
-        background-color: #F5F5F5;
-    }
-
-    #table-container::-webkit-scrollbar-thumb
-    {
-        border-radius: 10px;
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-        background-color: #a7c;
-    }*/
     .tableFixHead{
         /* overflow: auto; */
         height: 100px;
@@ -42,6 +23,28 @@
         background: #ffa;
         cursor: pointer;
     }
+    .badge {
+        margin: 2px!important;
+        font-weight: 100!important;
+        font-size: .75em;
+        border-radius: 3px!important;
+        color: #000!important;
+    }
+    .rounded-pill {
+        border-radius: 50rem!important;
+    }
+    .badge-success {
+        border: 1px solid rgba(25,135,84,.5);
+        background-color: #c3e6cb;
+    }
+    .badge-warning {
+        border: 1px solid rgba(255,193,7,.5);
+        background-color: #ffeeba;
+    }
+    .badge-info {
+        border: 1px solid rgba(13,110,253,.5);
+        background-color: #bee5eb;
+    }
     @media screen and (max-width: 800px) {
         .table-container{
             max-width:95vw;
@@ -56,7 +59,7 @@
                 'max-height': `calc(100% - ${tableHeight}px)`
                 }"
         >
-            
+
             <table class="table tableFixHead"ref="container">
                 <thead class="">
                     <tr>
@@ -71,8 +74,21 @@
                     >
                         <td v-for="h in headers"
                             :key="h[1]"
-                            v-text="row[h[1]]"
-                            ></td>
+                            >
+                            <template v-if="h[1] == 'portals'">
+                                <!-- <span class="badge rounded-pill mx-1 badge-success">inat</span>' -->
+                                <span v-for="p in row[h[1]].split(', ')"
+                                        class="badge rounded-pill mx-1"
+                                        :class="badgeClass(p)"
+                                >
+                                    {{p}}
+                                </span>
+                            </template>
+                            <template v-else>
+                                {{row[h[1]]}}
+                            </template>
+
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -111,8 +127,19 @@ export default {
     },
     methods:{
         updateHeight(){
-            // this.height = this.$refs.container.offsetTop
             this.height = this.$refs.container.getBoundingClientRect().top
+        },
+        badgeClass(p){
+            let op  = ""
+            switch(p){
+                case "inat" : op = 'badge-success'
+                    break
+                case "ibp" : op = 'badge-warning'
+                    break
+                case "counts" : op = 'badge-info'
+                    break
+            }
+            return op
         }
     }
 }
