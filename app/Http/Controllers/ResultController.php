@@ -21,13 +21,16 @@ class ResultController extends Controller
                                 ->get()
                                 ->keyBy("id");
 
-        $inat_data = iNat::select("id", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "inat_created_at")
+        $inat_data = iNat::select("id", "location", "place_guess", "state", "taxa_id", "taxa_name", "taxa_rank", "img_url", "user_id", "user_name", "inat_created_at", "observed_on")
                         // ->limit(1000)
+                        ->where("inat_created_at", "LIKE", "%2021-09-%")
                         ->get()
                         ->toArray();
         $ibp_data = IBP::select("id", "createdBy as user_id", "placeName as place_guess", "createdOn", "associatedMedia as img_url", "locationLat as lat", "locationLon as long", "rank as taxa_rank", "scientific_name_cleaned  as taxa_name", "inat_taxa_id as taxa_id", "state")
                         ->whereNotNull("state")
                         ->whereNotNull("inat_taxa_id")
+                        ->where("fromDate", "LIKE", "%09/2021")
+                        ->where("flagNotes", "not Like", "%uplicate%")
                         ->get()
                         ->toArray();
         $forms = CountForm::where("flag", 0)
@@ -40,15 +43,19 @@ class ResultController extends Controller
         $form_data = [];
 
         foreach ($inat_data as $k=>$id) {
-            $timestamp = strtotime($id["inat_created_at"]);
-            $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
+            // $timestamp = strtotime($id["inat_created_at"]);
+            $date = explode("-", $id["observed_on"]);
+            // $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
+            $inat_data[$k]["date"] = (int) $date[2];
             $inat_data[$k]["individuals"] = 1;
             unset($inat_data[$k]["inat_created_at"]);
         }
         foreach($ibp_data as $k=>$id){
             if($id["state"] != null){
+                $created = explode("/",$id["createdOn"]);
                 $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
-                $ibp_data[$k]["created_date"] = $id["createdOn"];
+                $ibp_data[$k]["date"] = (int) $created[0];
+
                 unset($ibp_data[$k]["lat"]);
                 unset($ibp_data[$k]["long"]);
                 unset($ibp_data[$k]["createdOn"]);
@@ -61,7 +68,7 @@ class ResultController extends Controller
                 "user_name" => $f["name"],
                 "state" => $f["state"],
                 "location" => $f["latitude"] . ",". $f["longitude"],
-                "created_date" => $created[0],
+                "date" => (int) $created[0],
                 "img_url" => "",
             ];
             foreach ($f["rows"] as $r) {
