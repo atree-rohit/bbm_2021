@@ -1,87 +1,96 @@
 <style scoped>
-    .breadcrumbs  a{
-        font-size:.7em;
-        height:30px;
-        line-height:30px;
-        vertical-align:middle;
-        text-align:center;
-        padding:0 7px;
-        position:relative;
-        display:inline-block;
-        background-color: #fff;
-        margin: 2px 0;
-        color:#000;
-        border:2px solid #8ab;
-        border-radius:7px;
-    }
     .breadcrumb {
         list-style: none;
-        overflow: hidden;
         padding: 0;
         margin: 0;
     }
-    .breadcrumb li a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 0 10px 55px;
-        background: brown; /* fallback color */
-        background: #004040;
-        position: relative;
-        display: block;
-        float: left;
-    }
-    .breadcrumb li a:after {
-        content: " ";
-        display: block;
-        width: 0;
-        height: 0;
-        border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-        border-bottom: 50px solid transparent;
-        border-left: 30px solid #004040;
-        position: absolute;
-        top: 50%;
-        margin-top: -50px;
-        left: 100%;
-        z-index: 2;
-    }
-    .breadcrumb li a:before {
-        content: " ";
-        display: block;
-        width: 0;
-        height: 0;
-        border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-        border-bottom: 50px solid transparent;
-        border-left: 30px solid white;
-        position: absolute;
-        top: 50%;
-        margin-top: -50px;
-        margin-left: 1px;
-        left: 100%;
-        z-index: 1;
-    }
-    .breadcrumb li:first-child a {
-        padding-left: 10px;
-    }
-    .breadcrumb li:last-child a {
-        background: rgb(200,200,0) !important;
-    }
-    .breadcrumb li:last-child a:after {
-        border-left: 30px solid rgb(200,200,0);
-    }
+    .breadcrumb{
+    background: #eee;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #f5f5f5 #e5e5e5 #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 2px rgba(0,0,0,.2);
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .breadcrumb li{
+    float: left;
+  }
+
+  .breadcrumb a{
+    padding: .7em 1em .7em 2em;
+    float: left;
+    text-decoration: none;
+    color: #303;
+    position: relative;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+    background-color: #ddd;
+    background-image: linear-gradient(to right, #7c9, #aec);
+  }
+
+  .breadcrumb li:first-child a{
+    padding-left: 1em;
+    border-radius: 5px 0 0 5px;
+  }
+
+  .breadcrumb a:hover{
+    background: #fff;
+  }
+
+  .breadcrumb a::after,
+  .breadcrumb a::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5em;
+    border-top: 1.5em solid transparent;
+    border-bottom: 1.5em solid transparent;
+    border-left: 1em solid;
+    right: -1em;
+  }
+
+  .breadcrumb a::after{
+    z-index: 2;
+    border-left-color: #aec;
+  }
+
+  .breadcrumb a::before{
+    border-left-color: #5a3;
+    right: -1.1em;
+    z-index: 1;
+  }
+
+  .breadcrumb a:hover::after{
+    border-left-color: #fff;
+  }
+
+  .breadcrumb .current,
+  .breadcrumb .current:hover{
+    font-weight: bold;
+    background: none;
+  }
+
+  .breadcrumb .current::after,
+  .breadcrumb .current::before{
+    content: normal;
+  }
 
     .breadcrumb li:hover a
     {
-        color:#0ff;
-        text-decoration: underline;
+        color: #282 !important;
+        text-decoration: none;
+        text-shadow: 1px 1px 5px rgba(100,255,100,.25);
     }
 </style>
 <template>
     <div>
-        <div class="breadcrumb text-center">
+        <ul class="breadcrumb text-center">
             <li v-for="(crumb, i) in breadcrumbs">
-                <a href="#" :title="crumbTitle(crumb, i)" @click="crumbClick(crumb)">{{ crumb }}</a>
+                <a href="#" :title="`${taxa_levels[i]}: ${crumb}`" @click="crumbClick(crumb)">{{ crumb }}</a>
             </li>
-        </div>        
+        </ul>
         <div id="sunburstChart" class=""></div>
     </div>
 </template>
@@ -110,6 +119,7 @@
         		root:{},
                 breadcrumbs:[],
                 watch_click:false,
+                taxa_levels: ["Super-family", "Family", "Sub-family", "Tribe", "Genus", "Species"],
 			}
 		},
 		computed: {
@@ -118,13 +128,18 @@
             },
 		},
 		watch: {
+            selected (newVal) {
+                if(newVal.length == 0){
+                    this.crumbClick("Papilionoidea")
+                }
+            },
             tree_data () {
                 this.init()
-                
+
                 this.watch_click = true
                 this.crumbClick(this.selected[this.selected.length - 1])
                 this.watch_click = false
-                
+
             }
 		},
         mounted() {
@@ -151,7 +166,7 @@
                 this.root = this.partition(this.speciesData)
                 this.root.each(d => d.current = d)
 
-            
+
             	if (!d3.select("#sunburstChart svg").empty()) {
                     d3.selectAll("#sunburstChart svg").remove()
                 }
@@ -191,7 +206,7 @@
             		.on("mouseover", function (d){ d3.select(this).classed("taxa-selected", true)})
             		.on("mouseout", function (d){ d3.select(this).classed("taxa-selected",false)})
             		.on("click", d =>  this.clicked(d))
-                        
+
 
             	this.path.append("title")
             		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ").replace("Reset > ", "")} - ${d.value}`);
@@ -219,7 +234,7 @@
             clicked(p) {
                 var selected_taxon = p.data.name
                 // console.log(selected_taxon, p)
-                
+
                 if(selected_taxon == 'Reset'){
                     alert("Root of the Tree")
                 // } else if (p.data.children.length == 0){
@@ -262,16 +277,16 @@
     					return +this.getAttribute("fill-opacity") || that.labelVisible(d.target)
                     }).transition(t)
     					.attr("fill-opacity", d => +that.labelVisible(d.target))
-    					.attrTween("transform", d => () => that.labelTransform(d.current))                    
-                }                    
+    					.attrTween("transform", d => () => that.labelTransform(d.current))
+                }
 
 			},
             arcVisible(d){
-                // 
+                //
                 return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
             },
             labelVisible(d) {
-                // 
+                //
                 return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
             },
             labelTransform(d) {
@@ -295,7 +310,7 @@
 				return match
 			},
             format(d){
-                // 
+                //
                 return d3.format(d)
 			},
             partition(data) {
@@ -334,17 +349,17 @@
                         result = this.populate_breadcrumbs(p.parent, result);
                     }
                     result.push(p.data.name)
-                } 
+                }
                 return result
             },
             crumbTitle(text, depth){
-                var taxon = ""
+                let taxon = ""
+                let rank = taxa_levels[depth]
                 if(text != undefined){
-                    if(depth > 0){
-                        taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
-                    }                    
+                    taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
+
                 }
-                return  taxon
+                return  taxon + "-" + depth
             },
             crumbClick(text){
                 this.root.descendants().forEach(a => {
