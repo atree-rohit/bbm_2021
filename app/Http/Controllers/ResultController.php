@@ -84,9 +84,9 @@ class ResultController extends Controller
             }
         }
         $all_portal_data = [
+            "counts" => $form_data,
             "inat" => $inat_data,
-            "ibp" => $ibp_data,
-            "counts" => $form_data
+            "ibp" => $ibp_data
         ];
 
 
