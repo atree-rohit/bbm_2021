@@ -404,7 +404,7 @@
 									 					<span class="material-icons">
 									 						calendar_today
 									 					</span>
-									 				</td><td v-text="fullDate(o.created_date)"></td>
+									 				</td><td v-text="fullDate(o.date)"></td>
 									 			</tr>
 									 			<tr>
 									 				<td class='gallery-caption-icon'>
@@ -428,46 +428,46 @@
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
-			<ui-collapsible :class="filterClass('portals')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+			<ui-collapsible :class="accordianClass('portals')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
 				<div slot="header" class="d-flex">
 					<span class="material-icons">
 						pages
 					</span>
 					<div>
-						{{filterTitle('portals')}}
+						{{accordianTitle('portals')}}
 					</div>
 				</div>
 				<div class="d-flex justify-content-center">
-					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="togglePortal('counts')">Butterfly Counts</button>
-					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="togglePortal('inat')">iNaturalist</button>
-					<button class="mx-2 btn" :class="portalBtnClass('ibp')" @click="togglePortal('ibp')">India Biodiversity Portal</button>
+					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="selectPortal('counts')">Butterfly Counts</button>
+					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="selectPortal('inat')">iNaturalist</button>
+					<button class="mx-2 btn" :class="portalBtnClass('ibp')" @click="selectPortal('ibp')">India Biodiversity Portal</button>
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('users')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+            <ui-collapsible :class="accordianClass('users')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
             	<div slot="header" class="d-flex">
 					<span class="material-icons">
 						people
 					</span>
 					<div>
-						{{filterTitle('users')}}
+						{{accordianTitle('users')}}
 					</div>
 				</div>
 				<data-table :data="userTableData"
-							:headers='[["Sl No","sl_no"],["User ID","id"],["User Name","name"],["Observations","observations"],["State","state"]]'
+							:headers='[["Sl No","sl_no"],["User ID","id"],["Observations","observations"],["State","state"], ["Portals", "portals"]]'
 							:selected='selected_users'
 							:selected_col="'id'"
 							@rowClick="seletUser"
 					/>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('date')" :disableRipple="true" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+            <ui-collapsible :class="accordianClass('date')" :disableRipple="true" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						today
 					</span>
 					<div>
-						{{filterTitle('date')}}
+						{{accordianTitle('date')}}
 					</div>
 				</div>
                 <div id="date-filter">
@@ -475,13 +475,13 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('id_level')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
+            <ui-collapsible :class="accordianClass('id_level')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						account_tree
 					</span>
 					<div>
-						{{filterTitle('id_level')}}
+						{{accordianTitle('id_level')}}
 					</div>
 				</div>
                 <div id="taxon-level-filter">
@@ -504,13 +504,13 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="filterClass('taxon')" :disableRipple="true" :open="accordions[4]" @open="onAccordionOpen(4)" @close="onAccordionClose(4)">
+            <ui-collapsible :class="accordianClass('taxon')" :disableRipple="true" :open="accordions[4]" @open="onAccordionOpen(4)" @close="onAccordionClose(4)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						data_usage
 					</span>
 					<div>
-						{{filterTitle('taxon')}}
+						{{accordianTitle('taxon')}}
 					</div>
 				</div>
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
@@ -528,37 +528,28 @@ import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
 	export default {
 		name:"i-nat",
-		props: ["inat_data", "inat_taxa", "form_data", "all_portal_data"],
+		props: ["inat_taxa", "all_portal_data"],
 		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
 		data() {
 			return{
-				table_switch:false,
-				all_data:[],
-				set_state: "",
-
 				selected_portals: ["counts", "inat", "ibp"],
 				selected_users: [],
 				selected_dates: [],
 				selected_state: "Goa",
-				selected_point:  null,
 				selected_taxa_levels: [],
 				selected_taxa: [],
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
-				taxa_tree: {},
+				observationsPerPage: 100,
+				observationsPageNo: 1,
+
+				tooltip: null,
 				tabs: [
 					{title:"Location"},
 					{title:"Table"},
 					{title:"Observations"},
 				],
-				map_first_render:true,
-
-				svgWidth: window.innerWidth * 0.6,
-				svgHeight: window.innerHeight * 0.9,
-				tooltip: null,
-
-				observationsPerPage: 100,
-				observationsPageNo: 1,
+				table_switch:false,
 				accordions: {
 					0: false,
 					1: false,
@@ -577,7 +568,7 @@ import DateChart from './date-chart'
 		watch: {
 		},
 		computed:{
-			filteredObservations(){
+			filteredObservations (){
 				let op =  this.filterPortal(op)
 
 				op = this.filterState(op)
@@ -589,12 +580,12 @@ import DateChart from './date-chart'
 
 				return op
 			},
-			filteredObservationsPaginated(){
+			filteredObservationsPaginated (){
 				//
 				return  this.filteredObservations.filter(o => o.img_url != '')
 							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
-			mapData(){
+			mapData (){
 				let op = this.filterPortal()
 
 				op = this.filterUsers(op)
@@ -614,12 +605,17 @@ import DateChart from './date-chart'
 				user_data = d3.nest().key(o => o.user_id).object(user_data)
 
 				op = Object.keys(user_data)
-						.map((u) => {return {
+						.map((u) => {
+							let states = new Set(user_data[u].map(u => u.state))
+							let portals = new Set(user_data[u].map(u => u.portal))
+							return {
 									id: u,
-									name: user_data[u][0].user_name,
+									// name: user_data[u][0].user_name,
 									observations: user_data[u].length,
-									state: user_data[u][0].state
-								}})
+									state: [...states].join(", "),
+									portals: [...portals].join(", ")
+							}
+						})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 
 				op = op.map((o,id) => {
@@ -640,8 +636,8 @@ import DateChart from './date-chart'
 					date_data[i] = 0
 				}
 				op.forEach(o => {
-					if(Object.keys(date_data).indexOf(o.created_date.toString()) != -1){
-						date_data[o.created_date]++
+					if(Object.keys(date_data).indexOf(o.date.toString()) != -1){
+						date_data[o.date]++
 					}
 				})
 				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
@@ -751,7 +747,7 @@ import DateChart from './date-chart'
 
 				return op
 			},
-			treeData(){
+			treeData (){
 				let op = []
 				let filtered_observations = this.filterPortal()
 				filtered_observations = this.filterState(filtered_observations)
@@ -784,7 +780,7 @@ import DateChart from './date-chart'
 
 				return op
 			},
-			speciesTableHeaders() {
+			speciesTableHeaders () {
 				let op = [["Taxa Name","name"], ["Common Name","common_name"],["Observations","count"],["Users","user_count"]]
 				if(this.selected_state == "All"){
 					op.push(["States", "state_count"])
@@ -793,21 +789,7 @@ import DateChart from './date-chart'
 			}
 		},
 		methods: {
-			portalBtnClass (p) {
-				let op = "btn-outline-primary"
-				if(this.selected_portals.indexOf(p) != -1)
-					op = "btn-success"
-				return op
-			},
-			togglePortal (p) {
-				let pos = this.selected_portals.indexOf(p)
-				if(pos == -1){
-					this.selected_portals.push(p)
-				} else {
-					this.selected_portals.splice(pos, 1)
-				}
-			},
-			filterPortal(){
+			filterPortal (){
 				let op = []
 				let that = this
 				if(this.selected_portals.length == 0){
@@ -828,35 +810,35 @@ import DateChart from './date-chart'
 
 				return op
 			},
-			filterState(ar){
+			filterState (ar){
 				let op = ar
 				if (this.selected_state != 'All') {
 					op = op.filter(o => o.state == this.selected_state)
 				}
 				return op
 			},
-			filterUsers(ar){
+			filterUsers (ar){
 				let op = ar
 				if(this.selected_users.length > 0){
 					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
 				}
 				return op
 			},
-			filterDates(ar){
+			filterDates (ar){
 				let op = ar
 				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.created_date) !== -1)
+					op = op.filter(x => this.selected_dates.indexOf(x.date) !== -1)
 				}
 				return op
 			},
-			filterTaxaLevels(ar){
+			filterTaxaLevels (ar){
 				let op = ar
 				if(this.selected_taxa_levels.length > 0){
 					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
 				}
 				return op
 			},
-			filterTaxa(ar){
+			filterTaxa (ar){
 				let op = ar
 				if(this.selected_taxa.length > 1){
 					let taxa_match = []
@@ -886,6 +868,65 @@ import DateChart from './date-chart'
 				}
 				return op
 			},
+
+			selectPortal (p) {
+				let pos = this.selected_portals.indexOf(p)
+				if(pos == -1){
+					this.selected_portals.push(p)
+				} else {
+					this.selected_portals.splice(pos, 1)
+				}
+			},
+			selectState (s) {
+				// console.log("emit setter", s)
+				this.selected_state = s
+			},
+			tableSelectState (s){
+				let selected = this.statesTableData[s].state
+				if (this.selected_state == selected) {
+					this.selected_state = 'All'
+				} else {
+					this.selected_state = selected
+				}
+			},
+			seletUser (u){
+				let selected = this.userTableData[u]
+				let index = this.selected_users.indexOf(selected.id)
+				if (index !== -1) {
+					this.selected_users.splice(index, 1);
+				} else {
+					this.selected_users.push(selected.id)
+				}
+			},
+			selectDateRange (d){
+				//
+				this.selected_dates = d
+			},
+			selectTaxaLevel (tname) {
+				let op = this.selected_taxa_levels.indexOf(tname)
+				if(op == -1){
+					this.selected_taxa_levels.push(tname)
+				} else {
+					this.selected_taxa_levels.splice(op, 1)
+				}
+			},
+			selectTaxon (t) {
+				//
+				this.selected_taxa = t
+				// console.log(this.selected_taxa)
+			},
+			tableSelectTaxa (t) {
+				// let selected = this.stateSpeciesList[t].name
+				console.log(this.stateSpeciesList[t])
+				// this.selected_taxa.push(selected)
+			},
+
+			portalBtnClass (p) {
+				let op = "btn-outline-primary"
+				if(this.selected_portals.indexOf(p) != -1)
+					op = "btn-success"
+				return op
+			},
 			idLevelBtnClass (t) {
 				let op = "btn-outline-secondary"
 				switch(t){
@@ -912,7 +953,30 @@ import DateChart from './date-chart'
 						break;
 				}
 			},
-			filterTitle(f){
+			taxaLevelBtnClass (tname, no) {
+				let op = "btn-outline-secondary"
+				if (this.selected_taxa_levels.indexOf(tname) != -1) {
+					if( no == 0){
+						op = "btn-danger"
+					} else {
+						op = "btn-success"
+					}
+				} else if( no == 0) {
+					op = "btn-outline-danger"
+				}
+				return op
+			},
+			accordianClass (f){
+				let op = ""
+				if(this.accordianTitle(f).includes(": All selected")){
+					op = ""
+				} else {
+					op = "filter-set"
+				}
+				return op;
+			},
+
+			accordianTitle (f){
 				let op = ""
 				switch(f){
 					case 'portals':
@@ -957,71 +1021,22 @@ import DateChart from './date-chart'
 				}
 				return op
 			},
-			filterClass(f){
-				let op = ""
-				if(this.filterTitle(f).includes(": All selected")){
-					op = ""
-				} else {
-					op = "filter-set"
-				}
-				return op;
-			},
-			onAccordionOpen(id) {
+			onAccordionOpen (id) {
 				Object.keys(this.accordions).forEach(key => {
 					this.accordions[key] = key == id; // eslint-disable-line eqeqeq
 				});
 			},
-			onAccordionClose(key) {
+			onAccordionClose (key) {
 				//
 				this.accordions[key] = false;
 			},
-			updateState () {
-				const axios = require('axios');
-				let post_data = {
-					id: this.selected_point.id,
-					state: this.set_state
-				}
-				var that = this;
 
-				axios.post('/inat/update_state', post_data)
-					.then(function (response) {
-						if(response.status == 200){
-							that.closeModal('update-state-Modal')
-						}
-					})
-					.catch(function (error) {
-						console.log(error);
-					})
-					.then( function () {
-						location.reload();
-					});
-			},
-			setMissingState (p) {
-				this.inat_data.forEach(o =>{
-					if(o.id == p[2]){
-						this.selected_point = o
-						if(o.state == null){
-							this.set_state = ''
-						} else {
-							this.set_state = o.state
-						}
-					}
-				})
-				this.openModal('update-state-Modal')
-			},
-			seletUser(u){
-				let selected = this.userTableData[u]
-				let index = this.selected_users.indexOf(selected.id)
-				if (index !== -1) {
-					this.selected_users.splice(index, 1);
-				} else {
-					this.selected_users.push(selected.id)
-				}
-			},
 			imgUrl (o) {
 				let op = ""
 				if(o.portal == "inat"){
 					op = o.img_url.replace("square", "medium")
+				} else if(o.portal == "ibp"){
+					op = `https://indiabiodiversity.org/files-api/api/get/raw/observations/${o.img_url}`
 				}
 				return op
 			},
@@ -1041,64 +1056,15 @@ import DateChart from './date-chart'
 				return op
 			},
 			gotoObservation (o) {
-				let url = 'https://www.inaturalist.org/observations/' + o.id;
+				let url = ""
+				if(o.portal == "inat"){
+					url = 'https://www.inaturalist.org/observations/' + o.id
+				} else if (o.portal == "ibp"){
+					url = 'https://indiabiodiversity.org/observation/show/' + o.id
+				}
 				window.open(url, '_blank').focus();
 			},
-			selectDateRange(d){
-				//
-				this.selected_dates = d
-			},
-			selectState (s) {
-				// console.log("emit setter", s)
-				this.selected_state = s
-			},
-			tableSelectState(s){
-				let selected = this.statesTableData[s].state
-				if (this.selected_state == selected) {
-					this.selected_state = 'All'
-				} else {
-					this.selected_state = selected
-				}
-			},
-			selectTaxon (t) {
-				//
-				this.selected_taxa = t
-				// console.log(this.selected_taxa)
-			},
-			selectTaxaLevel (tname) {
-				let op = this.selected_taxa_levels.indexOf(tname)
-				if(op == -1){
-					this.selected_taxa_levels.push(tname)
-				} else {
-					this.selected_taxa_levels.splice(op, 1)
-				}
-			},
-			tableSelectTaxa (t) {
-				// let selected = this.stateSpeciesList[t].name
-				console.log(this.stateSpeciesList[t])
-				// this.selected_taxa.push(selected)
-			},
-			taxaLevelBtnClass (tname, no) {
-				let op = "btn-outline-secondary"
-				if (this.selected_taxa_levels.indexOf(tname) != -1) {
-					if( no == 0){
-						op = "btn-danger"
-					} else {
-						op = "btn-success"
-					}
-				} else if( no == 0) {
-					op = "btn-outline-danger"
-				}
-				return op
-			},
-			openModal (ref) {
-				//
-				this.$refs[ref].open()
-			},
-			closeModal (ref) {
-				//
-				this.$refs[ref].close()
-			},
+
 			init () {
 				this.tooltip = d3.select('body')
 							    .append('div')
