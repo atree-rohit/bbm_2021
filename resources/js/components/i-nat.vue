@@ -56,31 +56,12 @@
 		overflow-x: auto;
 	}
 
-	#date-chart-continer svg g rect,
-	.map-boundary path,
-	.map-points circle,
-	.doughnut-chart path
-	{
-		transition: fill .5s;
-	}
 	.map-points circle{
 		stroke-width: .5px;
 		stroke: red;
 		fill: pink;
 	}
-	#date-chart-continer svg g.main-date-chart rect:hover {
-	  fill: yellow;
-	  cursor: pointer;
-	  background: orangered;
-	}
-	.y-grid .tick line{
-		stroke: #ccc;
-	}
-	.x-ticks .tick text{
-		text-anchor: end;
-		transform: rotate(-20deg);
-		font-size: .5vw;
-	}
+
 	.map-boundary path{
 		stroke: #333;
 		stroke-linejoin: round;
@@ -115,11 +96,6 @@
 		font-size: calc(1rem + 1vw);
 	}
 
-
-	.map-data-title{
-		font-size: calc(1rem + 1vw);
-	}
-
 	.ui-tabs__body{
 		padding: 0;
 	}
@@ -131,95 +107,16 @@
 	.ui-collapsible__body{
 		padding: 2px;
 	}
-	/*#observations-container{
-		max-height: 82vh;
-		overflow-y: scroll;
-	}*/
 
 	#observations-container{
 		overflow-y: scroll;
 	}
-	#gallery{
-		/* Prevent vertical gaps */
-		/*line-height: 0;*/
 
-		-webkit-column-count: 3;
-		-webkit-column-gap:   2px;
-		-moz-column-count:    3;
-		-moz-column-gap:      2px;
-		column-count:         3;
-		column-gap:           2px;
+	#observations-pagination-div{
+		background: #cad;
+		padding: 10px;
 	}
 
-	#gallery div {
-		/* Just in case there are inline attributes */
-		width: 100% !important;
-		height: auto !important;
-		margin: 2px;
-	}
-	.observation-img{
-		position: relative;
-	}
-	.observation-img .gallery-item-overlay {
-		background: rgba(0,0,0,0.7);
-		position: absolute;
-		height: 99%;
-		width: 100%;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		opacity: 0;
-		-webkit-transition: all 0.3s ease-in-out 0s;
-		-moz-transition: all 0.3s ease-in-out 0s;
-		transition: all 0.3s ease-in-out 0s;
-	}
-
-	.observation-img:hover .gallery-item-overlay{
-		opacity: 1;
-	}
-
-	.observation-img .gallery-item-image{
-		width: 100%;
-	}
-
-	.observation-img .gallery-item-details {
-		position: absolute;
-		text-align: center;
-		padding-left: 1em;
-		padding-right: 1em;
-		width: 100%;
-		top: 180%;
-		left: 50%;
-		opacity: 0;
-		-webkit-transform: translate(-50%, -50%);
-		-moz-transform: translate(-50%, -50%);
-		transform: translate(-50%, -50%);
-		-webkit-transition: all 0.2s ease-in-out 0s;
-		-moz-transition: all 0.2s ease-in-out 0s;
-		transition: all 0.2s ease-in-out 0s;
-	}
-
-	.observation-img:hover .gallery-item-details{
-		top: 50%;
-		left: 50%;
-		opacity: 1;
-		color:  #aaa;
-	}
-
-	.gallery-item-details .table-sm,
-	.gallery-item-details tr,
-	.gallery-item-details td
-	{
-		padding: 1px;
-		margin: 0;
-	}
-	.place-cell{
-		font-size: .6rem;
-	}
-	.gallery-caption-icon{
-		font-size: .9rem;
-	}
 	#date-chart-continer .tick line{
 		stroke:  #aaa;
 		stroke-width: 0.5px;
@@ -291,14 +188,6 @@
 		#report-page{
 			grid-template-columns: repeat(1, 1fr);
 		}
-		#gallery {
-  			-webkit-column-count: 2;
-			-webkit-column-gap:   1px;
-			-moz-column-count:    2;
-			-moz-column-gap:      1px;
-			column-count:         2;
-			column-gap:           1px;
-		}
 	}
 </style>
 <template>
@@ -317,7 +206,6 @@
 					v-for="tab in tabs"
 				>
 					<div id="map-container" v-if="tab.title === 'Location'">
-						<!-- <div id="map-container"></div> -->
 						<india-map :map_data="mapData"
 								   :selected_state="selected_state"
 								   :popup="tooltip"
@@ -357,13 +245,13 @@
 						</div>
 						<div class="species-data-table">
 							<data-table :data="statesTableData"
-										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"]]'
+										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"], ["Portals", "portals"]]'
 										:selected='[selected_state]'
 										:selected_col="'state'"
 										@rowClick="tableSelectState"
 										v-if="!table_switch"
 							/>
-							<data-table :data="stateSpeciesList"
+							<data-table :data="speciesTableData"
 										:headers='speciesTableHeaders'
 										:selected="[]"
 										:selected_col="''"
@@ -373,56 +261,17 @@
 						</div>
 					</div>
 					<div id="observations-container" v-if="tab.title === 'Observations'">
-						<div id="gallery">
-							<div v-for="o in filteredObservationsPaginated">
-								<div class="observation-img">
-									 <div class="gallery-item-overlay"></div>
-									 <img class="gallery-item-image" :src="imgUrl(o)">
-									 <div class="gallery-item-details">
-									 	<table class="table table-sm text-light">
-									 		<tbody>
-									 			<tr>
-									 				<td class='gallery-caption-icon'>
-									 					<span class="material-icons">
-									 						badge
-									 					</span>
-									 				</td>
-								 					<td v-text="speciesName(o.taxa_id)">
-
-									 				</td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-caption-icon'>
-									 					<span class="material-icons">
-									 						person
-									 					</span>
-									 				</td>
-									 				<td v-text="o.user_id"></td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-caption-icon'>
-									 					<span class="material-icons">
-									 						calendar_today
-									 					</span>
-									 				</td><td v-text="fullDate(o.date)"></td>
-									 			</tr>
-									 			<tr>
-									 				<td class='gallery-caption-icon'>
-									 					<span class="material-icons">
-															place
-														</span>
-									 				</td><td class="place-cell" v-text="o.place_guess"></td>
-									 			</tr>
-									 			<tr>
-									 				<td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
-									 			</tr>
-									 		</tbody>
-									 	</table>
-
-									 </div>
-								</div>
+						<div class="d-flex justify-content-center" id="observations-pagination-div">
+							<div v-if="observationsPageNo > 1">
+								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo--">&lt;</button>
 							</div>
+							<div class="mx-3 my-auto">Page {{observationsPageNo}} of {{Math.ceil(filteredObservations.length/observationsPerPage)}}</div>
+							<div v-if="observationsPageNo <= Math.ceil(filteredObservations.length/observationsPerPage)">
+								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo++">&gt;</button>
+							</div>
+
 						</div>
+						<image-gallery :observations="filteredObservationsPaginated" :taxa="inat_taxa"/>
 					</div>
 				</ui-tab>
 			</ui-tabs>
@@ -436,6 +285,10 @@
 					<div>
 						{{accordianTitle('portals')}}
 					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_portals.length > 0 && selected_portals.length <3"
+							@click.stop='selected_portals = ["counts", "inat", "ibp"]'
+						>Reset</button>
 				</div>
 				<div class="d-flex justify-content-center">
 					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="selectPortal('counts')">Butterfly Counts</button>
@@ -452,6 +305,10 @@
 					<div>
 						{{accordianTitle('users')}}
 					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_users.length > 0"
+							@click.stop='selected_users = []'
+						>Reset</button>
 				</div>
 				<data-table :data="userTableData"
 							:headers='[["Sl No","sl_no"],["User ID","id"],["Observations","observations"],["State","state"], ["Portals", "portals"]]'
@@ -469,6 +326,10 @@
 					<div>
 						{{accordianTitle('date')}}
 					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_dates.length > 0"
+							@click.stop='selected_dates = []'
+						>Reset</button>
 				</div>
                 <div id="date-filter">
 					<date-chart :dateTableData="dateTableData" :selected_dates="selected_dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
@@ -483,6 +344,10 @@
 					<div>
 						{{accordianTitle('id_level')}}
 					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_taxa_levels.length > 0 && selected_taxa_levels.length < 10"
+							@click.stop='selected_taxa_levels = []'
+						>Reset</button>
 				</div>
                 <div id="taxon-level-filter">
 					<div id="taxa-level-btns" class="d-flex flex-wrap justify-content-center">
@@ -496,9 +361,9 @@
 						>
 						</button>
 					</div>
-					<div class="d-flex justify-content-around">
-						<button class="btn btn-sm" :class="idLevelBtnClass('all')" @click="idLevelBtnClick('all')">Select All</button>
-						<button class="btn btn-sm" :class="idLevelBtnClass('none')" @click="idLevelBtnClick('none')">Select None</button>
+					<div class="d-flex justify-content-center mt-3">
+						<button class="btn btn-sm mx-3" :class="idLevelBtnClass('all')" @click="idLevelBtnClick('all')">Select All</button>
+						<button class="btn btn-sm mx-3" :class="idLevelBtnClass('none')" @click="idLevelBtnClick('none')">Select None</button>
 					</div>
 
 				</div>
@@ -512,6 +377,10 @@
 					<div>
 						{{accordianTitle('taxon')}}
 					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_taxa.length > 1"
+							@click.stop='selected_taxa = []'
+						>Reset</button>
 				</div>
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
@@ -526,10 +395,11 @@ import DataTable from './data-table'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
+import ImageGallery from './image-gallery'
 	export default {
 		name:"i-nat",
 		props: ["inat_taxa", "all_portal_data"],
-		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart },
+		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart, ImageGallery },
 		data() {
 			return{
 				selected_portals: ["counts", "inat", "ibp"],
@@ -576,12 +446,10 @@ import DateChart from './date-chart'
 				op = this.filterDates(op)
 				op = this.filterTaxaLevels(op)
 				op = this.filterTaxa(op)
-				op = op.reverse()
 
 				return op
 			},
 			filteredObservationsPaginated (){
-				//
 				return  this.filteredObservations.filter(o => o.img_url != '')
 							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
@@ -646,26 +514,28 @@ import DateChart from './date-chart'
 			},
 			stateStats () {
 				let op = {}
-				op['All'] = { observations: 0, users: new Set(), species: new Set() }
+				op['All'] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 				country.features.forEach(s => {
-					op[s.properties.ST_NM] = { observations: 0, users: new Set(), species: new Set() }
+					op[s.properties.ST_NM] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 				})
 
 				this.filteredObservations.forEach(o => {
 					op['All'].observations++
 					op['All'].users.add(o.user_id)
 					op['All'].species.add(o.taxa_id)
+					op['All'].portals.add(o.portal)
 					if(o.state !== null){
 						// console.log(`+${o.state}+`)
 						op[o.state].observations++
 						op[o.state].users.add(o.user_id)
 						op[o.state].species.add(o.taxa_id)
+						op[o.state].portals.add(o.portal)
 					}
 				})
 
 				return op
 			},
-			stateSpeciesList () {
+			speciesTableData () {
 				let op = []
 				this.filteredObservations.forEach(o => {
 					let new_flag = true
@@ -678,20 +548,18 @@ import DateChart from './date-chart'
 								op[oid].count++
 								op[oid].users.add(o.user_id)
 								op[oid].states.add(o.state)
+								op[oid].portals.add(o.portal)
 							}
 						})
 						if(new_flag){
-							let x = {
+							op.push({
 								name: taxa_name,
+								common_name: this.inat_taxa[o.taxa_id].common_name,
 								count: 1,
 								users: new Set([o.user_id]),
-								states: new Set([o.state])
-							}
-							let common_name = ""
-								common_name = this.inat_taxa[o.taxa_id].common_name
-
-							x.common_name = common_name
-							op.push(x)
+								states: new Set([o.state]),
+								portals: new Set([o.portal])
+							})
 						}
 					} else {
 						console.log(o.id, o.taxa_id, "Not found")
@@ -701,6 +569,7 @@ import DateChart from './date-chart'
 				op.forEach((s, id) => {
 					op[id].user_count = s.users.size
 					op[id].state_count = s.states.size
+					op[id].portals = [...s.portals].join(", ")
 				})
 
 				return op
@@ -714,7 +583,8 @@ import DateChart from './date-chart'
 							state: s,
 							observations: this.stateStats[s].observations,
 							users: this.stateStats[s].users.size,
-							species: this.stateStats[s].species.size
+							species: this.stateStats[s].species.size,
+							portals: [...this.stateStats[s].portals].join(", ")
 						})
 					}
 				})
@@ -785,6 +655,7 @@ import DateChart from './date-chart'
 				if(this.selected_state == "All"){
 					op.push(["States", "state_count"])
 				}
+				op.push(["Portals", "portals"])
 				return op
 			}
 		},
@@ -916,8 +787,8 @@ import DateChart from './date-chart'
 				// console.log(this.selected_taxa)
 			},
 			tableSelectTaxa (t) {
-				// let selected = this.stateSpeciesList[t].name
-				console.log(this.stateSpeciesList[t])
+				// let selected = this.speciesTableData[t].name
+				console.log(this.speciesTableData[t])
 				// this.selected_taxa.push(selected)
 			},
 
@@ -928,7 +799,7 @@ import DateChart from './date-chart'
 				return op
 			},
 			idLevelBtnClass (t) {
-				let op = "btn-outline-secondary"
+				let op = "btn-outline-danger"
 				switch(t){
 					case 'all':
 						if(this.selected_taxa_levels.length < 10){
@@ -996,7 +867,7 @@ import DateChart from './date-chart'
 						}
 						break
 					case 'date':
-						op = "Upload Date : "
+						op = "Date : "
 						if(this.selected_dates.length > 0 && this.selected_dates.length < 30) {
 							op += `${Math.min(...this.selected_dates)} - ${Math.max(...this.selected_dates)} Sept, 2021`
 						} else {
@@ -1014,7 +885,7 @@ import DateChart from './date-chart'
 					case 'taxon':
 						op = "Taxon: "
 						if(this.selected_taxa.length > 1){
-							op += this.selected_taxa.join(" - ")
+							op += this.selected_taxa.join(" > ")
 						} else {
 							op += "All selected"
 						}
@@ -1029,40 +900,6 @@ import DateChart from './date-chart'
 			onAccordionClose (key) {
 				//
 				this.accordions[key] = false;
-			},
-
-			imgUrl (o) {
-				let op = ""
-				if(o.portal == "inat"){
-					op = o.img_url.replace("square", "medium")
-				} else if(o.portal == "ibp"){
-					op = `https://indiabiodiversity.org/files-api/api/get/raw/observations/${o.img_url}`
-				}
-				return op
-			},
-			fullDate (d) {
-				let op = `${d} Sept, 21`
-				return op
-			},
-			speciesName (id) {
-				let op = ""
-				if (this.inat_taxa[id] !== undefined){
-					if (this.inat_taxa[id].common_name !== '' && this.inat_taxa[id].rank === 'species') {
-						op = `${this.inat_taxa[id].name} ( ${this.inat_taxa[id].common_name} )`
-					} else {
-						op = this.inat_taxa[id].name
-					}
-				}
-				return op
-			},
-			gotoObservation (o) {
-				let url = ""
-				if(o.portal == "inat"){
-					url = 'https://www.inaturalist.org/observations/' + o.id
-				} else if (o.portal == "ibp"){
-					url = 'https://indiabiodiversity.org/observation/show/' + o.id
-				}
-				window.open(url, '_blank').focus();
 			},
 
 			init () {
