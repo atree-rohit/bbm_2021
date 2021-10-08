@@ -146,8 +146,8 @@ export default {
 				this.state_max = this.state_data[s].length;
 			})
 			this.colors = d3.scaleLinear()
-				.domain([0, 1, this.state_max*.5, this.state_max])
-				.range(["#f77","#696", "#8c8", "#9f9"])
+				.domain([0, 1, this.state_max*.25, this.state_max])
+				.range(["#f77", "#ca0", "#ada", "#3d3"])
 
 			this.legend = d3Legend.legendColor()
 								.shapeWidth(45)
@@ -156,7 +156,7 @@ export default {
 								.orient('horizontal')
 								.labelOffset(-10)
 								.labelAlign("start")
-								.cells(5)
+								.cells(6)
 								// .shapePadding(47)
 
 			this.renderMap()
