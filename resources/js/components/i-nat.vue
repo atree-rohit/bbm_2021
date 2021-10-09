@@ -231,12 +231,12 @@
 								</tbody>
 							</table>
 						</div>
-				        <div class="d-flex justify-content-center py-1 switch-div">
-				        	<div class="me-5" v-if="selected_state != 'All'">
-				        		<button class="btn btn-sm btn-outline-danger" @click="selected_state = 'All'">
-				        			Back to All States
-				        		</button>
-				        	</div>
+						<div class="d-flex justify-content-center py-1 switch-div">
+							<div class="me-5" v-if="selected_state != 'All'">
+								<button class="btn btn-sm btn-outline-danger" @click="selected_state = 'All'">
+									Back to All States
+								</button>
+							</div>
 							<span class="switch-label" :class="!table_switch?'switch-selected':''" @click="table_switch=false">States</span>
 							<label class="switch mx-3 my-auto"><input type="checkbox" v-model="table_switch"/>
 							<div></div>
@@ -265,8 +265,8 @@
 							<div v-if="observationsPageNo > 1">
 								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo--">&lt;</button>
 							</div>
-							<div class="mx-3 my-auto">Page {{observationsPageNo}} of {{Math.ceil(filteredObservations.length/observationsPerPage)}}</div>
-							<div v-if="observationsPageNo <= Math.ceil(filteredObservations.length/observationsPerPage)">
+							<div class="mx-3 my-auto">Page {{observationsPageNo}} of {{totalObservationPages}}</div>
+							<div v-if="observationsPageNo <= totalObservationPages">
 								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo++">&gt;</button>
 							</div>
 
@@ -332,6 +332,14 @@
 						>Reset</button>
 				</div>
                 <div id="date-filter">
+                	{{selectDateType}}
+                	<div class="d-flex justify-content-center py-1 switch-div">
+						<span class="switch-label" :class="!date_switch?'switch-selected':''" @click="date_switch=false">Observed on</span>
+						<label class="switch mx-3 my-auto"><input type="checkbox" v-model="date_switch"/>
+						<div></div>
+						</label>
+						<span class="switch-label" :class="date_switch?'switch-selected':''" @click="date_switch=true">Created on</span>
+					</div>
 					<date-chart :dateTableData="dateTableData" :selected_dates="selected_dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
 				</div>
             </ui-collapsible>
@@ -419,6 +427,8 @@ import ImageGallery from './image-gallery'
 					{title:"Table"},
 					{title:"Observations"},
 				],
+
+				date_switch:false,
 				table_switch:false,
 				accordions: {
 					0: false,
@@ -450,7 +460,7 @@ import ImageGallery from './image-gallery'
 				return op
 			},
 			filteredObservationsPaginated (){
-				return  this.filteredObservations.filter(o => o.img_url != '')
+				return  this.filteredObservations.filter(o => o.img_url != '').filter(o => o.portal != 'counts')
 							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
 			},
 			mapData (){
@@ -496,16 +506,18 @@ import ImageGallery from './image-gallery'
 			dateTableData () {
 				let date_data = {}
 				let op = this.filterPortal()
+
 				op = this.filterState(op)
 				op = this.filterUsers(op)
 				op = this.filterTaxaLevels(op)
 				op = this.filterTaxa(op)
+				
 				for(var i = 0; i<31; i++){
 					date_data[i] = 0
 				}
 				op.forEach(o => {
-					if(Object.keys(date_data).indexOf(o.date.toString()) != -1){
-						date_data[o.date]++
+					if(Object.keys(date_data).indexOf(o[this.selectDateType].toString()) != -1){
+						date_data[o[this.selectDateType]]++
 					}
 				})
 				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
@@ -657,6 +669,15 @@ import ImageGallery from './image-gallery'
 				}
 				op.push(["Portals", "portals"])
 				return op
+			},
+			selectDateType () {
+				let op = "date"
+				if(this.date_switch)
+					op = "created_date"
+				return op
+			},
+			totalObservationPages () {
+				return Math.ceil(this.filteredObservations.filter(o => o.img_url != '').length/this.observationsPerPage)
 			}
 		},
 		methods: {
