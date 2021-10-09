@@ -11,7 +11,7 @@
         column-gap:           2px;
     }
 
-    #gallery div {
+    #gallerya div {
         /* Just in case there are inline attributes */
         width: 100% !important;
         height: auto !important;
@@ -20,7 +20,7 @@
     .observation-img{
         position: relative;
     }
-    .observation-img .gallery-item-overlay {
+    /*.observation-img .gallery-item-overlay {
         background: rgba(0,0,0,0.7);
         position: absolute;
         height: 99%;
@@ -33,46 +33,59 @@
         -webkit-transition: all 0.3s ease-in-out 0s;
         -moz-transition: all 0.3s ease-in-out 0s;
         transition: all 0.3s ease-in-out 0s;
+    }*/
+    .observation-img .gallery-item-overlay,
+    .observation-img .gallery-item-details {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        opacity: 0;
+        transition: .5s ease;
+        background-color: rgba(0,0,0,0.5);
+    }
+    .observation-img .gallery-item-overlay{
+        top: 0;
+    }
+    .observation-img .gallery-item-details {
+        display: flex;
+        align-items: center;
+
     }
 
-    .observation-img:hover .gallery-item-overlay{
+
+    .observation-img:hover .gallery-item-overlay, 
+    .observation-img:hover .gallery-item-details{
         opacity: 1;
+        cursor: pointer;
     }
 
     .observation-img .gallery-item-image{
         width: 100%;
     }
 
-    .observation-img .gallery-item-details {
+    /*.observation-img .gallery-item-details {
         position: absolute;
         text-align: center;
         padding-left: 1em;
         padding-right: 1em;
         width: 100%;
         bottom: 0%;
-        /* left: 50%; */
         opacity: 0;
-        /* -webkit-transform: translate(-50%, -50%);
-        -moz-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%); */
         -webkit-transition: all 0.2s ease-in-out 0s;
         -moz-transition: all 0.2s ease-in-out 0s;
         transition: all 0.2s ease-in-out 0s;
-    }
-
-    .observation-img:hover .gallery-item-details{
-        /* top: 50%;
-        left: 50%; */
-        opacity: 1;
-        color:  #aaa;
-    }
+    }*/
 
     .gallery-item-details .table-sm,
     .gallery-item-details tr,
     .gallery-item-details td
     {
         padding: 1px;
-        margin: 0;
+        margin: auto 0;
     }
     .place-cell{
         font-size: .6rem;
@@ -98,7 +111,7 @@
             <div class="observation-img">
                  <div class="gallery-item-overlay"></div>
                  <img class="gallery-item-image" :src="imgUrl(o)">
-                 <div class="gallery-item-details">
+                 <div class="gallery-item-details" @click="gotoObservation(o)" title="Go To Observation">
                     <table class="table table-sm text-light">
                         <tbody>
                             <tr>
@@ -131,9 +144,9 @@
                                     </span>
                                 </td><td v-text="o.state"></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td colspan="2"><ui-button color="green" size="small" raised @click="gotoObservation(o)">Go to Observation</ui-button></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
 
