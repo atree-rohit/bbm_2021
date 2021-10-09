@@ -26,7 +26,7 @@ class ResultController extends Controller
                         ->where("inat_created_at", "LIKE", "%2021-09-%")
                         ->get()
                         ->toArray();
-        $ibp_data = IBP::select("id", "createdBy as user_id", "placeName as place_guess", "createdOn", "associatedMedia as img_url", "locationLat as lat", "locationLon as long", "rank as taxa_rank", "scientific_name_cleaned  as taxa_name", "inat_taxa_id as taxa_id", "state")
+        $ibp_data = IBP::select("id", "createdBy as user_id", "placeName as place_guess", "createdOn", "associatedMedia as img_url", "locationLat as lat", "locationLon as long", "rank as taxa_rank", "scientific_name_cleaned  as taxa_name", "inat_taxa_id as taxa_id", "state", "fromDate", "flagNotes")
                         ->whereNotNull("state")
                         ->whereNotNull("inat_taxa_id")
                         ->where("fromDate", "LIKE", "%09/2021")
@@ -43,32 +43,40 @@ class ResultController extends Controller
         $form_data = [];
 
         foreach ($inat_data as $k=>$id) {
-            // $timestamp = strtotime($id["inat_created_at"]);
-            $date = explode("-", $id["observed_on"]);
-            // $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
-            $inat_data[$k]["date"] = (int) $date[2];
+            $timestamp = strtotime($id["inat_created_at"]);
+            $observed_date = explode("-", $id["observed_on"]);
+
+            $inat_data[$k]["date"] = (int) $observed_date[2];
+            $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
+            $inat_data[$k]["date"] = (int) $observed_date[2];
             $inat_data[$k]["individuals"] = 1;
             unset($inat_data[$k]["inat_created_at"]);
         }
         foreach($ibp_data as $k=>$id){
             if($id["state"] != null){
-                $created = explode("/",$id["createdOn"]);
+                $observed = explode("/",$id["fromDate"]);
+                $created = explode("/", $id["createdOn"]);
+
                 $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
-                $ibp_data[$k]["date"] = (int) $created[0];
+                $ibp_data[$k]["date"] = (int) $observed[0];
+                $ibp_data[$k]["created_date"] = (int) $created[0];
 
                 unset($ibp_data[$k]["lat"]);
                 unset($ibp_data[$k]["long"]);
                 unset($ibp_data[$k]["createdOn"]);
             }
         }
+        $dates = [];
         foreach ($forms as $f) {
-            $created = explode("-", $f["date_cleaned"]);
+            $observed = explode("-", $f["date_cleaned"]);
+            $timestamp = strtotime($f["created_at"]);
             $d = [
                 "user_id" => $f["name"],
                 "user_name" => $f["name"],
                 "state" => $f["state"],
                 "location" => $f["latitude"] . ",". $f["longitude"],
-                "date" => (int) $created[0],
+                "date" => (int) $observed[0],
+                "created_date" => (int) date('d', strtotime('+5 hours +30 minutes', $timestamp)),
                 "img_url" => "",
             ];
             foreach ($f["rows"] as $r) {
@@ -88,7 +96,6 @@ class ResultController extends Controller
             "inat" => $inat_data,
             "ibp" => $ibp_data
         ];
-
 
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
     }
