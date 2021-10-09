@@ -69,14 +69,13 @@ class ResultController extends Controller
         $dates = [];
         foreach ($forms as $f) {
             $observed = explode("-", $f["date_cleaned"]);
-            $timestamp = strtotime($f["created_at"]);
             $d = [
                 "user_id" => $f["name"],
                 "user_name" => $f["name"],
                 "state" => $f["state"],
                 "location" => $f["latitude"] . ",". $f["longitude"],
                 "date" => (int) $observed[0],
-                "created_date" => (int) date('d', strtotime('+5 hours +30 minutes', $timestamp)),
+                "created_date" => $f["date_created_cleaned"],
                 "img_url" => "",
             ];
             foreach ($f["rows"] as $r) {
