@@ -39,6 +39,7 @@ class CreateCountFormsTable extends Migration
             $table->boolean('duplicate')->default(false);
             $table->boolean('flag')->default(false);
             $table->boolean('validated')->default(false);
+            $table->integer('date_created_cleaned')->nullable();
             $table->timestamps();
         });
     }
