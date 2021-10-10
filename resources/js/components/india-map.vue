@@ -6,7 +6,7 @@
 		stroke-width:.5px;
 	}
 	.poly_text{
-		fill: #303;
+		fill: #545;
 		font-size: 0.5vw;
 		transition: fill,text-shadow .125s;
 	}
@@ -15,6 +15,11 @@
 		text-shadow: 0px 0px 5px #fff;
 		cursor: pointer;
 		font-weight: 1000;
+	}
+	@media screen and (max-width: 800px) {
+		.poly_text{
+			font-size: 3.5vw;
+		}
 	}
 
 </style>
