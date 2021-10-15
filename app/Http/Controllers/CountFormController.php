@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FormRow;
+use App\Exports\FormExport;
 use App\Models\CountForm;
+use App\Models\FormRow;
 use App\Models\iNat;
 use App\Models\iNatTaxa;
 use Illuminate\Http\Request;
@@ -283,6 +284,23 @@ class CountFormController extends Controller
             }
         }
         dd("$count rows cleaned!!");
+    }
+
+    public function export_user($email)
+    {
+        return (new FormExport($email))->download($email . '.xlsx');
+    }
+
+    public function export()
+    {
+        $forms = CountForm::where("flag", 0)->with("rows")->get()->groupBy("email");
+
+
+        // foreach($forms as $k => $f){
+        //     $forms[$k]->date_created_cleaned .= " Sept, 2021";
+        // }
+
+        return view('butterfly_count.export_list', compact("forms"));
     }
 
     public function create()
