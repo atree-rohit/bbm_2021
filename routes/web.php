@@ -6,6 +6,7 @@ use App\Http\Controllers\FormRowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\INatController;
 use App\Http\Controllers\IBPController;
+use App\Http\Controllers\BOIController;
 use App\Http\Controllers\SpeciesController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -58,4 +59,5 @@ Route::get('/ibp/missing_taxa', [IBPController::class, 'missingTaxa'])->middlewa
 Route::resource('/butterfly_count', CountFormController::class);
 // Route::resource('/inat', INatController::class);
 Route::resource('/ibp', IBPController::class)->middleware('auth');
+Route::resource('/boi', BOIController::class)->middleware('auth');
 // Route::resource('/species', SpeciesController::class);
