@@ -27,8 +27,8 @@ class CreateBOISTable extends Migration
             $table->string('district')->nullable();
             $table->string('location_name')->nullable();
             $table->string('latitude')->nullable();
-            $table->bigInteger('inat_taxa_id')->nullable();
             $table->string('longitude')->nullable();
+            $table->bigInteger('inat_taxa_id')->nullable();
             $table->timestamps();
         });
     }
