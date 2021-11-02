@@ -16,7 +16,7 @@ class BOIController extends Controller
     public function index()
     {
         $data = BOI::all();
-        $not_bbm = $bbm = [];
+        $not_bbm = $bbm = $bbm_no_taxa = $unmatched_taxa = [];
         $fields = ["boi_id", "created_date", "observed_date", "media_code", "species_name", "user", "life_stage", "country", "state", "district", "location_name", "latitude", "longitude", "inat_taxa_id"];
         foreach($data as $d){
             $exclude_flag = false;
@@ -33,17 +33,24 @@ class BOIController extends Controller
                 $not_bbm[] = $d;
             } else {
                 $bbm[] = $d;
+                if($d->inat_taxa_id == null){
+                    $bbm_no_taxa[] = $d;
+                    if(!isset($unmatched_taxa[$d->species_name]))
+                        $unmatched_taxa[$d->species_name] = 1;
+                    else
+                        $unmatched_taxa[$d->species_name]++;
+                }
             }
         }
 
-        echo "<h1>".count($not_bbm)."</h1>";
+        echo "<h1>".count($bbm_no_taxa)."</h1>";
         echo "<table border=1>";
         echo "<tr>";
         foreach($fields as $f){
             echo "<th>".$f."</th>";
         }
         echo "</tr>";
-        foreach($not_bbm as $b){
+        foreach($bbm_no_taxa as $b){
             echo "<tr>";
             foreach($fields as $f){
                 echo "<td>".$b->{$f}."</td>";
@@ -51,6 +58,10 @@ class BOIController extends Controller
             echo "</tr>";
         }
         echo "</table>";
+        ksort($unmatched_taxa);
+        
+        // dd(count(array_unique(array_column($not_bbm, 'boi_id'))));
+        dd($unmatched_taxa);
 
     }
 
