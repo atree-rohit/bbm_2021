@@ -31,8 +31,6 @@ class CreateIBPSTable extends Migration
             $table->text('higherClassificationId')->nullable();
             $table->string('state')->nullable();
             $table->string('observedInMonth')->nullable();
-            $table->string('lastRevised')->nullable();
-            $table->string('uploadProtocol')->nullable();
             $table->timestamps();
         });
     }
