@@ -16,6 +16,8 @@ class IBPController extends Controller
     */
     public function index()
     {
+        /*
+        */
         $ibps = IBP::get();
 
         foreach($ibps as $i){
@@ -30,11 +32,10 @@ class IBPController extends Controller
                 $i->save();
             }
         }
-
         $ibps = IBP::get()->groupBy("state");
         echo "<h1>" . count($ibps[""]) . "</h1>";
         $y = $ibps[""]->groupBy("placeName");
-        dd($y);
+
         $known_states = ["Uttar Pradesh", "West Bengal", "Gujarat", "Karnataka"];
 
         foreach($y as $s => $obs){
