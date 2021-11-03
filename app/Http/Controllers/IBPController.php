@@ -95,9 +95,9 @@ class IBPController extends Controller
 
     public function create()
     {
-        $fields = ['createdBy', 'placeName', 'flagNotes', 'createdOn', 'associatedMedia', 'locationLat', 'locationLon', 'fromDate', 'rank', 'scientificName', 'commonName', 'higherClassificationId', 'state', 'observedInMonth', 'lastRevised', 'uploadProtocol'];
+        $fields = ['createdBy', 'placeName', 'flagNotes', 'createdOn', 'associatedMedia', 'locationLat', 'locationLon', 'fromDate', 'rank', 'scientificName', 'commonName', 'higherClassificationId', 'state', 'observedInMonth'];
 
-        $json_string = file_get_contents(public_path("./data/ibp.json"));
+        $json_string = file_get_contents(public_path("./data/ibp_1.json"));
 
         $ibp_observations = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $json_string), true );
         $inat_taxa = iNatTaxa::get()->keyBy("name");
@@ -120,6 +120,7 @@ class IBPController extends Controller
             if(isset($inat_taxa[$ibp->scientific_name_cleaned])){
                 $ibp->inat_taxa_id = $inat_taxa[$ibp->scientific_name_cleaned]->id;
             }
+
 
             $ibp->save();
         }
