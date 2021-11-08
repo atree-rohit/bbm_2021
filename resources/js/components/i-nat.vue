@@ -287,13 +287,14 @@
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
 							v-if="selected_portals.length > 0 && selected_portals.length <3"
-							@click.stop='selected_portals = ["counts", "inat", "ibp"]'
+							@click.stop='selected_portals = ["counts", "inat", "ibp", "ifb"]'
 						>Reset</button>
 				</div>
 				<div class="d-flex justify-content-center">
 					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="selectPortal('counts')">Butterfly Counts</button>
 					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="selectPortal('inat')">iNaturalist</button>
 					<button class="mx-2 btn" :class="portalBtnClass('ibp')" @click="selectPortal('ibp')">India Biodiversity Portal</button>
+					<button class="mx-2 btn" :class="portalBtnClass('ifb')" @click="selectPortal('ifb')">iFoundButterflies</button>
 				</div>
             </ui-collapsible>
 
@@ -410,7 +411,7 @@ import ImageGallery from './image-gallery'
 		components: { DataTable, IndiaMap, SpeciesSunburst, DateChart, ImageGallery },
 		data() {
 			return{
-				selected_portals: ["counts", "inat", "ibp"],
+				selected_portals: ["counts", "inat", "ibp", "ifb"],
 				selected_users: [],
 				selected_dates: [],
 				selected_state: "Goa",
@@ -873,7 +874,7 @@ import ImageGallery from './image-gallery'
 				switch(f){
 					case 'portals':
 						op = "Portals : "
-						if (this.selected_portals.length == 3){
+						if (this.selected_portals.length == 4){
 							op += "All selected"
 						} else {
 							op += `${this.selected_portals.length} selected`
