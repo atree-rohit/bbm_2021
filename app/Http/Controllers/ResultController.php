@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\iNat;
+use App\Models\BOI;
 use App\Models\IBP;
 use App\Models\iNatTaxa;
 use App\Models\CountForm;
@@ -31,15 +32,25 @@ class ResultController extends Controller
                         ->whereNotNull("inat_taxa_id")
                         ->where("fromDate", "LIKE", "%09/2021")
                         ->where("flagNotes", "not Like", "%uplicate%")
+                        ->where("locationLat", ">", "0")
                         ->get()
                         ->toArray();
+        $boi_data = BOI::select("boi_id as id", "user as user_id", "location_name as place_guess", "created_date", "observed_date", "country", "latitude as lat", "longitude as long", "species_name as taxa_name", "inat_taxa_id as taxa_id", "state")
+                        ->where("flag", false)
+                        ->where("created_date", "like", "%/09/21%")
+                        ->where("observed_date", "like", "%/09/21%")
+                        ->where("country", "like", "%India%")
+                        ->get()
+                        ->toArray();
+
         $forms = CountForm::where("flag", 0)
                         // ->limit(50)
                         ->with("rows")
                         ->get()
                         ->toArray();
 
-        $inat_unset_fields = ["inat_created_at"];
+        // dd($boi_data->first());
+
         $form_data = [];
 
         foreach ($inat_data as $k=>$id) {
@@ -65,6 +76,19 @@ class ResultController extends Controller
                 unset($ibp_data[$k]["long"]);
                 unset($ibp_data[$k]["createdOn"]);
             }
+        }
+        foreach($boi_data as $k=>$bd){
+            $observed = explode("/",$bd["observed_date"]);
+            $created = explode("/", $bd["created_date"]);
+
+            $boi_data[$k]["location"] = $bd["lat"] . "," . $bd["long"];
+            $boi_data[$k]["date"] = (int) $observed[0];
+            $boi_data[$k]["created_date"] = (int) $created[0];
+
+            unset($boi_data[$k]["lat"]);
+            unset($boi_data[$k]["long"]);
+            unset($boi_data[$k]["observed_date"]);
+
         }
         $dates = [];
         foreach ($forms as $f) {
@@ -93,7 +117,8 @@ class ResultController extends Controller
         $all_portal_data = [
             "counts" => $form_data,
             "inat" => $inat_data,
-            "ibp" => $ibp_data
+            "ibp" => $ibp_data,
+            "boi" => $boi_data,
         ];
 
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
