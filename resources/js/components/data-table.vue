@@ -45,6 +45,10 @@
         border: 1px solid rgba(13,110,253,.5);
         background-color: #bee5eb;
     }
+    .badge-danger {
+        border: 1px solid rgba(253,110,13,.5);
+        background-color: #ebbebe;
+    }
     @media screen and (max-width: 800px) {
         .table-container{
             max-width:95vw;
@@ -137,6 +141,8 @@ export default {
                 case "ibp" : op = 'badge-warning'
                     break
                 case "counts" : op = 'badge-info'
+                    break
+                case "ifb" : op = 'badge-danger'
                     break
             }
             return op
