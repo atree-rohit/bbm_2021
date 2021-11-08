@@ -29,6 +29,7 @@ class CreateBOISTable extends Migration
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->bigInteger('inat_taxa_id')->nullable();
+            $table->boolean('flag')->default(false);
             $table->timestamps();
         });
     }
