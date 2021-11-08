@@ -20,6 +20,7 @@ class CreateBOISTable extends Migration
             $table->text('observed_date')->nullable();
             $table->string('media_code')->nullable();
             $table->string('species_name')->nullable();
+            $table->string('rank')->nullable();
             $table->string('user')->nullable();
             $table->string('life_stage')->nullable();
             $table->string('country')->nullable();
