@@ -20,6 +20,8 @@ class IBPController extends Controller
         */
         $ibps = IBP::get();
 
+        dd($ibps->where("rank", null));
+        /*
         foreach($ibps as $i){
             if($i->state == ""){
                 $state = $this->get_point_state($i->locationLat, $i->locationLon);
@@ -48,6 +50,7 @@ class IBPController extends Controller
                 }
             }
         }
+        */
 
     }
 
