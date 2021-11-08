@@ -17,6 +17,7 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/inat.js', 'public/js')
     .js('resources/js/inat_pull.js', 'public/js')
     .js('resources/js/count_clean.js', 'public/js')
+    .js('resources/js/boi_fix_taxa.js', 'public/js')
     .vue()
     .css('resources/css/style.css', 'public/css')
     .sass('resources/sass/app.scss', 'public/css');
