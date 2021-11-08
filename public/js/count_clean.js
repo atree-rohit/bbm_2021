@@ -2289,6 +2289,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "data-table",
   props: ["data", "headers", "selected", "selected_col"],
@@ -2335,6 +2339,10 @@ __webpack_require__.r(__webpack_exports__);
 
         case "counts":
           op = 'badge-info';
+          break;
+
+        case "ifb":
+          op = 'badge-danger';
           break;
       }
 
@@ -2410,7 +2418,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#table-container[data-v-79a76a14]{\n    height:  62vh;\n    overflow-y: scroll;\n    overflow-x: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #cad;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n.badge[data-v-79a76a14] {\n    margin: 2px!important;\n    font-weight: 100!important;\n    font-size: .75em;\n    border-radius: 3px!important;\n    color: #000!important;\n}\n.rounded-pill[data-v-79a76a14] {\n    border-radius: 50rem!important;\n}\n.badge-success[data-v-79a76a14] {\n    border: 1px solid rgba(25,135,84,.5);\n    background-color: #c3e6cb;\n}\n.badge-warning[data-v-79a76a14] {\n    border: 1px solid rgba(255,193,7,.5);\n    background-color: #ffeeba;\n}\n.badge-info[data-v-79a76a14] {\n    border: 1px solid rgba(13,110,253,.5);\n    background-color: #bee5eb;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#table-container[data-v-79a76a14]{\n    height:  62vh;\n    overflow-y: scroll;\n    overflow-x: auto;\n}\n.tableFixHead[data-v-79a76a14]{\n    /* overflow: auto; */\n    height: 100px;\n}\n.tableFixHead thead[data-v-79a76a14]{\n}\n.tableFixHead thead th[data-v-79a76a14]{\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    white-space: nowrap;\n    background: #cad;\n}\n.tableFixHead tbody tr[data-v-79a76a14]:hover{\n    background: #ffa;\n    cursor: pointer;\n}\n.badge[data-v-79a76a14] {\n    margin: 2px!important;\n    font-weight: 100!important;\n    font-size: .75em;\n    border-radius: 3px!important;\n    color: #000!important;\n}\n.rounded-pill[data-v-79a76a14] {\n    border-radius: 50rem!important;\n}\n.badge-success[data-v-79a76a14] {\n    border: 1px solid rgba(25,135,84,.5);\n    background-color: #c3e6cb;\n}\n.badge-warning[data-v-79a76a14] {\n    border: 1px solid rgba(255,193,7,.5);\n    background-color: #ffeeba;\n}\n.badge-info[data-v-79a76a14] {\n    border: 1px solid rgba(13,110,253,.5);\n    background-color: #bee5eb;\n}\n.badge-danger[data-v-79a76a14] {\n    border: 1px solid rgba(253,110,13,.5);\n    background-color: #ebbebe;\n}\n@media screen and (max-width: 800px) {\n.table-container[data-v-79a76a14]{\n        max-width:95vw;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
