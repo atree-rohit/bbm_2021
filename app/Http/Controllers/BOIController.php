@@ -22,20 +22,43 @@ class BOIController extends Controller
                     ->where("country", "like", "%India%")
                     ->get();
 
+        $inat_taxa = iNatTaxa::get()->keyBy("id");
+
         $not_bbm = $bbm = $bbm_no_taxa = $unmatched_taxa = [];
         $fields = ["boi_id", "created_date", "observed_date", "media_code", "species_name", "user", "life_stage", "country", "state", "district", "location_name", "latitude", "longitude", "inat_taxa_id"];
 
-        $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
-        $geojson_states = [];
-        foreach ($geojson->features as $state) {
-            $geojson_states[] = $state->properties->ST_NM;
+        echo "<table border=1>";
+        echo "<thead><tr><th>BOI Name</th><th>iNat Name</th></tr></head>";
+        foreach($data->groupBy("inat_taxa_id") as $inatti => $obvs ){
+            if($obvs[0]->species_name != $inat_taxa[$inatti]["name"]){
+                echo "<tr>";
+                echo "<td>" . $obvs[0]->species_name .  "</td>";
+                echo "<td>" . $inat_taxa[$inatti]["name"] . "</td>";
+                echo "</tr>";
+            }
         }
+        dd($inat_taxa);
+        // $geojson = json_decode(file_get_contents(public_path('data/country.geojson')));
+        // $geojson_states = [];
+        // foreach ($geojson->features as $state) {
+        //     $geojson_states[] = $state->properties->ST_NM;
+        // }
         
-        foreach($data->groupBy("state") as $s=>$obvs){
-            if(!in_array($s, $geojson_states))
-                echo "$s<br>";
-        }
-        dd($geojson_states);
+        // foreach($data->groupBy("state") as $s=>$obvs){
+        //     if(!in_array($s, $geojson_states))
+        //         echo "$s<br>";
+        // }
+        // dd($geojson_states);
+
+        
+        // foreach($data as $d){
+        //     if(!strpos($d->species_name, " ")){
+        //         $d->rank = "genus";
+        //     } else {
+        //         $d->rank = "species";                
+        //     }
+        //     $d->save();
+        // }
 
 
 
@@ -205,7 +228,7 @@ class BOIController extends Controller
         $taxa = iNatTaxa::all();
         $saved_taxa = $ancestors = [];
 
-        $taxa_to_pull = [358633, 1148666];
+        $taxa_to_pull = [1203643];
 
         array_multisort($all_taxa);
         if (($key = array_search(null, $all_taxa)) !== false) {
