@@ -248,6 +248,8 @@
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"], ["Portals", "portals"]]'
 										:selected='[selected_state]'
 										:selected_col="'state'"
+										:sort_col="'observations'"
+										:sort_dir="'desc'"
 										@rowClick="tableSelectState"
 										v-if="!table_switch"
 							/>
@@ -255,6 +257,8 @@
 										:headers='speciesTableHeaders'
 										:selected="[]"
 										:selected_col="''"
+										:sort_col="'observations'"
+										:sort_dir="'desc'"
 										@rowClick="tableSelectTaxa"
 										v-else
 							/>
@@ -315,6 +319,8 @@
 							:headers='[["Sl No","sl_no"],["User ID","id"],["Observations","observations"],["State","state"], ["Portals", "portals"]]'
 							:selected='selected_users'
 							:selected_col="'id'"
+							:sort_col="'sl_no'"
+							:sort_dir="'asc'"
 							@rowClick="seletUser"
 					/>
             </ui-collapsible>
@@ -333,7 +339,6 @@
 						>Reset</button>
 				</div>
                 <div id="date-filter">
-                	{{selectDateType}}
                 	<div class="d-flex justify-content-center py-1 switch-div">
 						<span class="switch-label" :class="!date_switch?'switch-selected':''" @click="date_switch=false">Observed on</span>
 						<label class="switch mx-3 my-auto"><input type="checkbox" v-model="date_switch"/>
@@ -512,7 +517,7 @@ import ImageGallery from './image-gallery'
 				op = this.filterUsers(op)
 				op = this.filterTaxaLevels(op)
 				op = this.filterTaxa(op)
-				
+
 				for(var i = 0; i<31; i++){
 					date_data[i] = 0
 				}

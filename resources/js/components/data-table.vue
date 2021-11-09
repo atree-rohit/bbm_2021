@@ -19,9 +19,20 @@
         white-space: nowrap;
         background: #cad;
     }
+    .tableFixHead thead th:hover{
+        background: #b9c;
+        cursor: pointer;
+    }
+    .tableFixHead thead th.sort-col{
+        background: #ecd;
+        cursor: pointer;
+    }
     .tableFixHead tbody tr:hover{
         background: #ffa;
         cursor: pointer;
+    }
+    .tableFixHead tbody td.sort-col{
+        background: #eedccc50;
     }
     .badge {
         margin: 2px!important;
@@ -63,21 +74,26 @@
                 'max-height': `calc(100% - ${tableHeight}px)`
                 }"
         >
-
             <table class="table tableFixHead"ref="container">
                 <thead class="">
                     <tr>
-                        <th v-for="h in headers" :key="h[1]" v-text="h[0]"></th>
+                        <th v-for="h in headers"
+                            :class="currentSort==h[1]?'sort-col':''"
+                            :key="h[1]"
+                            v-text="headerText(h)"
+                            @click="sort(h[1])"
+                        ></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(row, id) in data"
+                    <tr v-for="(row, id) in sortedData"
                         :key="id"
                         :class="selected_rows.indexOf(id) != -1? 'bg-success':''"
                         @click="$emit('rowClick', id)"
                     >
                         <td v-for="h in headers"
                             :key="h[1]"
+                            :class="currentSort==h[1]?'sort-col':''"
                             >
                             <template v-if="h[1] == 'portals'">
                                 <!-- <span class="badge rounded-pill mx-1 badge-success">inat</span>' -->
@@ -103,7 +119,7 @@
 <script>
 export default {
     name: "data-table",
-    props: ["data", "headers", "selected", "selected_col"],
+    props: ["data", "headers", "selected", "selected_col", "sort_col", "sort_dir"],
 
     mounted() {
         this.updateHeight()
@@ -112,6 +128,8 @@ export default {
         return {
             height: 0,
             selected_rows:[],
+            currentSort:this.sort_col,
+            sortDir:this.sort_dir
         }
     },
     watch:{
@@ -128,6 +146,15 @@ export default {
             const tableDOM = document.getElementById("table-container");
             return tableDOM ? tableDOM.offsetHeight : 0;
         },
+        sortedData() {
+            return this.data.sort((a,b) => {
+                let modifier = 1;
+                if(this.sortDir === 'desc') modifier = -1;
+                if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+                return 0;
+            })
+        }
     },
     methods:{
         updateHeight(){
@@ -146,6 +173,23 @@ export default {
                     break
             }
             return op
+        },
+        headerText(h) {
+            let op = h[0]
+            if(this.currentSort == h[1]) {
+                if(this.sortDir == 'asc') {
+                    op += " ▲"
+                } else {
+                    op += " ▼"
+                }
+            }
+            return op
+        },
+        sort(s) {
+            if(s === this.currentSort){
+                this.sortDir = this.sortDir==='asc'?'desc':'asc'
+            }
+            this.currentSort = s
         }
     }
 }
