@@ -18,7 +18,64 @@ class IBPController extends Controller
     {
         /*
         */
-        $ibps = IBP::get();
+        $ibps = IBP::where("inat_taxa_id", null)->get();
+        $inat_taxa = iNatTaxa::get()->keyBy("name");
+        $fixes = [
+            "Burara jaina" => "Bibasis jaina",
+            "Chilades pandava" => "Luthrodes pandava",
+            "Symphaedra nais" => "Euthalia nais",
+            "Spindasis vulcanus" => "Cigaritis vulcanus",
+            "Burara gomata" => "Bibasis gomata",
+            "Appias olferna" => "Appias libythea",
+            "Hyponephele pulchra" => "Hyponephele pulchella",
+            "Spindasis ictis" => "Cigaritis ictis",
+            "Spindasis lohita" => "Cigaritis lohita",
+            "Parnara guttatus" => "Parnara guttata",
+            "Everes argiades" => "Cupido argiades",
+            "Burara vasutana" => "Bibasis vasutana",
+            "Charaxes bharata" => "Polyura bharata",
+            "Tarucus extricatus" => "Tarucus nara",
+            "Acraea violae" => "Acraea terpsicore",
+            "Atrophaneura pandiyana" => "Pachliopta pandiyana",
+            "Spalgis epeus" => "Spalgis epius",
+            "Everes diporides" => "Cupido argiades",
+            "Chilasa clytia" => "Papilio clytia",
+            "Tarucus balkanicus" => "Tarucus balkanica",
+            "Spindasis elima" => "Cigaritis elima",
+            "Borbo bevani" => "Pseudoborbo bevani",
+            "Spindasis syama" => "Cigaritis syama",
+            "Burara amara" => "Bibasis amara",
+            "Heteropsis adolphei" => "Telinga adolphei",
+            "Colotis vestalis" => "Colotis phisadia",
+            "Celastrina huegeli" => "Celastrina huegelii",
+            "Childrena childreni" => "Argynnis childreni",
+            "Euploea core subsp. core" => "Euploea core core",
+            "Calpodes forulus" => "Badamia exclamationis",
+            "Burara oedipodea" => "Bibasis oedipodea",
+            "Lethe atkinsonia" => "Polyura agraria"
+        ];
+        $count = 0;
+        foreach($ibps->groupBy("scientific_name_cleaned") as $s => $obvs){
+            if($s != ""){
+                if(isset($inat_taxa[$fixes[$s]])){
+                    echo $s . " - " . $fixes[$s]."<br>";
+                    foreach($obvs as $o){
+                        $o->inat_taxa_id = $inat_taxa[$fixes[$s]]->id;
+                        $o->save();
+                        $count++;
+                    }
+                }
+            } else {
+                foreach($obvs as $o){
+                    $o->inat_taxa_id = 47224;
+                    $o->save();
+                }
+            }
+        }
+
+        echo "<h1>$count</h1>";
+
+        dd($ibps->groupBy("scientific_name_cleaned"));
 
         dd($ibps->where("rank", null));
         /*
