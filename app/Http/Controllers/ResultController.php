@@ -45,7 +45,8 @@ class ResultController extends Controller
                         ->toArray();
 
         $forms = CountForm::where("flag", 0)
-                        // ->limit(50)
+                        ->where("date_created_cleaned", ">", 0 )
+                        ->where("date_created_cleaned", "<", 31 )
                         ->with("rows")
                         ->get()
                         ->toArray();
@@ -54,12 +55,13 @@ class ResultController extends Controller
 
         $form_data = [];
         $ifb_data = [];
-        
+
         foreach ($inat_data as $k=>$id) {
             $timestamp = strtotime($id["inat_created_at"]);
             $observed_date = explode("-", $id["observed_on"]);
 
             $inat_data[$k]["date"] = (int) $observed_date[2];
+            $inat_data[$k]["user_id"] = ucwords(strtolower(str_replace("_", " ", $id["user_id"])));
             $inat_data[$k]["created_date"] = (int) date('d', strtotime('+5 hours +30 minutes', $timestamp));
             $inat_data[$k]["date"] = (int) $observed_date[2];
             $inat_data[$k]["individuals"] = 1;
@@ -71,6 +73,7 @@ class ResultController extends Controller
                 $created = explode("/", $id["createdOn"]);
 
                 $ibp_data[$k]["location"] = $id["lat"] . ",". $id["long"];
+                $ibp_data[$k]["user_id"] = ucwords(strtolower(str_replace("_", " ", $id["user_id"])));
                 $ibp_data[$k]["date"] = (int) $observed[0];
                 $ibp_data[$k]["created_date"] = (int) $created[0];
 
@@ -101,8 +104,8 @@ class ResultController extends Controller
         foreach ($forms as $f) {
             $observed = explode("-", $f["date_cleaned"]);
             $d = [
-                "user_id" => $f["name"],
-                "user_name" => $f["name"],
+                "user_id" => ucwords(strtolower($f["name"])),
+                "user_name" => ucwords(strtolower($f["name"])),
                 "state" => $f["state"],
                 "location" => $f["latitude"] . ",". $f["longitude"],
                 "date" => (int) $observed[0],
