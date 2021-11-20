@@ -55,11 +55,11 @@ Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->mi
 
 Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 
+Route::resource('/butterfly_count', CountFormController::class);
 /*
 Route::get('/ibp/missing_taxa', [IBPController::class, 'missingTaxa'])->middleware('auth');
 Route::get('/boi/fix_taxa', [BOIController::class, 'fix_taxa'])->middleware('auth');
 
-Route::resource('/butterfly_count', CountFormController::class);
 Route::resource('/ibp', IBPController::class)->middleware('auth');
 Route::resource('/boi', BOIController::class)->middleware('auth');
 */
