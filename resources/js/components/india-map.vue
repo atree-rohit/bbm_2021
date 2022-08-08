@@ -35,7 +35,7 @@ import * as d3Legend from "d3-svg-legend"
 import country from '../country.json'
 export default {
 	name:"india-map",
-	props: ["map_data", "selected_state", "popup", "stateStats"],
+	props: ["map_data", "selected_state", "popup", "stateStats", "selected_region"],
 	data() {
 		return{
 			states: null,
@@ -52,10 +52,17 @@ export default {
 			width: 800,
 			tooltip:this.popup,
 			map_first_render:true,
+			region_colors: {
+				north: "#f8df81",
+				south: "#badfda",
+				west: "#f6aa90",
+				east: "#d5b6d5"
+			}
 		}
 	},
 	mounted(){
 		this.init()
+		this.regionalStats()
 		// this.clicked(this.selectedGeoJson)
 		// this.map_first_render = false
 		// alert(`${this.width} x ${this.height}`)
@@ -116,6 +123,62 @@ export default {
 		}
 	},
 	methods:{
+		regionalStats(){
+			let region_states = {}
+			let regions = [...new Set(country.features.map((s) => s.properties.region))]
+			let region_stats = {}
+			regions.map((r) => {
+				region_stats[r] = {
+					region: r,
+					observations: []
+				}
+			})
+			// Total observations, total users, total unique taxa with counts
+
+			country.features.forEach((s) => {
+				if(region_states[s.properties.region] == undefined){
+					region_states[s.properties.region] = []
+				}
+				region_states[s.properties.region].push(s.properties.ST_NM)
+			})
+			
+			this.map_data.forEach((o) => {
+				let region = Object.keys(region_states).filter((rs) => region_states[rs].indexOf(o.state) != -1)[0]
+				region_stats[region].observations.push(o)
+			})
+			
+			regions.map((r) => {
+				region_stats[r].users = [...new Set(region_stats[r].observations.map((o) => o.user_id))]
+				region_stats[r].user_counts = region_stats[r].users.map((u) => {
+					return {
+						name: u,
+						count: region_stats[r].observations.filter((o) => o.user_id == u).length
+					}
+				})
+				region_stats[r].user_counts.sort((a,b) => b.count - a.count)
+				region_stats[r].taxa = [...new Set(region_stats[r].observations.map((o) => o.taxa_name))]
+				region_stats[r].taxa_counts = region_stats[r].taxa.map((t) => {
+					return {
+						name: t,
+						count: region_stats[r].observations.filter((o) => o.taxa_name == t).length
+					}
+				})
+				region_stats[r].taxa_counts.sort((a,b) => b.count - a.count)
+				
+			})
+			console.table(region_stats)
+			let x = regions.map((r) => {
+				return {
+					name: r,
+					observations: region_stats[r].observations.length,
+					users: region_stats[r].users.length,
+					taxa: region_stats[r].taxa.length,
+					top_taxa: region_stats[r].taxa_counts.slice(0,5).map((t) => `${t.name} (${t.count})`).join(", "),
+					top_users: region_stats[r].user_counts.slice(0,5).map((u) => `${u.name} (${u.count})`).join(", "),
+				}
+			})
+			console.log(x.map((r) => [r.name, r.top_users]))
+		},
 		init () {
 			this.map_first_render = true
 			this.states = null
@@ -179,7 +242,7 @@ export default {
 							.attr("preserveAspectRatio", "xMinYMin meet")
 							.attr("width", this.width)
 							.attr("height", this.height)
-							.style("background-color", "rgb(190, 229, 235)")
+							// .style("background-color", "rgb(190, 229, 235)")
 							.classed("svg-content d-flex m-auto", true)
 
 			this.projection = d3.geoMercator().scale(850).center([87, 25.5])
@@ -203,6 +266,7 @@ export default {
 
 			country.features.forEach(state=> {
 				let s_name = state.properties.ST_NM
+				let region = state.properties.region
 				let that = this
 
 				let current_state = this.states.append("g")
@@ -230,14 +294,15 @@ export default {
 				.on("click", this.clicked)
 
 
-				if(this.stateData[s_name] == undefined){
-					current_state.attr("fill", (d) => colors(-1))
-				} else if (s_name == this.selected) {
-					current_state.classed("state-selected", true)
-				} else {
-					current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
-				}
+				// if(this.stateData[s_name] == undefined){
+				// 	current_state.attr("fill", (d) => colors(-1))
+				// } else if (s_name == this.selected) {
+				// 	current_state.classed("state-selected", true)
+				// } else {
+				// 	current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
+				// }
 
+				current_state.attr("fill", (d) => this.region_colors[region])
 			})
 			if(this.selected == "All"){
 				country.features.forEach(state=> {

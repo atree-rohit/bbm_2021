@@ -208,6 +208,7 @@
 					<div id="map-container" v-if="tab.title === 'Location'">
 						<india-map :map_data="mapData"
 								   :selected_state="selected_state"
+								   :selected_region="selected_region"
 								   :popup="tooltip"
 								   :stateStats="stateStats"
 								   @stateSelected='selectState'
@@ -281,7 +282,25 @@
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
-			<ui-collapsible :class="accordianClass('portals')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+			<ui-collapsible :class="accordianClass('region')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
+				<div slot="header" class="d-flex">
+					<span class="material-icons">
+						crop_original
+					</span>
+					<div>
+						{{accordianTitle('region')}}
+					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected_region.length > 0 && selected_region.length <3"
+							@click.stop='selected_portals = ["counts", "inat", "ibp", "ifb"]'
+						>Reset</button>
+				</div>
+				<div class="d-flex justify-content-center">
+					<button class="mx-2 btn" @click="selectRegion('sount')">South</button>
+				</div>
+            </ui-collapsible>
+			
+			<ui-collapsible :class="accordianClass('portals')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
 				<div slot="header" class="d-flex">
 					<span class="material-icons">
 						pages
@@ -302,7 +321,7 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="accordianClass('users')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
+            <ui-collapsible :class="accordianClass('users')" :disableRipple="true" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
             	<div slot="header" class="d-flex">
 					<span class="material-icons">
 						people
@@ -325,7 +344,7 @@
 					/>
             </ui-collapsible>
 
-            <ui-collapsible :class="accordianClass('date')" :disableRipple="true" :open="accordions[2]" @open="onAccordionOpen(2)" @close="onAccordionClose(2)">
+            <ui-collapsible :class="accordianClass('date')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						today
@@ -350,7 +369,7 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="accordianClass('id_level')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
+            <ui-collapsible :class="accordianClass('id_level')" :disableRipple="true" :open="accordions[4]" @open="onAccordionOpen(4)" @close="onAccordionClose(4)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						account_tree
@@ -383,7 +402,7 @@
 				</div>
             </ui-collapsible>
 
-            <ui-collapsible :class="accordianClass('taxon')" :disableRipple="true" :open="accordions[4]" @open="onAccordionOpen(4)" @close="onAccordionClose(4)">
+            <ui-collapsible :class="accordianClass('taxon')" :disableRipple="true" :open="accordions[5]" @open="onAccordionOpen(5)" @close="onAccordionClose(5)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
 						data_usage
@@ -422,6 +441,7 @@ import ImageGallery from './image-gallery'
 				selected_state: "Goa",
 				selected_taxa_levels: [],
 				selected_taxa: [],
+				selected_region: "south",
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				observationsPerPage: 100,
@@ -687,6 +707,9 @@ import ImageGallery from './image-gallery'
 			}
 		},
 		methods: {
+			selectRegion(region){
+				
+			},
 			filterPortal (){
 				let op = []
 				let that = this
@@ -877,6 +900,14 @@ import ImageGallery from './image-gallery'
 			accordianTitle (f){
 				let op = ""
 				switch(f){
+					case 'region':
+						op = "Region : "
+						if (this.selected_region.length == 1){
+							op += `${this.selected_region.length} selected`
+						} else {
+							op += "All selected"
+						}
+						break
 					case 'portals':
 						op = "Portals : "
 						if (this.selected_portals.length == 4){
