@@ -131,14 +131,14 @@ class ResultController extends Controller
             "ifb" => $ifb_data,
         ];
 
-        /*
         $fp = fopen('all_data.json', 'w');
         fwrite($fp, json_encode($all_portal_data));
         fclose($fp);
-
+        
         $fp = fopen('all_taxa.json', 'w');
         fwrite($fp, json_encode($inat_taxa));
         fclose($fp);
+        /*
         */
        
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
