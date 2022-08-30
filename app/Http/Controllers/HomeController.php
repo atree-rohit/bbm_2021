@@ -28,8 +28,8 @@ class HomeController extends Controller
 
     public function welcome()
     {
-        $forms = CountForm::where("flag", false)->count();
-        $form_rows = FormRow::with("form")->get();
+        $forms = CountForm::where("flag", false)->where("created_at", "like", "%2022%")->count();
+        $form_rows = FormRow::where("created_at", "like", "%2022%")->with("form")->get();
         $stats = $this->populate_sci_names($form_rows);
         $users = User::count();
         
