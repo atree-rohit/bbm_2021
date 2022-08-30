@@ -81,7 +81,7 @@
 						<ul>
 							<li>You can use this app to submit count forms.</li>
 							<li>This app can be installed on your phone or computer.</li>
-							<li>At the end of Big Butterfly Month 2021, we will send you an excel sheet with all the data you contributed</li>
+							<li>At the end of Big Butterfly Month 2022, we will send you an excel sheet with all the data you contributed</li>
 						</ul>
 					</div>
 				</div>
