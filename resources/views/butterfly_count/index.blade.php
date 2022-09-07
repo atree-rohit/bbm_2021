@@ -5,9 +5,11 @@
 	.diagonal-box {
 		background-image: linear-gradient(65deg, rgba(255,150, 100, .5), rgba(255, 255,0, .25));
 		/*transform: skewY(-1deg);*/
-		position: fixed;
+		/* position: fixed; */
+		inset: 0;
 		width: 100%;
-		height: calc(100% - 66px);;
+		/* height: calc(100% - 66px);; */
+		min-height: 85vh;
 	} 
 	.content { 	
 		margin: 0 auto;
@@ -16,6 +18,18 @@
 	}
 	.container-fluid{
 		vertical-align: middle;
+	}
+
+	.custom-card-group{
+		display:grid;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media(max-width: 600px){
+		.custom-card-group{
+			grid-template-columns: 1fr;
+			grid-template-rows: 1fr 1fr;
+		}
 	}
 
 	.custom-card{
@@ -70,8 +84,8 @@
 <div class="diagonal-box py-5 mb-5">
 	<div class="container content">			
 		<p class="h1 py-3 text-dark">This year we have 2 ways for you to submit Butterfly Count data to us:</p>
-		<div class="card-groupa  d-flex justify-content-center">
-			<div class="custom-card col-xl-5 col-lg-10">
+		<div class="custom-card-group">
+			<div class="custom-card">
 				<div class="card-body">
 					<h5 class="card-title text-center h1">Using the App</h5>
 					<div class="card-buttons text-center">
@@ -86,7 +100,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="custom-card col-xl-5 col-lg-10">
+			<div class="custom-card">
 				<div class="card-body">
 					<h5 class="card-title text-center h1">Excel Sheet</h5>
 					<div class="card-buttons text-center">
