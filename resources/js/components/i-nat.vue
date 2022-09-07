@@ -296,7 +296,10 @@
 						>Reset</button>
 				</div>
 				<div class="d-flex justify-content-center">
-					<button class="mx-2 btn" @click="selectRegion('sount')">South</button>
+					<button class="mx-2 btn" @click="selectRegion('north')">North</button>
+					<button class="mx-2 btn" @click="selectRegion('east')">East</button>
+					<button class="mx-2 btn" @click="selectRegion('south')">South</button>
+					<button class="mx-2 btn" @click="selectRegion('west')">West</button>
 				</div>
             </ui-collapsible>
 			
