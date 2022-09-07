@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #nav-logo{
 	height: 85px;
 	position: absolute;
@@ -54,3 +55,6 @@
   }
 }
 
+=======
+#nav-logo{height:85px;margin-left:-5px;margin-top:-20px;position:absolute;z-index:100}.bg-indigo{background:#9561e2}.lg-button{font-size:3vw!important}.nav-flag{background:#fc6;background:linear-gradient(135deg,#fc6,#fff 50%,#43a838)}.color-0,.color-1,.color-2{box-shadow:2px 2px 10px hsla(0,0%,4%,.2);opacity:.8;transition:all .25s}.color-0:hover,.color-1:hover,.color-2:hover{box-shadow:4px 4px 10px #c8c8af;cursor:pointer;opacity:1}.color-0{background:#f93;color:#fff}.color-1{background:#fff;color:navy}.color-2{background:#138808;color:#fff}.color-3{background:#f33;color:#fff}@media (max-width:768px){#nav-logo{margin-top:-12px;position:relative}}
+>>>>>>> update_22
