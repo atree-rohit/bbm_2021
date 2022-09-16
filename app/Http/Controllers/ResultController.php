@@ -6,12 +6,17 @@ use App\Models\iNat;
 use App\Models\BOI;
 use App\Models\IBP;
 use App\Models\iNatTaxa;
+use App\Models\INat22;
+use App\Models\INatTaxa22;
 use App\Models\CountForm;
 use App\Models\FormRow;
 use Illuminate\Http\Request;
 
 class ResultController extends Controller
 {
+    private $existing_observation_ids;
+    private $existing_taxa_ids;
+
     public function index_old()
     {
         $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;
@@ -144,11 +149,120 @@ class ResultController extends Controller
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
     }
 
-    public function index()
+    public function index(){
+        $inat = INat22::all()->toArray();
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->toArray();
+        $counts = CountForm::where("created_at", "LIKE", "%2022-09%")->with("rows_cleaned")->get()->toArray();
+        dd($counts);
+        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
+
+    }
+    public function pull_inat()
     {
-        $url = "https://api.inaturalist.org/v1/observations?project_id=big-butterfly-month-india-2022&order=desc&order_by=created_at&page=21&per_page=200";
-        $data = json_decode(file_get_contents($url));
-        dd("injest csv files", $data);
+        $this->existing_observation_ids = INat22::select("id")->get()->pluck("id")->toArray();
+        $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
         
+        $page = 1;
+        $per_page = 200;
+        $total_results = 201;
+        $params = [
+            "project_id=big-butterfly-month-india-2022",
+            "order=desc",
+            "order_by=created_at",
+        ];
+        $url_base = "https://api.inaturalist.org/v1/observations?" . implode("&", $params);
+        // $url_base = public_path("data/2022/sample_inat.json");
+        $new_flag = true;
+        ob_start();
+
+        do{
+            $url = $url_base . "&page=$page&per_page=$per_page";
+            echo "Getting URL: $url <br>";
+            
+            flush();
+            ob_flush();
+            
+            $data = json_decode(file_get_contents($url));
+            $total_results = $data->total_results;
+            $added_count = 0;
+            foreach($data->results as $r){
+                if(!in_array($r->id, $this->existing_observation_ids)) {
+                    $this->add_inat_observation($r);
+                    $added_count++;
+                }
+            }
+            $page++;
+            if(($page * $per_page > $total_results) || ($added_count == 0)){
+                $new_flag = false;
+            }
+        } while($new_flag );
+        
+        ob_end_flush(); 
+        $this->get_missing_taxa();
+
+        dd("injest csv files", $this->existing_observation_ids, $this->existing_taxa_ids);
+    }
+    
+    public function add_inat_observation($record)
+    {
+        $cols = ["id", "uuid", "observed_on", "location", "place_guess", "description", "quality_grade", "license_code", "oauth_application_id"];
+        // "state",  "is_lepidoptera", "is_selected",  
+        if(!in_array($record->taxon->id, $this->existing_taxa_ids)){
+            $this->add_inat_taxa($record->taxon);
+        }
+        $observation = new INat22();
+        foreach($cols as $c){
+            $observation->{$c} = $record->$c;
+        }
+        $observation->taxa_id = $record->taxon->id;
+        $observation->img_url = $record->photos[0]->url ?? null;
+        $observation->user_id = $record->user->id;
+        $observation->user_name = $record->user->login;
+        $observation->inat_created_at = $record->created_at;
+        $observation->inat_updated_at = $record->updated_at;
+        $observation->save();
+        $this->existing_observation_ids[] = $observation->id;        
+    }
+
+    public function add_inat_taxa($new_taxa)
+    {
+        $taxa = new INatTaxa22();
+        $taxa->id = $new_taxa->id;
+        $taxa->name = $new_taxa->name;
+        $taxa->common_name = $new_taxa->preferred_common_name ?? null;
+        $taxa->rank = $new_taxa->rank;
+        $taxa->ancestry = $new_taxa->ancestry;
+        $taxa->save();
+        $this->existing_taxa_ids[] = $taxa->id;
+    }
+
+    public function get_missing_taxa()
+    {
+        $missing_taxa = [];
+        $ancestors = INatTaxa22::all()->pluck("ancestry")->toArray();
+        foreach($ancestors as $a){
+            $keys = explode("/", $a);
+            foreach($keys as $k){
+                $l = (int) $k;
+                if(!in_array($l, $this->existing_taxa_ids) && !in_array($l, $missing_taxa) && $l != 0){
+                    $missing_taxa[] = $l;
+                }
+            }
+        }
+        asort($missing_taxa);
+        ob_start();
+        foreach($missing_taxa as $mt){
+            $url = "https://api.inaturalist.org/v1/taxa/$mt";
+
+            echo "saving Taxa: $mt<br>";
+            flush();
+            ob_flush();
+
+            $data = json_decode(file_get_contents($url));
+            // dd($mt, $data);
+            $this->add_inat_taxa($data->results[0]);
+        }
+        ob_end_flush(); 
+        dd($this->existing_taxa_ids);
     }
 }
