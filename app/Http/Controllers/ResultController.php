@@ -11,6 +11,7 @@ use App\Models\INatTaxa22;
 use App\Models\CountForm;
 use App\Models\FormRow;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
 class ResultController extends Controller
 {
@@ -151,11 +152,54 @@ class ResultController extends Controller
 
     public function index(){
         $inat = INat22::all()->toArray();
-        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->toArray();
-        $counts = CountForm::where("created_at", "LIKE", "%2022-09%")->with("rows_cleaned")->get()->toArray();
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
+        $counts_raw = CountForm::where("created_at", "LIKE", "%2022-09%")->with("rows_cleaned")->get()->toArray();
+        $counts = [];
+        foreach($counts_raw as $cr){
+            $row = [];
+            $row["source"] = "count";
+            $row["user"] = $cr["name"];
+            $row["date"] = $cr["date_cleaned"];
+            $row["date_created"] = $cr["date_created_cleaned"];
+            $row["state"] = $cr["state"];
+            $row["lat"] = $cr["latitude"];
+            $row["lon"] = $cr["longitude"];
+            foreach($cr["rows_cleaned"] as $rc){
+                $row["id"] = $cr["id"] . "x" . $rc["id"];
+                $row["individuals"] = $rc["individuals"];
+                $row["taxa_id"] = $this->get_taxa_id($taxa, $rc);
+                $counts[] = $row;                
+            }
+            // dd($row);
+        }
+        $atree_staff = ["beenkumarkharka", "pemayangdenlepcha", "mingma_tamang1", "susadhnagurung", "tenzing3", "meghna25", "benoy", "adityazoo",  "rohitmg", "yougesh1", "prakash20", "kajal_limbu"];
+        $grouped_data = INat22::with("taxa")->get()->groupBy("user_name");
+        $atree_data = [];
+        foreach($atree_staff as $a){
+            $atree_data[] = [$a, count($grouped_data[$a]), $this->unique_species($grouped_data[$a])];
+        }
+        array_multisort( array_column($atree_data, 1), SORT_DESC, $atree_data );
+        // dd($atree_data);
+        echo "<table border=1>";
+        foreach($atree_data as $ad){
+            echo "<tr><td>$ad[0]</td><td>$ad[1]</td><td>$ad[2]</td></tr>";
+        }
+        echo "<table>";
         dd($counts);
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
 
+    }
+
+    public function unique_species($data)
+    {
+        $unique_ids = [];
+        foreach($data as $d){
+            if(!in_array($d->taxa->name, $unique_ids) && $d->taxa->rank == "species"){
+                $unique_ids[] = $d->taxa->name;
+            }
+        }
+        return count($unique_ids);
+        
     }
     public function pull_inat()
     {
@@ -264,5 +308,24 @@ class ResultController extends Controller
         }
         ob_end_flush(); 
         dd($this->existing_taxa_ids);
+    }
+
+    public function get_taxa_id($taxa, $data)
+    {
+        
+        $taxa_id = $taxa->where("name", "like", $data["scientific_name"])->first();
+        if($taxa_id){
+            $taxa_id = $taxa_id->id;
+        } else {
+            $taxa_id = INatTaxa22::where("common_name", "like", "%". $data["common_name"] ."%")->get()->first();
+            if($taxa_id){
+                // dd($taxa_id);
+                $taxa_id = $taxa_id->id;
+            } else {
+                dd($data, $taxa_id);
+            }
+            // $taxa_id = $taxa->where()
+        }
+        return $taxa_id;
     }
 }
