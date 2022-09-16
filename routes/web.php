@@ -54,6 +54,7 @@ Route::post('/inat/store_taxon', [INatController::class, 'store_taxon'])->name('
 Route::get('/inat/pull', [INatController::class, 'pull'])->name('inat.pull')->middleware('auth');
 
 Route::get('/result', [ResultController::class, 'index'])->name('result.index');
+Route::get('/result/pull_inat', [ResultController::class, 'pull_inat'])->name('result.pull_inat');
 
 Route::resource('/butterfly_count', CountFormController::class);
 /*
