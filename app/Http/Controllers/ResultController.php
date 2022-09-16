@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class ResultController extends Controller
 {
-    public function index()
+    public function index_old()
     {
         $last_update = strtotime(iNat::latest('updated_at')->first()->updated_at) + 5.5*60*60;
         $last_update = date("d M Y, h:i:s A", $last_update);
@@ -140,7 +140,15 @@ class ResultController extends Controller
         fwrite($fp, json_encode($inat_taxa));
         fclose($fp);
         */
-       
+        
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
+    }
+
+    public function index()
+    {
+        $url = "https://api.inaturalist.org/v1/observations?project_id=big-butterfly-month-india-2022&order=desc&order_by=created_at&page=21&per_page=200";
+        $data = json_decode(file_get_contents($url));
+        dd("injest csv files", $data);
+        
     }
 }
