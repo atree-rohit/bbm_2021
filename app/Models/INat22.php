@@ -11,6 +11,6 @@ class INat22 extends Model
 
     public function taxa()
     {
-        return $this->belongsTo(INatTaxa22::class, "id");
+        return $this->belongsTo(INatTaxa22::class, "taxa_id");
     }
 }
