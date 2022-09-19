@@ -6,6 +6,7 @@ use App\Models\iNat;
 use App\Models\BOI;
 use App\Models\IBP;
 use App\Models\iNatTaxa;
+use App\Models\IBP22;
 use App\Models\INat22;
 use App\Models\INatTaxa22;
 use App\Models\CountForm;
@@ -151,6 +152,12 @@ class ResultController extends Controller
     }
 
     public function index(){
+        $inat = INat22::select("id", "observed_on as date", "taxa_id", "location", "user_name as user")->get()->toArray();
+        $ibp = IBP22::select("id", "fromDate as date", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user")->get()->toArray();
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
+        dd($inat, $ibp, $taxa[0]);
+    }
+    public function index_atree(){
         $inat = INat22::all()->toArray();
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
         $counts_raw = CountForm::where("created_at", "LIKE", "%2022-09%")->with("rows_cleaned")->get()->toArray();
@@ -200,6 +207,98 @@ class ResultController extends Controller
         }
         return count($unique_ids);
         
+    }
+
+    public function pull_ibp()
+    {
+        $file = public_path("data/2022/ibp_20220916-0954.csv");
+        $this->existing_observation_ids = IBP22::select("id")->get()->pluck("id")->toArray();
+        $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
+        $fields = ["createdBy", "placeName", "flagNotes", "associatedMedia", "locationLat", "locationLon", "rank", "scientificName", "commonName", "observedInMonth"];
+        $headers = [];
+        $data = [];
+        $open = fopen($file, "r");
+        $header_flag = true;
+        while(($row = fgetcsv($open, 1000, ",")) !== FALSE){
+            if($header_flag){
+                $headers = $row;
+                $header_flag = false;
+            } else if(count($row) !== count($headers)){
+                dd("mismatch", $row);
+            } else {
+                $current_row = [];
+                foreach($headers as $k=>$h){
+                    $current_row[$h] = $row[$k];
+                }
+                $data[] = $current_row;
+            }
+        }
+        fclose($open);
+        $op = [];
+        foreach($data as $d){
+            $ibp = new IBP22();
+            $ibp->id = $d["catalogNumber"];
+            foreach($fields as $f){
+                $ibp->{$f} = $d[$f];
+            }
+            $ibp->createdOn = $this->format_ibp_date($d["createdOn"]);
+            $ibp->fromDate = $this->format_ibp_date($d["fromDate"]);
+            $ibp->state = ucwords(strtolower($d["state"]));
+            $ibp->taxa_id = $this->get_taxa_id_ibp($d);
+            $ibp->save();
+            $op[] = $ibp->toArray();
+        }
+        dd($op);
+    }
+
+    public function format_ibp_date($date)
+    {
+        $op = implode("-", array_reverse(explode("/", $date)));
+        return $op;
+    }
+
+    public function get_taxa_id_ibp($name)
+    {
+        $search_name = "";
+        $search_common_name = "";
+        switch($name["rank"]){
+            case "species": 
+            case "infraspecies": 
+                $search_name = explode(" ", $name["scientificName"]);
+                if(count($search_name) >1 ){
+                    $search_name = $search_name[0] . " " . $search_name[1];                    
+                } else {
+                    $search_name = $search_name[0];
+                }
+                $search_common_name = str_replace(":English", "", $name["commonName"]);
+                break;
+            case "": 
+            case "genus": 
+            case "subfamily": 
+            case "family": 
+            case "superfamily": 
+                $search_name = $name["scientificName"];
+                break;
+            default: dd($name);
+        }
+        if(strlen($search_name) > 0){
+            $matches = INatTaxa22::where("name", "like", "%".$search_name."%")->get();
+            if(count($matches) !== 0){
+                return $matches[0]->id;
+            } else {
+                if(strlen($search_common_name) > 0){
+                    $matches = INatTaxa22::where("common_name", "like", "%".$search_common_name."%")->get();
+                }
+                if(count($matches) === 1){
+                    return $matches[0]->id;
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+
+
     }
     public function pull_inat()
     {
