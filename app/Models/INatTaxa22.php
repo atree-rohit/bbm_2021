@@ -13,4 +13,9 @@ class INatTaxa22 extends Model
     {
         return $this->hasMany(INat22::class, "taxa_id");
     }
+    
+    public function ibp_records()
+    {
+        return $this->hasMany(IBP22::class, "taxa_id");
+    }
 }
