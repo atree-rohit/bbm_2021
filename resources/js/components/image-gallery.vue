@@ -107,7 +107,7 @@
 
 <template>
     <div id="gallery">
-        <div v-for="o in observations">
+        <div v-for="(o, k) in observations" :key="k">
             <div class="observation-img">
                  <div class="gallery-item-overlay"></div>
                  <img class="gallery-item-image" :src="imgUrl(o)">
