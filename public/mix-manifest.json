@@ -1,5 +1,6 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/result.js": "/js/result.js",
     "/js/validate.js": "/js/validate.js",
     "/js/butterfly_counts.js": "/js/butterfly_counts.js",
     "/js/inat.js": "/js/inat.js",
