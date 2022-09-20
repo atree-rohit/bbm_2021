@@ -29,6 +29,7 @@ class CreateIBP22STable extends Migration
             $table->string('commonName')->nullable();
             $table->unsignedBigInteger('taxa_id')->nullable();
             $table->string('state')->nullable();
+            $table->string('district')->nullable();
             $table->string('observedInMonth')->nullable();
             $table->timestamps();
 
