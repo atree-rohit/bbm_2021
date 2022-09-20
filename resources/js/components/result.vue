@@ -206,13 +206,13 @@
 					v-for="tab in tabs"
 				>
 					<div id="map-container" v-if="tab.title === 'Location'">
-						<!-- <india-map :map_data="mapData"
+						<india-map :map_data="mapData"
 								   :selected_state="selected_state"
 								   :selected_region="selected_region"
 								   :popup="tooltip"
 								   :stateStats="stateStats"
 								   @stateSelected='selectState'
-						/> -->
+						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
 						<div class="d-flex justify-content-around text-center">
@@ -428,7 +428,7 @@
 import axios from 'axios';
 import country from '../country.json'
 import DataTable from './data-table'
-// import IndiaMap from './india-map'
+import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
 import ImageGallery from './image-gallery'
@@ -436,7 +436,7 @@ import ImageGallery from './image-gallery'
 		name:"result",
 		props: ["taxa", "all_portal_data"],
 		components: { DataTable,
-						// IndiaMap,
+						IndiaMap,
 						SpeciesSunburst,
 						DateChart,
 						ImageGallery },
@@ -533,6 +533,7 @@ import ImageGallery from './image-gallery'
 					o.sl_no = id + 1
 					return o
 				})
+				console.log("user", op)
 
 				return op
 			},
@@ -570,7 +571,9 @@ import ImageGallery from './image-gallery'
 					op['All'].species.add(o.taxa_id)
 					op['All'].portals.add(o.portal)
 					if(o.state !== null){
-						// console.log(`+${o.state}+`)
+						if(op[o.state] == undefined){
+							console.log(`+${o.state}+`)
+						}
 						op[o.state].observations++
 						op[o.state].users.add(o.user_id)
 						op[o.state].species.add(o.taxa_id)
@@ -669,28 +672,28 @@ import ImageGallery from './image-gallery'
 				filtered_observations = this.filterUsers(filtered_observations)
 				filtered_observations = this.filterDates(filtered_observations)
 
-				filtered_observations.forEach(o => {
-					if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
-						let taxa = this.taxa[o.taxa_id]
-						let hierarchy = {}
-						hierarchy[taxa.rank] = taxa.name
-						hierarchy.key = taxa.name
-						this.taxa[taxa.id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.taxa[id].rank) != -1){
-								hierarchy[this.taxa[id].rank] = this.taxa[id].name
-							}
-						})
-						this.levels.forEach((l, lid) => {
-							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
-								hierarchy[l] = "Incertae sedis"
-							}
-						})
-						if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
-							hierarchy.value = 1
-							op.push(hierarchy)
-						}
-					}
-				})
+				// filtered_observations.forEach(o => {
+				// 	if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
+				// 		let taxa = this.taxa[o.taxa_id]
+				// 		let hierarchy = {}
+				// 		hierarchy[taxa.rank] = taxa.name
+				// 		hierarchy.key = taxa.name
+				// 		this.taxa[taxa.id].ancestry.split("/").forEach(id => {
+				// 			if(this.levels.indexOf(this.taxa[id].rank) != -1){
+				// 				hierarchy[this.taxa[id].rank] = this.taxa[id].name
+				// 			}
+				// 		})
+				// 		this.levels.forEach((l, lid) => {
+				// 			if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
+				// 				hierarchy[l] = "Incertae sedis"
+				// 			}
+				// 		})
+				// 		if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
+				// 			hierarchy.value = 1
+				// 			op.push(hierarchy)
+				// 		}
+				// 	}
+				// })
 
 
 				return op
