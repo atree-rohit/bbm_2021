@@ -410,7 +410,12 @@ export default {
 
 			if(this.selected != 'All'){
 				this.state_data[this.selected].forEach(o => {
-					let coords = o.location.split(",")
+					let coords = null
+					if(o.location != undefined){
+						coords = o.location.split(",")
+					} else {
+						coords = [o.lat, o.lon]
+					}
 					points.push([coords[1], coords[0], o.id, o.place_guess]);
 				})
 			}
