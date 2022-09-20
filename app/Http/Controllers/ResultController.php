@@ -18,6 +18,213 @@ class ResultController extends Controller
 {
     private $existing_observation_ids;
     private $existing_taxa_ids;
+    private $polygons;
+
+    public function index(){
+        $inat = INat22::select("id", "observed_on as date", "taxa_id", "location", "user_name as user_id", "state", "district", "img_url")
+                ->get()
+                ->toArray();
+        $ibp = IBP22::select("id", "fromDate as date","associatedMedia as img_url", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
+                ->get()
+                ->toArray();
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
+        
+        $form_data = [];
+        $last_update = "";
+        $all_portal_data = [
+            "counts" => [],
+            "inat" => $inat,
+            "ibp" => $ibp,
+            "ifb" => [],
+        ];
+        
+        return view('result.index', compact("taxa", "all_portal_data"));
+        /*
+        */
+    }
+
+    public function set_state()
+    {
+        // $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts.geojson")))->features;
+        // $this->polygons = json_decode(file_get_contents(public_path("/data/2022/states.json")))->features;
+        ini_set('max_execution_time', '60'); 
+        $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        $this->inat_set_state();
+        $this->ibp_set_state();
+    }
+
+    public function ibp_set_state()
+    {
+        $ibp = IBP22::where("district", null)
+                    ->limit(-1)
+                    ->get();
+        /*
+            echo "<table border='1'>";
+            foreach($ibp as $i){
+                echo "<tr><td>";
+                echo $i->id;
+                echo "</td><td>";
+                echo $i->locationLat;
+                echo "</td><td>";
+                echo $i->locationLon;
+                echo "</td></tr>";
+            }
+            echo "</table>";
+            return;
+        */
+        echo "<table border='1'>";
+        foreach($ibp as $i){
+            $point = [
+                $i->locationLat,
+                $i->locationLon,
+            ];
+            $index = 0;
+            while($i->district == null && $index < count($this->polygons) ){
+                // dd($i);
+                $current_polygon = $this->polygons[$index]->geometry->coordinates[0];
+                if($this->polygons[$index]->geometry->type == "Polygon"){
+                    $in_polygon = $this->is_in_polygon2($point[1], $point[0], $current_polygon);
+                    if($in_polygon){
+                        $this->save_state_district(
+                            $i,
+                            $this->polygons[$index]->properties->statename,
+                            $this->polygons[$index]->properties->distname
+                        );
+                        $table_op = [
+                            $i->location,
+                            $i->place_guess,
+                            $this->polygons[$index]->properties->statename,
+                            $this->polygons[$index]->properties->distname,
+                            $in_polygon
+                        ];
+                        echo "<tr><td>".  implode("</td><td>", $table_op)."</td></tr>";
+                    } else {
+                        $index++;
+                    }
+                } 
+                else {
+                    foreach($this->polygons[$index]->geometry->coordinates as $p){
+                        // echo "<tr><td>".json_encode($this->polygons[$index]->properties->statename)."</td></tr>";
+                        $in_polygon = $this->is_in_polygon2($point[1], $point[0], $p[0]);
+                        // echo "$in_polygon<br>";
+                        if($in_polygon){
+                            $this->save_state_district(
+                                $i,
+                                $this->polygons[$index]->properties->statename,
+                                $this->polygons[$index]->properties->distname
+                            );
+                            $table_op = [
+                                $i->location,
+                                $i->place_guess,
+                                $this->polygons[$index]->properties->statename,
+                                $this->polygons[$index]->properties->distname,
+                                $in_polygon
+                            ];
+                            echo "<tr><td>".  implode("</td><td>", $table_op)."</td></tr>";
+                        } 
+                    }
+                    $index++;
+                }
+            }
+        }
+        echo "</table>";
+    }
+
+
+    public function inat_set_state()
+    {
+        $inat = INat22::where("state", null)
+                ->get();
+        /*
+            echo "<table border='1'>";
+            foreach($inat as $i){
+                $l = explode(",",$i->location);
+                echo "<tr><td>";
+                echo $i->id;
+                echo "</td><td>";
+                echo $l[0];
+                echo "</td><td>";
+                echo $l[1];
+                echo "</td></tr>";
+            }
+            return;
+            echo "</table>";
+        */
+
+        echo "<table border='1'>";
+        foreach($inat as $i){
+            $point = explode(",", $i->location);
+            $index = 0;
+            $state_set = false;
+            while($state_set == false && $index < count($this->polygons) ){
+                $current_polygon = $this->polygons[$index]->geometry->coordinates[0];
+                if($this->polygons[$index]->geometry->type == "Polygon"){
+                    $in_polygon = $this->is_in_polygon2($point[1], $point[0], $current_polygon);
+                    if($in_polygon){
+                        $this->save_state_district(
+                            $i,
+                            $this->polygons[$index]->properties->statename,
+                            $this->polygons[$index]->properties->distname
+                        );
+                        $table_op = [
+                            $i->location,
+                            $i->place_guess,
+                            $this->polygons[$index]->properties->statename,
+                            $this->polygons[$index]->properties->distname,
+                            $in_polygon
+                        ];
+                        echo "<tr><td>".  implode("</td><td>", $table_op)."</td></tr>";
+                        $state_set = true;
+                    } else {
+                        $index++;
+                    }
+                } 
+                else {
+                    foreach($this->polygons[$index]->geometry->coordinates as $p){
+                        // echo "<tr><td>".json_encode($this->polygons[$index]->properties->statename)."</td></tr>";
+                        $in_polygon = $this->is_in_polygon2($point[1], $point[0], $p[0]);
+                        if($in_polygon){
+                            $this->save_state_district(
+                                $i,
+                                $this->polygons[$index]->properties->statename,
+                                $this->polygons[$index]->properties->distname
+                            );
+                            $table_op = [
+                                $i->location,
+                                $i->place_guess,
+                                $this->polygons[$index]->properties->statename,
+                                $this->polygons[$index]->properties->distname,
+                                $in_polygon
+                            ];
+                            echo "<tr><td>".  implode("</td><td>", $table_op)."</td></tr>";
+                            $state_set = true;
+                        } 
+                    }
+                    $index++;
+                }
+            }
+        }
+        echo "</table>";
+    }
+
+    public function save_state_district($obv, $state, $district)
+    {
+        $obv->state = $state;
+        $obv->district = $district;
+        $obv->save();
+        
+    }
+    public function is_in_polygon2($longitude_x, $latitude_y,$polygon)
+    {
+        $i = $j = $c = 0;
+        $points_polygon = count($polygon)-1;
+        for ($i = 0, $j = $points_polygon ; $i < $points_polygon; $j = $i++) {
+            if ( (($polygon[$i][1]  >  $latitude_y != ($polygon[$j][1] > $latitude_y)) &&
+            ($longitude_x < ($polygon[$j][0] - $polygon[$i][0]) * ($latitude_y - $polygon[$i][1]) / ($polygon[$j][1] - $polygon[$i][1]) + $polygon[$i][0]) ) )
+                $c = !$c;
+        }
+        return $c;
+    }
 
     public function index_old()
     {
@@ -53,7 +260,7 @@ class ResultController extends Controller
 
         $forms = CountForm::where("flag", 0)
                         ->where("date_created_cleaned", ">", 0 )
-                        ->where("date_created_cleaned", "<", 31 )
+                        ->where("date_created_cleaned", "<", 91 )
                         ->with("rows")
                         ->get()
                         ->toArray();
@@ -151,49 +358,29 @@ class ResultController extends Controller
         return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
     }
 
-    public function index(){
-        $inat = INat22::select("id", "observed_on as date", "taxa_id", "location", "user_name as user")->get()->toArray();
-        $ibp = IBP22::select("id", "fromDate as date", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user")->get()->toArray();
-        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
-        dd($inat, $ibp, $taxa[0]);
-    }
+
     public function index_atree(){
         $inat = INat22::all()->toArray();
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
-        $counts_raw = CountForm::where("created_at", "LIKE", "%2022-09%")->with("rows_cleaned")->get()->toArray();
-        $counts = [];
-        foreach($counts_raw as $cr){
-            $row = [];
-            $row["source"] = "count";
-            $row["user"] = $cr["name"];
-            $row["date"] = $cr["date_cleaned"];
-            $row["date_created"] = $cr["date_created_cleaned"];
-            $row["state"] = $cr["state"];
-            $row["lat"] = $cr["latitude"];
-            $row["lon"] = $cr["longitude"];
-            foreach($cr["rows_cleaned"] as $rc){
-                $row["id"] = $cr["id"] . "x" . $rc["id"];
-                $row["individuals"] = $rc["individuals"];
-                $row["taxa_id"] = $this->get_taxa_id($taxa, $rc);
-                $counts[] = $row;                
-            }
-            // dd($row);
-        }
+       
         $atree_staff = ["beenkumarkharka", "pemayangdenlepcha", "mingma_tamang1", "susadhnagurung", "tenzing3", "meghna25", "benoy", "adityazoo",  "rohitmg", "yougesh1", "prakash20", "kajal_limbu"];
         $grouped_data = INat22::with("taxa")->get()->groupBy("user_name");
         $atree_data = [];
+        $total_observations = 0;
+        $all_observations = [];
         foreach($atree_staff as $a){
-            $atree_data[] = [$a, count($grouped_data[$a]), $this->unique_species($grouped_data[$a])];
+            $atree_data[] = [$a, count($grouped_data[$a]), $this->unique_species($grouped_data[$a]->toArray())];
+            $all_observations = array_merge($all_observations, $grouped_data[$a]->toArray());
         }
+        $total_observations = count($all_observations);
+        $unique_species = $this->unique_species($all_observations);
         array_multisort( array_column($atree_data, 1), SORT_DESC, $atree_data );
-        // dd($atree_data);
         echo "<table border=1>";
         foreach($atree_data as $ad){
             echo "<tr><td>$ad[0]</td><td>$ad[1]</td><td>$ad[2]</td></tr>";
         }
         echo "<table>";
-        dd($counts);
-        return view('inat.index', compact("inat_data", "inat_taxa", "form_data", "last_update", "all_portal_data"));
+        dd($total_observations, $all_observations, $unique_species);
 
     }
 
@@ -201,8 +388,8 @@ class ResultController extends Controller
     {
         $unique_ids = [];
         foreach($data as $d){
-            if(!in_array($d->taxa->name, $unique_ids) && $d->taxa->rank == "species"){
-                $unique_ids[] = $d->taxa->name;
+            if(!in_array($d["taxa"]["name"], $unique_ids) && $d["taxa"]["rank"] == "species"){
+                $unique_ids[] = $d["taxa"]["name"];
             }
         }
         return count($unique_ids);
@@ -304,6 +491,7 @@ class ResultController extends Controller
     {
         $this->existing_observation_ids = INat22::select("id")->get()->pluck("id")->toArray();
         $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
+        $inat_records = INat22::all()->keyBy("id");
         
         $page = 1;
         $per_page = 200;
@@ -332,16 +520,20 @@ class ResultController extends Controller
                 if(!in_array($r->id, $this->existing_observation_ids)) {
                     $this->add_inat_observation($r);
                     $added_count++;
+                } else if($r->updated_at != $inat_records[$r->id]->inat_updated_at) {
+                    $this->update_inat_observation($r);
+                } else {
+                    $added_count--;
                 }
             }
             $page++;
-            if(($page * $per_page > $total_results) || ($added_count == 0)){
+            if(($page * $per_page > $total_results) || ($added_count > -2 )){
                 $new_flag = false;
             }
         } while($new_flag );
         
         ob_end_flush(); 
-        $this->get_missing_taxa();
+        // $this->get_missing_taxa();
 
         dd("injest csv files", $this->existing_observation_ids, $this->existing_taxa_ids);
     }
@@ -365,6 +557,22 @@ class ResultController extends Controller
         $observation->inat_updated_at = $record->updated_at;
         $observation->save();
         $this->existing_observation_ids[] = $observation->id;        
+    }
+
+    public function update_inat_observation($record)
+    {
+        $cols = ["observed_on", "location", "place_guess", "description", "quality_grade", "license_code"];
+        if(!in_array($record->taxon->id, $this->existing_taxa_ids)){
+            $this->add_inat_taxa($record->taxon);
+        }
+        $observation = INat22::find($record->id);
+        foreach($cols as $c){
+            $observation->{$c} = $record->$c;
+        }
+        $observation->taxa_id = $record->taxon->id;
+        $observation->img_url = $record->photos[0]->url ?? null;
+        $observation->inat_updated_at = $record->updated_at;
+        $observation->save();
     }
 
     public function add_inat_taxa($new_taxa)
