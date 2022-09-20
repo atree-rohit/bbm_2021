@@ -2547,6 +2547,477 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-svg-legend */ "./node_modules/d3-svg-legend/indexRollupNext.js");
+/* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "india-map",
+  props: ["map_data", "selected_state", "popup", "stateStats", "selected_region"],
+  data: function data() {
+    return {
+      states: null,
+      path: null,
+      svg: {},
+      projection: {},
+      colors: {},
+      legend: {},
+      state_data: {},
+      selected: "All",
+      state_max: 0,
+      height: 600,
+      width: 800,
+      tooltip: this.popup,
+      map_first_render: true,
+      region_colors: {
+        north: "#f8df81",
+        south: "#badfda",
+        west: "#f6aa90",
+        east: "#d5b6d5"
+      }
+    };
+  },
+  mounted: function mounted() {
+    this.init();
+    this.regionalStats(); // this.clicked(this.selectedGeoJson)
+    // this.map_first_render = false
+    // alert(`${this.width} x ${this.height}`)
+  },
+  computed: {
+    stateData: function stateData() {
+      var op = {};
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
+        op[s.properties.ST_NM] = [];
+      });
+      this.map_data.forEach(function (o) {
+        if (o.state !== null) {
+          op[o.state].push(o);
+        }
+      });
+      return op;
+    },
+    selectedGeoJson: function selectedGeoJson() {
+      var _this = this;
+
+      var op = {
+        properties: {
+          ST_NM: 'All'
+        }
+      };
+
+      if (this.selected !== 'All') {
+        Object.keys(_country_json__WEBPACK_IMPORTED_MODULE_1__.features).forEach(function (c) {
+          if (_country_json__WEBPACK_IMPORTED_MODULE_1__.features[c].properties.ST_NM === _this.selected) {
+            op = _country_json__WEBPACK_IMPORTED_MODULE_1__.features[c];
+          }
+        });
+      }
+
+      return op;
+    },
+    zoom: function zoom() {
+      var that = this;
+      return d3.zoom().scaleExtent([.5, 50]).translateExtent([[-0.5 * this.width, -0.75 * this.height], [2.5 * this.width, 2.5 * this.height]]).on('zoom', function () {
+        that.svg.selectAll('.poly_text').attr('transform', d3.event.transform), that.svg.selectAll('path').attr('transform', d3.event.transform), that.svg.selectAll('circle').attr('transform', d3.event.transform).attr("r", 2 / d3.event.transform.k);
+      });
+    }
+  },
+  watch: {
+    map_data: function map_data() {
+      this.init();
+    },
+    selected_state: function selected_state(newVal, oldVal) {
+      if (!d3.select("#map-container .map-points").empty()) {
+        d3.selectAll(".map-points").remove();
+      }
+
+      this.init();
+    }
+  },
+  methods: {
+    regionalStats: function regionalStats() {
+      var region_states = {};
+
+      var regions = _toConsumableArray(new Set(_country_json__WEBPACK_IMPORTED_MODULE_1__.features.map(function (s) {
+        return s.properties.region;
+      })));
+
+      var region_stats = {};
+      regions.map(function (r) {
+        region_stats[r] = {
+          region: r,
+          observations: []
+        };
+      }); // Total observations, total users, total unique taxa with counts
+
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
+        if (region_states[s.properties.region] == undefined) {
+          region_states[s.properties.region] = [];
+        }
+
+        region_states[s.properties.region].push(s.properties.ST_NM);
+      });
+      this.map_data.forEach(function (o) {
+        var region = Object.keys(region_states).filter(function (rs) {
+          return region_states[rs].indexOf(o.state) != -1;
+        })[0];
+        region_stats[region].observations.push(o);
+      });
+      regions.map(function (r) {
+        region_stats[r].users = _toConsumableArray(new Set(region_stats[r].observations.map(function (o) {
+          return o.user_id;
+        })));
+        region_stats[r].user_counts = region_stats[r].users.map(function (u) {
+          return {
+            name: u,
+            count: region_stats[r].observations.filter(function (o) {
+              return o.user_id == u;
+            }).length
+          };
+        });
+        region_stats[r].user_counts.sort(function (a, b) {
+          return b.count - a.count;
+        });
+        region_stats[r].taxa = _toConsumableArray(new Set(region_stats[r].observations.map(function (o) {
+          return o.taxa_name;
+        })));
+        region_stats[r].taxa_counts = region_stats[r].taxa.map(function (t) {
+          return {
+            name: t,
+            count: region_stats[r].observations.filter(function (o) {
+              return o.taxa_name == t;
+            }).length
+          };
+        });
+        region_stats[r].taxa_counts.sort(function (a, b) {
+          return b.count - a.count;
+        });
+      });
+      console.table(region_stats);
+      var x = regions.map(function (r) {
+        return {
+          name: r,
+          observations: region_stats[r].observations.length,
+          users: region_stats[r].users.length,
+          taxa: region_stats[r].taxa.length,
+          top_taxa: region_stats[r].taxa_counts.slice(0, 5).map(function (t) {
+            return "".concat(t.name, " (").concat(t.count, ")");
+          }).join(", "),
+          top_users: region_stats[r].user_counts.slice(0, 5).map(function (u) {
+            return "".concat(u.name, " (").concat(u.count, ")");
+          }).join(", ")
+        };
+      });
+      console.log(x.map(function (r) {
+        return [r.name, r.top_users];
+      }));
+    },
+    init: function init() {
+      var _this2 = this;
+
+      this.map_first_render = true;
+      this.states = null;
+      this.path = null;
+      this.svg = {};
+      this.projection = {};
+      this.colors = {};
+      this.legend = {};
+      this.state_data = {};
+      this.state_max = 0;
+      this.height = window.innerHeight * 0.85;
+      this.width = window.innerWidth * 0.5;
+
+      if (window.innerWidth < 800) {
+        this.height = window.innerHeight * 0.5;
+        this.width = window.innerWidth * 0.9;
+      }
+
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (s) {
+        _this2.state_data[s.properties.ST_NM] = [];
+      });
+      this.map_data.forEach(function (o) {
+        if (Object.keys(_this2.state_data).indexOf(o.state) != -1) {
+          _this2.state_data[o.state].push(o);
+        } else {
+          console.log("unmatched state name", o.state, o);
+        }
+      });
+      Object.keys(this.state_data).forEach(function (s) {
+        if (_this2.state_data[s].length > _this2.state_max) _this2.state_max = _this2.state_data[s].length;
+      });
+      this.colors = d3.scaleLinear().domain([0, 1, this.state_max * .25, this.state_max]).range(["#f77", "#ca0", "#ada", "#3d3"]);
+      this.legend = d3_svg_legend__WEBPACK_IMPORTED_MODULE_0__.legendColor().shapeWidth(45).scale(this.colors).labelFormat(d3.format(".0f")).orient('horizontal').labelOffset(-10).labelAlign("start").cells(6); // .shapePadding(47)
+
+      this.renderMap();
+      this.clicked(this.selectedGeoJson);
+      this.map_first_render = false;
+    },
+    renderMap: function renderMap() {
+      var _this3 = this;
+
+      this.selected = this.selected_state;
+
+      if (!d3.select("#map-container svg").empty()) {
+        d3.selectAll("#map-container svg").remove();
+      }
+
+      this.svg = d3.select("#map-container").append("svg").attr("preserveAspectRatio", "xMinYMin meet").attr("width", this.width).attr("height", this.height) // .style("background-color", "rgb(190, 229, 235)")
+      .classed("svg-content d-flex m-auto", true);
+      this.projection = d3.geoMercator().scale(850).center([87, 25.5]);
+      this.path = d3.geoPath().projection(this.projection);
+
+      if (this.height > this.width) {
+        this.legend.shapeWidth(35).cells(4); // .shapePadding(37)
+      }
+
+      var base = this.svg.append("g").classed("map-boundary", true);
+      var base_text = base.selectAll("text").append("g");
+      base = base.selectAll("path").append("g");
+      this.states = base.append("g").classed("states", true);
+      var that = this;
+      _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
+        var s_name = state.properties.ST_NM;
+        var region = state.properties.region;
+        var that = _this3;
+
+        var current_state = _this3.states.append("g").data([state]).enter().append("path").attr("d", _this3.path).attr("id", _this3.stateID(s_name)).attr("title", s_name).on('mouseover', function (d, i) {
+          that.tooltip.html("<table>\n\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t\t\t\t\t\t</table>")).style('visibility', 'visible');
+        }).on('mousemove', function () {
+          that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
+        }).on('mouseout', function () {
+          return that.tooltip.html("").style('visibility', 'hidden');
+        }).on("click", _this3.clicked); // if(this.stateData[s_name] == undefined){
+        // 	current_state.attr("fill", (d) => colors(-1))
+        // } else if (s_name == this.selected) {
+        // 	current_state.classed("state-selected", true)
+        // } else {
+        // 	current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
+        // }
+
+
+        current_state.attr("fill", function (d) {
+          return _this3.region_colors[region];
+        });
+      });
+
+      if (this.selected == "All") {
+        _country_json__WEBPACK_IMPORTED_MODULE_1__.features.forEach(function (state) {
+          var s_name = state.properties.ST_NM;
+          var label = base_text.append("g").data([state]).enter().append("text").classed("poly_text", true).attr("x", function (h) {
+            return _this3.path.centroid(h)[0];
+          }).attr("y", function (h) {
+            return _this3.path.centroid(h)[1];
+          }).attr("text-anchor", "middle").text(_this3.stateData[s_name].length).on('mouseover', function (d, i) {
+            that.tooltip.html("<table>\n\t\t\t\t\t\t\t\t<tr><td>State</td><td>".concat(s_name, "</td></tr>\n\t\t\t\t\t\t\t\t<tr><td>Observations</td><td>").concat(that.stateStats[s_name].observations, "</td></tr>\n\t\t\t\t\t\t\t\t<tr><td>Users</td><td>").concat(that.stateStats[s_name].users.size, "</td></tr>\n\t\t\t\t\t\t\t\t<tr><td>Unique Taxa</td><td>").concat(that.stateStats[s_name].species.size, "</td></tr>\n\t\t\t\t\t\t\t\t</table>")).style('visibility', 'visible');
+          }).on('mousemove', function () {
+            that.tooltip.style('top', d3.event.pageY - 10 + 'px').style('left', d3.event.pageX + 10 + 'px');
+          }).on('mouseout', function () {
+            return that.tooltip.html("").style('visibility', 'hidden');
+          }).on("click", _this3.clicked);
+        });
+      }
+
+      this.svg.append("g").attr("transform", "translate(" + this.width * .5 + ", 50)").call(this.legend); // .append("text")
+      // .classed("map_label", true)
+      // .attr("dx", 5)
+      // .attr("dy", -10)
+      // .classed("h1", true)
+      // .text(this.selected)
+
+      this.svg.call(this.zoom);
+      this.mapPoints(); // if(this.map_first_render){
+      // 	this.clicked(this.selectedGeoJson)
+      // 	this.map_first_render = false
+      // }
+    },
+    stateID: function stateID(s) {
+      return s.replaceAll(" ", "_").replaceAll("&", "");
+    },
+    clicked: function clicked(d) {
+      this.tooltip.html("").style('visibility', 'hidden');
+      var state = d.properties.ST_NM;
+      if (state == this.selected && state != 'All') if (!d3.select("#map-container .poly_text").empty()) {
+        d3.selectAll("#map-container .poly_text").remove();
+      }
+      var x0 = 0,
+          y0 = 0,
+          x1 = 0,
+          y1 = 0;
+      this.states.transition().style("fill", null);
+
+      if (d3.select(".state-selected")["_groups"][0][0] != null) {
+        d3.select("#" + d3.select(".state-selected")["_groups"][0][0].id).attr("class", null);
+      }
+
+      if (this.map_first_render) {
+        if (state == "All") {
+          var _this$path$bounds = this.path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_1__);
+
+          var _this$path$bounds2 = _slicedToArray(_this$path$bounds, 2);
+
+          var _this$path$bounds2$ = _slicedToArray(_this$path$bounds2[0], 2);
+
+          x0 = _this$path$bounds2$[0];
+          y0 = _this$path$bounds2$[1];
+
+          var _this$path$bounds2$2 = _slicedToArray(_this$path$bounds2[1], 2);
+
+          x1 = _this$path$bounds2$2[0];
+          y1 = _this$path$bounds2$2[1];
+        } else {
+          var _this$path$bounds3 = this.path.bounds(d);
+
+          var _this$path$bounds4 = _slicedToArray(_this$path$bounds3, 2);
+
+          var _this$path$bounds4$ = _slicedToArray(_this$path$bounds4[0], 2);
+
+          x0 = _this$path$bounds4$[0];
+          y0 = _this$path$bounds4$[1];
+
+          var _this$path$bounds4$2 = _slicedToArray(_this$path$bounds4[1], 2);
+
+          x1 = _this$path$bounds4$2[0];
+          y1 = _this$path$bounds4$2[1];
+          d3.select("#" + this.stateID(state)).classed("state-selected", true);
+        }
+      } else {
+        if (this.selected == state) {
+          var _this$path$bounds5 = this.path.bounds(_country_json__WEBPACK_IMPORTED_MODULE_1__);
+
+          var _this$path$bounds6 = _slicedToArray(_this$path$bounds5, 2);
+
+          var _this$path$bounds6$ = _slicedToArray(_this$path$bounds6[0], 2);
+
+          x0 = _this$path$bounds6$[0];
+          y0 = _this$path$bounds6$[1];
+
+          var _this$path$bounds6$2 = _slicedToArray(_this$path$bounds6[1], 2);
+
+          x1 = _this$path$bounds6$2[0];
+          y1 = _this$path$bounds6$2[1];
+        } else {
+          var _this$path$bounds7 = this.path.bounds(d);
+
+          var _this$path$bounds8 = _slicedToArray(_this$path$bounds7, 2);
+
+          var _this$path$bounds8$ = _slicedToArray(_this$path$bounds8[0], 2);
+
+          x0 = _this$path$bounds8$[0];
+          y0 = _this$path$bounds8$[1];
+
+          var _this$path$bounds8$2 = _slicedToArray(_this$path$bounds8[1], 2);
+
+          x1 = _this$path$bounds8$2[0];
+          y1 = _this$path$bounds8$2[1];
+          d3.select("#" + this.stateID(state)).classed("state-selected", true);
+        }
+
+        if (this.selected == state) {
+          this.$emit('stateSelected', 'All');
+        } else {
+          this.$emit('stateSelected', state);
+        }
+      }
+
+      this.svg.transition().duration(750).call(this.zoom.transform, d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.width, (y1 - y0) / this.height))).translate(-(x0 + x1) / 2, -(y0 + y1) / 2));
+      /*
+      */
+    },
+    mapPoints: function mapPoints() {
+      var _this4 = this;
+
+      var points = [];
+
+      if (this.selected != 'All') {
+        this.state_data[this.selected].forEach(function (o) {
+          var coords = null;
+
+          if (o.location != undefined) {
+            coords = o.location.split(",");
+          } else {
+            coords = [o.lat, o.lon];
+          }
+
+          points.push([coords[1], coords[0], o.id, o.place_guess]);
+        });
+      }
+
+      if (points.length > 0) {
+        var map_points = this.svg.append('g').classed('map-points', true).selectAll("circle").data(points).enter().append("circle").attr("cx", function (d) {
+          return _this4.projection(d)[0];
+        }).attr("cy", function (d) {
+          return _this4.projection(d)[1];
+        }).attr("r", "0px"); // map_points.on("click", (d) => that.setMissingState(d))
+      }
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=script&lang=js&":
 /*!*************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=script&lang=js& ***!
@@ -2562,9 +3033,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _country_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../country.json */ "./resources/js/country.json");
 /* harmony import */ var _data_table__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data-table */ "./resources/js/components/data-table.vue");
-/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
-/* harmony import */ var _date_chart__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./date-chart */ "./resources/js/components/date-chart.vue");
-/* harmony import */ var _image_gallery__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./image-gallery */ "./resources/js/components/image-gallery.vue");
+/* harmony import */ var _india_map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./india-map */ "./resources/js/components/india-map.vue");
+/* harmony import */ var _species_sunburst__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./species-sunburst */ "./resources/js/components/species-sunburst.vue");
+/* harmony import */ var _date_chart__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./date-chart */ "./resources/js/components/date-chart.vue");
+/* harmony import */ var _image_gallery__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./image-gallery */ "./resources/js/components/image-gallery.vue");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -3005,7 +3477,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 
 
- // import IndiaMap from './india-map'
+
 
 
 
@@ -3015,10 +3487,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   props: ["taxa", "all_portal_data"],
   components: {
     DataTable: _data_table__WEBPACK_IMPORTED_MODULE_2__.default,
-    // IndiaMap,
-    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_3__.default,
-    DateChart: _date_chart__WEBPACK_IMPORTED_MODULE_4__.default,
-    ImageGallery: _image_gallery__WEBPACK_IMPORTED_MODULE_5__.default
+    IndiaMap: _india_map__WEBPACK_IMPORTED_MODULE_3__.default,
+    SpeciesSunburst: _species_sunburst__WEBPACK_IMPORTED_MODULE_4__.default,
+    DateChart: _date_chart__WEBPACK_IMPORTED_MODULE_5__.default,
+    ImageGallery: _image_gallery__WEBPACK_IMPORTED_MODULE_6__.default
   },
   data: function data() {
     return {
@@ -3115,6 +3587,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         o.sl_no = id + 1;
         return o;
       });
+      console.log("user", op);
       return op;
     },
     dateTableData: function dateTableData() {
@@ -3167,7 +3640,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         op['All'].portals.add(o.portal);
 
         if (o.state !== null) {
-          // console.log(`+${o.state}+`)
+          if (op[o.state] == undefined) {
+            console.log("+".concat(o.state, "+"));
+          }
+
           op[o.state].observations++;
           op[o.state].users.add(o.user_id);
           op[o.state].species.add(o.taxa_id);
@@ -3281,40 +3757,33 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     treeData: function treeData() {
-      var _this4 = this;
-
       var op = [];
       var filtered_observations = this.filterPortal();
       filtered_observations = this.filterState(filtered_observations);
       filtered_observations = this.filterUsers(filtered_observations);
-      filtered_observations = this.filterDates(filtered_observations);
-      filtered_observations.forEach(function (o) {
-        if (o.taxa_id != undefined && _this4.taxa[o.taxa_id].rank == "species") {
-          var taxa = _this4.taxa[o.taxa_id];
-          var hierarchy = {};
-          hierarchy[taxa.rank] = taxa.name;
-          hierarchy.key = taxa.name;
+      filtered_observations = this.filterDates(filtered_observations); // filtered_observations.forEach(o => {
+      // 	if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
+      // 		let taxa = this.taxa[o.taxa_id]
+      // 		let hierarchy = {}
+      // 		hierarchy[taxa.rank] = taxa.name
+      // 		hierarchy.key = taxa.name
+      // 		this.taxa[taxa.id].ancestry.split("/").forEach(id => {
+      // 			if(this.levels.indexOf(this.taxa[id].rank) != -1){
+      // 				hierarchy[this.taxa[id].rank] = this.taxa[id].name
+      // 			}
+      // 		})
+      // 		this.levels.forEach((l, lid) => {
+      // 			if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
+      // 				hierarchy[l] = "Incertae sedis"
+      // 			}
+      // 		})
+      // 		if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
+      // 			hierarchy.value = 1
+      // 			op.push(hierarchy)
+      // 		}
+      // 	}
+      // })
 
-          _this4.taxa[taxa.id].ancestry.split("/").forEach(function (id) {
-            if (_this4.levels.indexOf(_this4.taxa[id].rank) != -1) {
-              hierarchy[_this4.taxa[id].rank] = _this4.taxa[id].name;
-            }
-          });
-
-          _this4.levels.forEach(function (l, lid) {
-            if (hierarchy[l] == undefined && lid < _this4.levels.indexOf(taxa.rank)) {
-              hierarchy[l] = "Incertae sedis";
-            }
-          });
-
-          if (op.map(function (e) {
-            return e.species;
-          }).indexOf(hierarchy.species) == -1) {
-            hierarchy.value = 1;
-            op.push(hierarchy);
-          }
-        }
-      });
       return op;
     },
     speciesTableHeaders: function speciesTableHeaders() {
@@ -3363,78 +3832,78 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     filterState: function filterState(ar) {
-      var _this5 = this;
+      var _this4 = this;
 
       var op = ar;
 
       if (this.selected_state != 'All') {
         op = op.filter(function (o) {
-          return o.state == _this5.selected_state;
+          return o.state == _this4.selected_state;
         });
       }
 
       return op;
     },
     filterUsers: function filterUsers(ar) {
-      var _this6 = this;
+      var _this5 = this;
 
       var op = ar;
 
       if (this.selected_users.length > 0) {
         op = op.filter(function (x) {
-          return _this6.selected_users.indexOf(x.user_id) !== -1;
+          return _this5.selected_users.indexOf(x.user_id) !== -1;
         });
       }
 
       return op;
     },
     filterDates: function filterDates(ar) {
-      var _this7 = this;
+      var _this6 = this;
 
       var op = ar;
 
       if (this.selected_dates.length > 0) {
         op = op.filter(function (x) {
-          return _this7.selected_dates.indexOf(x.date) !== -1;
+          return _this6.selected_dates.indexOf(x.date) !== -1;
         });
       }
 
       return op;
     },
     filterTaxaLevels: function filterTaxaLevels(ar) {
-      var _this8 = this;
+      var _this7 = this;
 
       var op = ar;
 
       if (this.selected_taxa_levels.length > 0) {
         op = op.filter(function (x) {
-          return _this8.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
+          return _this7.selected_taxa_levels.indexOf(x.taxa_rank) !== -1;
         });
       }
 
       return op;
     },
     filterTaxa: function filterTaxa(ar) {
-      var _this9 = this;
+      var _this8 = this;
 
       var op = ar;
 
       if (this.selected_taxa.length > 1) {
         var taxa_match = [];
         op.forEach(function (o) {
-          if (_this9.taxa[o.taxa_id] != undefined) {
+          if (_this8.taxa[o.taxa_id] != undefined) {
             var hierarchy = {};
             var match_flag = true;
             hierarchy[o.taxa_rank] = o.taxa_name;
 
-            _this9.taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
-              if (_this9.levels.indexOf(_this9.taxa[id].rank) != -1) {
-                hierarchy[_this9.taxa[id].rank] = _this9.taxa[id].name;
+            _this8.taxa[o.taxa_id].ancestry.split("/").forEach(function (id) {
+              if (_this8.levels.indexOf(_this8.taxa[id].rank) != -1) {
+                hierarchy[_this8.taxa[id].rank] = _this8.taxa[id].name;
               }
             });
 
-            _this9.selected_taxa.forEach(function (t, id) {
-              if (t != hierarchy[_this9.levels[id]] && t != 'Incertae sedis') match_flag = false;
+            _this8.selected_taxa.forEach(function (t, id) {
+              if (t != hierarchy[_this8.levels[id]] && t != 'Incertae sedis') match_flag = false;
             });
 
             if (match_flag) {
@@ -3636,10 +4105,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return op;
     },
     onAccordionOpen: function onAccordionOpen(id) {
-      var _this10 = this;
+      var _this9 = this;
 
       Object.keys(this.accordions).forEach(function (key) {
-        _this10.accordions[key] = key == id; // eslint-disable-line eqeqeq
+        _this9.accordions[key] = key == id; // eslint-disable-line eqeqeq
       });
     },
     onAccordionClose: function onAccordionClose(key) {
@@ -4199,6 +4668,30 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, "\n#gallery[data-v-06dce4a5]{\n        /* Prevent vertical gaps */\n        /*line-height: 0;*/\n\n        -webkit-column-count: 3;\n        -webkit-column-gap:   2px;\n        -moz-column-count:    3;\n        -moz-column-gap:      2px;\n        column-count:         3;\n        column-gap:           2px;\n}\n#gallerya div[data-v-06dce4a5] {\n        /* Just in case there are inline attributes */\n        width: 100% !important;\n        height: auto !important;\n        margin: 2px;\n}\n.observation-img[data-v-06dce4a5]{\n        position: relative;\n}\n    /*.observation-img .gallery-item-overlay {\n        background: rgba(0,0,0,0.7);\n        position: absolute;\n        height: 99%;\n        width: 100%;\n        left: 0;\n        top: 0;\n        bottom: 0;\n        right: 0;\n        opacity: 0;\n        -webkit-transition: all 0.3s ease-in-out 0s;\n        -moz-transition: all 0.3s ease-in-out 0s;\n        transition: all 0.3s ease-in-out 0s;\n    }*/\n.observation-img .gallery-item-overlay[data-v-06dce4a5],\n    .observation-img .gallery-item-details[data-v-06dce4a5] {\n        position: absolute;\n        left: 0;\n        right: 0;\n        bottom: 0;\n        width: 100%;\n        height: 100%;\n        text-align: center;\n        opacity: 0;\n        transition: .5s ease;\n        background-color: rgba(0,0,0,0.5);\n}\n.observation-img .gallery-item-overlay[data-v-06dce4a5]{\n        top: 0;\n}\n.observation-img .gallery-item-details[data-v-06dce4a5] {\n        display: flex;\n        align-items: center;\n}\n.observation-img:hover .gallery-item-overlay[data-v-06dce4a5], \n    .observation-img:hover .gallery-item-details[data-v-06dce4a5]{\n        opacity: 1;\n        cursor: pointer;\n}\n.observation-img .gallery-item-image[data-v-06dce4a5]{\n        width: 100%;\n}\n\n    /*.observation-img .gallery-item-details {\n        position: absolute;\n        text-align: center;\n        padding-left: 1em;\n        padding-right: 1em;\n        width: 100%;\n        bottom: 0%;\n        opacity: 0;\n        -webkit-transition: all 0.2s ease-in-out 0s;\n        -moz-transition: all 0.2s ease-in-out 0s;\n        transition: all 0.2s ease-in-out 0s;\n    }*/\n.gallery-item-details .table-sm[data-v-06dce4a5],\n    .gallery-item-details tr[data-v-06dce4a5],\n    .gallery-item-details td[data-v-06dce4a5]\n    {\n        padding: 1px;\n        margin: auto 0;\n}\n.place-cell[data-v-06dce4a5]{\n        font-size: .6rem;\n}\n.gallery-caption-icon[data-v-06dce4a5]{\n        font-size: .9rem;\n}\n@media screen and (max-width: 800px) {\n#gallery[data-v-06dce4a5] {\n  \t\t\t-webkit-column-count: 2;\n\t\t\t-webkit-column-gap:   1px;\n\t\t\t-moz-column-count:    2;\n\t\t\t-moz-column-gap:      1px;\n\t\t\tcolumn-count:         2;\n\t\t\tcolumn-gap:           1px;\n}\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n#map-container .state-selected{\n\t/*fill: #afa;*/\n\tfill: #ff5;\n\tstroke: rgba(255,50,0,.5);\n\tstroke-width:.5px;\n}\n.poly_text{\n\tfill: #545;\n\tfont-size: 0.5vw;\n\ttransition: fill,text-shadow .125s;\n}\n.poly_text:hover{\n\tfill: #00c;\n\ttext-shadow: 0px 0px 5px #fff;\n\tcursor: pointer;\n\tfont-weight: 1000;\n}\n@media screen and (max-width: 800px) {\n.poly_text{\n\t\tfont-size: 3.5vw;\n}\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -28007,6 +28500,6045 @@ var c = -0.5,
     context.closePath();
   }
 });
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/indexRollupNext.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/d3-svg-legend/indexRollupNext.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "legendColor": () => (/* binding */ color),
+/* harmony export */   "legendSize": () => (/* binding */ size),
+/* harmony export */   "legendSymbol": () => (/* binding */ symbol),
+/* harmony export */   "legendHelpers": () => (/* binding */ legendHelpers),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_selection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-selection */ "./node_modules/d3-svg-legend/node_modules/d3-selection/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-svg-legend/node_modules/d3-format/index.js");
+/* harmony import */ var d3_dispatch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-dispatch */ "./node_modules/d3-svg-legend/node_modules/d3-dispatch/index.js");
+/* harmony import */ var d3_scale__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3-scale */ "./node_modules/d3-svg-legend/node_modules/d3-scale/index.js");
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+
+
+
+
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+var d3_identity = function d3_identity(d) {
+  return d;
+};
+
+var d3_reverse = function d3_reverse(arr) {
+  var mirror = [];
+  for (var i = 0, l = arr.length; i < l; i++) {
+    mirror[i] = arr[l - i - 1];
+  }
+  return mirror;
+};
+
+//Text wrapping code adapted from Mike Bostock
+var d3_textWrapping = function d3_textWrapping(text, width) {
+  text.each(function () {
+    var text = (0,d3_selection__WEBPACK_IMPORTED_MODULE_0__.select)(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.2,
+        //ems
+    y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")) || 0,
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("dy", dy + "em");
+
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("dy", lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+};
+
+var d3_mergeLabels = function d3_mergeLabels() {
+  var gen = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var labels = arguments[1];
+  var domain = arguments[2];
+  var range = arguments[3];
+  var labelDelimiter = arguments[4];
+
+  if ((typeof labels === "undefined" ? "undefined" : _typeof(labels)) === "object") {
+    if (labels.length === 0) return gen;
+
+    var i = labels.length;
+    for (; i < gen.length; i++) {
+      labels.push(gen[i]);
+    }
+    return labels;
+  } else if (typeof labels === "function") {
+    var customLabels = [];
+    var genLength = gen.length;
+    for (var _i = 0; _i < genLength; _i++) {
+      customLabels.push(labels({
+        i: _i,
+        genLength: genLength,
+        generatedLabels: gen,
+        domain: domain,
+        range: range,
+        labelDelimiter: labelDelimiter
+      }));
+    }
+    return customLabels;
+  }
+
+  return gen;
+};
+
+var d3_linearLegend = function d3_linearLegend(scale, cells, labelFormat) {
+  var data = [];
+
+  if (cells.length > 1) {
+    data = cells;
+  } else {
+    var domain = scale.domain(),
+        increment = (domain[domain.length - 1] - domain[0]) / (cells - 1);
+    var i = 0;
+
+    for (; i < cells; i++) {
+      data.push(domain[0] + i * increment);
+    }
+  }
+
+  var labels = data.map(labelFormat);
+  return {
+    data: data,
+    labels: labels,
+    feature: function feature(d) {
+      return scale(d);
+    }
+  };
+};
+
+var d3_quantLegend = function d3_quantLegend(scale, labelFormat, labelDelimiter) {
+  var labels = scale.range().map(function (d) {
+    var invert = scale.invertExtent(d);
+    return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+  });
+
+  return {
+    data: scale.range(),
+    labels: labels,
+    feature: d3_identity
+  };
+};
+
+var d3_ordinalLegend = function d3_ordinalLegend(scale) {
+  return {
+    data: scale.domain(),
+    labels: scale.domain(),
+    feature: function feature(d) {
+      return scale(d);
+    }
+  };
+};
+
+var d3_cellOver = function d3_cellOver(cellDispatcher, d, obj) {
+  cellDispatcher.call("cellover", obj, d);
+};
+
+var d3_cellOut = function d3_cellOut(cellDispatcher, d, obj) {
+  cellDispatcher.call("cellout", obj, d);
+};
+
+var d3_cellClick = function d3_cellClick(cellDispatcher, d, obj) {
+  cellDispatcher.call("cellclick", obj, d);
+};
+
+var helper = {
+  d3_drawShapes: function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
+    if (shape === "rect") {
+      shapes.attr("height", shapeHeight).attr("width", shapeWidth);
+    } else if (shape === "circle") {
+      shapes.attr("r", shapeRadius);
+    } else if (shape === "line") {
+      shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
+    } else if (shape === "path") {
+      shapes.attr("d", path);
+    }
+  },
+
+  d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
+    enter.append("text").attr("class", classPrefix + "label");
+    var text = svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
+
+    if (labelWidth) {
+      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").call(d3_textWrapping, labelWidth);
+    }
+
+    return text;
+  },
+
+  d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
+    var type = scale.invertExtent ? d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ? d3_linearLegend(scale, cells, labelFormat) : d3_ordinalLegend(scale);
+
+    //for d3.scaleSequential that doesn't have a range function
+    var range = scale.range && scale.range() || scale.domain();
+    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range, labelDelimiter);
+
+    if (ascending) {
+      type.labels = d3_reverse(type.labels);
+      type.data = d3_reverse(type.data);
+    }
+
+    return type;
+  },
+
+  d3_filterCells: function d3_filterCells(type, cellFilter) {
+    var filterCells = type.data.map(function (d, i) {
+      return { data: d, label: type.labels[i] };
+    }).filter(cellFilter);
+    var dataValues = filterCells.map(function (d) {
+      return d.data;
+    });
+    var labelValues = filterCells.map(function (d) {
+      return d.label;
+    });
+    type.data = type.data.filter(function (d) {
+      return dataValues.indexOf(d) !== -1;
+    });
+    type.labels = type.labels.filter(function (d) {
+      return labelValues.indexOf(d) !== -1;
+    });
+    return type;
+  },
+
+  d3_placement: function d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign) {
+    cell.attr("transform", cellTrans);
+    text.attr("transform", textTrans);
+    if (orient === "horizontal") {
+      text.style("text-anchor", labelAlign);
+    }
+  },
+
+  d3_addEvents: function d3_addEvents(cells, dispatcher) {
+    cells.on("mouseover.legend", function (d) {
+      d3_cellOver(dispatcher, d, this);
+    }).on("mouseout.legend", function (d) {
+      d3_cellOut(dispatcher, d, this);
+    }).on("click.legend", function (d) {
+      d3_cellClick(dispatcher, d, this);
+    });
+  },
+
+  d3_title: function d3_title(svg, title, classPrefix, titleWidth) {
+    if (title !== "") {
+      var titleText = svg.selectAll("text." + classPrefix + "legendTitle");
+
+      titleText.data([title]).enter().append("text").attr("class", classPrefix + "legendTitle");
+
+      svg.selectAll("text." + classPrefix + "legendTitle").text(title);
+
+      if (titleWidth) {
+        svg.selectAll("text." + classPrefix + "legendTitle").call(d3_textWrapping, titleWidth);
+      }
+
+      var cellsSvg = svg.select("." + classPrefix + "legendCells");
+      var yOffset = svg.select("." + classPrefix + "legendTitle").nodes().map(function (d) {
+        return d.getBBox().height;
+      })[0],
+          xOffset = -cellsSvg.nodes().map(function (d) {
+        return d.getBBox().x;
+      })[0];
+      cellsSvg.attr("transform", "translate(" + xOffset + "," + yOffset + ")");
+    }
+  },
+
+  d3_defaultLocale: {
+    format: d3_format__WEBPACK_IMPORTED_MODULE_1__.format,
+    formatPrefix: d3_format__WEBPACK_IMPORTED_MODULE_1__.formatPrefix
+  },
+
+  d3_defaultFormatSpecifier: ".01f",
+
+  d3_defaultDelimiter: "to"
+};
+
+function color() {
+  var scale = (0,d3_scale__WEBPACK_IMPORTED_MODULE_3__.scaleLinear)(),
+      shape = "rect",
+      shapeWidth = 15,
+      shapeHeight = 15,
+      shapeRadius = 10,
+      shapePadding = 2,
+      cells = [5],
+      cellFilter = void 0,
+      labels = [],
+      classPrefix = "",
+      useClass = false,
+      title = "",
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
+      labelOffset = 10,
+      labelAlign = "middle",
+      labelDelimiter = helper.d3_defaultDelimiter,
+      labelWrap = void 0,
+      orient = "vertical",
+      ascending = false,
+      path = void 0,
+      titleWidth = void 0,
+      legendDispatcher = (0,d3_dispatch__WEBPACK_IMPORTED_MODULE_2__.dispatch)("cellover", "cellout", "cellclick");
+
+  function legend(svg) {
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
+        legendG = svg.selectAll("g").data([scale]);
+
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
+
+    if (cellFilter) {
+      helper.d3_filterCells(type, cellFilter);
+    }
+
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
+
+    var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
+    cellEnter.append(shape).attr("class", classPrefix + "swatch");
+
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch").data(type.data);
+
+    //add event handlers
+    helper.d3_addEvents(cellEnter, legendDispatcher);
+
+    cell.exit().transition().style("opacity", 0).remove();
+    shapes.exit().transition().style("opacity", 0).remove();
+
+    shapes = shapes.merge(shapes);
+
+    helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
+
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell);
+
+    // sets placement
+    var textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
+        shapeSize = shapes.nodes().map(function (d) {
+      return d.getBBox();
+    });
+    //sets scale
+    //everything is fill except for line which is stroke,
+    if (!useClass) {
+      if (shape == "line") {
+        shapes.style("stroke", type.feature);
+      } else {
+        shapes.style("fill", type.feature);
+      }
+    } else {
+      shapes.attr("class", function (d) {
+        return classPrefix + "swatch " + type.feature(d);
+      });
+    }
+
+    var cellTrans = void 0,
+        textTrans = void 0,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1;
+
+    //positions cells and text
+    if (orient === "vertical") {
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
+
+        cellTrans = function cellTrans(d, i) {
+          var height = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.sum)(cellSize.slice(0, i));
+          return "translate(0, " + (height + i * shapePadding) + ")";
+        };
+
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ", " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
+    } else if (orient === "horizontal") {
+      cellTrans = function cellTrans(d, i) {
+        return "translate(" + i * (shapeSize[i].width + shapePadding) + ",0)";
+      };
+      textTrans = function textTrans(d, i) {
+        return "translate(" + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n          " + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")";
+      };
+    }
+
+    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    helper.d3_title(svg, title, classPrefix, titleWidth);
+
+    cell.transition().style("opacity", 1);
+  }
+
+  legend.scale = function (_) {
+    if (!arguments.length) return scale;
+    scale = _;
+    return legend;
+  };
+
+  legend.cells = function (_) {
+    if (!arguments.length) return cells;
+    if (_.length > 1 || _ >= 2) {
+      cells = _;
+    }
+    return legend;
+  };
+
+  legend.cellFilter = function (_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
+    return legend;
+  };
+
+  legend.shape = function (_, d) {
+    if (!arguments.length) return shape;
+    if (_ == "rect" || _ == "circle" || _ == "line" || _ == "path" && typeof d === "string") {
+      shape = _;
+      path = d;
+    }
+    return legend;
+  };
+
+  legend.shapeWidth = function (_) {
+    if (!arguments.length) return shapeWidth;
+    shapeWidth = +_;
+    return legend;
+  };
+
+  legend.shapeHeight = function (_) {
+    if (!arguments.length) return shapeHeight;
+    shapeHeight = +_;
+    return legend;
+  };
+
+  legend.shapeRadius = function (_) {
+    if (!arguments.length) return shapeRadius;
+    shapeRadius = +_;
+    return legend;
+  };
+
+  legend.shapePadding = function (_) {
+    if (!arguments.length) return shapePadding;
+    shapePadding = +_;
+    return legend;
+  };
+
+  legend.labels = function (_) {
+    if (!arguments.length) return labels;
+    labels = _;
+    return legend;
+  };
+
+  legend.labelAlign = function (_) {
+    if (!arguments.length) return labelAlign;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
+    return legend;
+  };
+
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatLocale)(_);
+    return legend;
+  };
+
+  legend.labelFormat = function (_) {
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatSpecifier)(_);
+    return legend;
+  };
+
+  legend.labelOffset = function (_) {
+    if (!arguments.length) return labelOffset;
+    labelOffset = +_;
+    return legend;
+  };
+
+  legend.labelDelimiter = function (_) {
+    if (!arguments.length) return labelDelimiter;
+    labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
+    return legend;
+  };
+
+  legend.useClass = function (_) {
+    if (!arguments.length) return useClass;
+    if (_ === true || _ === false) {
+      useClass = _;
+    }
+    return legend;
+  };
+
+  legend.orient = function (_) {
+    if (!arguments.length) return orient;
+    _ = _.toLowerCase();
+    if (_ == "horizontal" || _ == "vertical") {
+      orient = _;
+    }
+    return legend;
+  };
+
+  legend.ascending = function (_) {
+    if (!arguments.length) return ascending;
+    ascending = !!_;
+    return legend;
+  };
+
+  legend.classPrefix = function (_) {
+    if (!arguments.length) return classPrefix;
+    classPrefix = _;
+    return legend;
+  };
+
+  legend.title = function (_) {
+    if (!arguments.length) return title;
+    title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function (_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
+    return legend;
+  };
+
+  legend.textWrap = function (_) {
+    if (!arguments.length) return textWrap;
+    textWrap = _;
+    return legend;
+  };
+
+  legend.on = function () {
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments);
+    return value === legendDispatcher ? legend : value;
+  };
+
+  return legend;
+}
+
+function size() {
+  var scale = (0,d3_scale__WEBPACK_IMPORTED_MODULE_3__.scaleLinear)(),
+      shape = "rect",
+      shapeWidth = 15,
+      shapePadding = 2,
+      cells = [5],
+      cellFilter = void 0,
+      labels = [],
+      classPrefix = "",
+      title = "",
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
+      labelOffset = 10,
+      labelAlign = "middle",
+      labelDelimiter = helper.d3_defaultDelimiter,
+      labelWrap = void 0,
+      orient = "vertical",
+      ascending = false,
+      path = void 0,
+      titleWidth = void 0,
+      legendDispatcher = (0,d3_dispatch__WEBPACK_IMPORTED_MODULE_2__.dispatch)("cellover", "cellout", "cellclick");
+
+  function legend(svg) {
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
+        legendG = svg.selectAll("g").data([scale]);
+
+    if (cellFilter) {
+      helper.d3_filterCells(type, cellFilter);
+    }
+
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
+
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
+    var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
+    cellEnter.append(shape).attr("class", classPrefix + "swatch");
+
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
+
+    //add event handlers
+    helper.d3_addEvents(cellEnter, legendDispatcher);
+
+    cell.exit().transition().style("opacity", 0).remove();
+
+    shapes.exit().transition().style("opacity", 0).remove();
+    shapes = shapes.merge(shapes);
+
+    //creates shape
+    if (shape === "line") {
+      helper.d3_drawShapes(shape, shapes, 0, shapeWidth);
+      shapes.attr("stroke-width", type.feature);
+    } else {
+      helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
+    }
+
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
+
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell);
+
+    //sets placement
+
+    var textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
+        shapeSize = shapes.nodes().map(function (d, i) {
+      var bbox = d.getBBox();
+      var stroke = scale(type.data[i]);
+
+      if (shape === "line" && orient === "horizontal") {
+        bbox.height = bbox.height + stroke;
+      } else if (shape === "line" && orient === "vertical") {
+        bbox.width = bbox.width;
+      }
+      return bbox;
+    });
+
+    var maxH = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.max)(shapeSize, function (d) {
+      return d.height + d.y;
+    }),
+        maxW = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.max)(shapeSize, function (d) {
+      return d.width + d.x;
+    });
+
+    var cellTrans = void 0,
+        textTrans = void 0,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1;
+
+    //positions cells and text
+    if (orient === "vertical") {
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.sum)(cellSize.slice(0, i));
+
+          return "translate(0, " + (y + height + i * shapePadding) + ")";
+        };
+
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
+    } else if (orient === "horizontal") {
+      (function () {
+        cellTrans = function cellTrans(d, i) {
+          var width = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.sum)(shapeSize.slice(0, i), function (d) {
+            return d.width;
+          });
+          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+        };
+
+        var offset = shape == "line" ? maxH / 2 : maxH;
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+        };
+      })();
+    }
+
+    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    helper.d3_title(svg, title, classPrefix, titleWidth);
+
+    cell.transition().style("opacity", 1);
+  }
+
+  legend.scale = function (_) {
+    if (!arguments.length) return scale;
+    scale = _;
+    return legend;
+  };
+
+  legend.cells = function (_) {
+    if (!arguments.length) return cells;
+    if (_.length > 1 || _ >= 2) {
+      cells = _;
+    }
+    return legend;
+  };
+
+  legend.cellFilter = function (_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
+    return legend;
+  };
+
+  legend.shape = function (_, d) {
+    if (!arguments.length) return shape;
+    if (_ == "rect" || _ == "circle" || _ == "line") {
+      shape = _;
+      path = d;
+    }
+    return legend;
+  };
+
+  legend.shapeWidth = function (_) {
+    if (!arguments.length) return shapeWidth;
+    shapeWidth = +_;
+    return legend;
+  };
+
+  legend.shapePadding = function (_) {
+    if (!arguments.length) return shapePadding;
+    shapePadding = +_;
+    return legend;
+  };
+
+  legend.labels = function (_) {
+    if (!arguments.length) return labels;
+    labels = _;
+    return legend;
+  };
+
+  legend.labelAlign = function (_) {
+    if (!arguments.length) return labelAlign;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
+    return legend;
+  };
+
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatLocale)(_);
+    return legend;
+  };
+
+  legend.labelFormat = function (_) {
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatSpecifier)(_);
+    return legend;
+  };
+
+  legend.labelOffset = function (_) {
+    if (!arguments.length) return labelOffset;
+    labelOffset = +_;
+    return legend;
+  };
+
+  legend.labelDelimiter = function (_) {
+    if (!arguments.length) return labelDelimiter;
+    labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
+    return legend;
+  };
+
+  legend.orient = function (_) {
+    if (!arguments.length) return orient;
+    _ = _.toLowerCase();
+    if (_ == "horizontal" || _ == "vertical") {
+      orient = _;
+    }
+    return legend;
+  };
+
+  legend.ascending = function (_) {
+    if (!arguments.length) return ascending;
+    ascending = !!_;
+    return legend;
+  };
+
+  legend.classPrefix = function (_) {
+    if (!arguments.length) return classPrefix;
+    classPrefix = _;
+    return legend;
+  };
+
+  legend.title = function (_) {
+    if (!arguments.length) return title;
+    title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function (_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
+    return legend;
+  };
+
+  legend.on = function () {
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments);
+    return value === legendDispatcher ? legend : value;
+  };
+
+  return legend;
+}
+
+function symbol() {
+  var scale = (0,d3_scale__WEBPACK_IMPORTED_MODULE_3__.scaleLinear)(),
+      shape = "path",
+      shapeWidth = 15,
+      shapeHeight = 15,
+      shapeRadius = 10,
+      shapePadding = 5,
+      cells = [5],
+      cellFilter = void 0,
+      labels = [],
+      classPrefix = "",
+      title = "",
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
+      labelAlign = "middle",
+      labelOffset = 10,
+      labelDelimiter = helper.d3_defaultDelimiter,
+      labelWrap = void 0,
+      orient = "vertical",
+      ascending = false,
+      titleWidth = void 0,
+      legendDispatcher = (0,d3_dispatch__WEBPACK_IMPORTED_MODULE_2__.dispatch)("cellover", "cellout", "cellclick");
+
+  function legend(svg) {
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
+        legendG = svg.selectAll("g").data([scale]);
+
+    if (cellFilter) {
+      helper.d3_filterCells(type, cellFilter);
+    }
+
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
+
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
+    var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
+    cellEnter.append(shape).attr("class", classPrefix + "swatch");
+
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
+
+    //add event handlers
+    helper.d3_addEvents(cellEnter, legendDispatcher);
+
+    //remove old shapes
+    cell.exit().transition().style("opacity", 0).remove();
+    shapes.exit().transition().style("opacity", 0).remove();
+    shapes = shapes.merge(shapes);
+
+    helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
+
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell);
+
+    // sets placement
+    var textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
+        shapeSize = shapes.nodes().map(function (d) {
+      return d.getBBox();
+    });
+
+    var maxH = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.max)(shapeSize, function (d) {
+      return d.height;
+    }),
+        maxW = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.max)(shapeSize, function (d) {
+      return d.width;
+    });
+
+    var cellTrans = void 0,
+        textTrans = void 0,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1;
+
+    //positions cells and text
+    if (orient === "vertical") {
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
+
+        cellTrans = function cellTrans(d, i) {
+          var height = (0,d3_array__WEBPACK_IMPORTED_MODULE_4__.sum)(cellSize.slice(0, i));
+          return "translate(0, " + (height + i * shapePadding) + " )";
+        };
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
+    } else if (orient === "horizontal") {
+      cellTrans = function cellTrans(d, i) {
+        return "translate( " + i * (maxW + shapePadding) + ",0)";
+      };
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (maxH + labelOffset) + ")";
+      };
+    }
+
+    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    helper.d3_title(svg, title, classPrefix, titleWidth);
+    cell.transition().style("opacity", 1);
+  }
+
+  legend.scale = function (_) {
+    if (!arguments.length) return scale;
+    scale = _;
+    return legend;
+  };
+
+  legend.cells = function (_) {
+    if (!arguments.length) return cells;
+    if (_.length > 1 || _ >= 2) {
+      cells = _;
+    }
+    return legend;
+  };
+
+  legend.cellFilter = function (_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
+    return legend;
+  };
+
+  legend.shapePadding = function (_) {
+    if (!arguments.length) return shapePadding;
+    shapePadding = +_;
+    return legend;
+  };
+
+  legend.labels = function (_) {
+    if (!arguments.length) return labels;
+    labels = _;
+    return legend;
+  };
+
+  legend.labelAlign = function (_) {
+    if (!arguments.length) return labelAlign;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
+    return legend;
+  };
+
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatLocale)(_);
+    return legend;
+  };
+
+  legend.labelFormat = function (_) {
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatSpecifier)(_);
+    return legend;
+  };
+
+  legend.labelOffset = function (_) {
+    if (!arguments.length) return labelOffset;
+    labelOffset = +_;
+    return legend;
+  };
+
+  legend.labelDelimiter = function (_) {
+    if (!arguments.length) return labelDelimiter;
+    labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
+    return legend;
+  };
+
+  legend.orient = function (_) {
+    if (!arguments.length) return orient;
+    _ = _.toLowerCase();
+    if (_ == "horizontal" || _ == "vertical") {
+      orient = _;
+    }
+    return legend;
+  };
+
+  legend.ascending = function (_) {
+    if (!arguments.length) return ascending;
+    ascending = !!_;
+    return legend;
+  };
+
+  legend.classPrefix = function (_) {
+    if (!arguments.length) return classPrefix;
+    classPrefix = _;
+    return legend;
+  };
+
+  legend.title = function (_) {
+    if (!arguments.length) return title;
+    title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function (_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
+    return legend;
+  };
+
+  legend.on = function () {
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments);
+    return value === legendDispatcher ? legend : value;
+  };
+
+  return legend;
+}
+
+var thresholdLabels = function thresholdLabels(_ref) {
+  var i = _ref.i,
+      genLength = _ref.genLength,
+      generatedLabels = _ref.generatedLabels,
+      labelDelimiter = _ref.labelDelimiter;
+
+  if (i === 0) {
+    var values = generatedLabels[i].split(" " + labelDelimiter + " ");
+    return "Less than " + values[1];
+  } else if (i === genLength - 1) {
+    var _values = generatedLabels[i].split(" " + labelDelimiter + " ");
+    return _values[0] + " or more";
+  }
+  return generatedLabels[i];
+};
+
+var legendHelpers = {
+  thresholdLabels: thresholdLabels
+};
+
+var index = {
+  legendColor: color,
+  legendSize: size,
+  legendSymbol: symbol,
+  legendHelpers: legendHelpers
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (index);
+//# sourceMappingURL=indexRollupNext.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/index.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "bisect": () => (/* reexport safe */ _src_bisect__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "bisectRight": () => (/* reexport safe */ _src_bisect__WEBPACK_IMPORTED_MODULE_0__.bisectRight),
+/* harmony export */   "bisectLeft": () => (/* reexport safe */ _src_bisect__WEBPACK_IMPORTED_MODULE_0__.bisectLeft),
+/* harmony export */   "ascending": () => (/* reexport safe */ _src_ascending__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "bisector": () => (/* reexport safe */ _src_bisector__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "descending": () => (/* reexport safe */ _src_descending__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "deviation": () => (/* reexport safe */ _src_deviation__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "extent": () => (/* reexport safe */ _src_extent__WEBPACK_IMPORTED_MODULE_5__.default),
+/* harmony export */   "histogram": () => (/* reexport safe */ _src_histogram__WEBPACK_IMPORTED_MODULE_6__.default),
+/* harmony export */   "thresholdFreedmanDiaconis": () => (/* reexport safe */ _src_threshold_freedmanDiaconis__WEBPACK_IMPORTED_MODULE_7__.default),
+/* harmony export */   "thresholdScott": () => (/* reexport safe */ _src_threshold_scott__WEBPACK_IMPORTED_MODULE_8__.default),
+/* harmony export */   "thresholdSturges": () => (/* reexport safe */ _src_threshold_sturges__WEBPACK_IMPORTED_MODULE_9__.default),
+/* harmony export */   "max": () => (/* reexport safe */ _src_max__WEBPACK_IMPORTED_MODULE_10__.default),
+/* harmony export */   "mean": () => (/* reexport safe */ _src_mean__WEBPACK_IMPORTED_MODULE_11__.default),
+/* harmony export */   "median": () => (/* reexport safe */ _src_median__WEBPACK_IMPORTED_MODULE_12__.default),
+/* harmony export */   "merge": () => (/* reexport safe */ _src_merge__WEBPACK_IMPORTED_MODULE_13__.default),
+/* harmony export */   "min": () => (/* reexport safe */ _src_min__WEBPACK_IMPORTED_MODULE_14__.default),
+/* harmony export */   "pairs": () => (/* reexport safe */ _src_pairs__WEBPACK_IMPORTED_MODULE_15__.default),
+/* harmony export */   "permute": () => (/* reexport safe */ _src_permute__WEBPACK_IMPORTED_MODULE_16__.default),
+/* harmony export */   "quantile": () => (/* reexport safe */ _src_quantile__WEBPACK_IMPORTED_MODULE_17__.default),
+/* harmony export */   "range": () => (/* reexport safe */ _src_range__WEBPACK_IMPORTED_MODULE_18__.default),
+/* harmony export */   "scan": () => (/* reexport safe */ _src_scan__WEBPACK_IMPORTED_MODULE_19__.default),
+/* harmony export */   "shuffle": () => (/* reexport safe */ _src_shuffle__WEBPACK_IMPORTED_MODULE_20__.default),
+/* harmony export */   "sum": () => (/* reexport safe */ _src_sum__WEBPACK_IMPORTED_MODULE_21__.default),
+/* harmony export */   "ticks": () => (/* reexport safe */ _src_ticks__WEBPACK_IMPORTED_MODULE_22__.default),
+/* harmony export */   "tickStep": () => (/* reexport safe */ _src_ticks__WEBPACK_IMPORTED_MODULE_22__.tickStep),
+/* harmony export */   "transpose": () => (/* reexport safe */ _src_transpose__WEBPACK_IMPORTED_MODULE_23__.default),
+/* harmony export */   "variance": () => (/* reexport safe */ _src_variance__WEBPACK_IMPORTED_MODULE_24__.default),
+/* harmony export */   "zip": () => (/* reexport safe */ _src_zip__WEBPACK_IMPORTED_MODULE_25__.default)
+/* harmony export */ });
+/* harmony import */ var _src_bisect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/bisect */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisect.js");
+/* harmony import */ var _src_ascending__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _src_bisector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/bisector */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisector.js");
+/* harmony import */ var _src_descending__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/descending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/descending.js");
+/* harmony import */ var _src_deviation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/deviation */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/deviation.js");
+/* harmony import */ var _src_extent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/extent */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/extent.js");
+/* harmony import */ var _src_histogram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/histogram */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/histogram.js");
+/* harmony import */ var _src_threshold_freedmanDiaconis__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/threshold/freedmanDiaconis */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/freedmanDiaconis.js");
+/* harmony import */ var _src_threshold_scott__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/threshold/scott */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/scott.js");
+/* harmony import */ var _src_threshold_sturges__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./src/threshold/sturges */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/sturges.js");
+/* harmony import */ var _src_max__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./src/max */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/max.js");
+/* harmony import */ var _src_mean__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./src/mean */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/mean.js");
+/* harmony import */ var _src_median__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./src/median */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/median.js");
+/* harmony import */ var _src_merge__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./src/merge */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/merge.js");
+/* harmony import */ var _src_min__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./src/min */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/min.js");
+/* harmony import */ var _src_pairs__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./src/pairs */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/pairs.js");
+/* harmony import */ var _src_permute__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./src/permute */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/permute.js");
+/* harmony import */ var _src_quantile__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./src/quantile */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/quantile.js");
+/* harmony import */ var _src_range__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./src/range */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/range.js");
+/* harmony import */ var _src_scan__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./src/scan */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/scan.js");
+/* harmony import */ var _src_shuffle__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./src/shuffle */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/shuffle.js");
+/* harmony import */ var _src_sum__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./src/sum */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/sum.js");
+/* harmony import */ var _src_ticks__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./src/ticks */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ticks.js");
+/* harmony import */ var _src_transpose__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./src/transpose */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/transpose.js");
+/* harmony import */ var _src_variance__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./src/variance */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/variance.js");
+/* harmony import */ var _src_zip__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./src/zip */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/zip.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/array.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/array.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "slice": () => (/* binding */ slice),
+/* harmony export */   "map": () => (/* binding */ map)
+/* harmony export */ });
+var array = Array.prototype;
+
+var slice = array.slice;
+var map = array.map;
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(a, b) {
+  return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisect.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/bisect.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "bisectRight": () => (/* binding */ bisectRight),
+/* harmony export */   "bisectLeft": () => (/* binding */ bisectLeft),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ascending__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _bisector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bisector */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisector.js");
+
+
+
+var ascendingBisect = (0,_bisector__WEBPACK_IMPORTED_MODULE_1__.default)(_ascending__WEBPACK_IMPORTED_MODULE_0__.default);
+var bisectRight = ascendingBisect.right;
+var bisectLeft = ascendingBisect.left;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (bisectRight);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisector.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/bisector.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ascending__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(compare) {
+  if (compare.length === 1) compare = ascendingComparator(compare);
+  return {
+    left: function(a, x, lo, hi) {
+      if (lo == null) lo = 0;
+      if (hi == null) hi = a.length;
+      while (lo < hi) {
+        var mid = lo + hi >>> 1;
+        if (compare(a[mid], x) < 0) lo = mid + 1;
+        else hi = mid;
+      }
+      return lo;
+    },
+    right: function(a, x, lo, hi) {
+      if (lo == null) lo = 0;
+      if (hi == null) hi = a.length;
+      while (lo < hi) {
+        var mid = lo + hi >>> 1;
+        if (compare(a[mid], x) > 0) hi = mid;
+        else lo = mid + 1;
+      }
+      return lo;
+    }
+  };
+}
+
+function ascendingComparator(f) {
+  return function(d, x) {
+    return (0,_ascending__WEBPACK_IMPORTED_MODULE_0__.default)(f(d), x);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/constant.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/constant.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return function() {
+    return x;
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/descending.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/descending.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(a, b) {
+  return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/deviation.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/deviation.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _variance__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./variance */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/variance.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var v = (0,_variance__WEBPACK_IMPORTED_MODULE_0__.default)(array, f);
+  return v ? Math.sqrt(v) : v;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/extent.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/extent.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var i = -1,
+      n = array.length,
+      a,
+      b,
+      c;
+
+  if (f == null) {
+    while (++i < n) if ((b = array[i]) != null && b >= b) { a = c = b; break; }
+    while (++i < n) if ((b = array[i]) != null) {
+      if (a > b) a = b;
+      if (c < b) c = b;
+    }
+  }
+
+  else {
+    while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) { a = c = b; break; }
+    while (++i < n) if ((b = f(array[i], i, array)) != null) {
+      if (a > b) a = b;
+      if (c < b) c = b;
+    }
+  }
+
+  return [a, c];
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/histogram.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/histogram.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/array.js");
+/* harmony import */ var _bisect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./bisect */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/bisect.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/constant.js");
+/* harmony import */ var _extent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./extent */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/extent.js");
+/* harmony import */ var _identity__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./identity */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/identity.js");
+/* harmony import */ var _ticks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ticks */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ticks.js");
+/* harmony import */ var _threshold_sturges__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./threshold/sturges */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/sturges.js");
+
+
+
+
+
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var value = _identity__WEBPACK_IMPORTED_MODULE_4__.default,
+      domain = _extent__WEBPACK_IMPORTED_MODULE_3__.default,
+      threshold = _threshold_sturges__WEBPACK_IMPORTED_MODULE_6__.default;
+
+  function histogram(data) {
+    var i,
+        n = data.length,
+        x,
+        values = new Array(n);
+
+    for (i = 0; i < n; ++i) {
+      values[i] = value(data[i], i, data);
+    }
+
+    var xz = domain(values),
+        x0 = xz[0],
+        x1 = xz[1],
+        tz = threshold(values, x0, x1);
+
+    // Convert number of thresholds into uniform thresholds.
+    if (!Array.isArray(tz)) tz = (0,_ticks__WEBPACK_IMPORTED_MODULE_5__.default)(x0, x1, tz);
+
+    // Remove any thresholds outside the domain.
+    var m = tz.length;
+    while (tz[0] <= x0) tz.shift(), --m;
+    while (tz[m - 1] >= x1) tz.pop(), --m;
+
+    var bins = new Array(m + 1),
+        bin;
+
+    // Initialize bins.
+    for (i = 0; i <= m; ++i) {
+      bin = bins[i] = [];
+      bin.x0 = i > 0 ? tz[i - 1] : x0;
+      bin.x1 = i < m ? tz[i] : x1;
+    }
+
+    // Assign data to bins by value, ignoring any outside the domain.
+    for (i = 0; i < n; ++i) {
+      x = values[i];
+      if (x0 <= x && x <= x1) {
+        bins[(0,_bisect__WEBPACK_IMPORTED_MODULE_1__.default)(tz, x, 0, m)].push(data[i]);
+      }
+    }
+
+    return bins;
+  }
+
+  histogram.value = function(_) {
+    return arguments.length ? (value = typeof _ === "function" ? _ : (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(_), histogram) : value;
+  };
+
+  histogram.domain = function(_) {
+    return arguments.length ? (domain = typeof _ === "function" ? _ : (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)([_[0], _[1]]), histogram) : domain;
+  };
+
+  histogram.thresholds = function(_) {
+    return arguments.length ? (threshold = typeof _ === "function" ? _ : Array.isArray(_) ? (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(_array__WEBPACK_IMPORTED_MODULE_0__.slice.call(_)) : (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(_), histogram) : threshold;
+  };
+
+  return histogram;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/identity.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/identity.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return x;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/max.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/max.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var i = -1,
+      n = array.length,
+      a,
+      b;
+
+  if (f == null) {
+    while (++i < n) if ((b = array[i]) != null && b >= b) { a = b; break; }
+    while (++i < n) if ((b = array[i]) != null && b > a) a = b;
+  }
+
+  else {
+    while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) { a = b; break; }
+    while (++i < n) if ((b = f(array[i], i, array)) != null && b > a) a = b;
+  }
+
+  return a;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/mean.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/mean.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var s = 0,
+      n = array.length,
+      a,
+      i = -1,
+      j = n;
+
+  if (f == null) {
+    while (++i < n) if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_0__.default)(array[i]))) s += a; else --j;
+  }
+
+  else {
+    while (++i < n) if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_0__.default)(f(array[i], i, array)))) s += a; else --j;
+  }
+
+  if (j) return s / j;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/median.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/median.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ascending__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js");
+/* harmony import */ var _quantile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./quantile */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/quantile.js");
+
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var numbers = [],
+      n = array.length,
+      a,
+      i = -1;
+
+  if (f == null) {
+    while (++i < n) if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_1__.default)(array[i]))) numbers.push(a);
+  }
+
+  else {
+    while (++i < n) if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_1__.default)(f(array[i], i, array)))) numbers.push(a);
+  }
+
+  return (0,_quantile__WEBPACK_IMPORTED_MODULE_2__.default)(numbers.sort(_ascending__WEBPACK_IMPORTED_MODULE_0__.default), 0.5);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/merge.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/merge.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(arrays) {
+  var n = arrays.length,
+      m,
+      i = -1,
+      j = 0,
+      merged,
+      array;
+
+  while (++i < n) j += arrays[i].length;
+  merged = new Array(j);
+
+  while (--n >= 0) {
+    array = arrays[n];
+    m = array.length;
+    while (--m >= 0) {
+      merged[--j] = array[m];
+    }
+  }
+
+  return merged;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/min.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/min.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var i = -1,
+      n = array.length,
+      a,
+      b;
+
+  if (f == null) {
+    while (++i < n) if ((b = array[i]) != null && b >= b) { a = b; break; }
+    while (++i < n) if ((b = array[i]) != null && a > b) a = b;
+  }
+
+  else {
+    while (++i < n) if ((b = f(array[i], i, array)) != null && b >= b) { a = b; break; }
+    while (++i < n) if ((b = f(array[i], i, array)) != null && a > b) a = b;
+  }
+
+  return a;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return x === null ? NaN : +x;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/pairs.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/pairs.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array) {
+  var i = 0, n = array.length - 1, p = array[0], pairs = new Array(n < 0 ? 0 : n);
+  while (i < n) pairs[i] = [p, p = array[++i]];
+  return pairs;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/permute.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/permute.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, indexes) {
+  var i = indexes.length, permutes = new Array(i);
+  while (i--) permutes[i] = array[indexes[i]];
+  return permutes;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/quantile.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/quantile.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, p, f) {
+  if (f == null) f = _number__WEBPACK_IMPORTED_MODULE_0__.default;
+  if (!(n = array.length)) return;
+  if ((p = +p) <= 0 || n < 2) return +f(array[0], 0, array);
+  if (p >= 1) return +f(array[n - 1], n - 1, array);
+  var n,
+      h = (n - 1) * p,
+      i = Math.floor(h),
+      a = +f(array[i], i, array),
+      b = +f(array[i + 1], i + 1, array);
+  return a + (b - a) * (h - i);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/range.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/range.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(start, stop, step) {
+  start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+
+  var i = -1,
+      n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+      range = new Array(n);
+
+  while (++i < n) {
+    range[i] = start + i * step;
+  }
+
+  return range;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/scan.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/scan.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ascending__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, compare) {
+  if (!(n = array.length)) return;
+  var i = 0,
+      n,
+      j = 0,
+      xi,
+      xj = array[j];
+
+  if (!compare) compare = _ascending__WEBPACK_IMPORTED_MODULE_0__.default;
+
+  while (++i < n) if (compare(xi = array[i], xj) < 0 || compare(xj, xj) !== 0) xj = xi, j = i;
+
+  if (compare(xj, xj) === 0) return j;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/shuffle.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/shuffle.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, i0, i1) {
+  var m = (i1 == null ? array.length : i1) - (i0 = i0 == null ? 0 : +i0),
+      t,
+      i;
+
+  while (m) {
+    i = Math.random() * m-- | 0;
+    t = array[m + i0];
+    array[m + i0] = array[i + i0];
+    array[i + i0] = t;
+  }
+
+  return array;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/sum.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/sum.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var s = 0,
+      n = array.length,
+      a,
+      i = -1;
+
+  if (f == null) {
+    while (++i < n) if (a = +array[i]) s += a; // Note: zero and null are equivalent.
+  }
+
+  else {
+    while (++i < n) if (a = +f(array[i], i, array)) s += a;
+  }
+
+  return s;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/freedmanDiaconis.js":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/freedmanDiaconis.js ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../array */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/array.js");
+/* harmony import */ var _ascending__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ascending */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ascending.js");
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../number */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js");
+/* harmony import */ var _quantile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../quantile */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/quantile.js");
+
+
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(values, min, max) {
+  values = _array__WEBPACK_IMPORTED_MODULE_0__.map.call(values, _number__WEBPACK_IMPORTED_MODULE_2__.default).sort(_ascending__WEBPACK_IMPORTED_MODULE_1__.default);
+  return Math.ceil((max - min) / (2 * ((0,_quantile__WEBPACK_IMPORTED_MODULE_3__.default)(values, 0.75) - (0,_quantile__WEBPACK_IMPORTED_MODULE_3__.default)(values, 0.25)) * Math.pow(values.length, -1 / 3)));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/scott.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/scott.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _deviation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../deviation */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/deviation.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(values, min, max) {
+  return Math.ceil((max - min) / (3.5 * (0,_deviation__WEBPACK_IMPORTED_MODULE_0__.default)(values) * Math.pow(values.length, -1 / 3)));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/sturges.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/threshold/sturges.js ***!
+  \***********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(values) {
+  return Math.ceil(Math.log(values.length) / Math.LN2) + 1;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/ticks.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/ticks.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "tickStep": () => (/* binding */ tickStep)
+/* harmony export */ });
+/* harmony import */ var _range__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./range */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/range.js");
+
+
+var e10 = Math.sqrt(50),
+    e5 = Math.sqrt(10),
+    e2 = Math.sqrt(2);
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(start, stop, count) {
+  var step = tickStep(start, stop, count);
+  return (0,_range__WEBPACK_IMPORTED_MODULE_0__.default)(
+    Math.ceil(start / step) * step,
+    Math.floor(stop / step) * step + step / 2, // inclusive
+    step
+  );
+}
+
+function tickStep(start, stop, count) {
+  var step0 = Math.abs(stop - start) / Math.max(0, count),
+      step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
+      error = step0 / step1;
+  if (error >= e10) step1 *= 10;
+  else if (error >= e5) step1 *= 5;
+  else if (error >= e2) step1 *= 2;
+  return stop < start ? -step1 : step1;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/transpose.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/transpose.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _min__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./min */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/min.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(matrix) {
+  if (!(n = matrix.length)) return [];
+  for (var i = -1, m = (0,_min__WEBPACK_IMPORTED_MODULE_0__.default)(matrix, length), transpose = new Array(m); ++i < m;) {
+    for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
+      row[j] = matrix[j][i];
+    }
+  }
+  return transpose;
+}
+
+function length(d) {
+  return d.length;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/variance.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/variance.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/number.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(array, f) {
+  var n = array.length,
+      m = 0,
+      a,
+      d,
+      s = 0,
+      i = -1,
+      j = 0;
+
+  if (f == null) {
+    while (++i < n) {
+      if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_0__.default)(array[i]))) {
+        d = a - m;
+        m += d / ++j;
+        s += d * (a - m);
+      }
+    }
+  }
+
+  else {
+    while (++i < n) {
+      if (!isNaN(a = (0,_number__WEBPACK_IMPORTED_MODULE_0__.default)(f(array[i], i, array)))) {
+        d = a - m;
+        m += d / ++j;
+        s += d * (a - m);
+      }
+    }
+  }
+
+  if (j > 1) return s / (j - 1);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-array/src/zip.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-array/src/zip.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _transpose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./transpose */ "./node_modules/d3-svg-legend/node_modules/d3-array/src/transpose.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return (0,_transpose__WEBPACK_IMPORTED_MODULE_0__.default)(arguments);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-dispatch/index.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-dispatch/index.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "dispatch": () => (/* reexport safe */ _src_dispatch__WEBPACK_IMPORTED_MODULE_0__.default)
+/* harmony export */ });
+/* harmony import */ var _src_dispatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/dispatch */ "./node_modules/d3-svg-legend/node_modules/d3-dispatch/src/dispatch.js");
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-dispatch/src/dispatch.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-dispatch/src/dispatch.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var noop = {value: function() {}};
+
+function dispatch() {
+  for (var i = 0, n = arguments.length, _ = {}, t; i < n; ++i) {
+    if (!(t = arguments[i] + "") || (t in _)) throw new Error("illegal type: " + t);
+    _[t] = [];
+  }
+  return new Dispatch(_);
+}
+
+function Dispatch(_) {
+  this._ = _;
+}
+
+function parseTypenames(typenames, types) {
+  return typenames.trim().split(/^|\s+/).map(function(t) {
+    var name = "", i = t.indexOf(".");
+    if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i);
+    if (t && !types.hasOwnProperty(t)) throw new Error("unknown type: " + t);
+    return {type: t, name: name};
+  });
+}
+
+Dispatch.prototype = dispatch.prototype = {
+  constructor: Dispatch,
+  on: function(typename, callback) {
+    var _ = this._,
+        T = parseTypenames(typename + "", _),
+        t,
+        i = -1,
+        n = T.length;
+
+    // If no callback was specified, return the callback of the given type and name.
+    if (arguments.length < 2) {
+      while (++i < n) if ((t = (typename = T[i]).type) && (t = get(_[t], typename.name))) return t;
+      return;
+    }
+
+    // If a type was specified, set the callback for the given type and name.
+    // Otherwise, if a null callback was specified, remove callbacks of the given name.
+    if (callback != null && typeof callback !== "function") throw new Error("invalid callback: " + callback);
+    while (++i < n) {
+      if (t = (typename = T[i]).type) _[t] = set(_[t], typename.name, callback);
+      else if (callback == null) for (t in _) _[t] = set(_[t], typename.name, null);
+    }
+
+    return this;
+  },
+  copy: function() {
+    var copy = {}, _ = this._;
+    for (var t in _) copy[t] = _[t].slice();
+    return new Dispatch(copy);
+  },
+  call: function(type, that) {
+    if ((n = arguments.length - 2) > 0) for (var args = new Array(n), i = 0, n, t; i < n; ++i) args[i] = arguments[i + 2];
+    if (!this._.hasOwnProperty(type)) throw new Error("unknown type: " + type);
+    for (t = this._[type], i = 0, n = t.length; i < n; ++i) t[i].value.apply(that, args);
+  },
+  apply: function(type, that, args) {
+    if (!this._.hasOwnProperty(type)) throw new Error("unknown type: " + type);
+    for (var t = this._[type], i = 0, n = t.length; i < n; ++i) t[i].value.apply(that, args);
+  }
+};
+
+function get(type, name) {
+  for (var i = 0, n = type.length, c; i < n; ++i) {
+    if ((c = type[i]).name === name) {
+      return c.value;
+    }
+  }
+}
+
+function set(type, name, callback) {
+  for (var i = 0, n = type.length; i < n; ++i) {
+    if (type[i].name === name) {
+      type[i] = noop, type = type.slice(0, i).concat(type.slice(i + 1));
+      break;
+    }
+  }
+  if (callback != null) type.push({name: name, value: callback});
+  return type;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dispatch);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/index.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/index.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "formatDefaultLocale": () => (/* reexport safe */ _src_defaultLocale__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "format": () => (/* reexport safe */ _src_defaultLocale__WEBPACK_IMPORTED_MODULE_0__.format),
+/* harmony export */   "formatPrefix": () => (/* reexport safe */ _src_defaultLocale__WEBPACK_IMPORTED_MODULE_0__.formatPrefix),
+/* harmony export */   "formatLocale": () => (/* reexport safe */ _src_locale__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "formatSpecifier": () => (/* reexport safe */ _src_formatSpecifier__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "precisionFixed": () => (/* reexport safe */ _src_precisionFixed__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "precisionPrefix": () => (/* reexport safe */ _src_precisionPrefix__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "precisionRound": () => (/* reexport safe */ _src_precisionRound__WEBPACK_IMPORTED_MODULE_5__.default)
+/* harmony export */ });
+/* harmony import */ var _src_defaultLocale__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/defaultLocale */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/defaultLocale.js");
+/* harmony import */ var _src_locale__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/locale */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/locale.js");
+/* harmony import */ var _src_formatSpecifier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/formatSpecifier */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatSpecifier.js");
+/* harmony import */ var _src_precisionFixed__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/precisionFixed */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionFixed.js");
+/* harmony import */ var _src_precisionPrefix__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/precisionPrefix */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionPrefix.js");
+/* harmony import */ var _src_precisionRound__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/precisionRound */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionRound.js");
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/defaultLocale.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/defaultLocale.js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "format": () => (/* binding */ format),
+/* harmony export */   "formatPrefix": () => (/* binding */ formatPrefix),
+/* harmony export */   "default": () => (/* binding */ defaultLocale)
+/* harmony export */ });
+/* harmony import */ var _locale__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./locale */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/locale.js");
+
+
+var locale;
+var format;
+var formatPrefix;
+
+defaultLocale({
+  decimal: ".",
+  thousands: ",",
+  grouping: [3],
+  currency: ["$", ""]
+});
+
+function defaultLocale(definition) {
+  locale = (0,_locale__WEBPACK_IMPORTED_MODULE_0__.default)(definition);
+  format = locale.format;
+  formatPrefix = locale.formatPrefix;
+  return locale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _formatDecimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./formatDecimal */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDecimal.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return x = (0,_formatDecimal__WEBPACK_IMPORTED_MODULE_0__.default)(Math.abs(x)), x ? x[1] : NaN;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDecimal.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDecimal.js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// Computes the decimal coefficient and exponent of the specified number x with
+// significant digits p, where x is positive and p is in [1, 21] or undefined.
+// For example, formatDecimal(1.23) returns ["123", 0].
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x, p) {
+  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
+  var i, coefficient = x.slice(0, i);
+
+  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
+  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
+  return [
+    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
+    +x.slice(i + 1)
+  ];
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDefault.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDefault.js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x, p) {
+  x = x.toPrecision(p);
+
+  out: for (var n = x.length, i = 1, i0 = -1, i1; i < n; ++i) {
+    switch (x[i]) {
+      case ".": i0 = i1 = i; break;
+      case "0": if (i0 === 0) i0 = i; i1 = i; break;
+      case "e": break out;
+      default: if (i0 > 0) i0 = 0; break;
+    }
+  }
+
+  return i0 > 0 ? x.slice(0, i0) + x.slice(i1 + 1) : x;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatGroup.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatGroup.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(grouping, thousands) {
+  return function(value, width) {
+    var i = value.length,
+        t = [],
+        j = 0,
+        g = grouping[0],
+        length = 0;
+
+    while (i > 0 && g > 0) {
+      if (length + g + 1 > width) g = Math.max(1, width - length);
+      t.push(value.substring(i -= g, i + g));
+      if ((length += g + 1) > width) break;
+      g = grouping[j = (j + 1) % grouping.length];
+    }
+
+    return t.reverse().join(thousands);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatPrefixAuto.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatPrefixAuto.js ***!
+  \***********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "prefixExponent": () => (/* binding */ prefixExponent),
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _formatDecimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./formatDecimal */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDecimal.js");
+
+
+var prefixExponent;
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x, p) {
+  var d = (0,_formatDecimal__WEBPACK_IMPORTED_MODULE_0__.default)(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1],
+      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
+      n = coefficient.length;
+  return i === n ? coefficient
+      : i > n ? coefficient + new Array(i - n + 1).join("0")
+      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
+      : "0." + new Array(1 - i).join("0") + (0,_formatDecimal__WEBPACK_IMPORTED_MODULE_0__.default)(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatRounded.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatRounded.js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _formatDecimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./formatDecimal */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDecimal.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x, p) {
+  var d = (0,_formatDecimal__WEBPACK_IMPORTED_MODULE_0__.default)(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1];
+  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
+      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatSpecifier.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatSpecifier.js ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _formatTypes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./formatTypes */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatTypes.js");
+
+
+// [[fill]align][sign][symbol][0][width][,][.precision][type]
+var re = /^(?:(.)?([<>=^]))?([+\-\( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?([a-z%])?$/i;
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(specifier) {
+  return new FormatSpecifier(specifier);
+}
+
+function FormatSpecifier(specifier) {
+  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+
+  var match,
+      fill = match[1] || " ",
+      align = match[2] || ">",
+      sign = match[3] || "-",
+      symbol = match[4] || "",
+      zero = !!match[5],
+      width = match[6] && +match[6],
+      comma = !!match[7],
+      precision = match[8] && +match[8].slice(1),
+      type = match[9] || "";
+
+  // The "n" type is an alias for ",g".
+  if (type === "n") comma = true, type = "g";
+
+  // Map invalid types to the default format.
+  else if (!_formatTypes__WEBPACK_IMPORTED_MODULE_0__.default[type]) type = "";
+
+  // If zero fill is specified, padding goes after sign and before digits.
+  if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
+
+  this.fill = fill;
+  this.align = align;
+  this.sign = sign;
+  this.symbol = symbol;
+  this.zero = zero;
+  this.width = width;
+  this.comma = comma;
+  this.precision = precision;
+  this.type = type;
+}
+
+FormatSpecifier.prototype.toString = function() {
+  return this.fill
+      + this.align
+      + this.sign
+      + this.symbol
+      + (this.zero ? "0" : "")
+      + (this.width == null ? "" : Math.max(1, this.width | 0))
+      + (this.comma ? "," : "")
+      + (this.precision == null ? "" : "." + Math.max(0, this.precision | 0))
+      + this.type;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatTypes.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/formatTypes.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _formatDefault__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./formatDefault */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatDefault.js");
+/* harmony import */ var _formatPrefixAuto__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./formatPrefixAuto */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatPrefixAuto.js");
+/* harmony import */ var _formatRounded__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./formatRounded */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatRounded.js");
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  "": _formatDefault__WEBPACK_IMPORTED_MODULE_0__.default,
+  "%": function(x, p) { return (x * 100).toFixed(p); },
+  "b": function(x) { return Math.round(x).toString(2); },
+  "c": function(x) { return x + ""; },
+  "d": function(x) { return Math.round(x).toString(10); },
+  "e": function(x, p) { return x.toExponential(p); },
+  "f": function(x, p) { return x.toFixed(p); },
+  "g": function(x, p) { return x.toPrecision(p); },
+  "o": function(x) { return Math.round(x).toString(8); },
+  "p": function(x, p) { return (0,_formatRounded__WEBPACK_IMPORTED_MODULE_2__.default)(x * 100, p); },
+  "r": _formatRounded__WEBPACK_IMPORTED_MODULE_2__.default,
+  "s": _formatPrefixAuto__WEBPACK_IMPORTED_MODULE_1__.default,
+  "X": function(x) { return Math.round(x).toString(16).toUpperCase(); },
+  "x": function(x) { return Math.round(x).toString(16); }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/locale.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/locale.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _exponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exponent */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js");
+/* harmony import */ var _formatGroup__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./formatGroup */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatGroup.js");
+/* harmony import */ var _formatSpecifier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./formatSpecifier */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatSpecifier.js");
+/* harmony import */ var _formatTypes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./formatTypes */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatTypes.js");
+/* harmony import */ var _formatPrefixAuto__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./formatPrefixAuto */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/formatPrefixAuto.js");
+
+
+
+
+
+
+var prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+
+function identity(x) {
+  return x;
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(locale) {
+  var group = locale.grouping && locale.thousands ? (0,_formatGroup__WEBPACK_IMPORTED_MODULE_1__.default)(locale.grouping, locale.thousands) : identity,
+      currency = locale.currency,
+      decimal = locale.decimal;
+
+  function newFormat(specifier) {
+    specifier = (0,_formatSpecifier__WEBPACK_IMPORTED_MODULE_2__.default)(specifier);
+
+    var fill = specifier.fill,
+        align = specifier.align,
+        sign = specifier.sign,
+        symbol = specifier.symbol,
+        zero = specifier.zero,
+        width = specifier.width,
+        comma = specifier.comma,
+        precision = specifier.precision,
+        type = specifier.type;
+
+    // Compute the prefix and suffix.
+    // For SI-prefix, the suffix is lazily computed.
+    var prefix = symbol === "$" ? currency[0] : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
+        suffix = symbol === "$" ? currency[1] : /[%p]/.test(type) ? "%" : "";
+
+    // What format function should we use?
+    // Is this an integer type?
+    // Can this type generate exponential notation?
+    var formatType = _formatTypes__WEBPACK_IMPORTED_MODULE_3__.default[type],
+        maybeSuffix = !type || /[defgprs%]/.test(type);
+
+    // Set the default precision if not specified,
+    // or clamp the specified precision to the supported range.
+    // For significant precision, it must be in [1, 21].
+    // For fixed precision, it must be in [0, 20].
+    precision = precision == null ? (type ? 6 : 12)
+        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
+        : Math.max(0, Math.min(20, precision));
+
+    function format(value) {
+      var valuePrefix = prefix,
+          valueSuffix = suffix,
+          i, n, c;
+
+      if (type === "c") {
+        valueSuffix = formatType(value) + valueSuffix;
+        value = "";
+      } else {
+        value = +value;
+
+        // Convert negative to positive, and compute the prefix.
+        // Note that -0 is not less than 0, but 1 / -0 is!
+        var valueNegative = (value < 0 || 1 / value < 0) && (value *= -1, true);
+
+        // Perform the initial formatting.
+        value = formatType(value, precision);
+
+        // If the original value was negative, it may be rounded to zero during
+        // formatting; treat this as (positive) zero.
+        if (valueNegative) {
+          i = -1, n = value.length;
+          valueNegative = false;
+          while (++i < n) {
+            if (c = value.charCodeAt(i), (48 < c && c < 58)
+                || (type === "x" && 96 < c && c < 103)
+                || (type === "X" && 64 < c && c < 71)) {
+              valueNegative = true;
+              break;
+            }
+          }
+        }
+
+        // Compute the prefix and suffix.
+        valuePrefix = (valueNegative ? (sign === "(" ? sign : "-") : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
+        valueSuffix = valueSuffix + (type === "s" ? prefixes[8 + _formatPrefixAuto__WEBPACK_IMPORTED_MODULE_4__.prefixExponent / 3] : "") + (valueNegative && sign === "(" ? ")" : "");
+
+        // Break the formatted value into the integer “value” part that can be
+        // grouped, and fractional or exponential “suffix” part that is not.
+        if (maybeSuffix) {
+          i = -1, n = value.length;
+          while (++i < n) {
+            if (c = value.charCodeAt(i), 48 > c || c > 57) {
+              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
+              value = value.slice(0, i);
+              break;
+            }
+          }
+        }
+      }
+
+      // If the fill character is not "0", grouping is applied before padding.
+      if (comma && !zero) value = group(value, Infinity);
+
+      // Compute the padding.
+      var length = valuePrefix.length + value.length + valueSuffix.length,
+          padding = length < width ? new Array(width - length + 1).join(fill) : "";
+
+      // If the fill character is "0", grouping is applied after padding.
+      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+
+      // Reconstruct the final output based on the desired alignment.
+      switch (align) {
+        case "<": return valuePrefix + value + valueSuffix + padding;
+        case "=": return valuePrefix + padding + value + valueSuffix;
+        case "^": return padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length);
+      }
+      return padding + valuePrefix + value + valueSuffix;
+    }
+
+    format.toString = function() {
+      return specifier + "";
+    };
+
+    return format;
+  }
+
+  function formatPrefix(specifier, value) {
+    var f = newFormat((specifier = (0,_formatSpecifier__WEBPACK_IMPORTED_MODULE_2__.default)(specifier), specifier.type = "f", specifier)),
+        e = Math.max(-8, Math.min(8, Math.floor((0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(value) / 3))) * 3,
+        k = Math.pow(10, -e),
+        prefix = prefixes[8 + e / 3];
+    return function(value) {
+      return f(k * value) + prefix;
+    };
+  }
+
+  return {
+    format: newFormat,
+    formatPrefix: formatPrefix
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionFixed.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionFixed.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _exponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exponent */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(step) {
+  return Math.max(0, -(0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(Math.abs(step)));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionPrefix.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionPrefix.js ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _exponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exponent */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(step, value) {
+  return Math.max(0, Math.max(-8, Math.min(8, Math.floor((0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(value) / 3))) * 3 - (0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(Math.abs(step)));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionRound.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-format/src/precisionRound.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _exponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./exponent */ "./node_modules/d3-svg-legend/node_modules/d3-format/src/exponent.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(step, max) {
+  step = Math.abs(step), max = Math.abs(max) - step;
+  return Math.max(0, (0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(max) - (0,_exponent__WEBPACK_IMPORTED_MODULE_0__.default)(step)) + 1;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/index.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/index.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "scaleBand": () => (/* reexport safe */ _src_band__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "scalePoint": () => (/* reexport safe */ _src_band__WEBPACK_IMPORTED_MODULE_0__.point),
+/* harmony export */   "scaleIdentity": () => (/* reexport safe */ _src_identity__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "scaleLinear": () => (/* reexport safe */ _src_linear__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "scaleLog": () => (/* reexport safe */ _src_log__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "scaleOrdinal": () => (/* reexport safe */ _src_ordinal__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "scaleImplicit": () => (/* reexport safe */ _src_ordinal__WEBPACK_IMPORTED_MODULE_4__.implicit),
+/* harmony export */   "scalePow": () => (/* reexport safe */ _src_pow__WEBPACK_IMPORTED_MODULE_5__.default),
+/* harmony export */   "scaleSqrt": () => (/* reexport safe */ _src_pow__WEBPACK_IMPORTED_MODULE_5__.sqrt),
+/* harmony export */   "scaleQuantile": () => (/* reexport safe */ _src_quantile__WEBPACK_IMPORTED_MODULE_6__.default),
+/* harmony export */   "scaleQuantize": () => (/* reexport safe */ _src_quantize__WEBPACK_IMPORTED_MODULE_7__.default),
+/* harmony export */   "scaleThreshold": () => (/* reexport safe */ _src_threshold__WEBPACK_IMPORTED_MODULE_8__.default),
+/* harmony export */   "scaleTime": () => (/* reexport safe */ _src_time__WEBPACK_IMPORTED_MODULE_9__.default),
+/* harmony export */   "scaleUtc": () => (/* reexport safe */ _src_utcTime__WEBPACK_IMPORTED_MODULE_10__.default),
+/* harmony export */   "schemeCategory10": () => (/* reexport safe */ _src_category10__WEBPACK_IMPORTED_MODULE_11__.default),
+/* harmony export */   "schemeCategory20b": () => (/* reexport safe */ _src_category20b__WEBPACK_IMPORTED_MODULE_12__.default),
+/* harmony export */   "schemeCategory20c": () => (/* reexport safe */ _src_category20c__WEBPACK_IMPORTED_MODULE_13__.default),
+/* harmony export */   "schemeCategory20": () => (/* reexport safe */ _src_category20__WEBPACK_IMPORTED_MODULE_14__.default),
+/* harmony export */   "interpolateCubehelixDefault": () => (/* reexport safe */ _src_cubehelix__WEBPACK_IMPORTED_MODULE_15__.default),
+/* harmony export */   "interpolateRainbow": () => (/* reexport safe */ _src_rainbow__WEBPACK_IMPORTED_MODULE_16__.default),
+/* harmony export */   "interpolateWarm": () => (/* reexport safe */ _src_rainbow__WEBPACK_IMPORTED_MODULE_16__.warm),
+/* harmony export */   "interpolateCool": () => (/* reexport safe */ _src_rainbow__WEBPACK_IMPORTED_MODULE_16__.cool),
+/* harmony export */   "interpolateViridis": () => (/* reexport safe */ _src_viridis__WEBPACK_IMPORTED_MODULE_17__.default),
+/* harmony export */   "interpolateMagma": () => (/* reexport safe */ _src_viridis__WEBPACK_IMPORTED_MODULE_17__.magma),
+/* harmony export */   "interpolateInferno": () => (/* reexport safe */ _src_viridis__WEBPACK_IMPORTED_MODULE_17__.inferno),
+/* harmony export */   "interpolatePlasma": () => (/* reexport safe */ _src_viridis__WEBPACK_IMPORTED_MODULE_17__.plasma),
+/* harmony export */   "scaleSequential": () => (/* reexport safe */ _src_sequential__WEBPACK_IMPORTED_MODULE_18__.default)
+/* harmony export */ });
+/* harmony import */ var _src_band__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/band */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/band.js");
+/* harmony import */ var _src_identity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/identity */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/identity.js");
+/* harmony import */ var _src_linear__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/linear */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _src_log__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/log */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/log.js");
+/* harmony import */ var _src_ordinal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/ordinal */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/ordinal.js");
+/* harmony import */ var _src_pow__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/pow */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/pow.js");
+/* harmony import */ var _src_quantile__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/quantile */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantile.js");
+/* harmony import */ var _src_quantize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/quantize */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantize.js");
+/* harmony import */ var _src_threshold__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/threshold */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/threshold.js");
+/* harmony import */ var _src_time__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./src/time */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/time.js");
+/* harmony import */ var _src_utcTime__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./src/utcTime */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/utcTime.js");
+/* harmony import */ var _src_category10__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./src/category10 */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category10.js");
+/* harmony import */ var _src_category20b__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./src/category20b */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20b.js");
+/* harmony import */ var _src_category20c__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./src/category20c */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20c.js");
+/* harmony import */ var _src_category20__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./src/category20 */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20.js");
+/* harmony import */ var _src_cubehelix__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./src/cubehelix */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/cubehelix.js");
+/* harmony import */ var _src_rainbow__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./src/rainbow */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/rainbow.js");
+/* harmony import */ var _src_viridis__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./src/viridis */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/viridis.js");
+/* harmony import */ var _src_sequential__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./src/sequential */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/sequential.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "map": () => (/* binding */ map),
+/* harmony export */   "slice": () => (/* binding */ slice)
+/* harmony export */ });
+var array = Array.prototype;
+
+var map = array.map;
+var slice = array.slice;
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/band.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/band.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ band),
+/* harmony export */   "point": () => (/* binding */ point)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var _ordinal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ordinal */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/ordinal.js");
+
+
+
+function band() {
+  var scale = (0,_ordinal__WEBPACK_IMPORTED_MODULE_1__.default)().unknown(undefined),
+      domain = scale.domain,
+      ordinalRange = scale.range,
+      range = [0, 1],
+      step,
+      bandwidth,
+      round = false,
+      paddingInner = 0,
+      paddingOuter = 0,
+      align = 0.5;
+
+  delete scale.unknown;
+
+  function rescale() {
+    var n = domain().length,
+        reverse = range[1] < range[0],
+        start = range[reverse - 0],
+        stop = range[1 - reverse];
+    step = (stop - start) / Math.max(1, n - paddingInner + paddingOuter * 2);
+    if (round) step = Math.floor(step);
+    start += (stop - start - step * (n - paddingInner)) * align;
+    bandwidth = step * (1 - paddingInner);
+    if (round) start = Math.round(start), bandwidth = Math.round(bandwidth);
+    var values = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.range)(n).map(function(i) { return start + step * i; });
+    return ordinalRange(reverse ? values.reverse() : values);
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain(_), rescale()) : domain();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = [+_[0], +_[1]], rescale()) : range.slice();
+  };
+
+  scale.rangeRound = function(_) {
+    return range = [+_[0], +_[1]], round = true, rescale();
+  };
+
+  scale.bandwidth = function() {
+    return bandwidth;
+  };
+
+  scale.step = function() {
+    return step;
+  };
+
+  scale.round = function(_) {
+    return arguments.length ? (round = !!_, rescale()) : round;
+  };
+
+  scale.padding = function(_) {
+    return arguments.length ? (paddingInner = paddingOuter = Math.max(0, Math.min(1, _)), rescale()) : paddingInner;
+  };
+
+  scale.paddingInner = function(_) {
+    return arguments.length ? (paddingInner = Math.max(0, Math.min(1, _)), rescale()) : paddingInner;
+  };
+
+  scale.paddingOuter = function(_) {
+    return arguments.length ? (paddingOuter = Math.max(0, Math.min(1, _)), rescale()) : paddingOuter;
+  };
+
+  scale.align = function(_) {
+    return arguments.length ? (align = Math.max(0, Math.min(1, _)), rescale()) : align;
+  };
+
+  scale.copy = function() {
+    return band()
+        .domain(domain())
+        .range(range)
+        .round(round)
+        .paddingInner(paddingInner)
+        .paddingOuter(paddingOuter)
+        .align(align);
+  };
+
+  return rescale();
+}
+
+function pointish(scale) {
+  var copy = scale.copy;
+
+  scale.padding = scale.paddingOuter;
+  delete scale.paddingInner;
+  delete scale.paddingOuter;
+
+  scale.copy = function() {
+    return pointish(copy());
+  };
+
+  return scale;
+}
+
+function point() {
+  return pointish(band().paddingInner(1));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category10.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/category10.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colors */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("1f77b4ff7f0e2ca02cd627289467bd8c564be377c27f7f7fbcbd2217becf"));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colors */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("1f77b4aec7e8ff7f0effbb782ca02c98df8ad62728ff98969467bdc5b0d58c564bc49c94e377c2f7b6d27f7f7fc7c7c7bcbd22dbdb8d17becf9edae5"));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20b.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20b.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colors */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("393b795254a36b6ecf9c9ede6379398ca252b5cf6bcedb9c8c6d31bd9e39e7ba52e7cb94843c39ad494ad6616be7969c7b4173a55194ce6dbdde9ed6"));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20c.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/category20c.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colors */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("3182bd6baed69ecae1c6dbefe6550dfd8d3cfdae6bfdd0a231a35474c476a1d99bc7e9c0756bb19e9ac8bcbddcdadaeb636363969696bdbdbdd9d9d9"));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(s) {
+  return s.match(/.{6}/g).map(function(x) {
+    return "#" + x;
+  });
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/constant.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/constant.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return function() {
+    return x;
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "deinterpolateLinear": () => (/* binding */ deinterpolateLinear),
+/* harmony export */   "copy": () => (/* binding */ copy),
+/* harmony export */   "default": () => (/* binding */ continuous)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/value.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/round.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/constant.js");
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/number.js");
+
+
+
+
+
+
+var unit = [0, 1];
+
+function deinterpolateLinear(a, b) {
+  return (b -= (a = +a))
+      ? function(x) { return (x - a) / b; }
+      : (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(b);
+}
+
+function deinterpolateClamp(deinterpolate) {
+  return function(a, b) {
+    var d = deinterpolate(a = +a, b = +b);
+    return function(x) { return x <= a ? 0 : x >= b ? 1 : d(x); };
+  };
+}
+
+function reinterpolateClamp(reinterpolate) {
+  return function(a, b) {
+    var r = reinterpolate(a = +a, b = +b);
+    return function(t) { return t <= 0 ? a : t >= 1 ? b : r(t); };
+  };
+}
+
+function bimap(domain, range, deinterpolate, reinterpolate) {
+  var d0 = domain[0], d1 = domain[1], r0 = range[0], r1 = range[1];
+  if (d1 < d0) d0 = deinterpolate(d1, d0), r0 = reinterpolate(r1, r0);
+  else d0 = deinterpolate(d0, d1), r0 = reinterpolate(r0, r1);
+  return function(x) { return r0(d0(x)); };
+}
+
+function polymap(domain, range, deinterpolate, reinterpolate) {
+  var j = Math.min(domain.length, range.length) - 1,
+      d = new Array(j),
+      r = new Array(j),
+      i = -1;
+
+  // Reverse descending domains.
+  if (domain[j] < domain[0]) {
+    domain = domain.slice().reverse();
+    range = range.slice().reverse();
+  }
+
+  while (++i < j) {
+    d[i] = deinterpolate(domain[i], domain[i + 1]);
+    r[i] = reinterpolate(range[i], range[i + 1]);
+  }
+
+  return function(x) {
+    var i = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.bisect)(domain, x, 1, j) - 1;
+    return r[i](d[i](x));
+  };
+}
+
+function copy(source, target) {
+  return target
+      .domain(source.domain())
+      .range(source.range())
+      .interpolate(source.interpolate())
+      .clamp(source.clamp());
+}
+
+// deinterpolate(a, b)(x) takes a domain value x in [a,b] and returns the corresponding parameter t in [0,1].
+// reinterpolate(a, b)(t) takes a parameter t in [0,1] and returns the corresponding domain value x in [a,b].
+function continuous(deinterpolate, reinterpolate) {
+  var domain = unit,
+      range = unit,
+      interpolate = d3_interpolate__WEBPACK_IMPORTED_MODULE_4__.default,
+      clamp = false,
+      piecewise,
+      output,
+      input;
+
+  function rescale() {
+    piecewise = Math.min(domain.length, range.length) > 2 ? polymap : bimap;
+    output = input = null;
+    return scale;
+  }
+
+  function scale(x) {
+    return (output || (output = piecewise(domain, range, clamp ? deinterpolateClamp(deinterpolate) : deinterpolate, interpolate)))(+x);
+  }
+
+  scale.invert = function(y) {
+    return (input || (input = piecewise(range, domain, deinterpolateLinear, clamp ? reinterpolateClamp(reinterpolate) : reinterpolate)))(+y);
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain = _array__WEBPACK_IMPORTED_MODULE_1__.map.call(_, _number__WEBPACK_IMPORTED_MODULE_3__.default), rescale()) : domain.slice();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), rescale()) : range.slice();
+  };
+
+  scale.rangeRound = function(_) {
+    return range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), interpolate = d3_interpolate__WEBPACK_IMPORTED_MODULE_5__.default, rescale();
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = !!_, rescale()) : clamp;
+  };
+
+  scale.interpolate = function(_) {
+    return arguments.length ? (interpolate = _, rescale()) : interpolate;
+  };
+
+  return rescale();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/cubehelix.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/cubehelix.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/cubehelix.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/cubehelix.js");
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,d3_interpolate__WEBPACK_IMPORTED_MODULE_0__.cubehelixLong)((0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(300, 0.5, 0.0), (0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(-240, 0.5, 1.0)));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/identity.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/identity.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ identity)
+/* harmony export */ });
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+/* harmony import */ var _linear__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./linear */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _number__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./number */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/number.js");
+
+
+
+
+function identity() {
+  var domain = [0, 1];
+
+  function scale(x) {
+    return +x;
+  }
+
+  scale.invert = scale;
+
+  scale.domain = scale.range = function(_) {
+    return arguments.length ? (domain = _array__WEBPACK_IMPORTED_MODULE_0__.map.call(_, _number__WEBPACK_IMPORTED_MODULE_2__.default), scale) : domain.slice();
+  };
+
+  scale.copy = function() {
+    return identity().domain(domain);
+  };
+
+  return (0,_linear__WEBPACK_IMPORTED_MODULE_1__.linearish)(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "linearish": () => (/* binding */ linearish),
+/* harmony export */   "default": () => (/* binding */ linear)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/number.js");
+/* harmony import */ var _continuous__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./continuous */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _tickFormat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tickFormat */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/tickFormat.js");
+
+
+
+
+
+function linearish(scale) {
+  var domain = scale.domain;
+
+  scale.ticks = function(count) {
+    var d = domain();
+    return (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.ticks)(d[0], d[d.length - 1], count == null ? 10 : count);
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    return (0,_tickFormat__WEBPACK_IMPORTED_MODULE_2__.default)(domain(), count, specifier);
+  };
+
+  scale.nice = function(count) {
+    var d = domain(),
+        i = d.length - 1,
+        n = count == null ? 10 : count,
+        start = d[0],
+        stop = d[i],
+        step = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.tickStep)(start, stop, n);
+
+    if (step) {
+      step = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.tickStep)(Math.floor(start / step) * step, Math.ceil(stop / step) * step, n);
+      d[0] = Math.floor(start / step) * step;
+      d[i] = Math.ceil(stop / step) * step;
+      domain(d);
+    }
+
+    return scale;
+  };
+
+  return scale;
+}
+
+function linear() {
+  var scale = (0,_continuous__WEBPACK_IMPORTED_MODULE_1__.default)(_continuous__WEBPACK_IMPORTED_MODULE_1__.deinterpolateLinear, d3_interpolate__WEBPACK_IMPORTED_MODULE_3__.default);
+
+  scale.copy = function() {
+    return (0,_continuous__WEBPACK_IMPORTED_MODULE_1__.copy)(scale, linear());
+  };
+
+  return linearish(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/log.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/log.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ log)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-svg-legend/node_modules/d3-format/index.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/constant.js");
+/* harmony import */ var _nice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nice */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/nice.js");
+/* harmony import */ var _continuous__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./continuous */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js");
+
+
+
+
+
+
+function deinterpolate(a, b) {
+  return (b = Math.log(b / a))
+      ? function(x) { return Math.log(x / a) / b; }
+      : (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(b);
+}
+
+function reinterpolate(a, b) {
+  return a < 0
+      ? function(t) { return -Math.pow(-b, t) * Math.pow(-a, 1 - t); }
+      : function(t) { return Math.pow(b, t) * Math.pow(a, 1 - t); };
+}
+
+function pow10(x) {
+  return isFinite(x) ? +("1e" + x) : x < 0 ? 0 : x;
+}
+
+function powp(base) {
+  return base === 10 ? pow10
+      : base === Math.E ? Math.exp
+      : function(x) { return Math.pow(base, x); };
+}
+
+function logp(base) {
+  return base === Math.E ? Math.log
+      : base === 10 && Math.log10
+      || base === 2 && Math.log2
+      || (base = Math.log(base), function(x) { return Math.log(x) / base; });
+}
+
+function reflect(f) {
+  return function(x) {
+    return -f(-x);
+  };
+}
+
+function log() {
+  var scale = (0,_continuous__WEBPACK_IMPORTED_MODULE_4__.default)(deinterpolate, reinterpolate).domain([1, 10]),
+      domain = scale.domain,
+      base = 10,
+      logs = logp(10),
+      pows = powp(10);
+
+  function rescale() {
+    logs = logp(base), pows = powp(base);
+    if (domain()[0] < 0) logs = reflect(logs), pows = reflect(pows);
+    return scale;
+  }
+
+  scale.base = function(_) {
+    return arguments.length ? (base = +_, rescale()) : base;
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain(_), rescale()) : domain();
+  };
+
+  scale.ticks = function(count) {
+    var d = domain(),
+        u = d[0],
+        v = d[d.length - 1],
+        r;
+
+    if (r = v < u) i = u, u = v, v = i;
+
+    var i = logs(u),
+        j = logs(v),
+        p,
+        k,
+        t,
+        n = count == null ? 10 : +count,
+        z = [];
+
+    if (!(base % 1) && j - i < n) {
+      i = Math.round(i) - 1, j = Math.round(j) + 1;
+      if (u > 0) for (; i < j; ++i) {
+        for (k = 1, p = pows(i); k < base; ++k) {
+          t = p * k;
+          if (t < u) continue;
+          if (t > v) break;
+          z.push(t);
+        }
+      } else for (; i < j; ++i) {
+        for (k = base - 1, p = pows(i); k >= 1; --k) {
+          t = p * k;
+          if (t < u) continue;
+          if (t > v) break;
+          z.push(t);
+        }
+      }
+    } else {
+      z = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.ticks)(i, j, Math.min(j - i, n)).map(pows);
+    }
+
+    return r ? z.reverse() : z;
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    if (specifier == null) specifier = base === 10 ? ".0e" : ",";
+    if (typeof specifier !== "function") specifier = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.format)(specifier);
+    if (count === Infinity) return specifier;
+    if (count == null) count = 10;
+    var k = Math.max(1, base * count / scale.ticks().length); // TODO fast estimate?
+    return function(d) {
+      var i = d / pows(Math.round(logs(d)));
+      if (i * base < base - 0.5) i *= base;
+      return i <= k ? specifier(d) : "";
+    };
+  };
+
+  scale.nice = function() {
+    return domain((0,_nice__WEBPACK_IMPORTED_MODULE_3__.default)(domain(), {
+      floor: function(x) { return pows(Math.floor(logs(x))); },
+      ceil: function(x) { return pows(Math.ceil(logs(x))); }
+    }));
+  };
+
+  scale.copy = function() {
+    return (0,_continuous__WEBPACK_IMPORTED_MODULE_4__.copy)(scale, log().base(base));
+  };
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/nice.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/nice.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(domain, interval) {
+  domain = domain.slice();
+
+  var i0 = 0,
+      i1 = domain.length - 1,
+      x0 = domain[i0],
+      x1 = domain[i1],
+      t;
+
+  if (x1 < x0) {
+    t = i0, i0 = i1, i1 = t;
+    t = x0, x0 = x1, x1 = t;
+  }
+
+  domain[i0] = interval.floor(x0);
+  domain[i1] = interval.ceil(x1);
+  return domain;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/number.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/number.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return +x;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/ordinal.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/ordinal.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "implicit": () => (/* binding */ implicit),
+/* harmony export */   "default": () => (/* binding */ ordinal)
+/* harmony export */ });
+/* harmony import */ var d3_collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-collection */ "./node_modules/d3-collection/src/index.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+
+
+
+var implicit = {name: "implicit"};
+
+function ordinal(range) {
+  var index = (0,d3_collection__WEBPACK_IMPORTED_MODULE_0__.map)(),
+      domain = [],
+      unknown = implicit;
+
+  range = range == null ? [] : _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(range);
+
+  function scale(d) {
+    var key = d + "", i = index.get(key);
+    if (!i) {
+      if (unknown !== implicit) return unknown;
+      index.set(key, i = domain.push(d));
+    }
+    return range[(i - 1) % range.length];
+  }
+
+  scale.domain = function(_) {
+    if (!arguments.length) return domain.slice();
+    domain = [], index = (0,d3_collection__WEBPACK_IMPORTED_MODULE_0__.map)();
+    var i = -1, n = _.length, d, key;
+    while (++i < n) if (!index.has(key = (d = _[i]) + "")) index.set(key, domain.push(d));
+    return scale;
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), scale) : range.slice();
+  };
+
+  scale.unknown = function(_) {
+    return arguments.length ? (unknown = _, scale) : unknown;
+  };
+
+  scale.copy = function() {
+    return ordinal()
+        .domain(domain)
+        .range(range)
+        .unknown(unknown);
+  };
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/pow.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/pow.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ pow),
+/* harmony export */   "sqrt": () => (/* binding */ sqrt)
+/* harmony export */ });
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constant */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/constant.js");
+/* harmony import */ var _linear__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./linear */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js");
+/* harmony import */ var _continuous__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./continuous */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js");
+
+
+
+
+function raise(x, exponent) {
+  return x < 0 ? -Math.pow(-x, exponent) : Math.pow(x, exponent);
+}
+
+function pow() {
+  var exponent = 1,
+      scale = (0,_continuous__WEBPACK_IMPORTED_MODULE_2__.default)(deinterpolate, reinterpolate),
+      domain = scale.domain;
+
+  function deinterpolate(a, b) {
+    return (b = raise(b, exponent) - (a = raise(a, exponent)))
+        ? function(x) { return (raise(x, exponent) - a) / b; }
+        : (0,_constant__WEBPACK_IMPORTED_MODULE_0__.default)(b);
+  }
+
+  function reinterpolate(a, b) {
+    b = raise(b, exponent) - (a = raise(a, exponent));
+    return function(t) { return raise(a + b * t, 1 / exponent); };
+  }
+
+  scale.exponent = function(_) {
+    return arguments.length ? (exponent = +_, domain(domain())) : exponent;
+  };
+
+  scale.copy = function() {
+    return (0,_continuous__WEBPACK_IMPORTED_MODULE_2__.copy)(scale, pow().exponent(exponent));
+  };
+
+  return (0,_linear__WEBPACK_IMPORTED_MODULE_1__.linearish)(scale);
+}
+
+function sqrt() {
+  return pow().exponent(0.5);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantile.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantile.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ quantile)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+
+
+
+function quantile() {
+  var domain = [],
+      range = [],
+      thresholds = [];
+
+  function rescale() {
+    var i = 0, n = Math.max(1, range.length);
+    thresholds = new Array(n - 1);
+    while (++i < n) thresholds[i - 1] = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.quantile)(domain, i / n);
+    return scale;
+  }
+
+  function scale(x) {
+    if (!isNaN(x = +x)) return range[(0,d3_array__WEBPACK_IMPORTED_MODULE_0__.bisect)(thresholds, x)];
+  }
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return i < 0 ? [NaN, NaN] : [
+      i > 0 ? thresholds[i - 1] : domain[0],
+      i < thresholds.length ? thresholds[i] : domain[domain.length - 1]
+    ];
+  };
+
+  scale.domain = function(_) {
+    if (!arguments.length) return domain.slice();
+    domain = [];
+    for (var i = 0, n = _.length, d; i < n; ++i) if (d = _[i], d != null && !isNaN(d = +d)) domain.push(d);
+    domain.sort(d3_array__WEBPACK_IMPORTED_MODULE_0__.ascending);
+    return rescale();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), rescale()) : range.slice();
+  };
+
+  scale.quantiles = function() {
+    return thresholds.slice();
+  };
+
+  scale.copy = function() {
+    return quantile()
+        .domain(domain)
+        .range(range);
+  };
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantize.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/quantize.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ quantize)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+/* harmony import */ var _linear__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linear */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js");
+
+
+
+
+function quantize() {
+  var x0 = 0,
+      x1 = 1,
+      n = 1,
+      domain = [0.5],
+      range = [0, 1];
+
+  function scale(x) {
+    if (x <= x) return range[(0,d3_array__WEBPACK_IMPORTED_MODULE_0__.bisect)(domain, x, 0, n)];
+  }
+
+  function rescale() {
+    var i = -1;
+    domain = new Array(n);
+    while (++i < n) domain[i] = ((i + 1) * x1 - (i - n) * x0) / (n + 1);
+    return scale;
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (x0 = +_[0], x1 = +_[1], rescale()) : [x0, x1];
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (n = (range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_)).length - 1, rescale()) : range.slice();
+  };
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return i < 0 ? [NaN, NaN]
+        : i < 1 ? [x0, domain[0]]
+        : i >= n ? [domain[n - 1], x1]
+        : [domain[i - 1], domain[i]];
+  };
+
+  scale.copy = function() {
+    return quantize()
+        .domain([x0, x1])
+        .range(range);
+  };
+
+  return (0,_linear__WEBPACK_IMPORTED_MODULE_2__.linearish)(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/rainbow.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/rainbow.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "warm": () => (/* binding */ warm),
+/* harmony export */   "cool": () => (/* binding */ cool),
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-color */ "./node_modules/d3-color/src/cubehelix.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/cubehelix.js");
+
+
+
+var warm = (0,d3_interpolate__WEBPACK_IMPORTED_MODULE_0__.cubehelixLong)((0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(-100, 0.75, 0.35), (0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(80, 1.50, 0.8));
+
+var cool = (0,d3_interpolate__WEBPACK_IMPORTED_MODULE_0__.cubehelixLong)((0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(260, 0.75, 0.35), (0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)(80, 1.50, 0.8));
+
+var rainbow = (0,d3_color__WEBPACK_IMPORTED_MODULE_1__.default)();
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(t) {
+  if (t < 0 || t > 1) t -= Math.floor(t);
+  var ts = Math.abs(t - 0.5);
+  rainbow.h = 360 * t - 100;
+  rainbow.s = 1.5 - 1.5 * ts;
+  rainbow.l = 0.8 - 0.9 * ts;
+  return rainbow + "";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/sequential.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/sequential.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ sequential)
+/* harmony export */ });
+/* harmony import */ var _linear__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./linear */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/linear.js");
+
+
+function sequential(interpolator) {
+  var x0 = 0,
+      x1 = 1,
+      clamp = false;
+
+  function scale(x) {
+    var t = (x - x0) / (x1 - x0);
+    return interpolator(clamp ? Math.max(0, Math.min(1, t)) : t);
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (x0 = +_[0], x1 = +_[1], scale) : [x0, x1];
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = !!_, scale) : clamp;
+  };
+
+  scale.interpolator = function(_) {
+    return arguments.length ? (interpolator = _, scale) : interpolator;
+  };
+
+  scale.copy = function() {
+    return sequential(interpolator).domain([x0, x1]).clamp(clamp);
+  };
+
+  return (0,_linear__WEBPACK_IMPORTED_MODULE_0__.linearish)(scale);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/threshold.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/threshold.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ threshold)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+
+
+
+function threshold() {
+  var domain = [0.5],
+      range = [0, 1],
+      n = 1;
+
+  function scale(x) {
+    if (x <= x) return range[(0,d3_array__WEBPACK_IMPORTED_MODULE_0__.bisect)(domain, x, 0, n)];
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (domain = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), n = Math.min(domain.length, range.length - 1), scale) : domain.slice();
+  };
+
+  scale.range = function(_) {
+    return arguments.length ? (range = _array__WEBPACK_IMPORTED_MODULE_1__.slice.call(_), n = Math.min(domain.length, range.length - 1), scale) : range.slice();
+  };
+
+  scale.invertExtent = function(y) {
+    var i = range.indexOf(y);
+    return [domain[i - 1], domain[i]];
+  };
+
+  scale.copy = function() {
+    return threshold()
+        .domain(domain)
+        .range(range);
+  };
+
+  return scale;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/tickFormat.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/tickFormat.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var d3_format__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-format */ "./node_modules/d3-svg-legend/node_modules/d3-format/index.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(domain, count, specifier) {
+  var start = domain[0],
+      stop = domain[domain.length - 1],
+      step = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.tickStep)(start, stop, count == null ? 10 : count),
+      precision;
+  specifier = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatSpecifier)(specifier == null ? ",f" : specifier);
+  switch (specifier.type) {
+    case "s": {
+      var value = Math.max(Math.abs(start), Math.abs(stop));
+      if (specifier.precision == null && !isNaN(precision = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.precisionPrefix)(step, value))) specifier.precision = precision;
+      return (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.formatPrefix)(specifier, value);
+    }
+    case "":
+    case "e":
+    case "g":
+    case "p":
+    case "r": {
+      if (specifier.precision == null && !isNaN(precision = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.precisionRound)(step, Math.max(Math.abs(start), Math.abs(stop))))) specifier.precision = precision - (specifier.type === "e");
+      break;
+    }
+    case "f":
+    case "%": {
+      if (specifier.precision == null && !isNaN(precision = (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.precisionFixed)(step))) specifier.precision = precision - (specifier.type === "%") * 2;
+      break;
+    }
+  }
+  return (0,d3_format__WEBPACK_IMPORTED_MODULE_1__.format)(specifier);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/time.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/time.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "calendar": () => (/* binding */ calendar),
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var d3_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-array */ "./node_modules/d3-svg-legend/node_modules/d3-array/index.js");
+/* harmony import */ var d3_interpolate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! d3-interpolate */ "./node_modules/d3-interpolate/src/number.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/year.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/month.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/week.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/day.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/hour.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/minute.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/second.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/millisecond.js");
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! d3-time-format */ "./node_modules/d3-time-format/src/defaultLocale.js");
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/array.js");
+/* harmony import */ var _continuous__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./continuous */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/continuous.js");
+/* harmony import */ var _nice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nice */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/nice.js");
+
+
+
+
+
+
+
+
+var durationSecond = 1000,
+    durationMinute = durationSecond * 60,
+    durationHour = durationMinute * 60,
+    durationDay = durationHour * 24,
+    durationWeek = durationDay * 7,
+    durationMonth = durationDay * 30,
+    durationYear = durationDay * 365;
+
+function date(t) {
+  return new Date(t);
+}
+
+function number(t) {
+  return t instanceof Date ? +t : +new Date(+t);
+}
+
+function calendar(year, month, week, day, hour, minute, second, millisecond, format) {
+  var scale = (0,_continuous__WEBPACK_IMPORTED_MODULE_2__.default)(_continuous__WEBPACK_IMPORTED_MODULE_2__.deinterpolateLinear, d3_interpolate__WEBPACK_IMPORTED_MODULE_4__.default),
+      invert = scale.invert,
+      domain = scale.domain;
+
+  var formatMillisecond = format(".%L"),
+      formatSecond = format(":%S"),
+      formatMinute = format("%I:%M"),
+      formatHour = format("%I %p"),
+      formatDay = format("%a %d"),
+      formatWeek = format("%b %d"),
+      formatMonth = format("%B"),
+      formatYear = format("%Y");
+
+  var tickIntervals = [
+    [second,  1,      durationSecond],
+    [second,  5,  5 * durationSecond],
+    [second, 15, 15 * durationSecond],
+    [second, 30, 30 * durationSecond],
+    [minute,  1,      durationMinute],
+    [minute,  5,  5 * durationMinute],
+    [minute, 15, 15 * durationMinute],
+    [minute, 30, 30 * durationMinute],
+    [  hour,  1,      durationHour  ],
+    [  hour,  3,  3 * durationHour  ],
+    [  hour,  6,  6 * durationHour  ],
+    [  hour, 12, 12 * durationHour  ],
+    [   day,  1,      durationDay   ],
+    [   day,  2,  2 * durationDay   ],
+    [  week,  1,      durationWeek  ],
+    [ month,  1,      durationMonth ],
+    [ month,  3,  3 * durationMonth ],
+    [  year,  1,      durationYear  ]
+  ];
+
+  function tickFormat(date) {
+    return (second(date) < date ? formatMillisecond
+        : minute(date) < date ? formatSecond
+        : hour(date) < date ? formatMinute
+        : day(date) < date ? formatHour
+        : month(date) < date ? (week(date) < date ? formatDay : formatWeek)
+        : year(date) < date ? formatMonth
+        : formatYear)(date);
+  }
+
+  function tickInterval(interval, start, stop, step) {
+    if (interval == null) interval = 10;
+
+    // If a desired tick count is specified, pick a reasonable tick interval
+    // based on the extent of the domain and a rough estimate of tick size.
+    // Otherwise, assume interval is already a time interval and use it.
+    if (typeof interval === "number") {
+      var target = Math.abs(stop - start) / interval,
+          i = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.bisector)(function(i) { return i[2]; }).right(tickIntervals, target);
+      if (i === tickIntervals.length) {
+        step = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.tickStep)(start / durationYear, stop / durationYear, interval);
+        interval = year;
+      } else if (i) {
+        i = tickIntervals[target / tickIntervals[i - 1][2] < tickIntervals[i][2] / target ? i - 1 : i];
+        step = i[1];
+        interval = i[0];
+      } else {
+        step = (0,d3_array__WEBPACK_IMPORTED_MODULE_0__.tickStep)(start, stop, interval);
+        interval = millisecond;
+      }
+    }
+
+    return step == null ? interval : interval.every(step);
+  }
+
+  scale.invert = function(y) {
+    return new Date(invert(y));
+  };
+
+  scale.domain = function(_) {
+    return arguments.length ? domain(_array__WEBPACK_IMPORTED_MODULE_1__.map.call(_, number)) : domain().map(date);
+  };
+
+  scale.ticks = function(interval, step) {
+    var d = domain(),
+        t0 = d[0],
+        t1 = d[d.length - 1],
+        r = t1 < t0,
+        t;
+    if (r) t = t0, t0 = t1, t1 = t;
+    t = tickInterval(interval, t0, t1, step);
+    t = t ? t.range(t0, t1 + 1) : []; // inclusive stop
+    return r ? t.reverse() : t;
+  };
+
+  scale.tickFormat = function(count, specifier) {
+    return specifier == null ? tickFormat : format(specifier);
+  };
+
+  scale.nice = function(interval, step) {
+    var d = domain();
+    return (interval = tickInterval(interval, d[0], d[d.length - 1], step))
+        ? domain((0,_nice__WEBPACK_IMPORTED_MODULE_3__.default)(d, interval))
+        : scale;
+  };
+
+  scale.copy = function() {
+    return (0,_continuous__WEBPACK_IMPORTED_MODULE_2__.copy)(scale, calendar(year, month, week, day, hour, minute, second, millisecond, format));
+  };
+
+  return scale;
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return calendar(d3_time__WEBPACK_IMPORTED_MODULE_5__.default, d3_time__WEBPACK_IMPORTED_MODULE_6__.default, d3_time__WEBPACK_IMPORTED_MODULE_7__.sunday, d3_time__WEBPACK_IMPORTED_MODULE_8__.default, d3_time__WEBPACK_IMPORTED_MODULE_9__.default, d3_time__WEBPACK_IMPORTED_MODULE_10__.default, d3_time__WEBPACK_IMPORTED_MODULE_11__.default, d3_time__WEBPACK_IMPORTED_MODULE_12__.default, d3_time_format__WEBPACK_IMPORTED_MODULE_13__.timeFormat).domain([new Date(2000, 0, 1), new Date(2000, 0, 2)]);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/utcTime.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/utcTime.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _time__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./time */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/time.js");
+/* harmony import */ var d3_time_format__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! d3-time-format */ "./node_modules/d3-time-format/src/defaultLocale.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcYear.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcMonth.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcWeek.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcDay.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcHour.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/utcMinute.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/second.js");
+/* harmony import */ var d3_time__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! d3-time */ "./node_modules/d3-time/src/millisecond.js");
+
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return (0,_time__WEBPACK_IMPORTED_MODULE_0__.calendar)(d3_time__WEBPACK_IMPORTED_MODULE_1__.default, d3_time__WEBPACK_IMPORTED_MODULE_2__.default, d3_time__WEBPACK_IMPORTED_MODULE_3__.utcSunday, d3_time__WEBPACK_IMPORTED_MODULE_4__.default, d3_time__WEBPACK_IMPORTED_MODULE_5__.default, d3_time__WEBPACK_IMPORTED_MODULE_6__.default, d3_time__WEBPACK_IMPORTED_MODULE_7__.default, d3_time__WEBPACK_IMPORTED_MODULE_8__.default, d3_time_format__WEBPACK_IMPORTED_MODULE_9__.utcFormat).domain([Date.UTC(2000, 0, 1), Date.UTC(2000, 0, 2)]);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/viridis.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-scale/src/viridis.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "magma": () => (/* binding */ magma),
+/* harmony export */   "inferno": () => (/* binding */ inferno),
+/* harmony export */   "plasma": () => (/* binding */ plasma)
+/* harmony export */ });
+/* harmony import */ var _colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colors */ "./node_modules/d3-svg-legend/node_modules/d3-scale/src/colors.js");
+
+
+function ramp(range) {
+  var n = range.length;
+  return function(t) {
+    return range[Math.max(0, Math.min(n - 1, Math.floor(t * n)))];
+  };
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ramp((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("44015444025645045745055946075a46085c460a5d460b5e470d60470e6147106347116447136548146748166848176948186a481a6c481b6d481c6e481d6f481f70482071482173482374482475482576482677482878482979472a7a472c7a472d7b472e7c472f7d46307e46327e46337f463480453581453781453882443983443a83443b84433d84433e85423f854240864241864142874144874045884046883f47883f48893e49893e4a893e4c8a3d4d8a3d4e8a3c4f8a3c508b3b518b3b528b3a538b3a548c39558c39568c38588c38598c375a8c375b8d365c8d365d8d355e8d355f8d34608d34618d33628d33638d32648e32658e31668e31678e31688e30698e306a8e2f6b8e2f6c8e2e6d8e2e6e8e2e6f8e2d708e2d718e2c718e2c728e2c738e2b748e2b758e2a768e2a778e2a788e29798e297a8e297b8e287c8e287d8e277e8e277f8e27808e26818e26828e26828e25838e25848e25858e24868e24878e23888e23898e238a8d228b8d228c8d228d8d218e8d218f8d21908d21918c20928c20928c20938c1f948c1f958b1f968b1f978b1f988b1f998a1f9a8a1e9b8a1e9c891e9d891f9e891f9f881fa0881fa1881fa1871fa28720a38620a48621a58521a68522a78522a88423a98324aa8325ab8225ac8226ad8127ad8128ae8029af7f2ab07f2cb17e2db27d2eb37c2fb47c31b57b32b67a34b67935b77937b87838b9773aba763bbb753dbc743fbc7340bd7242be7144bf7046c06f48c16e4ac16d4cc26c4ec36b50c46a52c56954c56856c66758c7655ac8645cc8635ec96260ca6063cb5f65cb5e67cc5c69cd5b6ccd5a6ece5870cf5773d05675d05477d1537ad1517cd2507fd34e81d34d84d44b86d54989d5488bd6468ed64590d74393d74195d84098d83e9bd93c9dd93ba0da39a2da37a5db36a8db34aadc32addc30b0dd2fb2dd2db5de2bb8de29bade28bddf26c0df25c2df23c5e021c8e020cae11fcde11dd0e11cd2e21bd5e21ad8e219dae319dde318dfe318e2e418e5e419e7e419eae51aece51befe51cf1e51df4e61ef6e620f8e621fbe723fde725")));
+
+var magma = ramp((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("00000401000501010601010802010902020b02020d03030f03031204041405041606051806051a07061c08071e0907200a08220b09240c09260d0a290e0b2b100b2d110c2f120d31130d34140e36150e38160f3b180f3d19103f1a10421c10441d11471e114920114b21114e22115024125325125527125829115a2a115c2c115f2d11612f116331116533106734106936106b38106c390f6e3b0f703d0f713f0f72400f74420f75440f764510774710784910784a10794c117a4e117b4f127b51127c52137c54137d56147d57157e59157e5a167e5c167f5d177f5f187f601880621980641a80651a80671b80681c816a1c816b1d816d1d816e1e81701f81721f817320817521817621817822817922827b23827c23827e24828025828125818326818426818627818827818928818b29818c29818e2a81902a81912b81932b80942c80962c80982d80992d809b2e7f9c2e7f9e2f7fa02f7fa1307ea3307ea5317ea6317da8327daa337dab337cad347cae347bb0357bb2357bb3367ab5367ab73779b83779ba3878bc3978bd3977bf3a77c03a76c23b75c43c75c53c74c73d73c83e73ca3e72cc3f71cd4071cf4070d0416fd2426fd3436ed5446dd6456cd8456cd9466bdb476adc4869de4968df4a68e04c67e24d66e34e65e44f64e55064e75263e85362e95462ea5661eb5760ec5860ed5a5fee5b5eef5d5ef05f5ef1605df2625df2645cf3655cf4675cf4695cf56b5cf66c5cf66e5cf7705cf7725cf8745cf8765cf9785df9795df97b5dfa7d5efa7f5efa815ffb835ffb8560fb8761fc8961fc8a62fc8c63fc8e64fc9065fd9266fd9467fd9668fd9869fd9a6afd9b6bfe9d6cfe9f6dfea16efea36ffea571fea772fea973feaa74feac76feae77feb078feb27afeb47bfeb67cfeb77efeb97ffebb81febd82febf84fec185fec287fec488fec68afec88cfeca8dfecc8ffecd90fecf92fed194fed395fed597fed799fed89afdda9cfddc9efddea0fde0a1fde2a3fde3a5fde5a7fde7a9fde9aafdebacfcecaefceeb0fcf0b2fcf2b4fcf4b6fcf6b8fcf7b9fcf9bbfcfbbdfcfdbf"));
+
+var inferno = ramp((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("00000401000501010601010802010a02020c02020e03021004031204031405041706041907051b08051d09061f0a07220b07240c08260d08290e092b10092d110a30120a32140b34150b37160b39180c3c190c3e1b0c411c0c431e0c451f0c48210c4a230c4c240c4f260c51280b53290b552b0b572d0b592f0a5b310a5c320a5e340a5f3609613809623909633b09643d09653e0966400a67420a68440a68450a69470b6a490b6a4a0c6b4c0c6b4d0d6c4f0d6c510e6c520e6d540f6d550f6d57106e59106e5a116e5c126e5d126e5f136e61136e62146e64156e65156e67166e69166e6a176e6c186e6d186e6f196e71196e721a6e741a6e751b6e771c6d781c6d7a1d6d7c1d6d7d1e6d7f1e6c801f6c82206c84206b85216b87216b88226a8a226a8c23698d23698f24699025689225689326679526679727669827669a28659b29649d29649f2a63a02a63a22b62a32c61a52c60a62d60a82e5fa92e5eab2f5ead305dae305cb0315bb1325ab3325ab43359b63458b73557b93556ba3655bc3754bd3853bf3952c03a51c13a50c33b4fc43c4ec63d4dc73e4cc83f4bca404acb4149cc4248ce4347cf4446d04545d24644d34743d44842d54a41d74b3fd84c3ed94d3dda4e3cdb503bdd513ade5238df5337e05536e15635e25734e35933e45a31e55c30e65d2fe75e2ee8602de9612bea632aeb6429eb6628ec6726ed6925ee6a24ef6c23ef6e21f06f20f1711ff1731df2741cf3761bf37819f47918f57b17f57d15f67e14f68013f78212f78410f8850ff8870ef8890cf98b0bf98c0af98e09fa9008fa9207fa9407fb9606fb9706fb9906fb9b06fb9d07fc9f07fca108fca309fca50afca60cfca80dfcaa0ffcac11fcae12fcb014fcb216fcb418fbb61afbb81dfbba1ffbbc21fbbe23fac026fac228fac42afac62df9c72ff9c932f9cb35f8cd37f8cf3af7d13df7d340f6d543f6d746f5d949f5db4cf4dd4ff4df53f4e156f3e35af3e55df2e661f2e865f2ea69f1ec6df1ed71f1ef75f1f179f2f27df2f482f3f586f3f68af4f88ef5f992f6fa96f8fb9af9fc9dfafda1fcffa4"));
+
+var plasma = ramp((0,_colors__WEBPACK_IMPORTED_MODULE_0__.default)("0d088710078813078916078a19068c1b068d1d068e20068f2206902406912605912805922a05932c05942e05952f059631059733059735049837049938049a3a049a3c049b3e049c3f049c41049d43039e44039e46039f48039f4903a04b03a14c02a14e02a25002a25102a35302a35502a45601a45801a45901a55b01a55c01a65e01a66001a66100a76300a76400a76600a76700a86900a86a00a86c00a86e00a86f00a87100a87201a87401a87501a87701a87801a87a02a87b02a87d03a87e03a88004a88104a78305a78405a78606a68707a68808a68a09a58b0aa58d0ba58e0ca48f0da4910ea3920fa39410a29511a19613a19814a099159f9a169f9c179e9d189d9e199da01a9ca11b9ba21d9aa31e9aa51f99a62098a72197a82296aa2395ab2494ac2694ad2793ae2892b02991b12a90b22b8fb32c8eb42e8db52f8cb6308bb7318ab83289ba3388bb3488bc3587bd3786be3885bf3984c03a83c13b82c23c81c33d80c43e7fc5407ec6417dc7427cc8437bc9447aca457acb4679cc4778cc4977cd4a76ce4b75cf4c74d04d73d14e72d24f71d35171d45270d5536fd5546ed6556dd7566cd8576bd9586ada5a6ada5b69db5c68dc5d67dd5e66de5f65de6164df6263e06363e16462e26561e26660e3685fe4695ee56a5de56b5de66c5ce76e5be76f5ae87059e97158e97257ea7457eb7556eb7655ec7754ed7953ed7a52ee7b51ef7c51ef7e50f07f4ff0804ef1814df1834cf2844bf3854bf3874af48849f48948f58b47f58c46f68d45f68f44f79044f79143f79342f89441f89540f9973ff9983ef99a3efa9b3dfa9c3cfa9e3bfb9f3afba139fba238fca338fca537fca636fca835fca934fdab33fdac33fdae32fdaf31fdb130fdb22ffdb42ffdb52efeb72dfeb82cfeba2cfebb2bfebd2afebe2afec029fdc229fdc328fdc527fdc627fdc827fdca26fdcb26fccd25fcce25fcd025fcd225fbd324fbd524fbd724fad824fada24f9dc24f9dd25f8df25f8e125f7e225f7e425f6e626f6e826f5e926f5eb27f4ed27f3ee27f3f027f2f227f1f426f1f525f0f724f0f921"));
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/index.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/index.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "creator": () => (/* reexport safe */ _src_creator__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "local": () => (/* reexport safe */ _src_local__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "matcher": () => (/* reexport safe */ _src_matcher__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "mouse": () => (/* reexport safe */ _src_mouse__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "namespace": () => (/* reexport safe */ _src_namespace__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "namespaces": () => (/* reexport safe */ _src_namespaces__WEBPACK_IMPORTED_MODULE_5__.default),
+/* harmony export */   "select": () => (/* reexport safe */ _src_select__WEBPACK_IMPORTED_MODULE_6__.default),
+/* harmony export */   "selectAll": () => (/* reexport safe */ _src_selectAll__WEBPACK_IMPORTED_MODULE_7__.default),
+/* harmony export */   "selection": () => (/* reexport safe */ _src_selection_index__WEBPACK_IMPORTED_MODULE_8__.default),
+/* harmony export */   "selector": () => (/* reexport safe */ _src_selector__WEBPACK_IMPORTED_MODULE_9__.default),
+/* harmony export */   "selectorAll": () => (/* reexport safe */ _src_selectorAll__WEBPACK_IMPORTED_MODULE_10__.default),
+/* harmony export */   "touch": () => (/* reexport safe */ _src_touch__WEBPACK_IMPORTED_MODULE_11__.default),
+/* harmony export */   "touches": () => (/* reexport safe */ _src_touches__WEBPACK_IMPORTED_MODULE_12__.default),
+/* harmony export */   "window": () => (/* reexport safe */ _src_window__WEBPACK_IMPORTED_MODULE_13__.default),
+/* harmony export */   "event": () => (/* reexport safe */ _src_selection_on__WEBPACK_IMPORTED_MODULE_14__.event),
+/* harmony export */   "customEvent": () => (/* reexport safe */ _src_selection_on__WEBPACK_IMPORTED_MODULE_14__.customEvent)
+/* harmony export */ });
+/* harmony import */ var _src_creator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/creator */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/creator.js");
+/* harmony import */ var _src_local__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/local */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/local.js");
+/* harmony import */ var _src_matcher__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/matcher */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/matcher.js");
+/* harmony import */ var _src_mouse__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/mouse */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/mouse.js");
+/* harmony import */ var _src_namespace__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/namespace */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespace.js");
+/* harmony import */ var _src_namespaces__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/namespaces */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespaces.js");
+/* harmony import */ var _src_select__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/select */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/select.js");
+/* harmony import */ var _src_selectAll__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/selectAll */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectAll.js");
+/* harmony import */ var _src_selection_index__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/selection/index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+/* harmony import */ var _src_selector__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./src/selector */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selector.js");
+/* harmony import */ var _src_selectorAll__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./src/selectorAll */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectorAll.js");
+/* harmony import */ var _src_touch__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./src/touch */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/touch.js");
+/* harmony import */ var _src_touches__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./src/touches */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/touches.js");
+/* harmony import */ var _src_window__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./src/window */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/window.js");
+/* harmony import */ var _src_selection_on__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./src/selection/on */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/on.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/constant.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/constant.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(x) {
+  return function() {
+    return x;
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/creator.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/creator.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _namespace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./namespace */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespace.js");
+/* harmony import */ var _namespaces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./namespaces */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespaces.js");
+
+
+
+function creatorInherit(name) {
+  return function() {
+    var document = this.ownerDocument,
+        uri = this.namespaceURI;
+    return uri === _namespaces__WEBPACK_IMPORTED_MODULE_1__.xhtml && document.documentElement.namespaceURI === _namespaces__WEBPACK_IMPORTED_MODULE_1__.xhtml
+        ? document.createElement(name)
+        : document.createElementNS(uri, name);
+  };
+}
+
+function creatorFixed(fullname) {
+  return function() {
+    return this.ownerDocument.createElementNS(fullname.space, fullname.local);
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name) {
+  var fullname = (0,_namespace__WEBPACK_IMPORTED_MODULE_0__.default)(name);
+  return (fullname.local
+      ? creatorFixed
+      : creatorInherit)(fullname);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/local.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/local.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ local)
+/* harmony export */ });
+var nextId = 0;
+
+function local() {
+  return new Local;
+}
+
+function Local() {
+  this._ = "@" + (++nextId).toString(36);
+}
+
+Local.prototype = local.prototype = {
+  constructor: Local,
+  get: function(node) {
+    var id = this._;
+    while (!(id in node)) if (!(node = node.parentNode)) return;
+    return node[id];
+  },
+  set: function(node, value) {
+    return node[this._] = value;
+  },
+  remove: function(node) {
+    return this._ in node && delete node[this._];
+  },
+  toString: function() {
+    return this._;
+  }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/matcher.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/matcher.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var matcher = function(selector) {
+  return function() {
+    return this.matches(selector);
+  };
+};
+
+if (typeof document !== "undefined") {
+  var element = document.documentElement;
+  if (!element.matches) {
+    var vendorMatches = element.webkitMatchesSelector
+        || element.msMatchesSelector
+        || element.mozMatchesSelector
+        || element.oMatchesSelector;
+    matcher = function(selector) {
+      return function() {
+        return vendorMatches.call(this, selector);
+      };
+    };
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (matcher);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/mouse.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/mouse.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _sourceEvent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sourceEvent */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/sourceEvent.js");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./point */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/point.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(node) {
+  var event = (0,_sourceEvent__WEBPACK_IMPORTED_MODULE_0__.default)();
+  if (event.changedTouches) event = event.changedTouches[0];
+  return (0,_point__WEBPACK_IMPORTED_MODULE_1__.default)(node, event);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespace.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespace.js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _namespaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./namespaces */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespaces.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name) {
+  var prefix = name += "", i = prefix.indexOf(":");
+  if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
+  return _namespaces__WEBPACK_IMPORTED_MODULE_0__.default.hasOwnProperty(prefix) ? {space: _namespaces__WEBPACK_IMPORTED_MODULE_0__.default[prefix], local: name} : name;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespaces.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespaces.js ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "xhtml": () => (/* binding */ xhtml),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var xhtml = "http://www.w3.org/1999/xhtml";
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  svg: "http://www.w3.org/2000/svg",
+  xhtml: xhtml,
+  xlink: "http://www.w3.org/1999/xlink",
+  xml: "http://www.w3.org/XML/1998/namespace",
+  xmlns: "http://www.w3.org/2000/xmlns/"
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/point.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/point.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(node, event) {
+  var svg = node.ownerSVGElement || node;
+
+  if (svg.createSVGPoint) {
+    var point = svg.createSVGPoint();
+    point.x = event.clientX, point.y = event.clientY;
+    point = point.matrixTransform(node.getScreenCTM().inverse());
+    return [point.x, point.y];
+  }
+
+  var rect = node.getBoundingClientRect();
+  return [event.clientX - rect.left - node.clientLeft, event.clientY - rect.top - node.clientTop];
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/select.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/select.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _selection_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./selection/index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(selector) {
+  return typeof selector === "string"
+      ? new _selection_index__WEBPACK_IMPORTED_MODULE_0__.Selection([[document.querySelector(selector)]], [document.documentElement])
+      : new _selection_index__WEBPACK_IMPORTED_MODULE_0__.Selection([[selector]], _selection_index__WEBPACK_IMPORTED_MODULE_0__.root);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectAll.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectAll.js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _selection_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./selection/index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(selector) {
+  return typeof selector === "string"
+      ? new _selection_index__WEBPACK_IMPORTED_MODULE_0__.Selection([document.querySelectorAll(selector)], [document.documentElement])
+      : new _selection_index__WEBPACK_IMPORTED_MODULE_0__.Selection([selector == null ? [] : selector], _selection_index__WEBPACK_IMPORTED_MODULE_0__.root);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/append.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/append.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _creator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../creator */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/creator.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name) {
+  var create = typeof name === "function" ? name : (0,_creator__WEBPACK_IMPORTED_MODULE_0__.default)(name);
+  return this.select(function() {
+    return this.appendChild(create.apply(this, arguments));
+  });
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/attr.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/attr.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _namespace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../namespace */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/namespace.js");
+
+
+function attrRemove(name) {
+  return function() {
+    this.removeAttribute(name);
+  };
+}
+
+function attrRemoveNS(fullname) {
+  return function() {
+    this.removeAttributeNS(fullname.space, fullname.local);
+  };
+}
+
+function attrConstant(name, value) {
+  return function() {
+    this.setAttribute(name, value);
+  };
+}
+
+function attrConstantNS(fullname, value) {
+  return function() {
+    this.setAttributeNS(fullname.space, fullname.local, value);
+  };
+}
+
+function attrFunction(name, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.removeAttribute(name);
+    else this.setAttribute(name, v);
+  };
+}
+
+function attrFunctionNS(fullname, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.removeAttributeNS(fullname.space, fullname.local);
+    else this.setAttributeNS(fullname.space, fullname.local, v);
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, value) {
+  var fullname = (0,_namespace__WEBPACK_IMPORTED_MODULE_0__.default)(name);
+
+  if (arguments.length < 2) {
+    var node = this.node();
+    return fullname.local
+        ? node.getAttributeNS(fullname.space, fullname.local)
+        : node.getAttribute(fullname);
+  }
+
+  return this.each((value == null
+      ? (fullname.local ? attrRemoveNS : attrRemove) : (typeof value === "function"
+      ? (fullname.local ? attrFunctionNS : attrFunction)
+      : (fullname.local ? attrConstantNS : attrConstant)))(fullname, value));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/call.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/call.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var callback = arguments[0];
+  arguments[0] = this;
+  callback.apply(null, arguments);
+  return this;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/classed.js":
+/*!***************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/classed.js ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function classArray(string) {
+  return string.trim().split(/^|\s+/);
+}
+
+function classList(node) {
+  return node.classList || new ClassList(node);
+}
+
+function ClassList(node) {
+  this._node = node;
+  this._names = classArray(node.getAttribute("class") || "");
+}
+
+ClassList.prototype = {
+  add: function(name) {
+    var i = this._names.indexOf(name);
+    if (i < 0) {
+      this._names.push(name);
+      this._node.setAttribute("class", this._names.join(" "));
+    }
+  },
+  remove: function(name) {
+    var i = this._names.indexOf(name);
+    if (i >= 0) {
+      this._names.splice(i, 1);
+      this._node.setAttribute("class", this._names.join(" "));
+    }
+  },
+  contains: function(name) {
+    return this._names.indexOf(name) >= 0;
+  }
+};
+
+function classedAdd(node, names) {
+  var list = classList(node), i = -1, n = names.length;
+  while (++i < n) list.add(names[i]);
+}
+
+function classedRemove(node, names) {
+  var list = classList(node), i = -1, n = names.length;
+  while (++i < n) list.remove(names[i]);
+}
+
+function classedTrue(names) {
+  return function() {
+    classedAdd(this, names);
+  };
+}
+
+function classedFalse(names) {
+  return function() {
+    classedRemove(this, names);
+  };
+}
+
+function classedFunction(names, value) {
+  return function() {
+    (value.apply(this, arguments) ? classedAdd : classedRemove)(this, names);
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, value) {
+  var names = classArray(name + "");
+
+  if (arguments.length < 2) {
+    var list = classList(this.node()), i = -1, n = names.length;
+    while (++i < n) if (!list.contains(names[i])) return false;
+    return true;
+  }
+
+  return this.each((typeof value === "function"
+      ? classedFunction : value
+      ? classedTrue
+      : classedFalse)(names, value));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/data.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/data.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+/* harmony import */ var _enter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enter */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/enter.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constant */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/constant.js");
+
+
+
+
+var keyPrefix = "$"; // Protect against keys like “__proto__”.
+
+function bindIndex(parent, group, enter, update, exit, data) {
+  var i = 0,
+      node,
+      groupLength = group.length,
+      dataLength = data.length;
+
+  // Put any non-null nodes that fit into update.
+  // Put any null nodes into enter.
+  // Put any remaining data into enter.
+  for (; i < dataLength; ++i) {
+    if (node = group[i]) {
+      node.__data__ = data[i];
+      update[i] = node;
+    } else {
+      enter[i] = new _enter__WEBPACK_IMPORTED_MODULE_1__.EnterNode(parent, data[i]);
+    }
+  }
+
+  // Put any non-null nodes that don’t fit into exit.
+  for (; i < groupLength; ++i) {
+    if (node = group[i]) {
+      exit[i] = node;
+    }
+  }
+}
+
+function bindKey(parent, group, enter, update, exit, data, key) {
+  var i,
+      node,
+      nodeByKeyValue = {},
+      groupLength = group.length,
+      dataLength = data.length,
+      keyValues = new Array(groupLength),
+      keyValue;
+
+  // Compute the key for each node.
+  // If multiple nodes have the same key, the duplicates are added to exit.
+  for (i = 0; i < groupLength; ++i) {
+    if (node = group[i]) {
+      keyValues[i] = keyValue = keyPrefix + key.call(node, node.__data__, i, group);
+      if (keyValue in nodeByKeyValue) {
+        exit[i] = node;
+      } else {
+        nodeByKeyValue[keyValue] = node;
+      }
+    }
+  }
+
+  // Compute the key for each datum.
+  // If there a node associated with this key, join and add it to update.
+  // If there is not (or the key is a duplicate), add it to enter.
+  for (i = 0; i < dataLength; ++i) {
+    keyValue = keyPrefix + key.call(parent, data[i], i, data);
+    if (node = nodeByKeyValue[keyValue]) {
+      update[i] = node;
+      node.__data__ = data[i];
+      nodeByKeyValue[keyValue] = null;
+    } else {
+      enter[i] = new _enter__WEBPACK_IMPORTED_MODULE_1__.EnterNode(parent, data[i]);
+    }
+  }
+
+  // Add any remaining nodes that were not bound to data to exit.
+  for (i = 0; i < groupLength; ++i) {
+    if ((node = group[i]) && (nodeByKeyValue[keyValues[i]] === node)) {
+      exit[i] = node;
+    }
+  }
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(value, key) {
+  if (!value) {
+    data = new Array(this.size()), j = -1;
+    this.each(function(d) { data[++j] = d; });
+    return data;
+  }
+
+  var bind = key ? bindKey : bindIndex,
+      parents = this._parents,
+      groups = this._groups;
+
+  if (typeof value !== "function") value = (0,_constant__WEBPACK_IMPORTED_MODULE_2__.default)(value);
+
+  for (var m = groups.length, update = new Array(m), enter = new Array(m), exit = new Array(m), j = 0; j < m; ++j) {
+    var parent = parents[j],
+        group = groups[j],
+        groupLength = group.length,
+        data = value.call(parent, parent && parent.__data__, j, parents),
+        dataLength = data.length,
+        enterGroup = enter[j] = new Array(dataLength),
+        updateGroup = update[j] = new Array(dataLength),
+        exitGroup = exit[j] = new Array(groupLength);
+
+    bind(parent, group, enterGroup, updateGroup, exitGroup, data, key);
+
+    // Now connect the enter nodes to their following update node, such that
+    // appendChild can insert the materialized enter node before this node,
+    // rather than at the end of the parent node.
+    for (var i0 = 0, i1 = 0, previous, next; i0 < dataLength; ++i0) {
+      if (previous = enterGroup[i0]) {
+        if (i0 >= i1) i1 = i0 + 1;
+        while (!(next = updateGroup[i1]) && ++i1 < dataLength);
+        previous._next = next || null;
+      }
+    }
+  }
+
+  update = new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(update, parents);
+  update._enter = enter;
+  update._exit = exit;
+  return update;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/datum.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/datum.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(value) {
+  return arguments.length
+      ? this.property("__data__", value)
+      : this.node().__data__;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/dispatch.js":
+/*!****************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/dispatch.js ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../window */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/window.js");
+
+
+function dispatchEvent(node, type, params) {
+  var window = (0,_window__WEBPACK_IMPORTED_MODULE_0__.default)(node),
+      event = window.CustomEvent;
+
+  if (event) {
+    event = new event(type, params);
+  } else {
+    event = window.document.createEvent("Event");
+    if (params) event.initEvent(type, params.bubbles, params.cancelable), event.detail = params.detail;
+    else event.initEvent(type, false, false);
+  }
+
+  node.dispatchEvent(event);
+}
+
+function dispatchConstant(type, params) {
+  return function() {
+    return dispatchEvent(this, type, params);
+  };
+}
+
+function dispatchFunction(type, params) {
+  return function() {
+    return dispatchEvent(this, type, params.apply(this, arguments));
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(type, params) {
+  return this.each((typeof params === "function"
+      ? dispatchFunction
+      : dispatchConstant)(type, params));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/each.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/each.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(callback) {
+
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
+      if (node = group[i]) callback.call(node, node.__data__, i, group);
+    }
+  }
+
+  return this;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/empty.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/empty.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return !this.node();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/enter.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/enter.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "EnterNode": () => (/* binding */ EnterNode)
+/* harmony export */ });
+/* harmony import */ var _sparse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sparse */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sparse.js");
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return new _index__WEBPACK_IMPORTED_MODULE_1__.Selection(this._enter || this._groups.map(_sparse__WEBPACK_IMPORTED_MODULE_0__.default), this._parents);
+}
+
+function EnterNode(parent, datum) {
+  this.ownerDocument = parent.ownerDocument;
+  this.namespaceURI = parent.namespaceURI;
+  this._next = null;
+  this._parent = parent;
+  this.__data__ = datum;
+}
+
+EnterNode.prototype = {
+  constructor: EnterNode,
+  appendChild: function(child) { return this._parent.insertBefore(child, this._next); },
+  insertBefore: function(child, next) { return this._parent.insertBefore(child, next); },
+  querySelector: function(selector) { return this._parent.querySelector(selector); },
+  querySelectorAll: function(selector) { return this._parent.querySelectorAll(selector); }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/exit.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/exit.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _sparse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sparse */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sparse.js");
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return new _index__WEBPACK_IMPORTED_MODULE_1__.Selection(this._exit || this._groups.map(_sparse__WEBPACK_IMPORTED_MODULE_0__.default), this._parents);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/filter.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/filter.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+/* harmony import */ var _matcher__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../matcher */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/matcher.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(match) {
+  if (typeof match !== "function") match = (0,_matcher__WEBPACK_IMPORTED_MODULE_1__.default)(match);
+
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
+      if ((node = group[i]) && match.call(node, node.__data__, i, group)) {
+        subgroup.push(node);
+      }
+    }
+  }
+
+  return new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(subgroups, this._parents);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/html.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/html.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function htmlRemove() {
+  this.innerHTML = "";
+}
+
+function htmlConstant(value) {
+  return function() {
+    this.innerHTML = value;
+  };
+}
+
+function htmlFunction(value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    this.innerHTML = v == null ? "" : v;
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(value) {
+  return arguments.length
+      ? this.each(value == null
+          ? htmlRemove : (typeof value === "function"
+          ? htmlFunction
+          : htmlConstant)(value))
+      : this.node().innerHTML;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "root": () => (/* binding */ root),
+/* harmony export */   "Selection": () => (/* binding */ Selection),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _select__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./select */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/select.js");
+/* harmony import */ var _selectAll__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./selectAll */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/selectAll.js");
+/* harmony import */ var _filter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./filter */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/filter.js");
+/* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./data */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/data.js");
+/* harmony import */ var _enter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enter */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/enter.js");
+/* harmony import */ var _exit__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./exit */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/exit.js");
+/* harmony import */ var _merge__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./merge */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/merge.js");
+/* harmony import */ var _order__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./order */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/order.js");
+/* harmony import */ var _sort__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./sort */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sort.js");
+/* harmony import */ var _call__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./call */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/call.js");
+/* harmony import */ var _nodes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./nodes */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/nodes.js");
+/* harmony import */ var _node__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./node */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/node.js");
+/* harmony import */ var _size__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./size */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/size.js");
+/* harmony import */ var _empty__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./empty */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/empty.js");
+/* harmony import */ var _each__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./each */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/each.js");
+/* harmony import */ var _attr__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./attr */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/attr.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./style */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/style.js");
+/* harmony import */ var _property__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./property */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/property.js");
+/* harmony import */ var _classed__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./classed */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/classed.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./text */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/text.js");
+/* harmony import */ var _html__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./html */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/html.js");
+/* harmony import */ var _raise__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./raise */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/raise.js");
+/* harmony import */ var _lower__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./lower */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/lower.js");
+/* harmony import */ var _append__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./append */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/append.js");
+/* harmony import */ var _insert__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./insert */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/insert.js");
+/* harmony import */ var _remove__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./remove */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/remove.js");
+/* harmony import */ var _datum__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./datum */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/datum.js");
+/* harmony import */ var _on__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./on */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/on.js");
+/* harmony import */ var _dispatch__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./dispatch */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/dispatch.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var root = [null];
+
+function Selection(groups, parents) {
+  this._groups = groups;
+  this._parents = parents;
+}
+
+function selection() {
+  return new Selection([[document.documentElement]], root);
+}
+
+Selection.prototype = selection.prototype = {
+  constructor: Selection,
+  select: _select__WEBPACK_IMPORTED_MODULE_0__.default,
+  selectAll: _selectAll__WEBPACK_IMPORTED_MODULE_1__.default,
+  filter: _filter__WEBPACK_IMPORTED_MODULE_2__.default,
+  data: _data__WEBPACK_IMPORTED_MODULE_3__.default,
+  enter: _enter__WEBPACK_IMPORTED_MODULE_4__.default,
+  exit: _exit__WEBPACK_IMPORTED_MODULE_5__.default,
+  merge: _merge__WEBPACK_IMPORTED_MODULE_6__.default,
+  order: _order__WEBPACK_IMPORTED_MODULE_7__.default,
+  sort: _sort__WEBPACK_IMPORTED_MODULE_8__.default,
+  call: _call__WEBPACK_IMPORTED_MODULE_9__.default,
+  nodes: _nodes__WEBPACK_IMPORTED_MODULE_10__.default,
+  node: _node__WEBPACK_IMPORTED_MODULE_11__.default,
+  size: _size__WEBPACK_IMPORTED_MODULE_12__.default,
+  empty: _empty__WEBPACK_IMPORTED_MODULE_13__.default,
+  each: _each__WEBPACK_IMPORTED_MODULE_14__.default,
+  attr: _attr__WEBPACK_IMPORTED_MODULE_15__.default,
+  style: _style__WEBPACK_IMPORTED_MODULE_16__.default,
+  property: _property__WEBPACK_IMPORTED_MODULE_17__.default,
+  classed: _classed__WEBPACK_IMPORTED_MODULE_18__.default,
+  text: _text__WEBPACK_IMPORTED_MODULE_19__.default,
+  html: _html__WEBPACK_IMPORTED_MODULE_20__.default,
+  raise: _raise__WEBPACK_IMPORTED_MODULE_21__.default,
+  lower: _lower__WEBPACK_IMPORTED_MODULE_22__.default,
+  append: _append__WEBPACK_IMPORTED_MODULE_23__.default,
+  insert: _insert__WEBPACK_IMPORTED_MODULE_24__.default,
+  remove: _remove__WEBPACK_IMPORTED_MODULE_25__.default,
+  datum: _datum__WEBPACK_IMPORTED_MODULE_26__.default,
+  on: _on__WEBPACK_IMPORTED_MODULE_27__.default,
+  dispatch: _dispatch__WEBPACK_IMPORTED_MODULE_28__.default
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (selection);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/insert.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/insert.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _creator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../creator */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/creator.js");
+/* harmony import */ var _selector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../selector */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selector.js");
+
+
+
+function constantNull() {
+  return null;
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, before) {
+  var create = typeof name === "function" ? name : (0,_creator__WEBPACK_IMPORTED_MODULE_0__.default)(name),
+      select = before == null ? constantNull : typeof before === "function" ? before : (0,_selector__WEBPACK_IMPORTED_MODULE_1__.default)(before);
+  return this.select(function() {
+    return this.insertBefore(create.apply(this, arguments), select.apply(this, arguments) || null);
+  });
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/lower.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/lower.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function lower() {
+  if (this.previousSibling) this.parentNode.insertBefore(this, this.parentNode.firstChild);
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return this.each(lower);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/merge.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/merge.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(selection) {
+
+  for (var groups0 = this._groups, groups1 = selection._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
+    for (var group0 = groups0[j], group1 = groups1[j], n = group0.length, merge = merges[j] = new Array(n), node, i = 0; i < n; ++i) {
+      if (node = group0[i] || group1[i]) {
+        merge[i] = node;
+      }
+    }
+  }
+
+  for (; j < m0; ++j) {
+    merges[j] = groups0[j];
+  }
+
+  return new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(merges, this._parents);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/node.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/node.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
+      var node = group[i];
+      if (node) return node;
+    }
+  }
+
+  return null;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/nodes.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/nodes.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var nodes = new Array(this.size()), i = -1;
+  this.each(function() { nodes[++i] = this; });
+  return nodes;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/on.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/on.js ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "event": () => (/* binding */ event),
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "customEvent": () => (/* binding */ customEvent)
+/* harmony export */ });
+var filterEvents = {};
+
+var event = null;
+
+if (typeof document !== "undefined") {
+  var element = document.documentElement;
+  if (!("onmouseenter" in element)) {
+    filterEvents = {mouseenter: "mouseover", mouseleave: "mouseout"};
+  }
+}
+
+function filterContextListener(listener, index, group) {
+  listener = contextListener(listener, index, group);
+  return function(event) {
+    var related = event.relatedTarget;
+    if (!related || (related !== this && !(related.compareDocumentPosition(this) & 8))) {
+      listener.call(this, event);
+    }
+  };
+}
+
+function contextListener(listener, index, group) {
+  return function(event1) {
+    var event0 = event; // Events can be reentrant (e.g., focus).
+    event = event1;
+    try {
+      listener.call(this, this.__data__, index, group);
+    } finally {
+      event = event0;
+    }
+  };
+}
+
+function parseTypenames(typenames) {
+  return typenames.trim().split(/^|\s+/).map(function(t) {
+    var name = "", i = t.indexOf(".");
+    if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i);
+    return {type: t, name: name};
+  });
+}
+
+function onRemove(typename) {
+  return function() {
+    var on = this.__on;
+    if (!on) return;
+    for (var j = 0, i = -1, m = on.length, o; j < m; ++j) {
+      if (o = on[j], (!typename.type || o.type === typename.type) && o.name === typename.name) {
+        this.removeEventListener(o.type, o.listener, o.capture);
+      } else {
+        on[++i] = o;
+      }
+    }
+    if (++i) on.length = i;
+    else delete this.__on;
+  };
+}
+
+function onAdd(typename, value, capture) {
+  var wrap = filterEvents.hasOwnProperty(typename.type) ? filterContextListener : contextListener;
+  return function(d, i, group) {
+    var on = this.__on, o, listener = wrap(value, i, group);
+    if (on) for (var j = 0, m = on.length; j < m; ++j) {
+      if ((o = on[j]).type === typename.type && o.name === typename.name) {
+        this.removeEventListener(o.type, o.listener, o.capture);
+        this.addEventListener(o.type, o.listener = listener, o.capture = capture);
+        o.value = value;
+        return;
+      }
+    }
+    this.addEventListener(typename.type, listener, capture);
+    o = {type: typename.type, name: typename.name, value: value, listener: listener, capture: capture};
+    if (!on) this.__on = [o];
+    else on.push(o);
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(typename, value, capture) {
+  var typenames = parseTypenames(typename + ""), i, n = typenames.length, t;
+
+  if (arguments.length < 2) {
+    var on = this.node().__on;
+    if (on) for (var j = 0, m = on.length, o; j < m; ++j) {
+      for (i = 0, o = on[j]; i < n; ++i) {
+        if ((t = typenames[i]).type === o.type && t.name === o.name) {
+          return o.value;
+        }
+      }
+    }
+    return;
+  }
+
+  on = value ? onAdd : onRemove;
+  if (capture == null) capture = false;
+  for (i = 0; i < n; ++i) this.each(on(typenames[i], value, capture));
+  return this;
+}
+
+function customEvent(event1, listener, that, args) {
+  var event0 = event;
+  event1.sourceEvent = event;
+  event = event1;
+  try {
+    return listener.apply(that, args);
+  } finally {
+    event = event0;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/order.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/order.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+
+  for (var groups = this._groups, j = -1, m = groups.length; ++j < m;) {
+    for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0;) {
+      if (node = group[i]) {
+        if (next && next !== node.nextSibling) next.parentNode.insertBefore(node, next);
+        next = node;
+      }
+    }
+  }
+
+  return this;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/property.js":
+/*!****************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/property.js ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function propertyRemove(name) {
+  return function() {
+    delete this[name];
+  };
+}
+
+function propertyConstant(name, value) {
+  return function() {
+    this[name] = value;
+  };
+}
+
+function propertyFunction(name, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) delete this[name];
+    else this[name] = v;
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, value) {
+  return arguments.length > 1
+      ? this.each((value == null
+          ? propertyRemove : typeof value === "function"
+          ? propertyFunction
+          : propertyConstant)(name, value))
+      : this.node()[name];
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/raise.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/raise.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function raise() {
+  if (this.nextSibling) this.parentNode.appendChild(this);
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return this.each(raise);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/remove.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/remove.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function remove() {
+  var parent = this.parentNode;
+  if (parent) parent.removeChild(this);
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  return this.each(remove);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/select.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/select.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+/* harmony import */ var _selector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../selector */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selector.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(select) {
+  if (typeof select !== "function") select = (0,_selector__WEBPACK_IMPORTED_MODULE_1__.default)(select);
+
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
+      if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
+        if ("__data__" in node) subnode.__data__ = node.__data__;
+        subgroup[i] = subnode;
+      }
+    }
+  }
+
+  return new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(subgroups, this._parents);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/selectAll.js":
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/selectAll.js ***!
+  \*****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+/* harmony import */ var _selectorAll__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../selectorAll */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectorAll.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(select) {
+  if (typeof select !== "function") select = (0,_selectorAll__WEBPACK_IMPORTED_MODULE_1__.default)(select);
+
+  for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
+      if (node = group[i]) {
+        subgroups.push(select.call(node, node.__data__, i, group));
+        parents.push(node);
+      }
+    }
+  }
+
+  return new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(subgroups, parents);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/size.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/size.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var size = 0;
+  this.each(function() { ++size; });
+  return size;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sort.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sort.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/index.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(compare) {
+  if (!compare) compare = ascending;
+
+  function compareNode(a, b) {
+    return a && b ? compare(a.__data__, b.__data__) : !a - !b;
+  }
+
+  for (var groups = this._groups, m = groups.length, sortgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n = group.length, sortgroup = sortgroups[j] = new Array(n), node, i = 0; i < n; ++i) {
+      if (node = group[i]) {
+        sortgroup[i] = node;
+      }
+    }
+    sortgroup.sort(compareNode);
+  }
+
+  return new _index__WEBPACK_IMPORTED_MODULE_0__.Selection(sortgroups, this._parents).order();
+}
+
+function ascending(a, b) {
+  return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sparse.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/sparse.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(update) {
+  return new Array(update.length);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/style.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/style.js ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../window */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/window.js");
+
+
+function styleRemove(name) {
+  return function() {
+    this.style.removeProperty(name);
+  };
+}
+
+function styleConstant(name, value, priority) {
+  return function() {
+    this.style.setProperty(name, value, priority);
+  };
+}
+
+function styleFunction(name, value, priority) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (v == null) this.style.removeProperty(name);
+    else this.style.setProperty(name, v, priority);
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(name, value, priority) {
+  var node;
+  return arguments.length > 1
+      ? this.each((value == null
+            ? styleRemove : typeof value === "function"
+            ? styleFunction
+            : styleConstant)(name, value, priority == null ? "" : priority))
+      : (0,_window__WEBPACK_IMPORTED_MODULE_0__.default)(node = this.node())
+          .getComputedStyle(node, null)
+          .getPropertyValue(name);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/text.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/text.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function textRemove() {
+  this.textContent = "";
+}
+
+function textConstant(value) {
+  return function() {
+    this.textContent = value;
+  };
+}
+
+function textFunction(value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    this.textContent = v == null ? "" : v;
+  };
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(value) {
+  return arguments.length
+      ? this.each(value == null
+          ? textRemove : (typeof value === "function"
+          ? textFunction
+          : textConstant)(value))
+      : this.node().textContent;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selector.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selector.js ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function none() {}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(selector) {
+  return selector == null ? none : function() {
+    return this.querySelector(selector);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectorAll.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/selectorAll.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function empty() {
+  return [];
+}
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(selector) {
+  return selector == null ? empty : function() {
+    return this.querySelectorAll(selector);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/sourceEvent.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/sourceEvent.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _selection_on__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./selection/on */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/selection/on.js");
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
+  var current = _selection_on__WEBPACK_IMPORTED_MODULE_0__.event, source;
+  while (source = current.sourceEvent) current = source;
+  return current;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/touch.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/touch.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _sourceEvent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sourceEvent */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/sourceEvent.js");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./point */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/point.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(node, touches, identifier) {
+  if (arguments.length < 3) identifier = touches, touches = (0,_sourceEvent__WEBPACK_IMPORTED_MODULE_0__.default)().changedTouches;
+
+  for (var i = 0, n = touches ? touches.length : 0, touch; i < n; ++i) {
+    if ((touch = touches[i]).identifier === identifier) {
+      return (0,_point__WEBPACK_IMPORTED_MODULE_1__.default)(node, touch);
+    }
+  }
+
+  return null;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/touches.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/touches.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _sourceEvent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sourceEvent */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/sourceEvent.js");
+/* harmony import */ var _point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./point */ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/point.js");
+
+
+
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(node, touches) {
+  if (touches == null) touches = (0,_sourceEvent__WEBPACK_IMPORTED_MODULE_0__.default)().touches;
+
+  for (var i = 0, n = touches ? touches.length : 0, points = new Array(n); i < n; ++i) {
+    points[i] = (0,_point__WEBPACK_IMPORTED_MODULE_1__.default)(node, touches[i]);
+  }
+
+  return points;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-svg-legend/node_modules/d3-selection/src/window.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/d3-svg-legend/node_modules/d3-selection/src/window.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(node) {
+  return (node.ownerDocument && node.ownerDocument.defaultView) // node is a Node
+      || (node.document && node) // node is a Window
+      || node.defaultView; // node is a Document
+}
 
 
 /***/ }),
@@ -70964,6 +77496,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=style&index=0&lang=css&":
 /*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=style&index=0&lang=css& ***!
@@ -71426,6 +77988,47 @@ component.options.__file = "resources/js/components/image-gallery.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/india-map.vue":
+/*!***********************************************!*\
+  !*** ./resources/js/components/india-map.vue ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./india-map.vue?vue&type=template&id=1e05f70b& */ "./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&");
+/* harmony import */ var _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./india-map.vue?vue&type=script&lang=js& */ "./resources/js/components/india-map.vue?vue&type=script&lang=js&");
+/* harmony import */ var _india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./india-map.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+;
+
+
+/* normalize component */
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
+  _india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.render,
+  _india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/india-map.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/result.vue":
 /*!********************************************!*\
   !*** ./resources/js/components/result.vue ***!
@@ -71556,6 +78159,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/india-map.vue?vue&type=script&lang=js&":
+/*!************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=script&lang=js& ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/components/result.vue?vue&type=script&lang=js&":
 /*!*********************************************************************!*\
   !*** ./resources/js/components/result.vue?vue&type=script&lang=js& ***!
@@ -71623,6 +78242,19 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_image_gallery_vue_vue_type_style_index_0_id_06dce4a5_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./image-gallery.vue?vue&type=style&index=0&id=06dce4a5&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/image-gallery.vue?vue&type=style&index=0&id=06dce4a5&scoped=true&lang=css&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css& ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=style&index=0&lang=css&");
 
 
 /***/ }),
@@ -71700,6 +78332,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_image_gallery_vue_vue_type_template_id_06dce4a5_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_image_gallery_vue_vue_type_template_id_06dce4a5_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./image-gallery.vue?vue&type=template&id=06dce4a5&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/image-gallery.vue?vue&type=template&id=06dce4a5&scoped=true&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b& ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_india_map_vue_vue_type_template_id_1e05f70b___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./india-map.vue?vue&type=template&id=1e05f70b& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&");
 
 
 /***/ }),
@@ -71903,8 +78552,8 @@ var render = function() {
   return _c(
     "div",
     { attrs: { id: "gallery" } },
-    _vm._l(_vm.observations, function(o) {
-      return _c("div", [
+    _vm._l(_vm.observations, function(o, k) {
+      return _c("div", { key: k }, [
         _c("div", { staticClass: "observation-img" }, [
           _c("div", { staticClass: "gallery-item-overlay" }),
           _vm._v(" "),
@@ -72021,6 +78670,38 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b&":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/india-map.vue?vue&type=template&id=1e05f70b& ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [_c("div", { attrs: { id: "map-container" } })])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=template&id=3ccf78b0&":
 /*!******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/result.vue?vue&type=template&id=3ccf78b0& ***!
@@ -72067,7 +78748,23 @@ var render = function() {
                 },
                 [
                   tab.title === "Location"
-                    ? _c("div", { attrs: { id: "map-container" } })
+                    ? _c(
+                        "div",
+                        { attrs: { id: "map-container" } },
+                        [
+                          _c("india-map", {
+                            attrs: {
+                              map_data: _vm.mapData,
+                              selected_state: _vm.selected_state,
+                              selected_region: _vm.selected_region,
+                              popup: _vm.tooltip,
+                              stateStats: _vm.stateStats
+                            },
+                            on: { stateSelected: _vm.selectState }
+                          })
+                        ],
+                        1
+                      )
                     : _vm._e(),
                   _vm._v(" "),
                   tab.title === "Table"
@@ -85215,7 +91912,7 @@ Vue.compile = compileToFunctions;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.2339,26.6825],[95.2104,26.7312],[95.2311,26.7651],[95.1815,26.8613],[95.2303,26.8837],[95.1915,26.9849],[95.1946,27.0313],[95.2463,27.0239],[95.3167,27.0829],[95.3648,27.1083],[95.3979,27.1085],[95.4581,27.1381],[95.4558,27.2037],[95.5073,27.2595],[95.5453,27.26],[95.5875,27.223],[95.6315,27.2296],[95.742,27.2668],[95.8517,27.2869],[95.8693,27.2601],[95.9583,27.3102],[95.9891,27.3566],[96.0178,27.3695],[95.974,27.4218],[95.9412,27.4374],[95.8422,27.4269],[95.8791,27.4968],[95.8757,27.5466],[95.8304,27.5632],[95.7924,27.598],[95.7902,27.6448],[95.7703,27.658],[95.7623,27.7151],[95.7759,27.7537],[95.8377,27.8242],[95.8703,27.8328],[95.9043,27.8619],[95.9703,27.9629],[95.8238,27.9716],[95.6052,27.9547],[95.5426,27.9082],[95.5222,27.8831],[95.3795,27.8393],[95.3087,27.8681],[94.8523,27.7277],[94.8478,27.7057],[94.7969,27.6957],[94.7542,27.6606],[94.7167,27.6583],[94.5867,27.6182],[94.4989,27.5723],[94.4513,27.5719],[94.4184,27.5976],[94.3698,27.5749],[94.2764,27.5904],[94.237,27.6325],[94.2239,27.5766],[94.2466,27.5696],[94.2682,27.5209],[94.1645,27.4769],[94.1593,27.4617],[94.0895,27.4071],[94.068,27.3717],[93.9912,27.3284],[93.8993,27.2392],[93.8372,27.1717],[93.8053,27.1482],[93.8356,27.0744],[93.7149,27.0143],[93.6574,26.9664],[93.5866,26.9506],[93.5247,26.9486],[93.489,26.9363],[93.4487,26.9509],[93.324,26.9602],[93.2616,26.9536],[93.0214,26.9136],[92.9171,26.963],[92.8838,27.0005],[92.7632,27.0274],[92.7228,27.0183],[92.6774,27.0318],[92.6447,26.9868],[92.589,26.9617],[92.4474,26.9589],[92.3983,26.9248],[92.3631,26.9346],[92.3026,26.9227],[92.1947,26.8901],[92.1121,26.8919],[92.1174,26.9317],[92.1038,27.007],[92.0285,27.078],[92.0372,27.1378],[92.0261,27.1712],[92.0571,27.189],[92.0705,27.2231],[92.071,27.2768],[92.1025,27.2685],[92.1183,27.2922],[92.0599,27.3267],[92.0472,27.3788],[92.0557,27.3996],[92.0252,27.4412],[92.0201,27.4793],[91.9408,27.4603],[91.8507,27.4823],[91.8301,27.4687],[91.7754,27.4643],[91.7155,27.4734],[91.6919,27.5026],[91.655,27.4828],[91.5964,27.5394],[91.5641,27.5841],[91.5599,27.6334],[91.594,27.6832],[91.626,27.7059],[91.6305,27.8008],[91.6013,27.8209],[91.5679,27.8154],[91.5723,27.8608],[91.6718,27.8567],[91.6965,27.8221],[91.7485,27.8033],[91.8301,27.8075],[91.8625,27.7368],[91.8806,27.7217],[91.947,27.7285],[91.9858,27.7698],[92.0572,27.7589],[92.158,27.8368],[92.2022,27.8568],[92.257,27.8619],[92.309,27.7788],[92.3814,27.7946],[92.4154,27.8226],[92.4453,27.8003],[92.494,27.8363],[92.5621,27.8205],[92.6065,27.877],[92.6706,27.8996],[92.741,27.9889],[92.7112,28.0328],[92.6647,28.0624],[92.682,28.1176],[92.7849,28.1834],[92.8212,28.197],[92.8298,28.1711],[92.897,28.2042],[92.9148,28.2346],[92.9664,28.2614],[93.0021,28.2303],[93.0355,28.2627],[93.0238,28.2995],[93.0972,28.3066],[93.1266,28.3263],[93.1955,28.3175],[93.2245,28.3405],[93.2334,28.4002],[93.1923,28.4256],[93.2311,28.4776],[93.2779,28.5045],[93.3074,28.566],[93.3021,28.5993],[93.3346,28.6335],[93.4141,28.6526],[93.4479,28.6758],[93.4764,28.6533],[93.4977,28.6837],[93.5266,28.6609],[93.609,28.6555],[93.7335,28.6888],[93.7771,28.668],[93.8459,28.7068],[93.9213,28.6697],[93.9673,28.7226],[93.9704,28.7508],[94.0033,28.7749],[93.9872,28.7978],[93.997,28.8409],[94.0321,28.853],[94.081,28.9054],[94.1573,28.9543],[94.1873,29.0388],[94.2171,29.0838],[94.2902,29.148],[94.3526,29.15],[94.3748,29.19],[94.4337,29.2267],[94.4969,29.2164],[94.5603,29.2286],[94.5764,29.275],[94.6133,29.301],[94.6308,29.3485],[94.7135,29.3041],[94.7688,29.2523],[94.8,29.2094],[94.8,29.1639],[94.8738,29.1836],[94.9207,29.1615],[95.1,29.1427],[95.1151,29.12],[95.179,29.1073],[95.2521,29.1085],[95.2514,29.0671],[95.304,29.0614],[95.4111,29.0324],[95.4553,29.0352],[95.4902,29.088],[95.5047,29.1414],[95.5479,29.1269],[95.5464,29.2141],[95.5871,29.2164],[95.6001,29.2604],[95.6326,29.2475],[95.7285,29.3009],[95.7791,29.3549],[95.7925,29.3364],[95.8417,29.3522],[95.8823,29.39],[95.9585,29.381],[96.0571,29.4568],[96.0821,29.4617],[96.1512,29.3973],[96.1868,29.3424],[96.184,29.307],[96.2349,29.241],[96.2936,29.2332],[96.3133,29.2565],[96.3757,29.2811],[96.3934,29.2538],[96.3467,29.1681],[96.2607,29.1574],[96.2179,29.1353],[96.2007,29.1031],[96.1699,29.0848],[96.1507,29.0503],[96.1849,28.985],[96.1452,28.9343],[96.1664,28.9026],[96.228,28.926],[96.2937,28.9954],[96.3467,29.029],[96.4357,29.0342],[96.5251,29.0758],[96.4772,28.9904],[96.4872,28.9616],[96.5209,28.9614],[96.5382,28.917],[96.5369,28.88],[96.6151,28.7741],[96.5849,28.717],[96.5213,28.7045],[96.4695,28.6801],[96.494,28.6391],[96.3995,28.5577],[96.3534,28.556],[96.3231,28.5257],[96.3596,28.505],[96.3655,28.4747],[96.2645,28.4123],[96.3183,28.3812],[96.3693,28.3893],[96.3976,28.3393],[96.4211,28.3457],[96.4303,28.3865],[96.4566,28.414],[96.5085,28.413],[96.5779,28.4578],[96.6628,28.4603],[96.7555,28.4096],[96.7722,28.3681],[96.85,28.3621],[96.8964,28.3796],[96.9235,28.3386],[96.994,28.3095],[97.0493,28.3513],[97.0901,28.3629],[97.1234,28.3493],[97.1666,28.2951],[97.2214,28.2926],[97.2384,28.2677],[97.2791,28.2687],[97.3715,28.2176],[97.3688,28.1924],[97.3275,28.1549],[97.3357,28.1114],[97.3068,28.0851],[97.3083,28.0617],[97.3625,28.0597],[97.3949,28.0255],[97.3744,27.9775],[97.3747,27.9091],[97.3609,27.8762],[97.3049,27.9213],[97.2527,27.901],[97.1565,27.8141],[97.1335,27.8066],[97.0885,27.7351],[97.0615,27.7486],[97.0225,27.7421],[96.9773,27.6637],[96.9351,27.6617],[96.903,27.614],[96.9067,27.5443],[96.9265,27.527],[96.903,27.4536],[96.9605,27.404],[96.9623,27.3738],[96.9984,27.3188],[97.0349,27.2951],[97.086,27.2396],[97.0901,27.2147],[97.1636,27.1422],[97.1382,27.0915],[97.1191,27.1043],[97.0624,27.0988],[97.0309,27.1302],[96.964,27.1613],[96.9013,27.1686],[96.8568,27.1925],[96.8856,27.2269],[96.8843,27.2602],[96.8511,27.2698],[96.7967,27.3458],[96.6057,27.3658],[96.5955,27.3405],[96.5076,27.299],[96.4214,27.3014],[96.407,27.2876],[96.3337,27.286],[96.3074,27.2942],[96.2728,27.2729],[96.2308,27.2767],[96.0889,27.2201],[96.0223,27.1797],[96.0157,27.1529],[95.9687,27.1001],[95.9457,27.0514],[95.8755,27.0149],[95.8023,27.0151],[95.7552,26.954],[95.7449,26.898],[95.7231,26.8815],[95.6668,26.9027],[95.6461,26.8845],[95.5998,26.8113],[95.5432,26.8354],[95.5081,26.8095],[95.4826,26.7468],[95.4593,26.7429],[95.4306,26.7],[95.3445,26.6753],[95.304,26.651],[95.2339,26.6825]]]},"properties":{"ST_NM":"Arunachal Pradesh","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.1946,27.0313],[95.1083,26.977],[95.0809,26.9502],[94.982,26.9134],[94.9552,26.9401],[94.8905,26.9296],[94.8175,26.8478],[94.7997,26.7999],[94.7681,26.7869],[94.6937,26.733],[94.6245,26.7155],[94.5903,26.6967],[94.5392,26.7063],[94.4597,26.6369],[94.4042,26.6119],[94.4052,26.5488],[94.3743,26.5075],[94.3208,26.4756],[94.2933,26.4712],[94.2812,26.5487],[94.2562,26.5413],[94.2365,26.5062],[94.1851,26.4585],[94.1718,26.4159],[94.1715,26.3381],[94.1197,26.3289],[94.0474,26.2491],[94.0318,26.1975],[94.0077,26.1826],[93.9889,26.1334],[93.9971,26.107],[93.9624,26.0366],[93.9541,25.9694],[93.9786,25.9168],[93.9159,25.8838],[93.876,25.8426],[93.8522,25.8583],[93.79,25.8113],[93.7776,25.8507],[93.796,25.9035],[93.777,25.958],[93.735,25.9237],[93.6814,25.9039],[93.702,25.8516],[93.6775,25.8279],[93.6391,25.8163],[93.6177,25.7766],[93.5423,25.7308],[93.5311,25.6927],[93.4965,25.6546],[93.4248,25.6304],[93.3584,25.5574],[93.3529,25.5281],[93.3844,25.4695],[93.4155,25.4451],[93.4553,25.4345],[93.4729,25.3861],[93.4515,25.3541],[93.4539,25.3249],[93.4704,25.3052],[93.4206,25.2777],[93.3864,25.2428],[93.354,25.1875],[93.3323,25.0939],[93.2993,25.0495],[93.266,25.0442],[93.2472,25.0181],[93.2622,24.9688],[93.2367,24.9373],[93.2488,24.9156],[93.2261,24.8738],[93.1953,24.8444],[93.1914,24.8045],[93.1541,24.7888],[93.1347,24.8107],[93.105,24.7917],[93.1071,24.7406],[93.0789,24.7047],[93.0891,24.5735],[93.0491,24.5425],[93.0327,24.4936],[93.0455,24.4762],[93.0335,24.4271],[93.0087,24.4118],[92.9339,24.3924],[92.907,24.4114],[92.8617,24.3987],[92.8451,24.3798],[92.8042,24.4176],[92.7637,24.5211],[92.6897,24.3537],[92.6491,24.3287],[92.6225,24.3316],[92.6122,24.2536],[92.5506,24.2471],[92.5243,24.1716],[92.4607,24.138],[92.4368,24.1529],[92.4188,24.1928],[92.4224,24.255],[92.2923,24.2505],[92.206,24.2385],[92.2188,24.2857],[92.2598,24.3585],[92.2465,24.4425],[92.23,24.4523],[92.2117,24.5045],[92.2312,24.547],[92.2544,24.6781],[92.2949,24.7329],[92.2885,24.7883],[92.2682,24.8299],[92.2422,24.8404],[92.2469,24.9085],[92.3503,24.8893],[92.3869,24.8514],[92.4758,24.8675],[92.4967,24.9022],[92.4837,24.9307],[92.4514,24.9385],[92.4184,24.9665],[92.4252,25.0297],[92.4597,25.0371],[92.4809,25.1087],[92.5388,25.1006],[92.5248,25.1353],[92.588,25.1289],[92.6278,25.1375],[92.6583,25.172],[92.6938,25.1793],[92.7428,25.2068],[92.7748,25.1997],[92.7683,25.2667],[92.7918,25.2844],[92.782,25.3328],[92.6362,25.4267],[92.6088,25.4136],[92.6004,25.4649],[92.5736,25.4906],[92.6428,25.5349],[92.6227,25.5658],[92.585,25.5506],[92.5566,25.5714],[92.5526,25.615],[92.4974,25.6241],[92.4702,25.6752],[92.4403,25.6922],[92.4441,25.7199],[92.373,25.7503],[92.3642,25.7375],[92.2643,25.7092],[92.225,25.7162],[92.1638,25.6671],[92.1547,25.7063],[92.1627,25.744],[92.1477,25.773],[92.151,25.8158],[92.1772,25.8728],[92.214,25.8948],[92.1524,25.9444],[92.1641,25.9704],[92.2627,26.0327],[92.2582,26.0636],[92.1691,26.0776],[92.1319,26.0444],[92.1078,26.0508],[92.0637,26.0341],[91.9885,26.0376],[91.9337,26.0104],[91.8749,26.0379],[91.8791,26.0981],[91.8212,26.1176],[91.7253,26.0463],[91.72,25.9537],[91.6705,25.9042],[91.621,25.9324],[91.6356,25.9617],[91.6347,26.0129],[91.5708,26.0259],[91.5079,25.9089],[91.4694,25.8593],[91.3653,25.8401],[91.3356,25.8408],[91.2745,25.7505],[91.2224,25.7227],[91.1782,25.7774],[91.2034,25.8442],[91.1475,25.8506],[91.1196,25.8328],[91.0669,25.8258],[91.0305,25.8859],[90.9659,25.8885],[90.9594,25.9313],[90.9142,25.9258],[90.8748,25.9426],[90.8091,25.9475],[90.778,25.9087],[90.7138,25.9518],[90.6285,25.9177],[90.6241,25.9393],[90.5767,25.9368],[90.5149,25.8962],[90.5349,25.9497],[90.4761,26.0097],[90.4302,25.989],[90.3997,26.0126],[90.3497,26.0042],[90.3274,25.9745],[90.1867,25.9475],[90.177,25.9589],[90.113,25.9543],[90.0862,25.9196],[90.0245,25.8956],[90.0035,25.8393],[89.951,25.8212],[89.955,25.7676],[89.9266,25.7385],[89.8956,25.7316],[89.9444,25.6793],[89.9531,25.6537],[90.0202,25.6076],[89.9372,25.5647],[89.8852,25.5551],[89.8708,25.4759],[89.8544,25.4674],[89.8481,25.4787],[89.8758,25.581],[89.8812,25.6294],[89.8709,25.6627],[89.8332,25.7182],[89.8412,25.7607],[89.8261,25.8107],[89.8329,25.8702],[89.8783,25.9242],[89.8484,25.9427],[89.8591,25.9692],[89.8441,26.0064],[89.8214,26.0121],[89.7946,26.0887],[89.742,26.1595],[89.7196,26.1659],[89.7139,26.2292],[89.781,26.3528],[89.833,26.385],[89.8688,26.4522],[89.852,26.5228],[89.8695,26.614],[89.8497,26.6281],[89.8633,26.6813],[89.8518,26.6972],[89.8624,26.737],[89.8976,26.7243],[90.0492,26.7304],[90.1947,26.7737],[90.1877,26.8071],[90.2308,26.8588],[90.2999,26.8484],[90.3479,26.8753],[90.3567,26.901],[90.4168,26.9046],[90.5464,26.8168],[90.6758,26.7844],[90.6931,26.7708],[90.8263,26.7769],[90.9914,26.7908],[91.0541,26.7808],[91.0976,26.8221],[91.1463,26.8111],[91.2368,26.812],[91.2976,26.7869],[91.3373,26.7806],[91.3762,26.7954],[91.4081,26.84],[91.4952,26.7912],[91.593,26.8052],[91.6259,26.821],[91.6901,26.8068],[91.7207,26.8119],[91.8242,26.8639],[91.8594,26.9132],[91.893,26.9187],[91.9643,26.8821],[91.9836,26.8579],[92.0562,26.8467],[92.1024,26.8673],[92.1121,26.8919],[92.1947,26.8901],[92.3026,26.9227],[92.3631,26.9346],[92.3983,26.9248],[92.4474,26.9589],[92.589,26.9617],[92.6447,26.9868],[92.6774,27.0318],[92.7228,27.0183],[92.7632,27.0274],[92.8838,27.0005],[92.9171,26.963],[93.0214,26.9136],[93.2616,26.9536],[93.324,26.9602],[93.4487,26.9509],[93.489,26.9363],[93.5247,26.9486],[93.5866,26.9506],[93.6574,26.9664],[93.7149,27.0143],[93.8356,27.0744],[93.8053,27.1482],[93.8372,27.1717],[93.8993,27.2392],[93.9912,27.3284],[94.068,27.3717],[94.0895,27.4071],[94.1593,27.4617],[94.1645,27.4769],[94.2682,27.5209],[94.2466,27.5696],[94.2239,27.5766],[94.237,27.6325],[94.2764,27.5904],[94.3698,27.5749],[94.4184,27.5976],[94.4513,27.5719],[94.4989,27.5723],[94.5867,27.6182],[94.7167,27.6583],[94.7542,27.6606],[94.7969,27.6957],[94.8478,27.7057],[94.8523,27.7277],[95.3087,27.8681],[95.3795,27.8393],[95.5222,27.8831],[95.5426,27.9082],[95.6052,27.9547],[95.8238,27.9716],[95.9703,27.9629],[95.9043,27.8619],[95.8703,27.8328],[95.8377,27.8242],[95.7759,27.7537],[95.7623,27.7151],[95.7703,27.658],[95.7902,27.6448],[95.7924,27.598],[95.8304,27.5632],[95.8757,27.5466],[95.8791,27.4968],[95.8422,27.4269],[95.9412,27.4374],[95.974,27.4218],[96.0178,27.3695],[95.9891,27.3566],[95.9583,27.3102],[95.8693,27.2601],[95.8517,27.2869],[95.742,27.2668],[95.6315,27.2296],[95.5875,27.223],[95.5453,27.26],[95.5073,27.2595],[95.4558,27.2037],[95.4581,27.1381],[95.3979,27.1085],[95.3648,27.1083],[95.3167,27.0829],[95.2463,27.0239],[95.1946,27.0313]]]},"properties":{"ST_NM":"Assam","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.8381,30.7549],[76.8483,30.7145],[76.8292,30.681],[76.8086,30.6674],[76.7524,30.6845],[76.7128,30.7413],[76.7117,30.7617],[76.7715,30.7953],[76.815,30.753],[76.8381,30.7549]]]},"properties":{"ST_NM":"Chandigarh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.5514,18.2919],[77.6055,18.2813],[77.5731,18.2394],[77.5853,18.2196],[77.5747,18.1765],[77.5969,18.1559],[77.597,18.0868],[77.5484,18.0652],[77.5538,18.0358],[77.6278,17.9968],[77.6495,17.95],[77.623,17.9455],[77.6191,17.9041],[77.57,17.8676],[77.5675,17.8454],[77.509,17.7878],[77.5599,17.7634],[77.5471,17.7285],[77.5218,17.7259],[77.4525,17.6947],[77.4556,17.6318],[77.4441,17.5844],[77.4941,17.5684],[77.5284,17.5754],[77.5506,17.5517],[77.5938,17.5645],[77.5957,17.5366],[77.662,17.5228],[77.6524,17.4827],[77.513,17.4309],[77.5249,17.3647],[77.503,17.3572],[77.4536,17.374],[77.456,17.331],[77.438,17.2919],[77.4585,17.2813],[77.3802,17.2225],[77.3625,17.1638],[77.3778,17.1401],[77.4647,17.1078],[77.4967,17.0427],[77.5022,17.0094],[77.4791,16.9945],[77.4541,16.9139],[77.4641,16.8506],[77.4576,16.8282],[77.4745,16.7813],[77.4432,16.7625],[77.427,16.7285],[77.4741,16.7166],[77.4639,16.6763],[77.4189,16.6686],[77.4678,16.6098],[77.4611,16.5849],[77.4238,16.5689],[77.4169,16.5173],[77.3815,16.5157],[77.369,16.4887],[77.2642,16.4726],[77.269,16.4305],[77.2882,16.4087],[77.3787,16.3854],[77.4227,16.3664],[77.4897,16.385],[77.5882,16.3328],[77.5956,16.3168],[77.5048,16.2758],[77.4901,16.2553],[77.4998,16.2178],[77.4898,16.1196],[77.5069,16.079],[77.494,16.037],[77.5141,16.0081],[77.5135,15.9268],[77.4351,15.9478],[77.3795,15.9398],[77.3011,15.958],[77.1853,15.9568],[77.1026,15.9287],[77.0702,15.9078],[77.0252,15.8375],[77.0632,15.8296],[77.0491,15.7303],[77.0798,15.7274],[77.0787,15.6952],[77.1289,15.6659],[77.1215,15.6311],[77.0832,15.6592],[77.0305,15.6345],[77.0289,15.5005],[76.9746,15.5105],[77.0108,15.4488],[77.032,15.4356],[77.0473,15.39],[77.0448,15.3557],[77.0744,15.3259],[77.117,15.3258],[77.1183,15.2954],[77.1519,15.2754],[77.1251,15.227],[77.1548,15.2148],[77.1692,15.1714],[77.1564,15.123],[77.1301,15.1008],[77.113,15.0341],[77.0825,15.0061],[77.0496,15.0331],[76.9496,15.0304],[76.8779,15.0355],[76.836,15.0793],[76.8021,15.095],[76.7736,15.0592],[76.7902,15.0207],[76.7672,14.9749],[76.8675,14.9699],[76.8639,14.8956],[76.8525,14.887],[76.8515,14.8086],[76.8368,14.7908],[76.7827,14.786],[76.803,14.7419],[76.7763,14.6832],[76.765,14.6022],[76.8052,14.5375],[76.8556,14.5096],[76.868,14.4741],[76.9007,14.4892],[76.9748,14.4854],[76.9478,14.4132],[76.9158,14.4207],[76.8848,14.3957],[76.8848,14.3476],[76.9034,14.3227],[76.9457,14.3132],[76.9249,14.2738],[76.9401,14.2446],[77.0057,14.2358],[77.0525,14.2455],[77.0812,14.2142],[77.1149,14.2232],[77.1105,14.2687],[77.1389,14.34],[77.1974,14.3212],[77.2461,14.3175],[77.2866,14.3401],[77.2893,14.2813],[77.3638,14.2759],[77.3595,14.234],[77.3926,14.1989],[77.4183,14.2091],[77.4054,14.2667],[77.3887,14.2696],[77.379,14.3228],[77.4121,14.3365],[77.4789,14.2922],[77.5039,14.2638],[77.4945,14.2243],[77.517,14.1861],[77.5035,14.1572],[77.467,14.1717],[77.3937,14.1743],[77.3789,14.1359],[77.3976,14.1096],[77.3323,14.0307],[77.3849,14.0161],[77.3797,13.9899],[77.4379,13.9756],[77.435,13.915],[77.3544,13.9042],[77.368,13.9503],[77.3611,13.9909],[77.3108,14.0326],[77.2773,14.0347],[77.2454,14.012],[77.1411,14.0039],[77.1318,14.044],[77.0753,14.0435],[77.0316,14.0569],[77.0204,14.1572],[77.0055,14.184],[76.8945,14.1678],[76.8895,14.1357],[76.9443,14.1208],[76.9735,14.0836],[76.9717,14.0581],[76.9352,14.0328],[77.0003,13.9895],[76.9938,13.9626],[77.0417,13.9335],[77.0185,13.8726],[76.978,13.8269],[76.9969,13.7478],[77.0245,13.7793],[77.0647,13.7439],[77.106,13.7678],[77.1731,13.7621],[77.1629,13.7985],[77.1686,13.8645],[77.2199,13.8678],[77.2567,13.8466],[77.3165,13.8633],[77.3368,13.8328],[77.3624,13.8543],[77.4155,13.8398],[77.4453,13.8111],[77.4706,13.7581],[77.4501,13.7109],[77.4553,13.6823],[77.4921,13.6899],[77.5407,13.756],[77.5717,13.7382],[77.6136,13.752],[77.6513,13.7841],[77.7033,13.7698],[77.7316,13.8076],[77.7888,13.8232],[77.7822,13.8439],[77.8371,13.8698],[77.8144,13.9308],[77.8957,13.9411],[77.9268,13.9054],[77.9674,13.9602],[77.9875,13.9555],[77.9844,13.8976],[77.9522,13.8903],[77.9559,13.831],[77.9921,13.8689],[78.0462,13.8622],[78.0489,13.8961],[78.1148,13.8629],[78.1265,13.7885],[78.0915,13.7423],[78.1208,13.7157],[78.0859,13.6922],[78.0897,13.6591],[78.1691,13.654],[78.2042,13.6285],[78.1902,13.5902],[78.2437,13.5976],[78.2593,13.585],[78.3259,13.5949],[78.3852,13.5922],[78.4067,13.5769],[78.3824,13.5251],[78.3745,13.462],[78.3776,13.3632],[78.4793,13.3013],[78.5593,13.2862],[78.5773,13.1719],[78.5501,13.1642],[78.5166,13.1304],[78.5142,13.0619],[78.4622,13.0433],[78.4674,12.9751],[78.4121,12.9436],[78.4683,12.9009],[78.3887,12.9069],[78.3602,12.937],[78.3136,12.8765],[78.3124,12.8586],[78.2522,12.8606],[78.2456,12.7883],[78.2309,12.7607],[78.1344,12.7819],[78.0765,12.8397],[78.0307,12.8525],[77.9898,12.8216],[77.9407,12.8234],[77.9173,12.838],[77.9389,12.8726],[77.836,12.8704],[77.7991,12.8516],[77.7943,12.7578],[77.7616,12.7273],[77.7404,12.6737],[77.6786,12.6604],[77.6599,12.6839],[77.5989,12.6672],[77.606,12.6281],[77.5793,12.5731],[77.5872,12.5148],[77.615,12.5042],[77.6272,12.4585],[77.613,12.3612],[77.5786,12.3358],[77.5656,12.3061],[77.5271,12.2788],[77.4876,12.2806],[77.4722,12.21],[77.5187,12.1945],[77.6125,12.206],[77.7313,12.1801],[77.7532,12.134],[77.7755,12.1185],[77.7557,12.0798],[77.7266,12.0612],[77.6963,12.0158],[77.669,11.9492],[77.5379,11.9325],[77.4928,11.9414],[77.4905,11.9086],[77.4654,11.8752],[77.4498,11.7961],[77.428,11.7671],[77.3955,11.7862],[77.3351,11.7713],[77.2938,11.8091],[77.2498,11.8131],[77.2386,11.7948],[77.1892,11.7926],[77.1107,11.7736],[77.1168,11.7303],[77.0808,11.7366],[77.0387,11.794],[77.0129,11.8147],[76.9699,11.777],[76.9088,11.7952],[76.8883,11.7338],[76.85,11.6867],[76.8228,11.6082],[76.6714,11.616],[76.6136,11.6078],[76.5596,11.6253],[76.5513,11.6724],[76.5116,11.7051],[76.4566,11.6646],[76.4313,11.6665],[76.4085,11.6896],[76.4247,11.721],[76.4111,11.7582],[76.3397,11.7391],[76.2802,11.8124],[76.227,11.8062],[76.2069,11.862],[76.1149,11.8667],[76.1125,11.9788],[76.0701,11.9672],[76.0032,11.9315],[75.8968,11.9448],[75.83,11.9841],[75.8011,12.037],[75.8027,12.0795],[75.7504,12.0843],[75.7277,12.0726],[75.6872,12.1103],[75.6489,12.1086],[75.6209,12.1552],[75.577,12.1569],[75.5408,12.2005],[75.5054,12.2708],[75.4849,12.29],[75.4327,12.2934],[75.4109,12.346],[75.4219,12.3727],[75.3659,12.412],[75.3705,12.4566],[75.4233,12.4668],[75.4179,12.4976],[75.3819,12.5021],[75.3454,12.4631],[75.3322,12.4996],[75.2801,12.5242],[75.2721,12.5702],[75.2118,12.5794],[75.2019,12.6286],[75.1541,12.6239],[75.161,12.673],[75.1107,12.6831],[75.0424,12.6721],[75.0503,12.7195],[74.9825,12.7385],[75.0062,12.7709],[74.9275,12.7787],[74.8696,12.7607],[74.824,12.8514],[74.793,12.998],[74.7503,13.1797],[74.6997,13.3429],[74.693,13.4586],[74.6638,13.6524],[74.6462,13.6807],[74.6296,13.7799],[74.6096,13.8599],[74.57,13.9466],[74.5151,13.9869],[74.4695,14.1882],[74.4534,14.2004],[74.4131,14.3176],[74.3945,14.4185],[74.3554,14.5089],[74.3164,14.5193],[74.3151,14.5434],[74.2782,14.6192],[74.2826,14.6737],[74.25,14.7395],[74.2058,14.7286],[74.1278,14.7804],[74.1252,14.8367],[74.0857,14.9006],[74.1793,14.9567],[74.1998,14.9261],[74.2524,14.9588],[74.2519,14.9935],[74.2966,15.0412],[74.2727,15.0975],[74.2836,15.1429],[74.3142,15.1804],[74.3017,15.2244],[74.2523,15.251],[74.2714,15.2809],[74.336,15.2956],[74.3171,15.3292],[74.323,15.3674],[74.2831,15.383],[74.2688,15.4191],[74.2755,15.4492],[74.2523,15.4993],[74.2785,15.5175],[74.2773,15.5469],[74.2493,15.5679],[74.2642,15.6159],[74.252,15.6543],[74.2238,15.669],[74.1674,15.6721],[74.1184,15.652],[74.1317,15.6936],[74.1259,15.7241],[74.1616,15.7513],[74.2015,15.7586],[74.2397,15.7435],[74.308,15.7485],[74.3676,15.7858],[74.3665,15.8259],[74.3457,15.8508],[74.4283,15.9523],[74.4631,16.038],[74.4333,16.0589],[74.3811,16.0355],[74.365,16.0584],[74.4288,16.112],[74.4816,16.0889],[74.4913,16.1043],[74.4896,16.1774],[74.5032,16.2254],[74.4177,16.258],[74.416,16.2801],[74.3632,16.2856],[74.3173,16.3278],[74.3191,16.3716],[74.3393,16.391],[74.3298,16.4475],[74.2971,16.4645],[74.291,16.5049],[74.3176,16.5537],[74.3788,16.5284],[74.3967,16.5833],[74.4635,16.6045],[74.4908,16.6298],[74.5446,16.6355],[74.5436,16.5953],[74.5686,16.5539],[74.6359,16.5839],[74.6888,16.6166],[74.6573,16.6431],[74.6894,16.6767],[74.6911,16.7155],[74.7322,16.7183],[74.7748,16.7517],[74.8499,16.7728],[74.9198,16.7729],[74.9104,16.8351],[74.9266,16.8641],[74.9606,16.8812],[74.9232,16.9393],[74.9894,16.9523],[75.0643,16.9422],[75.1176,16.9135],[75.1366,16.8745],[75.1766,16.8677],[75.1828,16.8432],[75.2277,16.8432],[75.2648,16.8628],[75.29,16.904],[75.2797,16.9566],[75.3424,16.9563],[75.3922,16.9801],[75.4279,16.9665],[75.4656,16.9884],[75.4891,16.9444],[75.5294,16.9694],[75.5634,16.9676],[75.5673,17.0091],[75.607,17.0046],[75.6102,16.9717],[75.6661,16.9798],[75.6768,17.0654],[75.6724,17.116],[75.6504,17.1157],[75.6285,17.1887],[75.662,17.2146],[75.6542,17.2738],[75.6303,17.2739],[75.6038,17.3055],[75.6101,17.345],[75.5809,17.3512],[75.5742,17.3833],[75.6091,17.3941],[75.6331,17.4772],[75.6749,17.457],[75.6836,17.4169],[75.7308,17.4204],[75.7652,17.4059],[75.8043,17.3678],[75.8215,17.4212],[75.926,17.3249],[76.0624,17.3545],[76.087,17.3359],[76.1198,17.3704],[76.1627,17.3452],[76.1963,17.3636],[76.2721,17.3606],[76.2764,17.3346],[76.3832,17.3145],[76.4092,17.3714],[76.3635,17.3777],[76.3716,17.4364],[76.3333,17.4339],[76.3307,17.4702],[76.3466,17.5126],[76.3316,17.596],[76.4197,17.6037],[76.4293,17.645],[76.4867,17.6584],[76.4873,17.7148],[76.5241,17.7154],[76.5307,17.7583],[76.563,17.7646],[76.5872,17.7075],[76.6119,17.7701],[76.6333,17.7282],[76.6907,17.6835],[76.7344,17.782],[76.7826,17.8066],[76.7871,17.8332],[76.738,17.8594],[76.8522,17.9008],[76.8844,17.8945],[76.9207,17.9416],[76.9057,18.0097],[76.945,18.0484],[76.9571,18.1083],[76.9206,18.1182],[76.952,18.1881],[76.9907,18.19],[76.997,18.1648],[77.064,18.1506],[77.1126,18.1568],[77.0985,18.1929],[77.1404,18.2078],[77.1749,18.2849],[77.2094,18.2881],[77.2118,18.3163],[77.2418,18.4126],[77.3173,18.4433],[77.3535,18.4477],[77.3729,18.4011],[77.4141,18.3931],[77.395,18.3478],[77.3715,18.3251],[77.4102,18.3016],[77.4377,18.3103],[77.4476,18.27],[77.4927,18.2672],[77.5243,18.3078],[77.5514,18.2919]]]},"properties":{"ST_NM":"Karnataka","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[94.6755,25.4456],[94.66,25.4054],[94.6323,25.3883],[94.6347,25.3581],[94.5853,25.2651],[94.5758,25.2145],[94.593,25.1918],[94.6412,25.166],[94.6975,25.1549],[94.7349,25.1342],[94.7447,25.0801],[94.7388,25.0236],[94.7071,24.9871],[94.7018,24.9296],[94.6866,24.8929],[94.6316,24.839],[94.6182,24.7855],[94.6285,24.756],[94.5852,24.7047],[94.5452,24.7105],[94.5449,24.6688],[94.515,24.6107],[94.4539,24.5648],[94.408,24.4405],[94.3505,24.3351],[94.3217,24.3289],[94.3219,24.2772],[94.2915,24.233],[94.2764,24.1734],[94.2597,24.1653],[94.2545,24.0825],[94.2373,24.0354],[94.1697,23.9284],[94.1566,23.8482],[94.1183,23.837],[94.0961,23.8892],[94.0488,23.888],[94.0405,23.9107],[93.8946,23.9523],[93.8196,23.9236],[93.7578,24.0032],[93.7216,23.9979],[93.6238,24.0114],[93.6072,23.9716],[93.5002,23.9447],[93.4617,23.9761],[93.4166,24.0719],[93.3577,24.0915],[93.3284,24.0808],[93.3262,24.0485],[93.2864,24.0475],[93.2503,24.0802],[93.2253,24.0846],[93.2119,24.0486],[93.1243,24.0607],[93.0784,24.1018],[93.052,24.0895],[92.991,24.1156],[93.0205,24.2319],[93.0079,24.2869],[93.0336,24.321],[93.0177,24.3499],[93.0246,24.3926],[93.0087,24.4118],[93.0335,24.4271],[93.0455,24.4762],[93.0327,24.4936],[93.0491,24.5425],[93.0891,24.5735],[93.0789,24.7047],[93.1071,24.7406],[93.105,24.7917],[93.1347,24.8107],[93.1541,24.7888],[93.1914,24.8045],[93.1953,24.8444],[93.2261,24.8738],[93.2488,24.9156],[93.2367,24.9373],[93.2622,24.9688],[93.2472,25.0181],[93.266,25.0442],[93.2993,25.0495],[93.3323,25.0939],[93.354,25.1875],[93.3864,25.2428],[93.4206,25.2777],[93.4704,25.3052],[93.4539,25.3249],[93.5064,25.2688],[93.5474,25.2481],[93.6052,25.199],[93.6374,25.2639],[93.6814,25.3285],[93.7422,25.404],[93.8049,25.4631],[93.8008,25.4963],[93.759,25.5118],[93.7672,25.5342],[93.8158,25.5423],[93.8344,25.5606],[93.8884,25.5651],[93.9546,25.5504],[94.0022,25.5851],[94.0476,25.5759],[94.0928,25.5296],[94.1375,25.5183],[94.1499,25.5432],[94.1859,25.5316],[94.2216,25.4908],[94.2846,25.5079],[94.3185,25.5025],[94.418,25.5384],[94.425,25.5865],[94.479,25.6152],[94.4945,25.6096],[94.5839,25.6849],[94.5901,25.6366],[94.56,25.5982],[94.5679,25.5009],[94.616,25.4625],[94.6755,25.4456]]]},"properties":{"ST_NM":"Manipur","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.4252,25.0297],[92.2293,25.0972],[92.1996,25.1254],[92.1355,25.1433],[92.1224,25.1659],[92.0746,25.1862],[92.0108,25.1891],[91.9832,25.1716],[91.9471,25.1833],[91.8064,25.1694],[91.7466,25.1717],[91.6889,25.1381],[91.642,25.1243],[91.6029,25.1737],[91.4931,25.1347],[91.4318,25.1557],[91.4139,25.1725],[91.3453,25.1725],[91.2646,25.2068],[91.1253,25.1931],[91.0815,25.2019],[90.9655,25.1714],[90.8694,25.1597],[90.8195,25.1635],[90.7901,25.1824],[90.7605,25.1652],[90.6889,25.1611],[90.665,25.1846],[90.6363,25.1732],[90.5104,25.1685],[90.4446,25.1438],[90.3774,25.1618],[90.3317,25.1917],[90.2145,25.2032],[90.1597,25.2235],[90.1124,25.2242],[90.0599,25.256],[89.9809,25.2853],[89.9722,25.301],[89.9081,25.3078],[89.8694,25.2872],[89.8401,25.3185],[89.814,25.3699],[89.8342,25.4349],[89.8544,25.4674],[89.8708,25.4759],[89.8852,25.5551],[89.9372,25.5647],[90.0202,25.6076],[89.9531,25.6537],[89.9444,25.6793],[89.8956,25.7316],[89.9266,25.7385],[89.955,25.7676],[89.951,25.8212],[90.0035,25.8393],[90.0245,25.8956],[90.0862,25.9196],[90.113,25.9543],[90.177,25.9589],[90.1867,25.9475],[90.3274,25.9745],[90.3497,26.0042],[90.3997,26.0126],[90.4302,25.989],[90.4761,26.0097],[90.5349,25.9497],[90.5149,25.8962],[90.5767,25.9368],[90.6241,25.9393],[90.6285,25.9177],[90.7138,25.9518],[90.778,25.9087],[90.8091,25.9475],[90.8748,25.9426],[90.9142,25.9258],[90.9594,25.9313],[90.9659,25.8885],[91.0305,25.8859],[91.0669,25.8258],[91.1196,25.8328],[91.1475,25.8506],[91.2034,25.8442],[91.1782,25.7774],[91.2224,25.7227],[91.2745,25.7505],[91.3356,25.8408],[91.3653,25.8401],[91.4694,25.8593],[91.5079,25.9089],[91.5708,26.0259],[91.6347,26.0129],[91.6356,25.9617],[91.621,25.9324],[91.6705,25.9042],[91.72,25.9537],[91.7253,26.0463],[91.8212,26.1176],[91.8791,26.0981],[91.8749,26.0379],[91.9337,26.0104],[91.9885,26.0376],[92.0637,26.0341],[92.1078,26.0508],[92.1319,26.0444],[92.1691,26.0776],[92.2582,26.0636],[92.2627,26.0327],[92.1641,25.9704],[92.1524,25.9444],[92.214,25.8948],[92.1772,25.8728],[92.151,25.8158],[92.1477,25.773],[92.1627,25.744],[92.1547,25.7063],[92.1638,25.6671],[92.225,25.7162],[92.2643,25.7092],[92.3642,25.7375],[92.373,25.7503],[92.4441,25.7199],[92.4403,25.6922],[92.4702,25.6752],[92.4974,25.6241],[92.5526,25.615],[92.5566,25.5714],[92.585,25.5506],[92.6227,25.5658],[92.6428,25.5349],[92.5736,25.4906],[92.6004,25.4649],[92.6088,25.4136],[92.6362,25.4267],[92.782,25.3328],[92.7918,25.2844],[92.7683,25.2667],[92.7748,25.1997],[92.7428,25.2068],[92.6938,25.1793],[92.6583,25.172],[92.6278,25.1375],[92.588,25.1289],[92.5248,25.1353],[92.5388,25.1006],[92.4809,25.1087],[92.4597,25.0371],[92.4252,25.0297]]]},"properties":{"ST_NM":"Meghalaya","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.0087,24.4118],[93.0246,24.3926],[93.0177,24.3499],[93.0336,24.321],[93.0079,24.2869],[93.0205,24.2319],[92.991,24.1156],[93.052,24.0895],[93.0784,24.1018],[93.1243,24.0607],[93.2119,24.0486],[93.2253,24.0846],[93.2503,24.0802],[93.2864,24.0475],[93.3262,24.0485],[93.3386,24.0215],[93.3334,23.9789],[93.3537,23.9466],[93.3931,23.921],[93.3848,23.8725],[93.4021,23.8122],[93.3916,23.7571],[93.4061,23.7122],[93.4355,23.6782],[93.4223,23.6596],[93.428,23.5882],[93.418,23.5392],[93.3943,23.4992],[93.3884,23.4487],[93.4019,23.3897],[93.3704,23.3324],[93.3698,23.257],[93.3855,23.2195],[93.3679,23.1464],[93.327,23.0391],[93.2944,23.007],[93.2413,23.0067],[93.2103,23.0474],[93.1831,23.0597],[93.1265,23.044],[93.1229,23.0079],[93.1547,22.9178],[93.1362,22.9133],[93.11,22.8182],[93.0942,22.8062],[93.1066,22.7545],[93.0909,22.7042],[93.1094,22.6351],[93.1402,22.5927],[93.1149,22.5629],[93.1093,22.5246],[93.1346,22.4929],[93.1395,22.4537],[93.1852,22.4277],[93.1864,22.3387],[93.1993,22.256],[93.1417,22.2457],[93.1612,22.1965],[93.1277,22.1734],[93.1109,22.2043],[93.0627,22.2078],[93.0393,22.139],[93.0042,22.0755],[92.978,21.9982],[92.9516,22.0302],[92.9155,21.9798],[92.8645,22.0242],[92.8572,22.0666],[92.8183,22.0752],[92.7283,22.1476],[92.6968,22.1434],[92.6819,22.1038],[92.6796,22.0115],[92.6526,22.0165],[92.6346,21.9835],[92.599,22.0063],[92.6,22.0519],[92.5748,22.1153],[92.5958,22.1752],[92.5835,22.2992],[92.5623,22.3723],[92.544,22.49],[92.5481,22.5073],[92.5222,22.5603],[92.5377,22.577],[92.5261,22.6729],[92.5074,22.7378],[92.4825,22.747],[92.4554,22.8254],[92.4634,22.8554],[92.4194,22.9116],[92.3716,22.9368],[92.3918,23.057],[92.3609,23.0988],[92.3672,23.1251],[92.3475,23.2367],[92.4005,23.2364],[92.3842,23.3079],[92.3672,23.318],[92.3776,23.3626],[92.3563,23.3712],[92.3327,23.4351],[92.3118,23.5604],[92.2742,23.6482],[92.2917,23.6819],[92.2654,23.7251],[92.257,23.8129],[92.2896,23.8683],[92.3239,23.905],[92.3085,23.9682],[92.326,23.9975],[92.3164,24.0675],[92.3315,24.1524],[92.3244,24.1978],[92.2923,24.2505],[92.4224,24.255],[92.4188,24.1928],[92.4368,24.1529],[92.4607,24.138],[92.5243,24.1716],[92.5506,24.2471],[92.6122,24.2536],[92.6225,24.3316],[92.6491,24.3287],[92.6897,24.3537],[92.7637,24.5211],[92.8042,24.4176],[92.8451,24.3798],[92.8617,24.3987],[92.907,24.4114],[92.9339,24.3924],[93.0087,24.4118]]]},"properties":{"ST_NM":"Mizoram","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.1946,27.0313],[95.1915,26.9849],[95.2303,26.8837],[95.1815,26.8613],[95.2311,26.7651],[95.2104,26.7312],[95.2339,26.6825],[95.2085,26.6478],[95.1491,26.616],[95.1543,26.5828],[95.1072,26.5415],[95.1141,26.5184],[95.0729,26.4725],[95.1322,26.3777],[95.1223,26.3573],[95.1282,26.2932],[95.1187,26.2263],[95.1424,26.2119],[95.1171,26.1629],[95.1181,26.1006],[95.1647,26.0925],[95.1857,26.0733],[95.1589,26.0248],[95.0956,25.9558],[95.0484,25.9352],[95.0128,25.8984],[95.0089,25.8669],[95.0496,25.7927],[95.0408,25.7423],[95.004,25.729],[94.9248,25.6497],[94.9148,25.6075],[94.8347,25.553],[94.8055,25.4918],[94.6834,25.4662],[94.6755,25.4456],[94.616,25.4625],[94.5679,25.5009],[94.56,25.5982],[94.5901,25.6366],[94.5839,25.6849],[94.4945,25.6096],[94.479,25.6152],[94.425,25.5865],[94.418,25.5384],[94.3185,25.5025],[94.2846,25.5079],[94.2216,25.4908],[94.1859,25.5316],[94.1499,25.5432],[94.1375,25.5183],[94.0928,25.5296],[94.0476,25.5759],[94.0022,25.5851],[93.9546,25.5504],[93.8884,25.5651],[93.8344,25.5606],[93.8158,25.5423],[93.7672,25.5342],[93.759,25.5118],[93.8008,25.4963],[93.8049,25.4631],[93.7422,25.404],[93.6814,25.3285],[93.6374,25.2639],[93.6052,25.199],[93.5474,25.2481],[93.5064,25.2688],[93.4539,25.3249],[93.4515,25.3541],[93.4729,25.3861],[93.4553,25.4345],[93.4155,25.4451],[93.3844,25.4695],[93.3529,25.5281],[93.3584,25.5574],[93.4248,25.6304],[93.4965,25.6546],[93.5311,25.6927],[93.5423,25.7308],[93.6177,25.7766],[93.6391,25.8163],[93.6775,25.8279],[93.702,25.8516],[93.6814,25.9039],[93.735,25.9237],[93.777,25.958],[93.796,25.9035],[93.7776,25.8507],[93.79,25.8113],[93.8522,25.8583],[93.876,25.8426],[93.9159,25.8838],[93.9786,25.9168],[93.9541,25.9694],[93.9624,26.0366],[93.9971,26.107],[93.9889,26.1334],[94.0077,26.1826],[94.0318,26.1975],[94.0474,26.2491],[94.1197,26.3289],[94.1715,26.3381],[94.1718,26.4159],[94.1851,26.4585],[94.2365,26.5062],[94.2562,26.5413],[94.2812,26.5487],[94.2933,26.4712],[94.3208,26.4756],[94.3743,26.5075],[94.4052,26.5488],[94.4042,26.6119],[94.4597,26.6369],[94.5392,26.7063],[94.5903,26.6967],[94.6245,26.7155],[94.6937,26.733],[94.7681,26.7869],[94.7997,26.7999],[94.8175,26.8478],[94.8905,26.9296],[94.9552,26.9401],[94.982,26.9134],[95.0809,26.9502],[95.1083,26.977],[95.1946,27.0313]]]},"properties":{"ST_NM":"Nagaland","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.7767,30.9043],[76.7843,30.8779],[76.8467,30.834],[76.857,30.7948],[76.8381,30.7549],[76.815,30.753],[76.7715,30.7953],[76.7117,30.7617],[76.7128,30.7413],[76.7524,30.6845],[76.8086,30.6674],[76.8292,30.681],[76.9271,30.6037],[76.9164,30.5541],[76.9311,30.5009],[76.8864,30.4297],[76.9394,30.3948],[76.9156,30.3653],[76.851,30.4353],[76.8234,30.4116],[76.7688,30.4308],[76.735,30.4191],[76.7134,30.3881],[76.7461,30.3672],[76.711,30.3258],[76.688,30.3269],[76.6234,30.2646],[76.6239,30.2278],[76.6003,30.1839],[76.6398,30.1503],[76.5993,30.1125],[76.577,30.11],[76.547,30.0762],[76.4625,30.1011],[76.4599,30.1295],[76.4218,30.1924],[76.3872,30.1706],[76.4091,30.1468],[76.3399,30.0987],[76.2853,30.1062],[76.2274,30.1445],[76.2197,30.1161],[76.2489,30.0851],[76.2262,30.0587],[76.2054,29.9738],[76.1782,29.9422],[76.1934,29.8857],[76.2301,29.8854],[76.2438,29.8524],[76.1978,29.8448],[76.1848,29.8228],[76.148,29.82],[76.1292,29.797],[76.085,29.8008],[76.0434,29.7427],[75.9844,29.7271],[75.8702,29.7493],[75.837,29.7943],[75.7885,29.8114],[75.7378,29.814],[75.7028,29.7524],[75.6783,29.7761],[75.6345,29.7553],[75.5721,29.7433],[75.5611,29.7707],[75.4539,29.782],[75.4141,29.77],[75.3918,29.7131],[75.3457,29.696],[75.3166,29.6306],[75.3094,29.5608],[75.2421,29.5459],[75.2222,29.5813],[75.2353,29.6021],[75.1824,29.6293],[75.1679,29.667],[75.2068,29.6875],[75.1969,29.7161],[75.2416,29.7546],[75.2085,29.7932],[75.191,29.8414],[75.1368,29.806],[75.0908,29.8527],[75.1147,29.8787],[75.0888,29.9172],[75.0699,29.8771],[74.9905,29.868],[74.9471,29.9085],[74.9228,29.952],[74.888,29.9671],[74.8562,29.9565],[74.8064,29.9921],[74.7794,29.972],[74.7314,29.9615],[74.7022,29.9719],[74.6582,29.9323],[74.6468,29.9043],[74.5967,29.9123],[74.5272,29.9428],[74.1017,29.9671],[73.8955,29.9741],[73.8863,30.0121],[73.904,30.05],[73.9299,30.0685],[73.9707,30.1251],[73.9726,30.1981],[73.9622,30.2634],[73.9317,30.3186],[73.8798,30.3598],[73.9648,30.4247],[73.9641,30.4564],[73.9927,30.5142],[74.0501,30.5371],[74.0723,30.5229],[74.1285,30.6323],[74.1491,30.6316],[74.2192,30.6935],[74.2326,30.7245],[74.2654,30.7249],[74.2974,30.7771],[74.3248,30.8495],[74.3482,30.855],[74.3659,30.8929],[74.4237,30.9296],[74.4569,30.9642],[74.5087,30.9673],[74.5464,30.9924],[74.548,31.0325],[74.5744,31.0568],[74.5969,31.0376],[74.6711,31.0536],[74.7024,31.0917],[74.6891,31.128],[74.6403,31.1197],[74.6009,31.1321],[74.6007,31.088],[74.5513,31.0865],[74.5484,31.1221],[74.5103,31.132],[74.5099,31.1734],[74.5326,31.2497],[74.5367,31.3302],[74.5538,31.3665],[74.5834,31.3791],[74.5964,31.4163],[74.6435,31.4161],[74.6532,31.4553],[74.6128,31.5274],[74.616,31.5575],[74.5754,31.6039],[74.5554,31.6079],[74.5242,31.687],[74.4866,31.7151],[74.5139,31.74],[74.5594,31.7579],[74.5706,31.837],[74.6159,31.8894],[74.6366,31.884],[74.6771,31.9262],[74.7076,31.9231],[74.7816,31.9558],[74.8189,31.9587],[74.8287,31.9983],[74.9274,32.0664],[75.0123,32.0357],[75.0688,32.0636],[75.1018,32.0594],[75.1228,32.0815],[75.1959,32.0836],[75.2769,32.1156],[75.2854,32.1518],[75.3139,32.1722],[75.3313,32.2197],[75.3655,32.2199],[75.3718,32.2797],[75.3438,32.279],[75.3317,32.3269],[75.3414,32.3461],[75.419,32.32],[75.4657,32.327],[75.5425,32.3056],[75.5395,32.3362],[75.5967,32.3777],[75.687,32.3905],[75.7373,32.4296],[75.7295,32.4532],[75.7777,32.4657],[75.8344,32.5118],[75.9014,32.4531],[75.9192,32.4121],[75.8742,32.3958],[75.8453,32.3574],[75.8112,32.3486],[75.773,32.2903],[75.6571,32.2512],[75.6247,32.1899],[75.6632,32.1916],[75.6613,32.1369],[75.6008,32.0931],[75.6021,32.0659],[75.6543,32.0776],[75.7508,32.0377],[75.7797,32.0047],[75.8925,31.9618],[75.9612,31.8549],[75.9475,31.813],[76.0177,31.6322],[76.0979,31.5328],[76.1345,31.4505],[76.1698,31.399],[76.1493,31.3533],[76.1788,31.3405],[76.1808,31.3105],[76.2139,31.2995],[76.3112,31.3195],[76.3076,31.3426],[76.3408,31.3635],[76.3311,31.4012],[76.3721,31.4085],[76.4317,31.3269],[76.4861,31.304],[76.5492,31.2528],[76.5835,31.2762],[76.6454,31.2091],[76.615,31.19],[76.6016,31.1286],[76.6385,31.1079],[76.611,31.0459],[76.6247,30.9988],[76.6732,30.9688],[76.7081,30.9704],[76.7767,30.9043]]]},"properties":{"ST_NM":"Punjab","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[74.5272,29.9428],[74.51,29.9082],[74.5436,29.9014],[74.561,29.8696],[74.5391,29.8406],[74.4844,29.8143],[74.4772,29.7453],[74.535,29.7407],[74.6009,29.7659],[74.6098,29.7218],[74.5854,29.6539],[74.5759,29.5601],[74.623,29.531],[74.5846,29.4585],[74.5433,29.4679],[74.5366,29.4245],[74.5661,29.4206],[74.6026,29.3653],[74.6042,29.3273],[74.6545,29.3329],[74.6582,29.372],[74.7194,29.37],[74.7396,29.354],[74.7819,29.3579],[74.8203,29.3972],[74.8505,29.4036],[74.9384,29.3618],[74.9608,29.318],[74.9617,29.2803],[74.9986,29.2707],[75.05,29.2862],[75.0751,29.2299],[75.1196,29.2229],[75.1957,29.2634],[75.2101,29.2347],[75.3229,29.2895],[75.34,29.2828],[75.3296,29.2327],[75.3895,29.2612],[75.4106,29.2555],[75.4067,29.1697],[75.375,29.1352],[75.3946,29.1108],[75.3912,29.0627],[75.4418,29.0575],[75.4582,29.0135],[75.5206,29.0044],[75.5274,28.971],[75.5057,28.9359],[75.4971,28.8549],[75.5196,28.8345],[75.5081,28.7886],[75.538,28.7266],[75.5412,28.6605],[75.5619,28.6131],[75.6224,28.6014],[75.6337,28.5445],[75.6658,28.536],[75.69,28.4999],[75.7356,28.4688],[75.7883,28.4536],[75.777,28.4004],[75.8328,28.4054],[75.9295,28.3591],[75.9578,28.3139],[76.0263,28.275],[76.0132,28.244],[76.0403,28.222],[76.0703,28.1652],[76.0261,28.1646],[75.946,28.1077],[75.9834,28.0813],[76.0408,28.074],[76.0164,28.0305],[75.9769,28.0314],[75.9424,27.9132],[75.9873,27.9043],[75.9714,27.852],[76.0477,27.8351],[76.0878,27.8606],[76.1233,27.851],[76.1323,27.8245],[76.1812,27.7975],[76.2252,27.8332],[76.1938,27.8595],[76.2013,27.8928],[76.1682,27.9034],[76.1866,27.9655],[76.1604,27.9984],[76.1895,28.0565],[76.2281,28.0484],[76.261,28.0675],[76.3208,28.016],[76.3565,28.0675],[76.3366,28.1026],[76.3566,28.1437],[76.4757,28.1486],[76.4992,28.1002],[76.4547,28.0423],[76.5438,28.0342],[76.5447,27.9637],[76.6049,28.0039],[76.6681,28.0138],[76.6516,28.0616],[76.716,28.1279],[76.7435,28.121],[76.7948,28.1484],[76.8084,28.2109],[76.8675,28.2199],[76.932,28.1531],[76.9705,28.1384],[76.9308,27.9929],[76.9315,27.9226],[76.943,27.8539],[76.915,27.8348],[76.8942,27.7179],[76.9155,27.6526],[76.9421,27.6738],[76.9791,27.6536],[77.0001,27.737],[77.0449,27.7434],[77.0358,27.7816],[77.0448,27.8218],[77.1085,27.7863],[77.1833,27.7876],[77.2134,27.8016],[77.2524,27.7907],[77.2837,27.8011],[77.3015,27.7949],[77.3194,27.7335],[77.3409,27.7036],[77.3462,27.6395],[77.3171,27.6068],[77.3345,27.5913],[77.34,27.5266],[77.399,27.5002],[77.4337,27.46],[77.4211,27.422],[77.4395,27.3907],[77.5072,27.3771],[77.5483,27.3366],[77.6125,27.3319],[77.6168,27.2865],[77.6811,27.1944],[77.6584,27.1701],[77.6218,27.1722],[77.6037,27.1238],[77.5376,27.0983],[77.5772,27.0683],[77.6018,27.0225],[77.6656,27.0173],[77.6798,27.0471],[77.7114,26.9974],[77.5832,26.9242],[77.4902,26.9005],[77.4266,26.859],[77.4206,26.8106],[77.4366,26.7676],[77.4875,26.7881],[77.5007,26.817],[77.6076,26.8278],[77.7226,26.8743],[77.7324,26.9201],[77.7747,26.9322],[77.8505,26.9127],[77.9043,26.8833],[77.9088,26.9064],[77.9678,26.9037],[77.987,26.8893],[78.0569,26.9068],[78.1112,26.8959],[78.1245,26.9493],[78.1687,26.9478],[78.2723,26.9192],[78.2326,26.8743],[78.2027,26.8654],[78.223,26.8306],[78.1689,26.8126],[78.1551,26.7841],[78.1165,26.7966],[78.0921,26.7149],[78.0952,26.6793],[77.9975,26.694],[77.9536,26.6592],[77.8984,26.6555],[77.8967,26.6175],[77.8273,26.596],[77.8325,26.5615],[77.7834,26.5521],[77.7388,26.5295],[77.7127,26.4982],[77.6755,26.503],[77.6149,26.4536],[77.5621,26.4368],[77.5235,26.4073],[77.4395,26.4039],[77.4443,26.3616],[77.3765,26.3653],[77.3209,26.3334],[77.3167,26.3118],[77.2706,26.2673],[77.2039,26.23],[77.1351,26.2334],[77.1004,26.1859],[77.0324,26.1729],[76.999,26.1301],[76.9481,26.1028],[76.9018,26.0935],[76.8861,26.0492],[76.84,26.0261],[76.8134,25.9977],[76.8051,25.9609],[76.751,25.9164],[76.7064,25.9001],[76.6711,25.9102],[76.6318,25.9],[76.6239,25.8713],[76.5914,25.8755],[76.5305,25.8119],[76.5156,25.7773],[76.5205,25.7273],[76.4752,25.7128],[76.5032,25.6729],[76.4989,25.6375],[76.5163,25.5282],[76.5546,25.4838],[76.5553,25.4534],[76.5884,25.4305],[76.5981,25.3939],[76.6363,25.3838],[76.6699,25.3488],[76.7007,25.3514],[76.7289,25.3288],[76.7805,25.3158],[76.8572,25.3327],[76.902,25.3235],[76.9295,25.3029],[77.0314,25.2945],[77.0457,25.3194],[77.0835,25.3367],[77.1252,25.3305],[77.1635,25.3086],[77.2092,25.3062],[77.2369,25.3802],[77.2943,25.4244],[77.3311,25.4274],[77.3709,25.4084],[77.3502,25.3822],[77.3497,25.3289],[77.378,25.3155],[77.3741,25.2745],[77.3554,25.2633],[77.4145,25.2204],[77.3962,25.1378],[77.3758,25.1048],[77.31,25.0807],[77.2887,25.1064],[77.1746,25.1117],[77.1669,25.0849],[77.0821,25.0582],[76.9885,25.0724],[76.9659,25.0515],[76.8762,25.0415],[76.8619,24.9614],[76.923,24.9136],[76.9125,24.8882],[76.9418,24.8587],[76.8818,24.837],[76.8321,24.8378],[76.8026,24.8093],[76.8484,24.7661],[76.8561,24.7425],[76.9014,24.7342],[76.9635,24.7565],[76.9983,24.7182],[77.0307,24.7122],[77.0651,24.6438],[77.0713,24.5724],[77.0547,24.5264],[77.029,24.4961],[76.9778,24.4612],[76.9169,24.4832],[76.9207,24.528],[76.8841,24.5215],[76.8621,24.5484],[76.8164,24.5336],[76.8465,24.4864],[76.8521,24.451],[76.8396,24.4131],[76.8518,24.3707],[76.8415,24.3225],[76.8631,24.2731],[76.9118,24.2381],[76.9224,24.2116],[76.9008,24.1272],[76.8546,24.1357],[76.802,24.1165],[76.7564,24.1691],[76.7006,24.1677],[76.6779,24.2041],[76.7022,24.2414],[76.6402,24.2684],[76.5957,24.2441],[76.5618,24.1734],[76.5276,24.157],[76.5048,24.2031],[76.3925,24.217],[76.3398,24.244],[76.2867,24.2283],[76.2856,24.2096],[76.2045,24.2172],[76.2038,24.3038],[76.1861,24.3286],[76.1587,24.2828],[76.146,24.2244],[76.1177,24.1947],[76.1141,24.1626],[76.1311,24.1154],[76.1271,24.088],[76.0429,24.0661],[75.9987,24.0207],[75.9635,24.0187],[75.9849,23.9737],[75.9871,23.9403],[75.9375,23.8966],[75.8447,23.8839],[75.8189,23.8684],[75.7646,23.8753],[75.7353,23.8985],[75.7179,23.8117],[75.6538,23.7981],[75.5835,23.7947],[75.5592,23.8186],[75.5659,23.8534],[75.4929,23.9061],[75.4594,23.9205],[75.4689,23.9744],[75.5211,24.0246],[75.5846,23.9906],[75.6324,23.9956],[75.6709,24.018],[75.7018,23.9665],[75.7649,23.9923],[75.7821,24.0426],[75.8368,24.057],[75.835,24.0917],[75.7929,24.0918],[75.752,24.148],[75.7731,24.202],[75.8181,24.2387],[75.813,24.292],[75.7664,24.2981],[75.7382,24.3348],[75.7519,24.4276],[75.7894,24.4716],[75.8098,24.4339],[75.8388,24.4141],[75.8753,24.4265],[75.9092,24.455],[75.9031,24.5044],[75.9235,24.5342],[75.9066,24.5758],[75.8786,24.5834],[75.8252,24.6675],[75.8376,24.7253],[75.8026,24.7562],[75.7572,24.7615],[75.6832,24.7241],[75.646,24.6851],[75.6087,24.6818],[75.5831,24.7133],[75.5339,24.7123],[75.4554,24.6806],[75.3492,24.7008],[75.2284,24.7176],[75.1975,24.7433],[75.211,24.7977],[75.2504,24.8095],[75.273,24.8427],[75.2978,24.8071],[75.3976,24.8418],[75.3736,24.8677],[75.3182,24.8604],[75.2634,24.8748],[75.2819,24.953],[75.3203,24.9016],[75.3371,24.9553],[75.3135,24.9801],[75.3343,25.0411],[75.2676,25.0425],[75.1925,25.0335],[75.17,25.0489],[75.1515,24.9892],[75.1136,24.9668],[75.1192,24.8824],[75.0765,24.8806],[75.0483,24.8499],[74.9482,24.8645],[74.9106,24.8939],[74.9134,24.9161],[74.8597,24.9617],[74.8336,24.9596],[74.8259,24.8993],[74.8591,24.8384],[74.8609,24.7985],[74.9815,24.7636],[74.9922,24.6944],[74.943,24.6404],[74.89,24.634],[74.8739,24.6491],[74.8176,24.7454],[74.7802,24.7297],[74.7837,24.6916],[74.8142,24.6659],[74.7796,24.6153],[74.7865,24.5858],[74.7537,24.5538],[74.7444,24.4685],[74.8151,24.4686],[74.8253,24.4001],[74.7809,24.3385],[74.7817,24.2902],[74.7471,24.2534],[74.7775,24.2387],[74.8678,24.243],[74.9071,24.201],[74.8823,24.1796],[74.9033,24.1092],[74.939,24.0544],[74.9785,24.0365],[74.9621,23.9774],[74.9288,23.9541],[74.9025,23.8732],[74.9088,23.8356],[74.9404,23.7647],[74.9039,23.6748],[74.9365,23.6286],[74.87,23.5918],[74.84,23.5499],[74.8029,23.5325],[74.7,23.5039],[74.6519,23.4624],[74.6162,23.4599],[74.575,23.4233],[74.5689,23.3763],[74.5424,23.3647],[74.5232,23.3211],[74.5438,23.2804],[74.6201,23.2768],[74.6489,23.256],[74.7011,23.2648],[74.7443,23.2114],[74.7153,23.1908],[74.6714,23.2001],[74.5965,23.1379],[74.5432,23.1305],[74.5394,23.1034],[74.4641,23.0817],[74.4322,23.105],[74.3845,23.1111],[74.3244,23.0614],[74.2834,23.0954],[74.2738,23.158],[74.2029,23.1902],[74.1728,23.1557],[74.1278,23.176],[74.1408,23.2229],[74.1388,23.266],[74.1069,23.2937],[74.0377,23.2954],[74.0287,23.3316],[73.8884,23.3561],[73.8303,23.4262],[73.779,23.4312],[73.7673,23.453],[73.7132,23.4143],[73.6913,23.4582],[73.6462,23.4413],[73.6332,23.4691],[73.6564,23.5074],[73.6331,23.5286],[73.6475,23.5743],[73.6417,23.6274],[73.6152,23.6521],[73.5687,23.6529],[73.5227,23.6071],[73.5056,23.6387],[73.5073,23.7028],[73.4735,23.7051],[73.4108,23.7801],[73.3797,23.767],[73.3561,23.7849],[73.3679,23.8141],[73.3542,23.8518],[73.3875,23.9158],[73.4201,23.9248],[73.4046,24.0411],[73.3387,24.0987],[73.2824,24.0192],[73.2395,24.004],[73.1932,24.0409],[73.2139,24.0776],[73.1589,24.0982],[73.1294,24.1226],[73.0675,24.1946],[73.0941,24.2468],[73.1255,24.2733],[73.1354,24.3083],[73.1665,24.2992],[73.2193,24.3638],[73.1962,24.3764],[73.152,24.3543],[73.0765,24.3965],[73.101,24.4273],[73.1017,24.4711],[73.086,24.4984],[73.0435,24.4692],[72.9998,24.4832],[72.9695,24.4529],[72.9619,24.4058],[72.9776,24.3734],[72.9107,24.3371],[72.8498,24.3719],[72.8037,24.3632],[72.7326,24.3635],[72.6892,24.4116],[72.6809,24.465],[72.6563,24.4621],[72.576,24.4788],[72.5412,24.5186],[72.4932,24.459],[72.5004,24.4169],[72.4573,24.4147],[72.4302,24.4801],[72.4416,24.5147],[72.3795,24.5127],[72.3539,24.5635],[72.2902,24.5503],[72.2463,24.5862],[72.2644,24.6044],[72.2337,24.6404],[72.1648,24.6212],[72.0898,24.6586],[72.0847,24.7069],[72.0583,24.7124],[71.9841,24.6863],[71.9784,24.6573],[71.9255,24.6359],[71.9075,24.6774],[71.8578,24.6664],[71.8522,24.6092],[71.8025,24.631],[71.8024,24.6719],[71.7717,24.6753],[71.7079,24.6617],[71.6554,24.6391],[71.6079,24.677],[71.4778,24.6795],[71.3782,24.6261],[71.3478,24.661],[71.3137,24.648],[71.2876,24.6158],[71.112,24.6757],[71.0985,24.6876],[71.0652,24.7176],[70.9918,24.8636],[70.9374,24.9388],[70.908,25.0438],[70.8882,25.1483],[70.7513,25.2779],[70.7365,25.3326],[70.6645,25.3971],[70.6717,25.4204],[70.6782,25.5257],[70.6669,25.5314],[70.6737,25.676],[70.647,25.7128],[70.6085,25.7151],[70.5299,25.6836],[70.3867,25.6739],[70.2684,25.7138],[70.2222,25.7932],[70.1741,25.8285],[70.0995,25.9383],[70.0832,26.0834],[70.1409,26.156],[70.1749,26.252],[70.1634,26.295],[70.1851,26.3743],[70.1767,26.424],[70.1843,26.4804],[70.174,26.5514],[70.1172,26.587],[70.056,26.6006],[69.9344,26.5815],[69.8859,26.5788],[69.7917,26.5983],[69.7195,26.6548],[69.5101,26.7436],[69.4842,26.8049],[69.4975,26.8669],[69.5131,27.01],[69.5869,27.1835],[69.6446,27.2252],[69.7021,27.2839],[69.76,27.3211],[69.8629,27.4022],[69.9335,27.4978],[70.0257,27.5629],[70.1322,27.8056],[70.2258,27.9008],[70.2958,27.9359],[70.3719,28.0118],[70.5054,28.037],[70.5892,28.0104],[70.5983,27.9931],[70.6771,27.9218],[70.684,27.8282],[70.7591,27.7212],[70.8716,27.7056],[70.9058,27.7095],[71.2051,27.8353],[71.3826,27.8725],[71.666,27.8778],[71.8983,27.9615],[71.9277,28.1216],[72.0164,28.2276],[72.1322,28.3129],[72.2061,28.3941],[72.2993,28.6695],[72.4037,28.7832],[72.4793,28.8122],[72.7325,28.9476],[72.9452,29.0277],[73.0043,29.1529],[73.0845,29.2358],[73.2824,29.572],[73.336,29.7416],[73.397,29.9459],[73.5971,30.0189],[73.8062,30.0677],[73.8303,30.0935],[73.9726,30.1981],[73.9707,30.1251],[73.9299,30.0685],[73.904,30.05],[73.8863,30.0121],[73.8955,29.9741],[74.1017,29.9671],[74.5272,29.9428]]]},"properties":{"ST_NM":"Rajasthan","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[88.7455,27.142],[88.7165,27.1415],[88.6822,27.1768],[88.6574,27.1597],[88.589,27.1893],[88.5331,27.1767],[88.5291,27.1478],[88.4662,27.1122],[88.4306,27.0794],[88.3566,27.0953],[88.3166,27.1256],[88.2787,27.1305],[88.2322,27.1185],[88.1817,27.1325],[88.1536,27.1098],[88.0962,27.1334],[88.0788,27.2013],[88.0288,27.2207],[88.0148,27.2117],[88.0328,27.2853],[88.0684,27.3351],[88.0423,27.3698],[88.0478,27.4053],[88.075,27.4268],[88.0471,27.4751],[88.0614,27.541],[88.0831,27.5888],[88.1137,27.6097],[88.1193,27.6433],[88.1432,27.6626],[88.1588,27.7405],[88.1782,27.7465],[88.1964,27.8538],[88.1347,27.8817],[88.1204,27.9212],[88.1449,27.9643],[88.1844,27.9439],[88.2124,27.9647],[88.2534,27.9448],[88.2864,27.9663],[88.3519,27.9896],[88.4107,27.9832],[88.4151,27.9992],[88.4676,28.0167],[88.4962,28.054],[88.545,28.0335],[88.5596,28.0838],[88.6462,28.0987],[88.6835,28.0779],[88.7561,28.0761],[88.7929,28.0488],[88.844,27.9926],[88.837,27.9292],[88.8605,27.9277],[88.8829,27.89],[88.8807,27.8296],[88.8566,27.8153],[88.8651,27.742],[88.8482,27.6678],[88.8152,27.6462],[88.8045,27.5944],[88.7698,27.5712],[88.7908,27.5315],[88.777,27.4693],[88.8048,27.4151],[88.838,27.3793],[88.8612,27.3867],[88.895,27.3321],[88.9154,27.3307],[88.9033,27.2726],[88.8318,27.2625],[88.8033,27.248],[88.7877,27.1817],[88.7455,27.142]]]},"properties":{"ST_NM":"Sikkim","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.2117,24.5045],[92.23,24.4523],[92.2465,24.4425],[92.2598,24.3585],[92.2188,24.2857],[92.206,24.2385],[92.2923,24.2505],[92.3244,24.1978],[92.3315,24.1524],[92.3164,24.0675],[92.326,23.9975],[92.3085,23.9682],[92.3239,23.905],[92.2896,23.8683],[92.257,23.8129],[92.2654,23.7251],[92.2044,23.7062],[92.1704,23.7058],[92.118,23.7311],[92.1078,23.6934],[92.0745,23.6466],[92.0066,23.6654],[91.9835,23.7282],[91.9584,23.7386],[91.9371,23.6905],[91.9756,23.4953],[91.9434,23.4644],[91.9479,23.4354],[91.9055,23.4327],[91.8636,23.4083],[91.8039,23.3321],[91.7644,23.3099],[91.7892,23.2044],[91.8058,23.1802],[91.8222,23.0862],[91.784,23.0375],[91.7216,22.9888],[91.575,22.9688],[91.5423,22.9996],[91.5503,23.0385],[91.5112,23.1043],[91.491,23.1578],[91.5031,23.1922],[91.4485,23.26],[91.4155,23.2626],[91.3863,23.2276],[91.3847,23.1563],[91.4161,23.0812],[91.3964,23.0561],[91.3469,23.1024],[91.3247,23.1688],[91.3236,23.2377],[91.3101,23.3091],[91.2835,23.3834],[91.2831,23.4193],[91.2538,23.4879],[91.2004,23.5169],[91.2078,23.5397],[91.1608,23.5945],[91.1603,23.6527],[91.2019,23.655],[91.202,23.6902],[91.1531,23.6918],[91.1657,23.7496],[91.2095,23.7518],[91.2478,23.8298],[91.2195,23.8792],[91.2802,23.9823],[91.3216,23.9947],[91.3599,23.9855],[91.3969,24.0485],[91.3759,24.1056],[91.4727,24.0984],[91.5397,24.0732],[91.581,24.0744],[91.6313,24.1036],[91.6291,24.1383],[91.6493,24.1953],[91.6822,24.163],[91.7264,24.1412],[91.7571,24.1438],[91.7469,24.2452],[91.8606,24.1817],[91.8844,24.1411],[91.9105,24.1406],[91.9423,24.2631],[91.922,24.3373],[91.9821,24.3596],[92.0008,24.3955],[92.0831,24.3751],[92.1142,24.3868],[92.1396,24.4255],[92.1687,24.4343],[92.1498,24.4907],[92.1689,24.5272],[92.2117,24.5045]]]},"properties":{"ST_NM":"Tripura","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.0651,28.8367],[80.0681,28.8029],[80.0301,28.7487],[79.9544,28.7229],[79.9246,28.7751],[79.8243,28.8073],[79.8461,28.8732],[79.7998,28.8875],[79.7491,28.8718],[79.7067,28.8411],[79.6561,28.8698],[79.5844,28.8463],[79.5843,28.8792],[79.5565,28.8993],[79.533,28.8698],[79.4256,28.8665],[79.4276,28.9128],[79.408,28.952],[79.3563,28.9678],[79.3068,28.9667],[79.2449,29.0101],[79.2045,29.021],[79.1425,29.067],[79.1502,29.1187],[79.0505,29.157],[79.0248,29.1125],[78.9823,29.1431],[78.9346,29.1297],[78.8733,29.2237],[78.7899,29.2477],[78.7272,29.3056],[78.7669,29.3366],[78.7954,29.3251],[78.8402,29.346],[78.9122,29.3943],[78.9253,29.4339],[78.7997,29.4646],[78.7433,29.5013],[78.7109,29.5005],[78.6505,29.5461],[78.6177,29.5581],[78.5416,29.6263],[78.5215,29.6579],[78.5068,29.7295],[78.3927,29.7675],[78.3357,29.7967],[78.2909,29.7587],[78.2459,29.7346],[78.2039,29.7373],[78.1805,29.6969],[78.1305,29.6526],[78.0575,29.6307],[78.0183,29.5983],[77.9675,29.5801],[77.9826,29.6406],[77.9264,29.7143],[77.879,29.7003],[77.83,29.6683],[77.8105,29.7024],[77.7697,29.7177],[77.7803,29.7651],[77.7415,29.8521],[77.7173,29.8875],[77.7472,29.9101],[77.7305,29.9317],[77.7441,29.9837],[77.782,30.0187],[77.77,30.0426],[77.7997,30.0873],[77.828,30.086],[77.8661,30.1192],[77.912,30.1826],[77.937,30.2492],[77.8463,30.2721],[77.7208,30.3309],[77.6765,30.3878],[77.6472,30.4048],[77.576,30.3974],[77.5987,30.4282],[77.688,30.4475],[77.721,30.4731],[77.8185,30.5081],[77.8064,30.5546],[77.7718,30.5593],[77.7566,30.6045],[77.7867,30.6144],[77.7733,30.6686],[77.733,30.7354],[77.7074,30.7404],[77.7577,30.8352],[77.7572,30.8601],[77.8057,30.8533],[77.8041,30.9236],[77.7623,30.9193],[77.749,30.9535],[77.7737,30.9742],[77.8101,30.9557],[77.8318,30.9941],[77.807,31.0268],[77.8171,31.0559],[77.8512,31.0734],[77.8638,31.1086],[77.9686,31.1726],[77.9847,31.157],[78.0291,31.1625],[78.0659,31.1872],[78.1036,31.1855],[78.1602,31.2256],[78.1981,31.2177],[78.2432,31.2294],[78.2759,31.2614],[78.3076,31.2615],[78.3703,31.2864],[78.4073,31.2559],[78.4617,31.2361],[78.4837,31.199],[78.552,31.2003],[78.5797,31.226],[78.6486,31.2129],[78.6617,31.1893],[78.7695,31.1865],[78.8107,31.172],[78.8436,31.128],[78.89,31.0971],[78.9592,31.0995],[79.0065,31.1192],[78.9859,31.1739],[78.9575,31.1867],[78.9221,31.2254],[78.882,31.2868],[78.9096,31.3092],[78.9424,31.365],[78.9766,31.3626],[78.9987,31.3399],[79.0158,31.4232],[79.0505,31.4266],[79.0961,31.4517],[79.1391,31.4333],[79.1737,31.3837],[79.1669,31.361],[79.2116,31.3499],[79.217,31.3136],[79.2468,31.2914],[79.2224,31.2629],[79.2968,31.2166],[79.3184,31.1359],[79.4102,31.1073],[79.418,31.0428],[79.4338,31.0228],[79.5069,31.0321],[79.5241,30.9899],[79.5553,30.9559],[79.6009,30.9393],[79.6649,30.9684],[79.7354,30.9797],[79.7532,31.0064],[79.8181,30.9715],[79.8744,30.9673],[79.8889,30.9183],[79.9305,30.8816],[79.9628,30.8887],[80.0504,30.845],[80.0877,30.7956],[80.1249,30.7809],[80.1737,30.8083],[80.209,30.7525],[80.2488,30.7431],[80.2324,30.692],[80.1984,30.6866],[80.2195,30.6431],[80.2094,30.588],[80.2544,30.5645],[80.3154,30.565],[80.3469,30.5208],[80.4173,30.5173],[80.4661,30.4905],[80.4974,30.4877],[80.5478,30.4478],[80.6056,30.4707],[80.6893,30.4147],[80.7151,30.4142],[80.8267,30.3144],[80.9076,30.3041],[80.9269,30.2672],[80.9985,30.268],[81.0323,30.2463],[81.0345,30.1976],[80.9749,30.1926],[80.9284,30.1748],[80.9222,30.2076],[80.8941,30.2104],[80.8715,30.1603],[80.8781,30.1337],[80.8041,30.0888],[80.7361,29.9997],[80.6779,29.9587],[80.6044,29.9582],[80.5714,29.9146],[80.553,29.849],[80.4634,29.801],[80.4071,29.7938],[80.369,29.7497],[80.3686,29.7228],[80.3921,29.6654],[80.4205,29.6296],[80.4059,29.5915],[80.3483,29.5545],[80.342,29.5108],[80.2957,29.4871],[80.2423,29.4419],[80.2429,29.411],[80.2733,29.3933],[80.2717,29.3629],[80.3184,29.3014],[80.2905,29.2301],[80.2979,29.2052],[80.2588,29.1872],[80.2705,29.1469],[80.233,29.1193],[80.1862,29.136],[80.1451,29.1032],[80.1295,29.0613],[80.1269,29.0055],[80.0967,28.9757],[80.0589,28.9158],[80.0651,28.8367]]]},"properties":{"ST_NM":"Uttarakhand","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.2729,18.723],[80.3045,18.6834],[80.3431,18.5981],[80.3944,18.6058],[80.4566,18.6298],[80.5147,18.6194],[80.5353,18.5906],[80.6057,18.5483],[80.6564,18.4748],[80.7021,18.4443],[80.7329,18.403],[80.7315,18.3548],[80.7494,18.3076],[80.7917,18.2509],[80.7372,18.2221],[80.7368,18.1772],[80.7991,18.1715],[80.8241,18.1944],[80.8236,18.2395],[80.8659,18.2335],[80.8585,18.1898],[80.8667,18.1403],[80.9142,18.1445],[80.9562,18.1336],[80.9534,18.082],[80.9698,18.0472],[80.9984,17.9168],[80.9964,17.8491],[81.0082,17.7983],[81.0466,17.7824],[81.0856,17.7981],[81.1015,17.7677],[81.0582,17.7331],[81.0406,17.7477],[80.9463,17.7602],[80.8855,17.7357],[80.8858,17.6813],[80.9111,17.6381],[80.8657,17.6355],[80.8554,17.6019],[80.9694,17.5981],[80.9984,17.5647],[81.0148,17.5222],[81.0801,17.5151],[81.1245,17.5271],[81.1596,17.4844],[81.1483,17.4637],[81.2027,17.434],[81.2455,17.4331],[81.3134,17.4082],[81.3226,17.3746],[81.2885,17.3281],[81.2683,17.3201],[81.1904,17.3249],[81.1767,17.2877],[81.1861,17.2485],[81.1712,17.231],[81.0796,17.2156],[81.0377,17.1934],[80.9984,17.1905],[80.9189,17.2198],[80.924,17.1579],[80.8794,17.1609],[80.8715,17.0699],[80.8288,17.0528],[80.6995,17.0838],[80.6369,17.1284],[80.58,17.1531],[80.564,17.1338],[80.5141,17.1221],[80.5054,17.0685],[80.4649,17.0301],[80.4386,17.0376],[80.4172,17.0735],[80.3873,17.0713],[80.407,17.0158],[80.3714,16.9759],[80.4497,16.9548],[80.4935,16.9275],[80.4985,16.9557],[80.5345,16.9614],[80.6019,16.9186],[80.5956,16.8843],[80.5683,16.8694],[80.5629,16.8329],[80.6053,16.798],[80.5702,16.7681],[80.5171,16.7759],[80.4645,16.7955],[80.4642,16.82],[80.4078,16.849],[80.3409,16.8598],[80.3217,16.8797],[80.3066,16.9738],[80.2649,16.9973],[80.2021,17.0171],[80.1702,17.0169],[80.1402,16.9906],[80.0952,16.9907],[80.0555,16.9715],[80.0396,16.9171],[80.0043,16.8801],[80.0171,16.8543],[80.0727,16.8165],[80.055,16.7447],[80.0306,16.7148],[79.9958,16.7001],[79.9648,16.645],[79.9324,16.6314],[79.8942,16.6492],[79.8855,16.6874],[79.8589,16.7047],[79.8124,16.6946],[79.7841,16.7306],[79.7446,16.7191],[79.7157,16.6892],[79.6622,16.6867],[79.635,16.6611],[79.604,16.6724],[79.5421,16.6323],[79.5104,16.6358],[79.4403,16.6149],[79.4187,16.5803],[79.3372,16.5821],[79.2955,16.563],[79.2617,16.567],[79.2273,16.5238],[79.2145,16.4847],[79.2081,16.3802],[79.2338,16.3358],[79.2208,16.2344],[79.1699,16.2099],[79.1238,16.2311],[79.1034,16.2234],[79.0091,16.24],[78.9866,16.2112],[78.9111,16.1885],[78.9222,16.1059],[78.8895,16.0847],[78.8693,16.1457],[78.8347,16.1452],[78.8371,16.0704],[78.7855,16.0212],[78.7355,16.0082],[78.6812,16.0348],[78.6503,16.0788],[78.61,16.0872],[78.5518,16.0428],[78.4791,16.0674],[78.4079,16.0748],[78.3655,16.0468],[78.3266,16.0368],[78.3069,16.0107],[78.2625,16.0267],[78.2522,15.9362],[78.1871,15.9117],[78.1754,15.8581],[78.1242,15.837],[78.0836,15.8409],[78.0255,15.9024],[78.0088,15.8648],[77.9754,15.8834],[77.9388,15.8831],[77.8904,15.9058],[77.8606,15.8847],[77.8036,15.8742],[77.7128,15.8945],[77.6575,15.8859],[77.6128,15.9175],[77.5135,15.9268],[77.5141,16.0081],[77.494,16.037],[77.5069,16.079],[77.4898,16.1196],[77.4998,16.2178],[77.4901,16.2553],[77.5048,16.2758],[77.5956,16.3168],[77.5882,16.3328],[77.4897,16.385],[77.4227,16.3664],[77.3787,16.3854],[77.2882,16.4087],[77.269,16.4305],[77.2642,16.4726],[77.369,16.4887],[77.3815,16.5157],[77.4169,16.5173],[77.4238,16.5689],[77.4611,16.5849],[77.4678,16.6098],[77.4189,16.6686],[77.4639,16.6763],[77.4741,16.7166],[77.427,16.7285],[77.4432,16.7625],[77.4745,16.7813],[77.4576,16.8282],[77.4641,16.8506],[77.4541,16.9139],[77.4791,16.9945],[77.5022,17.0094],[77.4967,17.0427],[77.4647,17.1078],[77.3778,17.1401],[77.3625,17.1638],[77.3802,17.2225],[77.4585,17.2813],[77.438,17.2919],[77.456,17.331],[77.4536,17.374],[77.503,17.3572],[77.5249,17.3647],[77.513,17.4309],[77.6524,17.4827],[77.662,17.5228],[77.5957,17.5366],[77.5938,17.5645],[77.5506,17.5517],[77.5284,17.5754],[77.4941,17.5684],[77.4441,17.5844],[77.4556,17.6318],[77.4525,17.6947],[77.5218,17.7259],[77.5471,17.7285],[77.5599,17.7634],[77.509,17.7878],[77.5675,17.8454],[77.57,17.8676],[77.6191,17.9041],[77.623,17.9455],[77.6495,17.95],[77.6278,17.9968],[77.5538,18.0358],[77.5484,18.0652],[77.597,18.0868],[77.5969,18.1559],[77.5747,18.1765],[77.5853,18.2196],[77.5731,18.2394],[77.6055,18.2813],[77.5514,18.2919],[77.5581,18.3314],[77.5204,18.3579],[77.5516,18.3889],[77.5567,18.4192],[77.5836,18.4451],[77.5764,18.4868],[77.6005,18.5273],[77.6396,18.5549],[77.6514,18.5323],[77.7016,18.5552],[77.7385,18.5568],[77.7504,18.5889],[77.7301,18.6672],[77.7596,18.7067],[77.7897,18.6949],[77.84,18.8048],[77.9489,18.8433],[77.9033,18.8666],[77.8844,18.9048],[77.8433,18.9087],[77.8586,18.9491],[77.8163,18.9473],[77.8218,18.9785],[77.7742,18.9974],[77.7648,19.0626],[77.8004,19.0511],[77.8049,19.1012],[77.8486,19.0865],[77.838,19.1376],[77.8477,19.1896],[77.8714,19.2538],[77.8635,19.3041],[77.9117,19.3163],[77.9435,19.3427],[78.0425,19.2706],[78.0557,19.2371],[78.1171,19.2486],[78.1429,19.23],[78.1753,19.2376],[78.1767,19.2778],[78.1937,19.3145],[78.1721,19.3597],[78.1925,19.4067],[78.22,19.433],[78.2445,19.4288],[78.3044,19.4561],[78.3092,19.4811],[78.275,19.552],[78.3037,19.5693],[78.2905,19.646],[78.2627,19.6651],[78.2762,19.6924],[78.3118,19.691],[78.3432,19.7132],[78.3647,19.7812],[78.3364,19.8379],[78.2998,19.841],[78.307,19.9143],[78.3369,19.883],[78.3807,19.8804],[78.3874,19.8446],[78.423,19.8176],[78.475,19.8155],[78.5527,19.824],[78.6036,19.8184],[78.699,19.7886],[78.7863,19.7765],[78.8407,19.7554],[78.8599,19.6895],[78.9555,19.6559],[78.9558,19.5997],[78.9753,19.5511],[78.998,19.5401],[79.046,19.5483],[79.1618,19.4878],[79.1897,19.4591],[79.2224,19.4676],[79.2075,19.5061],[79.24,19.5353],[79.2371,19.5572],[79.273,19.5989],[79.3184,19.5767],[79.3574,19.5776],[79.4055,19.5356],[79.4333,19.5373],[79.469,19.5096],[79.5008,19.5074],[79.5186,19.5431],[79.6005,19.5095],[79.6148,19.5608],[79.6322,19.5751],[79.7144,19.5869],[79.7353,19.605],[79.7786,19.5997],[79.8163,19.574],[79.8322,19.5391],[79.8638,19.5112],[79.9055,19.5],[79.9439,19.4707],[79.9779,19.4004],[79.9591,19.336],[79.9659,19.3111],[79.9364,19.2641],[79.9242,19.2155],[79.9446,19.1671],[79.8742,19.1243],[79.8584,19.0959],[79.8698,19.0423],[79.9383,19.0406],[79.9578,18.9363],[79.9616,18.8667],[79.914,18.8261],[79.9732,18.7718],[80.0188,18.7702],[80.0495,18.7287],[80.1123,18.6829],[80.1558,18.7006],[80.1787,18.6833],[80.2185,18.7079],[80.2729,18.723]]]},"properties":{"ST_NM":"Telangana","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[88.1054,26.5511],[88.1349,26.5235],[88.1892,26.5596],[88.2354,26.5448],[88.1826,26.5042],[88.2257,26.4801],[88.2609,26.4196],[88.2341,26.3918],[88.2819,26.3749],[88.2808,26.327],[88.2277,26.2849],[88.157,26.2557],[88.092,26.2023],[88.0732,26.1752],[88.0348,26.1792],[88.0138,26.1492],[87.9797,26.1442],[87.9844,26.1018],[87.9498,26.0602],[87.931,26.0823],[87.8568,26.0247],[87.8452,25.9624],[87.8108,25.928],[87.8307,25.8709],[87.8923,25.8658],[87.9099,25.7809],[87.9352,25.769],[87.9679,25.7261],[88.0497,25.7022],[88.0477,25.6582],[88.0216,25.5962],[88.0314,25.5541],[88.0715,25.5158],[88.0653,25.4894],[88.0306,25.4907],[87.9662,25.5363],[87.926,25.5387],[87.9027,25.5048],[87.8661,25.497],[87.8306,25.4619],[87.787,25.4493],[87.7643,25.386],[87.7895,25.3769],[87.7842,25.3401],[87.8524,25.2952],[87.8452,25.2634],[87.819,25.2425],[87.7636,25.2648],[87.7114,25.2577],[87.692,25.3116],[87.612,25.3128],[87.5844,25.3336],[87.5519,25.3327],[87.5432,25.2972],[87.4873,25.2965],[87.4971,25.2599],[87.4739,25.2402],[87.463,25.1951],[87.3918,25.2279],[87.3709,25.2072],[87.3345,25.2162],[87.3183,25.1948],[87.2955,25.0886],[87.2425,25.1027],[87.1811,25.0658],[87.1461,25.009],[87.1542,24.9754],[87.145,24.9192],[87.1571,24.883],[87.1094,24.8517],[87.0772,24.8077],[87.0805,24.7261],[87.0543,24.6697],[87.0511,24.6086],[86.9954,24.6204],[86.9784,24.6401],[86.9298,24.6268],[86.9085,24.585],[86.86,24.5561],[86.8113,24.5689],[86.787,24.6165],[86.6694,24.5662],[86.6032,24.602],[86.5526,24.5444],[86.5167,24.5354],[86.485,24.47],[86.4912,24.428],[86.4453,24.3679],[86.413,24.3803],[86.3955,24.4153],[86.3159,24.4422],[86.2761,24.4659],[86.3092,24.5112],[86.2924,24.5879],[86.2136,24.5943],[86.1583,24.5867],[86.1246,24.6113],[86.1154,24.6437],[86.1285,24.6987],[86.0942,24.7449],[86.0538,24.7559],[86.0553,24.7797],[85.9804,24.7487],[85.9702,24.733],[85.9204,24.7441],[85.8897,24.7927],[85.8201,24.808],[85.7781,24.7965],[85.7416,24.8198],[85.7045,24.7663],[85.7086,24.7268],[85.6604,24.6723],[85.6755,24.618],[85.6691,24.5798],[85.6152,24.5808],[85.5806,24.6008],[85.5721,24.5623],[85.5238,24.521],[85.491,24.5481],[85.432,24.5315],[85.3975,24.5448],[85.3732,24.5248],[85.2921,24.5237],[85.2825,24.4915],[85.2496,24.4908],[85.2261,24.4633],[85.1615,24.4607],[85.1739,24.4206],[85.0817,24.3985],[85.0315,24.4158],[84.9552,24.3715],[84.9166,24.3733],[84.8709,24.4582],[84.8329,24.4699],[84.8388,24.5127],[84.8022,24.5306],[84.7861,24.5036],[84.7556,24.5001],[84.7272,24.4692],[84.6856,24.4556],[84.6649,24.3909],[84.5675,24.4092],[84.5589,24.376],[84.5337,24.3597],[84.5009,24.2876],[84.4659,24.3316],[84.4244,24.3298],[84.4261,24.3572],[84.3476,24.3912],[84.3028,24.48],[84.3221,24.5166],[84.2972,24.5605],[84.259,24.5342],[84.2361,24.5495],[84.1728,24.5451],[84.1786,24.5052],[84.1039,24.4809],[84.0851,24.5136],[84.0731,24.5674],[84.034,24.6298],[83.998,24.6383],[83.9748,24.5914],[83.933,24.5473],[83.8727,24.5322],[83.8015,24.5299],[83.7546,24.5094],[83.596,24.5126],[83.5033,24.5254],[83.5223,24.5477],[83.5227,24.5986],[83.5437,24.6283],[83.5019,24.6486],[83.5204,24.6775],[83.4849,24.704],[83.4281,24.7682],[83.3912,24.7891],[83.4014,24.8194],[83.377,24.86],[83.3617,24.9537],[83.3436,24.9663],[83.3434,25.0509],[83.3536,25.1886],[83.4035,25.2164],[83.4093,25.2456],[83.5372,25.3036],[83.6298,25.3301],[83.6636,25.3725],[83.6946,25.3712],[83.7423,25.4099],[83.7712,25.3969],[83.8079,25.4091],[83.9142,25.5452],[84.0174,25.6148],[84.0813,25.6365],[84.075,25.6953],[84.1051,25.7212],[84.1544,25.7274],[84.1989,25.7022],[84.2232,25.6625],[84.2941,25.6602],[84.324,25.6704],[84.3285,25.7311],[84.3646,25.7419],[84.4297,25.7111],[84.4621,25.7089],[84.5202,25.675],[84.5611,25.6839],[84.5603,25.7369],[84.61,25.7552],[84.6248,25.7919],[84.5508,25.8407],[84.534,25.8763],[84.5109,25.8714],[84.4276,25.8913],[84.4119,25.9308],[84.354,25.9588],[84.3119,25.9438],[84.2066,25.9989],[84.0887,26.1003],[84.056,26.1001],[84.0262,26.1966],[84.0599,26.2236],[84.1769,26.265],[84.1861,26.3137],[84.1755,26.3732],[84.0683,26.3884],[84.0186,26.4471],[83.9915,26.4323],[83.9108,26.4497],[83.9152,26.5029],[83.9402,26.5253],[84.0069,26.5256],[84.0478,26.5363],[84.09,26.607],[84.0882,26.6362],[84.1593,26.6361],[84.2847,26.5996],[84.3528,26.6199],[84.4195,26.6261],[84.4106,26.6702],[84.3303,26.684],[84.3061,26.7496],[84.2549,26.7267],[84.2326,26.7537],[84.26,26.807],[84.2541,26.8566],[84.2188,26.8714],[84.1661,26.8338],[84.1406,26.8527],[84.1298,26.893],[84.0798,26.8779],[84.0443,26.9315],[84.0564,26.9902],[84.0495,27.0345],[84.0056,27.0603],[84.0165,27.1055],[83.9647,27.0843],[83.9474,27.1118],[83.987,27.1976],[83.9557,27.2353],[83.9118,27.246],[83.9292,27.2916],[83.9043,27.3266],[83.8715,27.3073],[83.8635,27.3441],[83.8819,27.3651],[83.8324,27.4309],[83.8698,27.4374],[84.0465,27.4459],[84.0645,27.4781],[84.0929,27.4904],[84.1056,27.5212],[84.1754,27.4743],[84.2585,27.451],[84.2792,27.3962],[84.354,27.3716],[84.4222,27.3715],[84.6202,27.3393],[84.6899,27.2216],[84.6748,27.1034],[84.6461,27.0758],[84.6448,27.0457],[84.7571,27.0028],[84.793,26.9964],[84.8219,27.0212],[84.8577,26.9887],[84.9108,26.968],[84.9607,26.9611],[84.9702,26.918],[85.0576,26.8494],[85.099,26.8712],[85.1926,26.8671],[85.1767,26.8097],[85.2119,26.7579],[85.2325,26.7622],[85.3343,26.7417],[85.4077,26.7917],[85.451,26.782],[85.4953,26.7972],[85.5752,26.8606],[85.6794,26.8437],[85.7216,26.8203],[85.7347,26.7959],[85.7252,26.7092],[85.7323,26.6536],[85.8174,26.6028],[85.8507,26.6085],[85.8595,26.5701],[85.9138,26.6085],[85.9448,26.6129],[85.9536,26.6465],[86.0282,26.6662],[86.1183,26.6304],[86.1361,26.6065],[86.171,26.6168],[86.1954,26.5955],[86.2351,26.5918],[86.2529,26.6149],[86.3075,26.6203],[86.4559,26.5678],[86.4989,26.5422],[86.542,26.5383],[86.563,26.5019],[86.6255,26.4806],[86.6318,26.4647],[86.696,26.4486],[86.7407,26.4253],[86.7677,26.4589],[86.8335,26.4393],[86.8935,26.4615],[86.9294,26.4898],[86.9334,26.5154],[87.0165,26.5318],[87.0409,26.5684],[87.0718,26.5407],[87.0911,26.4508],[87.1622,26.4045],[87.2353,26.4152],[87.2652,26.406],[87.2655,26.3736],[87.3116,26.3718],[87.3402,26.3477],[87.3556,26.3887],[87.388,26.4192],[87.4637,26.4402],[87.5159,26.4308],[87.5843,26.3934],[87.6513,26.3934],[87.7128,26.4274],[87.7638,26.4101],[87.7927,26.469],[87.8483,26.4369],[87.8636,26.4685],[87.8991,26.4786],[87.9173,26.4304],[87.9974,26.365],[88.0685,26.415],[88.0992,26.4561],[88.1106,26.4976],[88.1054,26.5511]]]},"properties":{"ST_NM":"Bihar","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.4313,11.6665],[76.4271,11.6335],[76.3881,11.6297],[76.378,11.602],[76.3359,11.5958],[76.3024,11.5713],[76.279,11.6009],[76.2334,11.5679],[76.2407,11.526],[76.2647,11.4813],[76.326,11.4541],[76.3687,11.4563],[76.4604,11.3889],[76.5478,11.359],[76.5422,11.2967],[76.5217,11.2707],[76.4531,11.2395],[76.4489,11.2056],[76.499,11.2114],[76.5338,11.1857],[76.6289,11.1943],[76.707,11.2383],[76.7355,11.2157],[76.698,11.1742],[76.7002,11.1536],[76.7481,11.1348],[76.7465,11.0568],[76.7158,11.0405],[76.6667,10.9682],[76.6591,10.9306],[76.7392,10.8946],[76.7798,10.8913],[76.8308,10.8707],[76.8701,10.809],[76.901,10.8079],[76.9039,10.7627],[76.8661,10.6841],[76.8821,10.639],[76.8143,10.635],[76.8387,10.5959],[76.8233,10.3946],[76.8486,10.3674],[76.8299,10.3032],[76.8967,10.2621],[76.9104,10.2351],[76.9841,10.2223],[77.0516,10.2638],[77.056,10.2873],[77.1202,10.318],[77.176,10.3586],[77.2353,10.3529],[77.2278,10.3154],[77.2636,10.2639],[77.2778,10.1934],[77.2749,10.1313],[77.2443,10.1317],[77.2012,10.1072],[77.204,10.0885],[77.2616,10.0336],[77.2554,10.0112],[77.2728,9.9643],[77.2183,9.9049],[77.2269,9.822],[77.2468,9.7985],[77.2049,9.724],[77.2066,9.6945],[77.1808,9.6586],[77.1677,9.6151],[77.2036,9.6145],[77.2342,9.5816],[77.2696,9.5729],[77.3037,9.5988],[77.3657,9.551],[77.3991,9.4962],[77.3925,9.4595],[77.3659,9.4602],[77.3364,9.4124],[77.338,9.3687],[77.2995,9.311],[77.2567,9.1967],[77.2678,9.1534],[77.2056,9.0839],[77.1925,9.0436],[77.167,9.0449],[77.1493,9.0097],[77.1733,8.9916],[77.2211,8.9041],[77.2567,8.8782],[77.264,8.8421],[77.2297,8.7847],[77.179,8.7307],[77.2009,8.669],[77.2514,8.6203],[77.2751,8.5386],[77.2621,8.5067],[77.2135,8.512],[77.2065,8.4443],[77.167,8.3839],[77.1685,8.3326],[77.1186,8.3203],[77.0978,8.2925],[76.9713,8.3923],[76.9676,8.4097],[76.7019,8.7369],[76.6717,8.7841],[76.6102,8.8597],[76.5655,8.8804],[76.5424,8.9134],[76.5167,9.0177],[76.353,9.3767],[76.3155,9.5031],[76.2963,9.6281],[76.2841,9.7489],[76.2603,9.8832],[76.2026,10.0528],[76.1867,10.1169],[76.139,10.2537],[76.1167,10.3339],[76.0671,10.456],[76.0319,10.5175],[75.9225,10.7613],[75.9072,10.804],[75.8876,10.898],[75.8302,11.1167],[75.8045,11.1596],[75.7596,11.2888],[75.7156,11.3933],[75.6807,11.4509],[75.6373,11.4656],[75.6186,11.4875],[75.5609,11.6438],[75.5366,11.6939],[75.5306,11.704],[75.4379,11.8056],[75.379,11.8598],[75.3658,11.8535],[75.2516,12.0087],[75.2042,12.0056],[75.1566,12.11],[75.042,12.3882],[75.0317,12.3918],[74.974,12.5014],[74.8696,12.7607],[74.9275,12.7787],[75.0062,12.7709],[74.9825,12.7385],[75.0503,12.7195],[75.0424,12.6721],[75.1107,12.6831],[75.161,12.673],[75.1541,12.6239],[75.2019,12.6286],[75.2118,12.5794],[75.2721,12.5702],[75.2801,12.5242],[75.3322,12.4996],[75.3454,12.4631],[75.3819,12.5021],[75.4179,12.4976],[75.4233,12.4668],[75.3705,12.4566],[75.3659,12.412],[75.4219,12.3727],[75.4109,12.346],[75.4327,12.2934],[75.4849,12.29],[75.5054,12.2708],[75.5408,12.2005],[75.577,12.1569],[75.6209,12.1552],[75.6489,12.1086],[75.6872,12.1103],[75.7277,12.0726],[75.7504,12.0843],[75.8027,12.0795],[75.8011,12.037],[75.83,11.9841],[75.8968,11.9448],[76.0032,11.9315],[76.0701,11.9672],[76.1125,11.9788],[76.1149,11.8667],[76.2069,11.862],[76.227,11.8062],[76.2802,11.8124],[76.3397,11.7391],[76.4111,11.7582],[76.4247,11.721],[76.4085,11.6896],[76.4313,11.6665]]]},"properties":{"ST_NM":"Kerala","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[82.8103,23.9629],[82.7524,23.9198],[82.6989,23.925],[82.6616,23.9077],[82.6597,23.8547],[82.5908,23.8221],[82.5542,23.8262],[82.5253,23.7841],[82.4974,23.7849],[82.4708,23.8106],[82.3935,23.7999],[82.3352,23.8028],[82.2622,23.8211],[82.238,23.8057],[82.2069,23.8266],[82.144,23.8164],[82.0817,23.8164],[82.0092,23.8608],[81.9561,23.853],[81.9215,23.8709],[81.9045,23.8448],[81.8234,23.8079],[81.7731,23.8164],[81.725,23.8447],[81.6592,23.9176],[81.6102,23.9041],[81.6032,23.8537],[81.6344,23.8357],[81.6514,23.7991],[81.644,23.7731],[81.6757,23.7573],[81.6959,23.7214],[81.6552,23.6632],[81.6203,23.6515],[81.6115,23.6017],[81.5767,23.5854],[81.61,23.5557],[81.627,23.4821],[81.6681,23.533],[81.6994,23.522],[81.7251,23.5567],[81.8095,23.549],[81.8211,23.515],[81.8812,23.5151],[81.9233,23.5327],[81.9764,23.4523],[81.9849,23.4149],[82.0569,23.377],[82.1015,23.3981],[82.1194,23.354],[82.1464,23.3608],[82.1988,23.3122],[82.1455,23.2266],[82.1451,23.1634],[82.1613,23.1432],[82.1111,23.1094],[82.0673,23.1161],[82.036,23.0811],[81.9695,23.081],[81.9295,23.0617],[81.9215,23.0408],[81.9505,22.983],[81.8616,22.8893],[81.7757,22.8745],[81.767,22.8344],[81.7944,22.7665],[81.7523,22.7267],[81.7716,22.6764],[81.7286,22.6765],[81.7131,22.6481],[81.6833,22.6469],[81.6465,22.5934],[81.66,22.57],[81.605,22.5346],[81.5675,22.5505],[81.4965,22.5193],[81.4826,22.4885],[81.4278,22.4798],[81.4229,22.4477],[81.3964,22.4401],[81.382,22.5098],[81.3185,22.5167],[81.2813,22.503],[81.2322,22.4522],[81.1718,22.4872],[81.1564,22.4564],[81.11,22.4356],[81.1058,22.3871],[81.1211,22.3412],[81.1184,22.2905],[81.0895,22.2471],[81.0235,22.2292],[81.0219,22.1328],[80.9939,22.0493],[80.9496,22.1172],[80.9079,22.1096],[80.8979,22.0669],[80.8324,21.9086],[80.8446,21.8316],[80.8154,21.7555],[80.7854,21.7403],[80.7561,21.7622],[80.7338,21.7286],[80.7171,21.6025],[80.7408,21.5392],[80.7276,21.4962],[80.7353,21.4609],[80.6711,21.3383],[80.66,21.3341],[80.6214,21.3203],[80.5392,21.3827],[80.4611,21.403],[80.4461,21.3711],[80.4129,21.3763],[80.3959,21.405],[80.4181,21.4484],[80.3848,21.4894],[80.3765,21.5233],[80.3308,21.5479],[80.328,21.5711],[80.254,21.6245],[80.1928,21.6355],[80.1546,21.6065],[80.1287,21.6114],[80.0723,21.5567],[80.0314,21.5556],[80.0005,21.5336],[79.9715,21.5577],[79.9298,21.5525],[79.9184,21.5244],[79.8631,21.5308],[79.8312,21.5467],[79.7899,21.5874],[79.7334,21.6033],[79.578,21.5413],[79.512,21.584],[79.4962,21.674],[79.4152,21.6908],[79.4007,21.677],[79.2909,21.6925],[79.2681,21.7154],[79.2212,21.6939],[79.2239,21.6486],[79.1631,21.6585],[79.1028,21.6014],[79.0123,21.5994],[78.9753,21.6176],[78.9165,21.5909],[78.9123,21.5488],[78.9411,21.5112],[78.805,21.4904],[78.7278,21.4623],[78.6881,21.4819],[78.5854,21.4867],[78.5408,21.5235],[78.5049,21.5266],[78.4571,21.4959],[78.4339,21.5356],[78.408,21.6084],[78.3557,21.573],[78.3208,21.5718],[78.2644,21.5913],[78.2635,21.5659],[78.2234,21.5526],[78.182,21.5566],[78.1763,21.4991],[78.0661,21.4374],[77.981,21.4024],[77.9019,21.3773],[77.8225,21.4072],[77.7966,21.389],[77.7467,21.3796],[77.7371,21.3622],[77.6773,21.3753],[77.6497,21.3921],[77.5633,21.3932],[77.5314,21.419],[77.5144,21.3759],[77.4917,21.3741],[77.4735,21.4542],[77.4417,21.4714],[77.4224,21.5169],[77.4546,21.5537],[77.5082,21.5509],[77.5751,21.5264],[77.6118,21.5385],[77.5762,21.5771],[77.5618,21.6657],[77.5438,21.7038],[77.5007,21.7468],[77.456,21.7601],[77.4058,21.7525],[77.324,21.7527],[77.26,21.714],[77.2268,21.7167],[77.2104,21.6896],[77.1296,21.7222],[77.0624,21.7071],[77.0084,21.6801],[76.9133,21.6118],[76.9012,21.5965],[76.8549,21.6133],[76.8273,21.5883],[76.7994,21.595],[76.782,21.5686],[76.7894,21.5398],[76.7635,21.5205],[76.7956,21.4894],[76.7858,21.465],[76.7443,21.4398],[76.7402,21.4113],[76.6827,21.3784],[76.6215,21.3322],[76.6626,21.2804],[76.6232,21.1849],[76.5608,21.1987],[76.5298,21.1818],[76.4931,21.1938],[76.4373,21.1001],[76.3804,21.0751],[76.2789,21.0701],[76.2719,21.0888],[76.1917,21.0866],[76.1354,21.1207],[76.1102,21.1612],[76.1652,21.1694],[76.1592,21.2535],[76.1284,21.2866],[76.0956,21.3711],[76.0478,21.349],[75.9866,21.3687],[75.9629,21.3896],[75.9105,21.3824],[75.874,21.3925],[75.8332,21.3766],[75.7033,21.388],[75.6701,21.3745],[75.6164,21.388],[75.5415,21.3691],[75.4964,21.3873],[75.4265,21.3907],[75.3824,21.3793],[75.3002,21.3912],[75.2071,21.4128],[75.1077,21.4622],[75.0899,21.5153],[75.0517,21.5665],[74.8689,21.6314],[74.8289,21.6097],[74.7837,21.6108],[74.6871,21.6317],[74.6642,21.6523],[74.5821,21.6649],[74.5478,21.7187],[74.513,21.7185],[74.5141,21.7659],[74.5003,21.8068],[74.5101,21.8292],[74.5093,21.9207],[74.4891,21.9558],[74.4394,21.9767],[74.4317,22.0302],[74.3901,22.0215],[74.3411,21.974],[74.3089,21.9724],[74.281,21.933],[74.1938,21.9257],[74.1467,21.9528],[74.1435,21.9897],[74.1012,21.9994],[74.1703,22.0916],[74.1285,22.0946],[74.1307,22.1445],[74.1165,22.2162],[74.0723,22.219],[74.0745,22.2656],[74.0538,22.3037],[74.0959,22.371],[74.1281,22.333],[74.1902,22.3202],[74.2704,22.413],[74.2037,22.4461],[74.1194,22.4188],[74.0863,22.4699],[74.0829,22.5066],[74.0533,22.5086],[74.0384,22.5347],[74.0747,22.5513],[74.1345,22.5197],[74.2104,22.565],[74.232,22.6123],[74.2769,22.6459],[74.3609,22.6338],[74.3842,22.6474],[74.4018,22.7315],[74.4648,22.8164],[74.4766,22.8555],[74.4606,22.9079],[74.4184,22.9173],[74.3782,22.9069],[74.3395,22.9528],[74.3643,22.9814],[74.3244,23.0614],[74.3845,23.1111],[74.4322,23.105],[74.4641,23.0817],[74.5394,23.1034],[74.5432,23.1305],[74.5965,23.1379],[74.6714,23.2001],[74.7153,23.1908],[74.7443,23.2114],[74.7011,23.2648],[74.6489,23.256],[74.6201,23.2768],[74.5438,23.2804],[74.5232,23.3211],[74.5424,23.3647],[74.5689,23.3763],[74.575,23.4233],[74.6162,23.4599],[74.6519,23.4624],[74.7,23.5039],[74.8029,23.5325],[74.84,23.5499],[74.87,23.5918],[74.9365,23.6286],[74.9039,23.6748],[74.9404,23.7647],[74.9088,23.8356],[74.9025,23.8732],[74.9288,23.9541],[74.9621,23.9774],[74.9785,24.0365],[74.939,24.0544],[74.9033,24.1092],[74.8823,24.1796],[74.9071,24.201],[74.8678,24.243],[74.7775,24.2387],[74.7471,24.2534],[74.7817,24.2902],[74.7809,24.3385],[74.8253,24.4001],[74.8151,24.4686],[74.7444,24.4685],[74.7537,24.5538],[74.7865,24.5858],[74.7796,24.6153],[74.8142,24.6659],[74.7837,24.6916],[74.7802,24.7297],[74.8176,24.7454],[74.8739,24.6491],[74.89,24.634],[74.943,24.6404],[74.9922,24.6944],[74.9815,24.7636],[74.8609,24.7985],[74.8591,24.8384],[74.8259,24.8993],[74.8336,24.9596],[74.8597,24.9617],[74.9134,24.9161],[74.9106,24.8939],[74.9482,24.8645],[75.0483,24.8499],[75.0765,24.8806],[75.1192,24.8824],[75.1136,24.9668],[75.1515,24.9892],[75.17,25.0489],[75.1925,25.0335],[75.2676,25.0425],[75.3343,25.0411],[75.3135,24.9801],[75.3371,24.9553],[75.3203,24.9016],[75.2819,24.953],[75.2634,24.8748],[75.3182,24.8604],[75.3736,24.8677],[75.3976,24.8418],[75.2978,24.8071],[75.273,24.8427],[75.2504,24.8095],[75.211,24.7977],[75.1975,24.7433],[75.2284,24.7176],[75.3492,24.7008],[75.4554,24.6806],[75.5339,24.7123],[75.5831,24.7133],[75.6087,24.6818],[75.646,24.6851],[75.6832,24.7241],[75.7572,24.7615],[75.8026,24.7562],[75.8376,24.7253],[75.8252,24.6675],[75.8786,24.5834],[75.9066,24.5758],[75.9235,24.5342],[75.9031,24.5044],[75.9092,24.455],[75.8753,24.4265],[75.8388,24.4141],[75.8098,24.4339],[75.7894,24.4716],[75.7519,24.4276],[75.7382,24.3348],[75.7664,24.2981],[75.813,24.292],[75.8181,24.2387],[75.7731,24.202],[75.752,24.148],[75.7929,24.0918],[75.835,24.0917],[75.8368,24.057],[75.7821,24.0426],[75.7649,23.9923],[75.7018,23.9665],[75.6709,24.018],[75.6324,23.9956],[75.5846,23.9906],[75.5211,24.0246],[75.4689,23.9744],[75.4594,23.9205],[75.4929,23.9061],[75.5659,23.8534],[75.5592,23.8186],[75.5835,23.7947],[75.6538,23.7981],[75.7179,23.8117],[75.7353,23.8985],[75.7646,23.8753],[75.8189,23.8684],[75.8447,23.8839],[75.9375,23.8966],[75.9871,23.9403],[75.9849,23.9737],[75.9635,24.0187],[75.9987,24.0207],[76.0429,24.0661],[76.1271,24.088],[76.1311,24.1154],[76.1141,24.1626],[76.1177,24.1947],[76.146,24.2244],[76.1587,24.2828],[76.1861,24.3286],[76.2038,24.3038],[76.2045,24.2172],[76.2856,24.2096],[76.2867,24.2283],[76.3398,24.244],[76.3925,24.217],[76.5048,24.2031],[76.5276,24.157],[76.5618,24.1734],[76.5957,24.2441],[76.6402,24.2684],[76.7022,24.2414],[76.6779,24.2041],[76.7006,24.1677],[76.7564,24.1691],[76.802,24.1165],[76.8546,24.1357],[76.9008,24.1272],[76.9224,24.2116],[76.9118,24.2381],[76.8631,24.2731],[76.8415,24.3225],[76.8518,24.3707],[76.8396,24.4131],[76.8521,24.451],[76.8465,24.4864],[76.8164,24.5336],[76.8621,24.5484],[76.8841,24.5215],[76.9207,24.528],[76.9169,24.4832],[76.9778,24.4612],[77.029,24.4961],[77.0547,24.5264],[77.0713,24.5724],[77.0651,24.6438],[77.0307,24.7122],[76.9983,24.7182],[76.9635,24.7565],[76.9014,24.7342],[76.8561,24.7425],[76.8484,24.7661],[76.8026,24.8093],[76.8321,24.8378],[76.8818,24.837],[76.9418,24.8587],[76.9125,24.8882],[76.923,24.9136],[76.8619,24.9614],[76.8762,25.0415],[76.9659,25.0515],[76.9885,25.0724],[77.0821,25.0582],[77.1669,25.0849],[77.1746,25.1117],[77.2887,25.1064],[77.31,25.0807],[77.3758,25.1048],[77.3962,25.1378],[77.4145,25.2204],[77.3554,25.2633],[77.3741,25.2745],[77.378,25.3155],[77.3497,25.3289],[77.3502,25.3822],[77.3709,25.4084],[77.3311,25.4274],[77.2943,25.4244],[77.2369,25.3802],[77.2092,25.3062],[77.1635,25.3086],[77.1252,25.3305],[77.0835,25.3367],[77.0457,25.3194],[77.0314,25.2945],[76.9295,25.3029],[76.902,25.3235],[76.8572,25.3327],[76.7805,25.3158],[76.7289,25.3288],[76.7007,25.3514],[76.6699,25.3488],[76.6363,25.3838],[76.5981,25.3939],[76.5884,25.4305],[76.5553,25.4534],[76.5546,25.4838],[76.5163,25.5282],[76.4989,25.6375],[76.5032,25.6729],[76.4752,25.7128],[76.5205,25.7273],[76.5156,25.7773],[76.5305,25.8119],[76.5914,25.8755],[76.6239,25.8713],[76.6318,25.9],[76.6711,25.9102],[76.7064,25.9001],[76.751,25.9164],[76.8051,25.9609],[76.8134,25.9977],[76.84,26.0261],[76.8861,26.0492],[76.9018,26.0935],[76.9481,26.1028],[76.999,26.1301],[77.0324,26.1729],[77.1004,26.1859],[77.1351,26.2334],[77.2039,26.23],[77.2706,26.2673],[77.3167,26.3118],[77.3209,26.3334],[77.3765,26.3653],[77.4443,26.3616],[77.4395,26.4039],[77.5235,26.4073],[77.5621,26.4368],[77.6149,26.4536],[77.6755,26.503],[77.7127,26.4982],[77.7388,26.5295],[77.7834,26.5521],[77.8325,26.5615],[77.8273,26.596],[77.8967,26.6175],[77.8984,26.6555],[77.9536,26.6592],[77.9975,26.694],[78.0952,26.6793],[78.0921,26.7149],[78.1165,26.7966],[78.1551,26.7841],[78.1689,26.8126],[78.223,26.8306],[78.2711,26.8142],[78.2835,26.8545],[78.3615,26.8691],[78.3952,26.8171],[78.4269,26.8256],[78.4596,26.7883],[78.522,26.7803],[78.5775,26.7485],[78.613,26.752],[78.63,26.7732],[78.6745,26.7657],[78.6806,26.7859],[78.7215,26.7964],[78.7719,26.7701],[78.8159,26.7624],[78.8694,26.6994],[78.9151,26.7062],[79.0084,26.6639],[78.9938,26.6405],[79.0165,26.6007],[78.9876,26.5931],[79.0189,26.541],[79.0679,26.4969],[79.0627,26.4532],[79.1295,26.4404],[79.1237,26.4116],[79.0914,26.4046],[79.0845,26.3581],[79.1205,26.3483],[79.135,26.3248],[79.0621,26.2736],[79.0653,26.2298],[79.0252,26.2207],[78.9943,26.1462],[78.9521,26.1293],[79.0121,26.0832],[78.9479,26.0263],[78.9525,25.988],[78.9333,25.9485],[78.8842,25.913],[78.8492,25.8281],[78.8083,25.8009],[78.7713,25.7497],[78.7633,25.7199],[78.8167,25.6763],[78.8105,25.6194],[78.7162,25.6045],[78.6583,25.5599],[78.5979,25.5705],[78.5447,25.5616],[78.4938,25.5786],[78.4195,25.5335],[78.4287,25.4879],[78.3691,25.4386],[78.301,25.362],[78.3279,25.3523],[78.3386,25.2919],[78.372,25.2589],[78.3821,25.2226],[78.4166,25.1835],[78.4112,25.1295],[78.3861,25.1038],[78.3395,25.0872],[78.3472,25.0245],[78.334,24.9949],[78.1723,24.8778],[78.2357,24.7717],[78.2256,24.753],[78.2768,24.6619],[78.2645,24.5522],[78.2266,24.5339],[78.2448,24.4874],[78.2711,24.4774],[78.2707,24.4462],[78.3658,24.386],[78.3297,24.3257],[78.3819,24.2731],[78.4098,24.2711],[78.4385,24.3123],[78.478,24.339],[78.502,24.3903],[78.5961,24.3351],[78.6602,24.2674],[78.6686,24.24],[78.7031,24.2269],[78.7645,24.2321],[78.7894,24.1771],[78.8471,24.2139],[78.888,24.227],[78.8846,24.2505],[78.9167,24.269],[78.9096,24.2961],[78.963,24.3442],[78.9936,24.4227],[78.9151,24.4582],[78.9185,24.4951],[78.9501,24.5007],[78.935,24.5608],[78.8831,24.6414],[78.8348,24.6048],[78.7838,24.5886],[78.757,24.5989],[78.7465,24.662],[78.7812,24.7069],[78.7701,24.7577],[78.7899,24.8104],[78.7533,24.869],[78.6766,24.8986],[78.6634,24.9384],[78.6361,24.9593],[78.6527,25.0499],[78.6273,25.0869],[78.6019,25.0978],[78.6007,25.1554],[78.5705,25.2052],[78.5608,25.2646],[78.533,25.3009],[78.538,25.3595],[78.585,25.3468],[78.602,25.4089],[78.6448,25.4146],[78.6582,25.441],[78.7115,25.4281],[78.6627,25.3822],[78.7153,25.3717],[78.7267,25.3434],[78.7746,25.353],[78.7486,25.3916],[78.759,25.4307],[78.7318,25.46],[78.7967,25.4828],[78.8354,25.4558],[78.8662,25.4657],[78.8415,25.5125],[78.8844,25.5156],[78.8841,25.5544],[78.9528,25.5375],[78.9205,25.5138],[78.9763,25.42],[78.9438,25.3491],[78.9013,25.3616],[78.8802,25.3859],[78.7977,25.2892],[78.8519,25.2302],[78.8641,25.3102],[78.8841,25.3441],[78.9639,25.2994],[78.9201,25.2736],[78.8717,25.188],[78.8903,25.1607],[78.921,25.2007],[78.9538,25.219],[79.0059,25.195],[79.0222,25.2413],[79.0636,25.222],[79.0309,25.1849],[79.031,25.1384],[79.0948,25.176],[79.116,25.1399],[79.1658,25.1075],[79.2038,25.1259],[79.2404,25.1131],[79.2824,25.1173],[79.3136,25.1361],[79.307,25.2249],[79.3447,25.2173],[79.345,25.2508],[79.2807,25.2617],[79.269,25.3051],[79.2998,25.3377],[79.3421,25.329],[79.3686,25.2924],[79.447,25.2445],[79.4382,25.1968],[79.3903,25.1701],[79.3842,25.1427],[79.4053,25.1062],[79.4263,25.1191],[79.4827,25.0797],[79.525,25.0974],[79.5187,25.1199],[79.5692,25.1718],[79.6083,25.1281],[79.6758,25.1237],[79.747,25.1393],[79.8258,25.1071],[79.8661,25.1411],[79.8513,25.2275],[79.8772,25.2509],[79.9366,25.2475],[79.9808,25.2618],[80.0221,25.2976],[80.0343,25.3421],[80.0727,25.3368],[80.089,25.3558],[80.1311,25.3342],[80.1959,25.4019],[80.2535,25.4008],[80.2639,25.4241],[80.3163,25.3858],[80.3221,25.3346],[80.3108,25.2864],[80.3482,25.2785],[80.408,25.2177],[80.4317,25.1776],[80.3527,25.1303],[80.3506,25.0904],[80.3304,25.0475],[80.2879,25.0381],[80.331,24.9922],[80.3477,25.0177],[80.3774,25.0069],[80.4083,25.0571],[80.449,25.0787],[80.4569,24.981],[80.5008,25.0045],[80.5309,25.0013],[80.5465,25.0321],[80.5062,25.0428],[80.5067,25.084],[80.5523,25.0628],[80.5924,25.0902],[80.6019,25.1505],[80.6325,25.1226],[80.6233,25.0886],[80.6763,25.0786],[80.6812,25.053],[80.7291,25.0672],[80.7663,25.0528],[80.7834,25.0759],[80.7306,25.1129],[80.7605,25.1347],[80.8038,25.1376],[80.8254,25.1215],[80.8486,25.163],[80.8823,25.1831],[80.9043,25.1589],[80.8688,25.1165],[80.8781,25.0655],[80.8355,25.0241],[80.8552,25.004],[80.8088,24.9489],[80.8296,24.918],[80.929,24.9612],[80.9964,24.9281],[81.0339,24.9526],[81.0897,24.9463],[81.0967,24.9209],[81.1396,24.8875],[81.1722,24.9573],[81.2153,24.9329],[81.2237,24.9988],[81.263,25.0519],[81.2662,25.1396],[81.292,25.1619],[81.3565,25.1634],[81.4069,25.1272],[81.4225,25.099],[81.4992,25.077],[81.4842,25.116],[81.5186,25.1861],[81.5787,25.1908],[81.6027,25.1364],[81.6378,25.1004],[81.6054,25.0787],[81.6117,25.0563],[81.6686,25.0715],[81.7084,25.0353],[81.7458,25.0335],[81.7927,25.0045],[81.8352,25.0173],[81.9079,24.9801],[81.9196,24.9278],[81.9079,24.8814],[81.9598,24.8372],[82.0107,24.8469],[82.0977,24.8162],[82.2556,24.7494],[82.2351,24.6709],[82.273,24.6752],[82.3299,24.6185],[82.4019,24.5914],[82.418,24.6415],[82.4073,24.6829],[82.4277,24.7022],[82.4569,24.6733],[82.5239,24.6726],[82.5391,24.6478],[82.671,24.697],[82.7287,24.6357],[82.7738,24.6418],[82.8008,24.5801],[82.7482,24.5613],[82.7207,24.5138],[82.7434,24.4987],[82.7134,24.3813],[82.764,24.3707],[82.7728,24.3076],[82.7364,24.2229],[82.7443,24.1656],[82.7281,24.1356],[82.6646,24.1298],[82.7123,24.0886],[82.7742,24.0748],[82.7513,24.0119],[82.8038,24.0036],[82.8103,23.9629]],[[79.396,25.0322],[79.4239,25.045],[79.3894,25.0918],[79.3737,25.0467],[79.396,25.0322]]]},"properties":{"ST_NM":"Madhya Pradesh","region":"west"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[93.8372,7.2402],[93.8711,7.1865],[93.88,7.0911],[93.8976,7.0806],[93.9331,7.0111],[93.931,6.9623],[93.8899,6.9024],[93.892,6.8067],[93.8455,6.817],[93.829,6.7551],[93.8013,6.7631],[93.8043,6.8022],[93.7796,6.835],[93.7696,6.891],[93.7442,6.9076],[93.7372,6.9644],[93.6943,7.0132],[93.6704,7.0177],[93.6463,7.1305],[93.6656,7.1418],[93.6803,7.1933],[93.7225,7.1893],[93.7405,7.2091],[93.7968,7.2139],[93.8372,7.2402]]],[[[93.7,7.4457],[93.7087,7.4047],[93.7432,7.3771],[93.7131,7.3122],[93.6673,7.2869],[93.636,7.2444],[93.617,7.27],[93.6191,7.3627],[93.6958,7.3962],[93.7,7.4457]]],[[[93.3713,8.0219],[93.3976,8.007],[93.3928,7.9736],[93.451,7.9366],[93.464,7.894],[93.4159,7.9079],[93.3679,7.8837],[93.3127,7.9291],[93.301,7.9613],[93.324,8.0108],[93.3713,8.0219]]],[[[93.5367,8.0283],[93.5696,7.9982],[93.5601,7.9346],[93.4985,7.9861],[93.5367,8.0283]]],[[[93.1168,8.3566],[93.1322,8.3486],[93.1165,8.2761],[93.1475,8.2421],[93.1119,8.2254],[93.0751,8.2785],[93.0853,8.34],[93.1168,8.3566]]],[[[92.7924,9.2387],[92.8126,9.2191],[92.8266,9.1411],[92.8004,9.1233],[92.7291,9.1264],[92.7175,9.1476],[92.7174,9.2095],[92.7636,9.217],[92.7924,9.2387]]],[[[92.5206,10.8978],[92.554,10.8688],[92.5647,10.8055],[92.5857,10.7899],[92.583,10.7415],[92.597,10.6813],[92.5503,10.6379],[92.5415,10.5948],[92.5685,10.5784],[92.5315,10.5209],[92.4988,10.5136],[92.4522,10.5448],[92.3843,10.5447],[92.4203,10.6133],[92.385,10.6699],[92.3783,10.7826],[92.3972,10.7794],[92.4616,10.8613],[92.5206,10.8978]]],[[[93.5119,8.2351],[93.5341,8.198],[93.4954,8.1664],[93.501,8.1388],[93.5406,8.0701],[93.5015,8.0777],[93.4757,8.0647],[93.4496,8.125],[93.4496,8.1802],[93.5119,8.2351]]],[[[92.2143,11.595],[92.2683,11.5854],[92.2719,11.5354],[92.2586,11.5181],[92.2133,11.5307],[92.2143,11.595]]],[[[92.9664,12.0413],[92.9952,12.0378],[93.0526,11.8996],[93.0372,11.8823],[92.9996,11.9368],[92.938,11.9864],[92.9664,12.0413]]],[[[92.9991,12.1063],[93.0045,12.0478],[92.9713,12.0554],[92.9541,12.0802],[92.9636,12.1118],[92.9991,12.1063]]],[[[92.9871,12.1601],[93.0027,12.1122],[92.9624,12.1136],[92.952,12.1473],[92.9871,12.1601]]],[[[93.0718,12.2105],[93.0935,12.1465],[93.0741,12.0848],[93.0363,12.1311],[93.0561,12.1944],[93.0718,12.2105]]],[[[92.6389,11.5105],[92.6678,11.4893],[92.6836,11.4328],[92.6533,11.41],[92.6886,11.37],[92.6374,11.3471],[92.6007,11.3463],[92.5806,11.3706],[92.5867,11.4012],[92.6244,11.4195],[92.61,11.4586],[92.6389,11.5105]]],[[[92.7205,12.8991],[92.7184,12.875],[92.6649,12.8119],[92.6482,12.8605],[92.6639,12.882],[92.6925,12.9924],[92.7185,12.9825],[92.7205,12.8991]]],[[[92.8394,13.1265],[92.8125,13.1538],[92.8268,13.2366],[92.832,13.3524],[92.8807,13.4065],[92.8714,13.4724],[92.9331,13.4992],[92.9479,13.5324],[92.9891,13.5661],[93.0321,13.5645],[93.0434,13.5257],[93.0285,13.4283],[93.0573,13.3977],[93.0387,13.3512],[93.0026,13.3544],[92.9823,13.3293],[93.0439,13.2589],[93.0552,13.2334],[93.0309,13.1776],[93.0333,13.0819],[93.0121,13.05],[92.967,13.0183],[92.9144,13.0522],[92.9015,13.022],[92.9112,12.9899],[92.8821,12.9792],[92.8593,12.9021],[92.8007,12.9001],[92.7919,12.9285],[92.7965,13.0805],[92.8394,13.1265]]],[[[92.7346,12.2398],[92.7609,12.2285],[92.7467,12.1805],[92.7206,12.1975],[92.7346,12.2398]]],[[[92.8102,12.3131],[92.8338,12.3],[92.8695,12.3009],[92.8739,12.2059],[92.8494,12.1507],[92.7631,12.0643],[92.7376,12.0987],[92.7687,12.1842],[92.7696,12.2385],[92.7417,12.2444],[92.8102,12.3131]]],[[[92.696,12.2391],[92.717,12.174],[92.7562,12.163],[92.7336,12.1034],[92.7782,12.0262],[92.7139,11.9884],[92.7052,11.9279],[92.733,11.9077],[92.7627,11.9401],[92.7859,11.9255],[92.7896,11.8838],[92.7535,11.7182],[92.7013,11.6957],[92.6952,11.6665],[92.6624,11.657],[92.6775,11.6134],[92.7182,11.6821],[92.7554,11.6645],[92.7507,11.6087],[92.7105,11.4883],[92.6987,11.5075],[92.6449,11.524],[92.6489,11.5724],[92.6175,11.5881],[92.5911,11.6709],[92.5918,11.7313],[92.5527,11.7184],[92.5496,11.8234],[92.5143,11.8484],[92.5279,11.8962],[92.5644,11.9435],[92.6083,11.8964],[92.6124,11.9993],[92.6237,12.0278],[92.6236,12.1077],[92.6443,12.1788],[92.696,12.2391]]],[[[92.9011,12.9109],[92.9242,12.8839],[92.9521,12.8059],[92.928,12.7753],[92.9674,12.739],[92.9563,12.6405],[92.9584,12.5772],[92.9724,12.5311],[92.953,12.5023],[92.9406,12.4506],[92.9186,12.4231],[92.8276,12.4238],[92.882,12.3331],[92.8312,12.3029],[92.8096,12.3158],[92.77,12.3166],[92.7192,12.3003],[92.699,12.3309],[92.7051,12.3705],[92.6978,12.4262],[92.7079,12.4933],[92.6986,12.5154],[92.7091,12.5603],[92.704,12.6082],[92.7422,12.6721],[92.7284,12.6979],[92.7396,12.7313],[92.7195,12.7889],[92.7218,12.8254],[92.7533,12.8485],[92.78,12.8238],[92.7903,12.89],[92.8207,12.8962],[92.8435,12.8753],[92.9011,12.9109]]]]},"properties":{"ST_NM":"Andaman & Nicobar","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[72.3623,22.0291],[72.4286,22.0016],[72.4445,21.9703],[72.4391,21.9298],[72.4084,21.8981],[72.3895,21.8205],[72.352,21.7975],[72.3207,21.8202],[72.2998,21.8827],[72.2929,21.9705],[72.3204,22.0058],[72.3623,22.0291]]],[[[69.629,22.4587],[69.6569,22.4268],[69.6366,22.4055],[69.5904,22.4305],[69.629,22.4587]]],[[[74.3244,23.0614],[74.3643,22.9814],[74.3395,22.9528],[74.3782,22.9069],[74.4184,22.9173],[74.4606,22.9079],[74.4766,22.8555],[74.4648,22.8164],[74.4018,22.7315],[74.3842,22.6474],[74.3609,22.6338],[74.2769,22.6459],[74.232,22.6123],[74.2104,22.565],[74.1345,22.5197],[74.0747,22.5513],[74.0384,22.5347],[74.0533,22.5086],[74.0829,22.5066],[74.0863,22.4699],[74.1194,22.4188],[74.2037,22.4461],[74.2704,22.413],[74.1902,22.3202],[74.1281,22.333],[74.0959,22.371],[74.0538,22.3037],[74.0745,22.2656],[74.0723,22.219],[74.1165,22.2162],[74.1307,22.1445],[74.1285,22.0946],[74.1703,22.0916],[74.1012,21.9994],[74.1435,21.9897],[74.1467,21.9528],[74.0526,21.9271],[73.9296,21.8644],[73.8711,21.8412],[73.8263,21.8426],[73.8362,21.7468],[73.881,21.7146],[73.8849,21.6535],[73.8386,21.633],[73.8122,21.6025],[73.8348,21.5202],[73.8534,21.4973],[73.9288,21.523],[73.9675,21.5226],[74.011,21.5491],[74.0433,21.5456],[74.1577,21.5687],[74.2003,21.5323],[74.2634,21.5398],[74.2761,21.5619],[74.3208,21.529],[74.3206,21.4984],[74.2558,21.4766],[74.214,21.4815],[74.0466,21.4486],[74.0443,21.4191],[74.0083,21.4228],[73.9518,21.3952],[73.9425,21.3001],[73.8794,21.2658],[73.8487,21.2746],[73.8116,21.231],[73.8259,21.1999],[73.8157,21.1739],[73.7296,21.1652],[73.6431,21.1394],[73.6517,21.1074],[73.7058,21.1081],[73.7297,21.0822],[73.7801,21.0643],[73.8148,21.0233],[73.8677,20.9859],[73.9011,20.9821],[73.8882,20.9352],[73.9256,20.8883],[73.9236,20.8512],[73.9422,20.7423],[73.9049,20.7253],[73.8745,20.7296],[73.8627,20.7032],[73.8119,20.692],[73.8382,20.6547],[73.8384,20.6205],[73.775,20.5995],[73.7463,20.5683],[73.7155,20.5764],[73.6696,20.5632],[73.6269,20.5849],[73.5996,20.6368],[73.5509,20.6485],[73.5313,20.6741],[73.4484,20.6922],[73.3942,20.6407],[73.4202,20.6272],[73.4292,20.5962],[73.4742,20.5831],[73.4677,20.4964],[73.4209,20.4278],[73.38,20.3939],[73.4118,20.3638],[73.4274,20.278],[73.413,20.2694],[73.4166,20.1982],[73.3429,20.1995],[73.3016,20.2099],[73.2813,20.1902],[73.2782,20.1487],[73.2547,20.127],[73.2107,20.1205],[73.1856,20.1558],[73.1991,20.1944],[73.1332,20.2057],[73.1421,20.1773],[73.0997,20.1561],[73.0629,20.1697],[73.0602,20.2233],[73.1657,20.2829],[73.1514,20.3172],[73.1014,20.3028],[73.0775,20.3229],[73.0383,20.3173],[73.0358,20.2923],[72.9417,20.2925],[72.9119,20.269],[72.954,20.2369],[72.9616,20.2088],[72.8705,20.2281],[72.8211,20.1877],[72.817,20.1561],[72.7752,20.1319],[72.7375,20.1348],[72.7457,20.2018],[72.74,20.2431],[72.7776,20.3368],[72.8212,20.3677],[72.8907,20.3726],[72.8573,20.4188],[72.8854,20.4625],[72.8556,20.4675],[72.8845,20.5023],[72.8982,20.583],[72.8542,20.7148],[72.8426,20.7773],[72.7856,20.916],[72.7466,20.9563],[72.7221,21.0344],[72.665,21.0996],[72.6315,21.082],[72.6188,21.1141],[72.6381,21.211],[72.6004,21.2898],[72.6006,21.3232],[72.6541,21.3461],[72.6493,21.3728],[72.6726,21.4263],[72.651,21.4534],[72.7058,21.5269],[72.6846,21.5442],[72.6354,21.5353],[72.6122,21.5852],[72.6351,21.6182],[72.7,21.6455],[72.7823,21.6423],[72.7899,21.6631],[72.7276,21.686],[72.6929,21.6784],[72.6238,21.682],[72.5527,21.6616],[72.5278,21.6782],[72.5399,21.7292],[72.5794,21.7401],[72.5955,21.804],[72.6187,21.8104],[72.6378,21.9606],[72.5825,21.9184],[72.583,21.8904],[72.5218,21.8803],[72.509,21.9442],[72.5228,22.0413],[72.5437,22.1291],[72.5667,22.1822],[72.621,22.2168],[72.6564,22.2129],[72.6965,22.1865],[72.7582,22.1742],[72.8091,22.2236],[72.8443,22.2344],[72.8745,22.2205],[72.9133,22.2404],[72.9107,22.267],[72.872,22.2849],[72.8398,22.2812],[72.7638,22.234],[72.7372,22.2753],[72.6822,22.276],[72.5803,22.3011],[72.5167,22.3056],[72.5003,22.2777],[72.4653,22.2599],[72.4273,22.2095],[72.4081,22.2296],[72.4186,22.3018],[72.3733,22.3158],[72.358,22.2476],[72.3392,22.2137],[72.3386,22.1767],[72.3086,22.1469],[72.2695,22.0596],[72.2254,22.0545],[72.2473,22.0133],[72.2418,21.9757],[72.2117,21.962],[72.2032,21.9137],[72.2173,21.8669],[72.2425,21.8297],[72.1919,21.8267],[72.1772,21.8036],[72.1939,21.7503],[72.2202,21.7365],[72.2353,21.6967],[72.2799,21.6942],[72.3094,21.639],[72.2772,21.5652],[72.2688,21.5222],[72.2107,21.4209],[72.1325,21.339],[72.0844,21.2463],[72.1124,21.2],[72.0175,21.1538],[72.0013,21.1769],[71.9713,21.1289],[71.8939,21.1088],[71.8782,21.0895],[71.8381,21.0902],[71.7794,21.0299],[71.711,21.0189],[71.6495,20.9964],[71.5655,20.9493],[71.5114,20.9446],[71.4769,20.8945],[71.4408,20.8708],[71.4049,20.8688],[71.3215,20.847],[71.2018,20.7887],[71.1575,20.7795],[71.1489,20.7581],[71.0925,20.7573],[71.0802,20.7384],[71.0075,20.7374],[70.9749,20.7274],[70.9203,20.7428],[70.8781,20.7284],[70.8736,20.7042],[70.8031,20.7005],[70.7039,20.7385],[70.6438,20.7792],[70.6271,20.768],[70.5416,20.8029],[70.4256,20.8631],[70.4028,20.8863],[70.3206,20.9277],[70.256,20.9747],[70.1683,21.0484],[70.0478,21.1568],[69.9598,21.2505],[69.8153,21.4168],[69.6988,21.5427],[69.6027,21.637],[69.5845,21.6377],[69.4775,21.7343],[69.433,21.7665],[69.3649,21.8344],[69.282,21.8955],[69.2172,21.9576],[69.0483,22.1365],[68.9559,22.2415],[68.9364,22.3114],[68.9558,22.3358],[68.9691,22.3895],[69.0064,22.4394],[69.054,22.4655],[69.0352,22.3905],[69.0721,22.3872],[69.1634,22.404],[69.1758,22.3778],[69.1569,22.3158],[69.1593,22.2768],[69.1367,22.1952],[69.1786,22.2126],[69.2377,22.2227],[69.2406,22.2582],[69.2922,22.2752],[69.334,22.3031],[69.336,22.3225],[69.4244,22.3166],[69.4896,22.3377],[69.4995,22.3661],[69.5435,22.3768],[69.5919,22.3588],[69.6558,22.3596],[69.6632,22.3934],[69.7006,22.3961],[69.7005,22.4607],[69.7437,22.4588],[69.8448,22.472],[69.8622,22.4622],[69.9467,22.5281],[70.0378,22.5617],[70.1248,22.5528],[70.1773,22.605],[70.2231,22.6731],[70.2224,22.7088],[70.2488,22.747],[70.2925,22.766],[70.3259,22.8394],[70.3761,22.9084],[70.4141,22.927],[70.4265,22.9041],[70.4094,22.8526],[70.4547,22.8451],[70.4831,22.9126],[70.4789,22.9752],[70.5391,22.9643],[70.5478,23.0004],[70.5934,23.0553],[70.6888,23.1173],[70.7126,23.1548],[70.7179,23.1892],[70.6667,23.2289],[70.6359,23.1854],[70.5052,23.1766],[70.408,23.2176],[70.3006,23.2087],[70.3085,23.1811],[70.2158,23.1285],[70.1078,22.9778],[70.0627,22.9547],[70.062,22.9201],[69.939,22.8975],[69.8988,22.8711],[69.863,22.8698],[69.7125,22.8059],[69.6475,22.796],[69.5801,22.8157],[69.5311,22.802],[69.4686,22.7978],[69.3017,22.8332],[69.2686,22.825],[69.1946,22.8389],[69.0443,22.9302],[68.9554,22.9735],[68.8021,23.0643],[68.7615,23.0785],[68.6569,23.151],[68.5322,23.2805],[68.5619,23.3137],[68.5563,23.3569],[68.5006,23.3694],[68.4586,23.3672],[68.4334,23.4155],[68.3998,23.4201],[68.4131,23.4858],[68.3264,23.4961],[68.3101,23.5786],[68.2741,23.5948],[68.1789,23.5927],[68.1193,23.6159],[68.0938,23.6668],[68.1062,23.6809],[68.1622,23.6865],[68.2024,23.7661],[68.1993,23.8466],[68.2084,23.875],[68.2501,23.895],[68.2889,23.9319],[68.3342,23.9259],[68.345,23.9724],[68.3971,23.97],[68.7504,23.9713],[68.754,23.9779],[68.7693,24.2674],[68.7646,24.2959],[68.8306,24.3119],[68.8573,24.2143],[68.8748,24.2123],[68.9069,24.2798],[68.9455,24.3026],[68.9846,24.2276],[69.0034,24.223],[69.0949,24.274],[69.1938,24.2362],[69.313,24.2813],[69.3749,24.269],[69.4431,24.28],[69.5052,24.269],[69.5942,24.2928],[69.7315,24.1709],[70.0252,24.171],[70.067,24.1991],[70.11,24.2948],[70.2539,24.3255],[70.3267,24.3519],[70.3685,24.3507],[70.4116,24.3752],[70.4723,24.3887],[70.5729,24.4217],[70.5989,24.4042],[70.5623,24.3508],[70.5847,24.2777],[70.5711,24.2514],[70.6441,24.2247],[70.7135,24.2154],[70.806,24.2206],[70.8516,24.2442],[70.8784,24.3017],[70.9469,24.3485],[70.9858,24.3654],[71.02,24.3478],[71.0492,24.3563],[71.0841,24.3945],[71.1196,24.4026],[71.103,24.4359],[71.0372,24.4324],[70.9985,24.4441],[71.0046,24.5232],[70.9874,24.5433],[70.9863,24.5953],[71.0084,24.6355],[71.0742,24.6623],[71.0985,24.6876],[71.112,24.6757],[71.2876,24.6158],[71.3137,24.648],[71.3478,24.661],[71.3782,24.6261],[71.4778,24.6795],[71.6079,24.677],[71.6554,24.6391],[71.7079,24.6617],[71.7717,24.6753],[71.8024,24.6719],[71.8025,24.631],[71.8522,24.6092],[71.8578,24.6664],[71.9075,24.6774],[71.9255,24.6359],[71.9784,24.6573],[71.9841,24.6863],[72.0583,24.7124],[72.0847,24.7069],[72.0898,24.6586],[72.1648,24.6212],[72.2337,24.6404],[72.2644,24.6044],[72.2463,24.5862],[72.2902,24.5503],[72.3539,24.5635],[72.3795,24.5127],[72.4416,24.5147],[72.4302,24.4801],[72.4573,24.4147],[72.5004,24.4169],[72.4932,24.459],[72.5412,24.5186],[72.576,24.4788],[72.6563,24.4621],[72.6809,24.465],[72.6892,24.4116],[72.7326,24.3635],[72.8037,24.3632],[72.8498,24.3719],[72.9107,24.3371],[72.9776,24.3734],[72.9619,24.4058],[72.9695,24.4529],[72.9998,24.4832],[73.0435,24.4692],[73.086,24.4984],[73.1017,24.4711],[73.101,24.4273],[73.0765,24.3965],[73.152,24.3543],[73.1962,24.3764],[73.2193,24.3638],[73.1665,24.2992],[73.1354,24.3083],[73.1255,24.2733],[73.0941,24.2468],[73.0675,24.1946],[73.1294,24.1226],[73.1589,24.0982],[73.2139,24.0776],[73.1932,24.0409],[73.2395,24.004],[73.2824,24.0192],[73.3387,24.0987],[73.4046,24.0411],[73.4201,23.9248],[73.3875,23.9158],[73.3542,23.8518],[73.3679,23.8141],[73.3561,23.7849],[73.3797,23.767],[73.4108,23.7801],[73.4735,23.7051],[73.5073,23.7028],[73.5056,23.6387],[73.5227,23.6071],[73.5687,23.6529],[73.6152,23.6521],[73.6417,23.6274],[73.6475,23.5743],[73.6331,23.5286],[73.6564,23.5074],[73.6332,23.4691],[73.6462,23.4413],[73.6913,23.4582],[73.7132,23.4143],[73.7673,23.453],[73.779,23.4312],[73.8303,23.4262],[73.8884,23.3561],[74.0287,23.3316],[74.0377,23.2954],[74.1069,23.2937],[74.1388,23.266],[74.1408,23.2229],[74.1278,23.176],[74.1728,23.1557],[74.2029,23.1902],[74.2738,23.158],[74.2834,23.0954],[74.3244,23.0614]]],[[[70.0168,22.6],[70.0328,22.5728],[70.0014,22.5546],[69.9855,22.5887],[70.0168,22.6]]]]},"properties":{"ST_NM":"Gujarat","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[72.7621,11.1829],[72.7636,11.1932],[72.7722,11.2169],[72.7795,11.2426],[72.787,11.2586],[72.7901,11.2555],[72.7807,11.232],[72.7779,11.2197],[72.7697,11.2057],[72.7621,11.1829]]]},"properties":{"ST_NM":"Lakshadweep","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[84.7647,19.0773],[84.6957,19.1273],[84.7126,19.1539],[84.6688,19.1669],[84.6526,19.1303],[84.6007,19.1275],[84.6257,19.0671],[84.5921,19.0232],[84.5669,19.0707],[84.4946,19.0319],[84.4762,18.9921],[84.4288,18.97],[84.4367,18.9238],[84.416,18.8985],[84.3601,18.8621],[84.319,18.788],[84.2869,18.8049],[84.2655,18.7852],[84.2243,18.7997],[84.1671,18.7893],[84.0916,18.7602],[84.0365,18.8173],[83.8945,18.8172],[83.8438,18.8761],[83.8219,18.9601],[83.7927,19.0189],[83.7456,18.9967],[83.7002,19.0253],[83.664,19.0765],[83.6497,19.1231],[83.5997,19.1364],[83.573,19.0623],[83.5164,19.0575],[83.4653,19.0886],[83.4765,19.0085],[83.4599,18.9557],[83.3991,19.01],[83.3636,19.0176],[83.3088,18.9998],[83.3484,18.9263],[83.3903,18.883],[83.4041,18.8449],[83.346,18.8278],[83.2807,18.7971],[83.2695,18.7653],[83.2227,18.776],[83.1913,18.7541],[83.1372,18.7863],[83.0707,18.7062],[83.056,18.6662],[83.0226,18.655],[82.999,18.6215],[83.0436,18.545],[83.0732,18.5155],[83.0191,18.4572],[83.0753,18.4041],[83.0527,18.3807],[83.0202,18.3924],[82.9751,18.3635],[82.938,18.3616],[82.8703,18.4193],[82.8139,18.4516],[82.7804,18.4315],[82.7888,18.3639],[82.7692,18.3382],[82.6549,18.297],[82.6367,18.2376],[82.5966,18.265],[82.5924,18.3291],[82.6053,18.3821],[82.5413,18.4216],[82.5259,18.5164],[82.5042,18.5144],[82.4718,18.5433],[82.381,18.4346],[82.3907,18.3272],[82.3731,18.2818],[82.343,18.2813],[82.3138,18.1848],[82.3517,18.1724],[82.3325,18.1276],[82.3476,18.0891],[82.3422,18.0587],[82.2897,18.0696],[82.2709,18.058],[82.2645,17.9956],[82.1873,18.0158],[82.1672,18.0527],[82.075,18.0759],[82.007,18.0584],[81.9635,18.0019],[81.8082,17.9564],[81.7879,17.926],[81.7104,17.8739],[81.6622,17.8816],[81.6188,17.8241],[81.5635,17.8272],[81.4885,17.8144],[81.4787,17.8375],[81.4186,17.8149],[81.3961,17.82],[81.4007,17.8943],[81.4478,17.8892],[81.4491,17.932],[81.4824,17.9755],[81.4825,18.0554],[81.5135,18.1006],[81.526,18.16],[81.5071,18.1855],[81.5373,18.2694],[81.5643,18.2752],[81.6005,18.3097],[81.6622,18.325],[81.6595,18.3467],[81.7503,18.3536],[81.7688,18.4181],[81.8572,18.494],[81.8682,18.5249],[81.9056,18.5612],[81.9502,18.57],[81.963,18.5948],[81.8941,18.6427],[81.9489,18.6437],[81.9654,18.6934],[82.0167,18.7195],[82.085,18.7186],[82.0887,18.7602],[82.1563,18.7852],[82.1689,18.836],[82.1612,18.8632],[82.1754,18.9013],[82.2175,18.9222],[82.246,18.9191],[82.2299,19.0274],[82.2022,19.0667],[82.2191,19.0954],[82.1675,19.1364],[82.1805,19.191],[82.1617,19.2023],[82.1584,19.2652],[82.186,19.3374],[82.1782,19.4366],[82.1273,19.4305],[82.1028,19.4661],[82.1002,19.5166],[82.0478,19.535],[82.0398,19.5972],[82.059,19.6282],[82.0446,19.7005],[82.0632,19.7578],[82.0602,19.7964],[81.9859,19.8011],[81.9681,19.8599],[81.8696,19.9026],[81.8531,19.9185],[81.8553,19.9723],[81.876,20.0521],[81.8968,20.0496],[81.9456,20.1052],[82.0373,20.028],[82.0705,20.057],[82.1285,20.0142],[82.1715,20.0052],[82.1882,19.9862],[82.2375,20.0035],[82.2692,19.9753],[82.3041,19.8892],[82.3453,19.8359],[82.418,19.9041],[82.4848,19.9078],[82.5046,19.8907],[82.6038,19.8663],[82.5758,19.8334],[82.5832,19.7792],[82.6271,19.7938],[82.6521,19.8322],[82.7039,19.832],[82.7196,19.8675],[82.7074,19.9021],[82.7181,19.9888],[82.6343,20.0033],[82.5913,19.9921],[82.5511,20.0162],[82.4947,20.0228],[82.401,20.0546],[82.3909,20.1622],[82.4122,20.1798],[82.4234,20.2193],[82.4113,20.2602],[82.4355,20.2857],[82.4314,20.3129],[82.4004,20.3393],[82.438,20.4342],[82.3978,20.4727],[82.3894,20.517],[82.3365,20.5539],[82.3437,20.5957],[82.3765,20.6324],[82.3741,20.6674],[82.3514,20.7063],[82.3395,20.8469],[82.3604,20.8726],[82.4064,20.8689],[82.4109,20.8443],[82.4549,20.8266],[82.4812,20.8496],[82.4881,20.9087],[82.5601,20.9467],[82.6298,21.04],[82.6121,21.0683],[82.65,21.1064],[82.6366,21.1479],[82.6972,21.164],[82.7559,21.1669],[82.7857,21.1448],[82.8415,21.1674],[82.9422,21.1605],[82.9837,21.1801],[83.0122,21.1449],[83.0779,21.1119],[83.1388,21.1094],[83.1986,21.1642],[83.2221,21.232],[83.2176,21.2557],[83.2681,21.2773],[83.2591,21.3375],[83.2742,21.3773],[83.3903,21.3427],[83.3987,21.4052],[83.354,21.448],[83.3492,21.5121],[83.3723,21.5627],[83.3698,21.6004],[83.3928,21.6273],[83.4432,21.6555],[83.4662,21.6097],[83.4868,21.6433],[83.4181,21.6799],[83.4536,21.6946],[83.4888,21.7481],[83.469,21.7869],[83.4933,21.8182],[83.5256,21.7981],[83.6057,21.9141],[83.5373,21.9779],[83.5502,22.0535],[83.5938,22.0732],[83.5627,22.103],[83.6078,22.1537],[83.6277,22.2042],[83.7057,22.2467],[83.7579,22.2403],[83.7796,22.2736],[83.8253,22.2923],[83.8299,22.3235],[83.8658,22.3431],[83.8975,22.3379],[83.9234,22.3584],[83.971,22.359],[84.0065,22.3822],[84.0469,22.4375],[84.0409,22.4731],[83.9807,22.5021],[84.0091,22.5261],[84.0756,22.5062],[84.113,22.4765],[84.1424,22.4723],[84.141,22.4259],[84.1968,22.3781],[84.2504,22.379],[84.269,22.3545],[84.317,22.3423],[84.3675,22.3532],[84.4005,22.3464],[84.4289,22.371],[84.4771,22.3869],[84.503,22.4198],[84.6288,22.4345],[84.6666,22.4195],[84.7501,22.4193],[84.759,22.4467],[84.8034,22.448],[84.8358,22.432],[84.8801,22.4489],[84.9094,22.4227],[84.9543,22.4587],[84.9707,22.4516],[85.0367,22.4814],[85.0877,22.3884],[85.0765,22.3561],[85.0995,22.2935],[85.0524,22.1951],[85.0298,22.1624],[85.0554,22.1156],[85.0999,22.1042],[85.1267,22.0748],[85.1531,22.0789],[85.2516,22.0266],[85.2748,22.0816],[85.3231,22.1275],[85.3527,22.1287],[85.371,22.161],[85.4123,22.1616],[85.4945,22.1194],[85.5994,22.0783],[85.6449,22.0947],[85.6902,22.0609],[85.7302,22.0653],[85.8074,22.1161],[85.7772,22.0556],[85.766,21.9949],[85.8257,21.9751],[85.9139,21.98],[86.0094,22.1178],[85.9967,22.1324],[86.0314,22.1925],[85.9856,22.2371],[85.9885,22.2673],[86.0171,22.2973],[85.998,22.3448],[86.0291,22.3858],[86.0181,22.4257],[85.9603,22.4614],[85.9734,22.5058],[86.0691,22.5559],[86.104,22.5009],[86.1237,22.4886],[86.2115,22.4715],[86.2258,22.453],[86.2941,22.4268],[86.3229,22.3848],[86.3678,22.3438],[86.411,22.3198],[86.4994,22.3463],[86.5262,22.3125],[86.5848,22.3006],[86.6515,22.2632],[86.6829,22.2233],[86.727,22.2168],[86.7218,22.1468],[86.7948,22.1572],[86.8378,22.0977],[86.8519,22.1029],[86.9601,22.0879],[86.9926,22.055],[87.0282,22.0379],[87.032,21.9957],[87.0019,21.913],[87.0397,21.8674],[87.0986,21.8658],[87.0909,21.8992],[87.1199,21.9272],[87.1615,21.9356],[87.1634,21.9691],[87.2359,21.9571],[87.2551,21.9267],[87.2389,21.8999],[87.2466,21.8613],[87.2765,21.8052],[87.3473,21.7921],[87.374,21.772],[87.4444,21.7682],[87.4706,21.7052],[87.4683,21.6641],[87.4862,21.6098],[87.425,21.5726],[87.393,21.543],[87.2355,21.5383],[87.1478,21.5087],[87.1102,21.4844],[87.0386,21.4201],[86.9842,21.3896],[86.945,21.3528],[86.8907,21.2553],[86.8633,21.2226],[86.8408,21.1578],[86.8525,21.0946],[86.9513,20.8982],[86.9768,20.8609],[86.9718,20.7939],[86.9079,20.7933],[86.8952,20.7639],[87.0221,20.7703],[87.0556,20.715],[86.888,20.6047],[86.7761,20.5224],[86.7304,20.4415],[86.7308,20.4114],[86.7589,20.3903],[86.7878,20.4049],[86.8098,20.375],[86.7844,20.3323],[86.7223,20.2903],[86.5955,20.2245],[86.5204,20.1702],[86.4915,20.1182],[86.4346,20.0531],[86.4088,19.9951],[86.355,19.948],[86.3239,19.9462],[86.23,19.9022],[86.0577,19.8504],[85.9444,19.8286],[85.7808,19.7815],[85.6791,19.7451],[85.4978,19.6571],[85.4085,19.618],[85.3073,19.5615],[85.1429,19.4456],[85.1042,19.413],[85.0794,19.375],[84.9803,19.3156],[84.8789,19.2313],[84.8085,19.1542],[84.7647,19.0773]]]},"properties":{"ST_NM":"Odisha","region":"east"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[73.2107,20.1205],[73.2132,20.091],[73.1709,20.0521],[73.1533,20.0729],[73.0559,20.099],[73.0396,20.0671],[72.9925,20.1177],[72.9616,20.2088],[72.954,20.2369],[72.9119,20.269],[72.9417,20.2925],[73.0358,20.2923],[73.0383,20.3173],[73.0775,20.3229],[73.1014,20.3028],[73.1514,20.3172],[73.1657,20.2829],[73.0602,20.2233],[73.0629,20.1697],[73.0997,20.1561],[73.1421,20.1773],[73.1332,20.2057],[73.1991,20.1944],[73.1856,20.1558],[73.2107,20.1205]]],[[[72.8212,20.3677],[72.8277,20.4317],[72.8556,20.4675],[72.8854,20.4625],[72.8573,20.4188],[72.8907,20.3726],[72.8212,20.3677]]],[[[71.0075,20.7374],[70.9788,20.7049],[70.9198,20.7104],[70.9203,20.7428],[70.9749,20.7274],[71.0075,20.7374]]]]},"properties":{"ST_NM":"Dadra and Nagar Haveli and Daman and Diu","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[78.3986,32.5257],[78.3264,32.472],[78.2946,32.5041],[78.3153,32.5254],[78.3128,32.5737],[78.348,32.5811],[78.4052,32.6194],[78.3796,32.6683],[78.3944,32.7156],[78.3877,32.7569],[78.3572,32.7578],[78.3042,32.7342],[78.3122,32.7092],[78.253,32.6911],[78.2195,32.6647],[78.158,32.684],[78.1478,32.6546],[78.1106,32.6626],[78.0872,32.6244],[78.0468,32.645],[78.0158,32.6198],[77.9518,32.6589],[77.9183,32.6912],[77.9337,32.7607],[77.8841,32.7877],[77.8788,32.8188],[77.7809,32.8656],[77.8,32.9122],[77.7131,32.9826],[77.6315,32.9452],[77.6021,32.9426],[77.5402,32.8874],[77.5017,32.8856],[77.469,32.8584],[77.4449,32.8796],[77.3974,32.8785],[77.3744,32.8547],[77.3739,32.8245],[77.339,32.8168],[77.3197,32.8522],[77.2339,32.8937],[77.1642,32.9189],[77.1497,32.9781],[77.0955,32.9711],[77.049,32.999],[77.0103,32.9891],[76.973,32.9998],[76.9416,33.0284],[76.8852,33.1216],[76.8553,33.1143],[76.8138,33.1776],[76.8344,33.2049],[76.7927,33.2566],[76.7712,33.2496],[76.7372,33.261],[76.7172,33.3293],[76.6706,33.342],[76.6394,33.3929],[76.6287,33.4349],[76.5776,33.4297],[76.5763,33.4531],[76.5417,33.47],[76.507,33.5103],[76.4579,33.5372],[76.384,33.5525],[76.3592,33.6034],[76.3001,33.6009],[76.303,33.5676],[76.2596,33.5651],[76.2255,33.5474],[76.2299,33.6308],[76.2698,33.6431],[76.2711,33.7309],[76.2389,33.7721],[76.2008,33.7753],[76.1583,33.8082],[76.1509,33.8361],[76.0846,33.8883],[76.0477,33.9291],[76.0261,33.9934],[75.9779,34.0005],[75.9435,33.9874],[75.8519,33.9814],[75.8641,34.0125],[75.8199,34.0453],[75.7664,34.06],[75.748,34.0966],[75.7126,34.1149],[75.687,34.159],[75.6989,34.2151],[75.6551,34.2427],[75.595,34.1982],[75.5797,34.2144],[75.4971,34.2334],[75.4744,34.2809],[75.406,34.2845],[75.3934,34.2951],[75.372,34.4066],[75.3197,34.4347],[75.3459,34.508],[75.3411,34.5527],[75.2454,34.625],[75.175,34.6455],[75.0779,34.6384],[75.0208,34.626],[74.9253,34.6635],[74.8776,34.6607],[74.7496,34.6688],[74.6515,34.6974],[74.6063,34.7264],[74.5935,34.7569],[74.5525,34.7726],[74.4607,34.7807],[74.4045,34.7778],[74.4402,34.8397],[74.5054,34.8635],[74.5678,34.873],[74.5763,34.9001],[74.5716,34.9658],[74.5873,35.0096],[74.5354,35.0315],[74.5416,35.0667],[74.5154,35.0948],[74.4398,35.1181],[74.3803,35.0576],[74.3084,35.06],[74.2532,35.0374],[74.2282,35.0826],[74.1628,35.0862],[74.1335,35.1075],[74.1012,35.1453],[74.0442,35.1459],[73.9912,35.1842],[73.9628,35.1735],[73.9164,35.2117],[73.8644,35.2103],[73.846,35.2291],[73.7767,35.2433],[73.7309,35.2168],[73.7144,35.2279],[73.7263,35.2777],[73.6991,35.3227],[73.6996,35.3578],[73.7381,35.4274],[73.7948,35.4614],[73.7852,35.5238],[73.7342,35.5361],[73.72,35.5529],[73.6719,35.5507],[73.6385,35.5703],[73.5571,35.5551],[73.5313,35.5706],[73.481,35.5767],[73.406,35.5634],[73.3689,35.6036],[73.272,35.6292],[73.2148,35.6745],[73.1386,35.718],[73.1342,35.7849],[73.1523,35.842],[73.0784,35.8857],[73.0374,35.8542],[72.9872,35.8606],[72.9287,35.8449],[72.9009,35.8811],[72.7983,35.8669],[72.7766,35.8434],[72.7227,35.8533],[72.6905,35.8323],[72.645,35.8657],[72.5944,35.875],[72.5688,35.9067],[72.5331,35.9168],[72.5305,35.9523],[72.5554,35.9961],[72.5953,36.0267],[72.5855,36.0498],[72.5311,36.0718],[72.5359,36.1139],[72.5731,36.1503],[72.5509,36.1805],[72.5629,36.2159],[72.5964,36.2636],[72.6341,36.276],[72.6812,36.2622],[72.7498,36.3045],[72.7778,36.3092],[72.8363,36.3654],[72.8894,36.3972],[72.8767,36.4375],[72.9215,36.4623],[72.9621,36.4669],[73.0212,36.5243],[73.0608,36.5371],[73.1117,36.6094],[73.0901,36.6424],[73.0842,36.6817],[73.1304,36.6876],[73.1931,36.7202],[73.2142,36.6993],[73.2519,36.7083],[73.3173,36.7067],[73.3684,36.732],[73.4355,36.7439],[73.5291,36.7201],[73.6048,36.715],[73.6066,36.6979],[73.6998,36.6842],[73.7242,36.7094],[73.79,36.7039],[73.8082,36.7161],[73.8654,36.6994],[73.8967,36.7022],[73.8992,36.7491],[73.8628,36.7876],[73.833,36.7873],[73.8021,36.8156],[73.7257,36.832],[73.7182,36.8565],[73.6806,36.8849],[73.6895,36.9115],[73.7481,36.896],[73.8779,36.8937],[73.9369,36.8733],[73.999,36.8236],[74.0513,36.8059],[74.0918,36.8379],[74.1455,36.8464],[74.1726,36.9033],[74.2605,36.8859],[74.312,36.9151],[74.3674,36.9583],[74.4285,36.9891],[74.5328,36.9854],[74.5745,36.9494],[74.5885,37.0279],[74.7077,37.077],[74.7273,37.0253],[74.7516,37.0109],[74.7779,37.0291],[74.8329,37.0242],[74.8451,36.9893],[74.9131,36.9085],[74.9404,36.9341],[75.0177,36.9757],[75.0861,36.9423],[75.1348,36.9567],[75.2013,37.0205],[75.2639,37.0513],[75.3439,37.0507],[75.3442,37.0024],[75.3733,36.9607],[75.4269,36.9513],[75.4077,36.9161],[75.447,36.8797],[75.4779,36.8062],[75.6154,36.761],[75.6741,36.6954],[75.7472,36.5878],[75.8051,36.5537],[75.848,36.5437],[75.9223,36.5019],[75.9959,36.4837],[76.0681,36.477],[76.124,36.4369],[76.172,36.3897],[76.1975,36.3869],[76.2536,36.3472],[76.3512,36.3593],[76.4308,36.3076],[76.4548,36.2408],[76.4805,36.2109],[76.5368,36.1949],[76.5618,36.1725],[76.6,36.165],[76.6361,36.1844],[76.7052,36.1246],[76.7248,36.0779],[76.7995,36.0485],[76.8038,36.0163],[76.767,36.0075],[76.7216,35.9529],[76.7845,35.8894],[76.8026,35.8499],[76.8641,35.826],[76.8937,35.7992],[76.934,35.7835],[77.0321,35.7759],[77.0803,35.7973],[77.1183,35.7959],[77.1646,35.7581],[77.1741,35.7312],[77.2233,35.7145],[77.3153,35.6995],[77.3571,35.7172],[77.4028,35.6607],[77.4366,35.6406],[77.4258,35.6101],[77.4556,35.5931],[77.4593,35.5472],[77.4389,35.5176],[77.3771,35.5499],[77.3209,35.5363],[77.3474,35.4932],[77.3765,35.4779],[77.4493,35.4624],[77.5156,35.4881],[77.6227,35.4716],[77.7241,35.4766],[77.7361,35.5227],[77.777,35.4942],[77.8243,35.51],[77.8999,35.4676],[77.9659,35.5745],[78.0449,35.5848],[78.0763,35.5487],[78.1359,35.5384],[78.1651,35.6127],[78.1984,35.6531],[78.2537,35.6452],[78.2707,35.6684],[78.2719,35.7215],[78.3374,35.7201],[78.3891,35.7379],[78.4218,35.7848],[78.5198,35.7633],[78.5791,35.8076],[78.6095,35.8134],[78.6567,35.8535],[78.7174,35.8678],[78.7673,35.8692],[78.803,35.8553],[78.9384,35.8791],[78.9568,35.8912],[79.007,35.8535],[79.1294,35.8355],[79.1787,35.8698],[79.1963,35.8981],[79.1883,35.9467],[79.2403,35.9863],[79.3853,35.99],[79.4016,35.9183],[79.4241,35.8946],[79.5168,35.883],[79.5583,35.8613],[79.6639,35.8348],[79.7445,35.7999],[79.8673,35.7824],[79.9169,35.8218],[79.9523,35.8367],[79.9975,35.8373],[80.0366,35.7993],[80.0566,35.7495],[80.0865,35.7247],[80.1138,35.6765],[80.2357,35.6415],[80.2898,35.607],[80.3096,35.5537],[80.327,35.4721],[80.2794,35.4404],[80.2819,35.3875],[80.2693,35.3438],[80.234,35.2762],[80.227,35.2277],[80.1819,35.1663],[80.1762,35.1365],[80.1842,35.0628],[80.1692,34.9885],[80.122,34.893],[80.0715,34.8281],[80.0674,34.7144],[79.943,34.6807],[79.8591,34.6884],[79.7704,34.6221],[79.7909,34.5922],[79.7569,34.5544],[79.8087,34.5309],[79.7924,34.4847],[79.7318,34.478],[79.5787,34.4896],[79.507,34.4739],[79.5266,34.4176],[79.558,34.4108],[79.558,34.3321],[79.5906,34.2813],[79.5827,34.238],[79.5356,34.2055],[79.5095,34.2102],[79.4932,34.1796],[79.4932,34.1355],[79.4597,34.1016],[79.4327,34.093],[79.4127,34.0555],[79.4182,34.014],[79.3741,34.0331],[79.2587,34.0481],[79.1965,34.0509],[79.1501,34.0678],[79.1423,34.0349],[79.0826,34.0216],[79.0133,34.05],[78.9391,34.0237],[78.9042,33.9759],[79.0187,33.7754],[79.0523,33.7781],[79.019,33.7054],[79.0525,33.6778],[79.0906,33.6792],[79.104,33.6134],[79.0287,33.6258],[78.9884,33.6109],[78.9178,33.6333],[78.9139,33.5757],[78.9391,33.5263],[78.9319,33.4325],[78.992,33.3305],[79.0243,33.329],[79.0958,33.2943],[79.1327,33.2898],[79.2391,33.2975],[79.3142,33.2729],[79.3643,33.2824],[79.4534,33.2583],[79.4367,33.1896],[79.3919,33.1242],[79.3759,33.0845],[79.392,33.0539],[79.3808,33.0275],[79.334,33.0161],[79.3819,32.9721],[79.4077,32.9699],[79.4625,32.9198],[79.5717,32.7822],[79.6017,32.7767],[79.6253,32.7373],[79.5142,32.6079],[79.4683,32.5761],[79.4466,32.5323],[79.3979,32.5369],[79.393,32.5721],[79.338,32.5918],[79.2757,32.5338],[79.1936,32.4828],[79.1305,32.4707],[79.1458,32.4368],[79.1136,32.384],[79.0591,32.3904],[79.0131,32.3771],[78.9775,32.339],[78.9587,32.3668],[78.902,32.3927],[78.8574,32.4404],[78.8258,32.4385],[78.775,32.5729],[78.7911,32.6182],[78.7481,32.6813],[78.7216,32.661],[78.6606,32.6533],[78.6176,32.5958],[78.5867,32.6157],[78.5343,32.6084],[78.4946,32.5807],[78.4425,32.5697],[78.4258,32.5311],[78.3986,32.5257]]]},"properties":{"ST_NM":"Ladakh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.7712,33.2496],[76.7758,33.2205],[76.7469,33.1792],[76.6185,33.1744],[76.6053,33.2043],[76.5674,33.2103],[76.4879,33.1797],[76.4104,33.1866],[76.3745,33.1542],[76.2918,33.1032],[76.2953,33.0576],[76.2474,33.0216],[76.1829,33.0207],[76.1661,33.007],[76.1123,33.0063],[76.0973,32.9643],[76.0456,32.9378],[76.0321,32.9167],[75.9539,32.8734],[75.9245,32.9062],[75.8423,32.9293],[75.8113,32.8778],[75.8888,32.8032],[75.9261,32.7456],[75.9011,32.6986],[75.9185,32.654],[75.9159,32.613],[75.8847,32.59],[75.8761,32.5505],[75.8344,32.5118],[75.7777,32.4657],[75.7295,32.4532],[75.7373,32.4296],[75.687,32.3905],[75.5967,32.3777],[75.5395,32.3362],[75.5425,32.3056],[75.4657,32.327],[75.419,32.32],[75.3414,32.3461],[75.3317,32.3269],[75.2126,32.4024],[75.2009,32.4202],[75.1329,32.4259],[75.1079,32.46],[75.0269,32.4965],[75.018,32.4663],[74.9475,32.4473],[74.8207,32.497],[74.8121,32.4797],[74.7114,32.4782],[74.6806,32.4919],[74.6496,32.5973],[74.6663,32.6756],[74.6549,32.7282],[74.7048,32.821],[74.7046,32.8418],[74.6336,32.8097],[74.6306,32.7666],[74.5542,32.759],[74.51,32.7467],[74.4596,32.7886],[74.4022,32.7796],[74.3828,32.7575],[74.3084,32.7922],[74.299,32.8241],[74.2165,32.8449],[74.1774,32.8827],[74.0545,32.9114],[74.0515,32.9304],[73.9874,32.9354],[73.9965,32.9598],[73.9575,32.9866],[73.892,33.0024],[73.8219,33.0054],[73.8057,32.971],[73.7395,33.0432],[73.7345,33.0663],[73.6878,33.0881],[73.6271,33.0895],[73.6248,33.1115],[73.6574,33.2048],[73.6048,33.2513],[73.5822,33.329],[73.5578,33.3681],[73.5972,33.4441],[73.6241,33.4572],[73.5952,33.4922],[73.6176,33.5456],[73.6188,33.5772],[73.5726,33.6179],[73.5624,33.6755],[73.5911,33.6996],[73.5905,33.7537],[73.5576,33.7832],[73.5854,33.899],[73.5488,33.9311],[73.5142,34.0062],[73.488,34.1757],[73.4923,34.2197],[73.4255,34.349],[73.3996,34.359],[73.4246,34.4418],[73.4421,34.5649],[73.5527,34.5927],[73.6181,34.5854],[73.6387,34.5657],[73.6594,34.61],[73.6895,34.6431],[73.6695,34.6892],[73.7058,34.7249],[73.7306,34.771],[73.773,34.7964],[73.8203,34.7955],[73.8429,34.8153],[73.9173,34.814],[73.9542,34.835],[73.9719,34.8632],[74.0295,34.8771],[74.043,34.9214],[74.0734,34.9406],[74.0644,34.9982],[74.1031,35.0142],[74.0655,35.048],[74.0943,35.097],[74.1335,35.1075],[74.1628,35.0862],[74.2282,35.0826],[74.2532,35.0374],[74.3084,35.06],[74.3803,35.0576],[74.4398,35.1181],[74.5154,35.0948],[74.5416,35.0667],[74.5354,35.0315],[74.5873,35.0096],[74.5716,34.9658],[74.5763,34.9001],[74.5678,34.873],[74.5054,34.8635],[74.4402,34.8397],[74.4045,34.7778],[74.4607,34.7807],[74.5525,34.7726],[74.5935,34.7569],[74.6063,34.7264],[74.6515,34.6974],[74.7496,34.6688],[74.8776,34.6607],[74.9253,34.6635],[75.0208,34.626],[75.0779,34.6384],[75.175,34.6455],[75.2454,34.625],[75.3411,34.5527],[75.3459,34.508],[75.3197,34.4347],[75.372,34.4066],[75.3934,34.2951],[75.406,34.2845],[75.4744,34.2809],[75.4971,34.2334],[75.5797,34.2144],[75.595,34.1982],[75.6551,34.2427],[75.6989,34.2151],[75.687,34.159],[75.7126,34.1149],[75.748,34.0966],[75.7664,34.06],[75.8199,34.0453],[75.8641,34.0125],[75.8519,33.9814],[75.9435,33.9874],[75.9779,34.0005],[76.0261,33.9934],[76.0477,33.9291],[76.0846,33.8883],[76.1509,33.8361],[76.1583,33.8082],[76.2008,33.7753],[76.2389,33.7721],[76.2711,33.7309],[76.2698,33.6431],[76.2299,33.6308],[76.2255,33.5474],[76.2596,33.5651],[76.303,33.5676],[76.3001,33.6009],[76.3592,33.6034],[76.384,33.5525],[76.4579,33.5372],[76.507,33.5103],[76.5417,33.47],[76.5763,33.4531],[76.5776,33.4297],[76.6287,33.4349],[76.6394,33.3929],[76.6706,33.342],[76.7172,33.3293],[76.7372,33.261],[76.7712,33.2496]]]},"properties":{"ST_NM":"Jammu & Kashmir","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[83.3299,24.1017],[83.3878,24.1],[83.4342,24.0843],[83.4542,24.0415],[83.5082,24.0312],[83.5151,23.9815],[83.5488,23.934],[83.5689,23.8667],[83.6665,23.8443],[83.7076,23.8175],[83.7377,23.7605],[83.746,23.7195],[83.7236,23.6839],[83.7589,23.6536],[83.7771,23.608],[83.8258,23.5908],[83.9397,23.5705],[83.9319,23.6205],[84.0087,23.6279],[84.03,23.5996],[84.028,23.5457],[84.0149,23.5042],[83.971,23.467],[83.9817,23.4223],[83.9693,23.3669],[84.0117,23.3537],[84.0231,23.378],[84.0744,23.3336],[84.0537,23.2474],[84.0634,23.2066],[84.0319,23.1579],[84.0722,23.109],[84.1334,23.0831],[84.1254,23.037],[84.1469,22.9905],[84.1783,22.9799],[84.2425,22.9834],[84.2805,22.964],[84.3281,22.982],[84.3804,22.9721],[84.3962,22.9259],[84.3715,22.8647],[84.3347,22.8616],[84.3147,22.8006],[84.286,22.764],[84.2598,22.7677],[84.2295,22.7369],[84.2381,22.6919],[84.15,22.6365],[84.084,22.6382],[84.0494,22.595],[84.0244,22.5919],[84.0028,22.546],[84.0091,22.5261],[83.9807,22.5021],[84.0409,22.4731],[84.0469,22.4375],[84.0065,22.3822],[83.971,22.359],[83.9234,22.3584],[83.8975,22.3379],[83.8658,22.3431],[83.8299,22.3235],[83.8253,22.2923],[83.7796,22.2736],[83.7579,22.2403],[83.7057,22.2467],[83.6277,22.2042],[83.6078,22.1537],[83.5627,22.103],[83.5938,22.0732],[83.5502,22.0535],[83.5373,21.9779],[83.6057,21.9141],[83.5256,21.7981],[83.4933,21.8182],[83.469,21.7869],[83.4888,21.7481],[83.4536,21.6946],[83.4181,21.6799],[83.4868,21.6433],[83.4662,21.6097],[83.4432,21.6555],[83.3928,21.6273],[83.3698,21.6004],[83.3723,21.5627],[83.3492,21.5121],[83.354,21.448],[83.3987,21.4052],[83.3903,21.3427],[83.2742,21.3773],[83.2591,21.3375],[83.2681,21.2773],[83.2176,21.2557],[83.2221,21.232],[83.1986,21.1642],[83.1388,21.1094],[83.0779,21.1119],[83.0122,21.1449],[82.9837,21.1801],[82.9422,21.1605],[82.8415,21.1674],[82.7857,21.1448],[82.7559,21.1669],[82.6972,21.164],[82.6366,21.1479],[82.65,21.1064],[82.6121,21.0683],[82.6298,21.04],[82.5601,20.9467],[82.4881,20.9087],[82.4812,20.8496],[82.4549,20.8266],[82.4109,20.8443],[82.4064,20.8689],[82.3604,20.8726],[82.3395,20.8469],[82.3514,20.7063],[82.3741,20.6674],[82.3765,20.6324],[82.3437,20.5957],[82.3365,20.5539],[82.3894,20.517],[82.3978,20.4727],[82.438,20.4342],[82.4004,20.3393],[82.4314,20.3129],[82.4355,20.2857],[82.4113,20.2602],[82.4234,20.2193],[82.4122,20.1798],[82.3909,20.1622],[82.401,20.0546],[82.4947,20.0228],[82.5511,20.0162],[82.5913,19.9921],[82.6343,20.0033],[82.7181,19.9888],[82.7074,19.9021],[82.7196,19.8675],[82.7039,19.832],[82.6521,19.8322],[82.6271,19.7938],[82.5832,19.7792],[82.5758,19.8334],[82.6038,19.8663],[82.5046,19.8907],[82.4848,19.9078],[82.418,19.9041],[82.3453,19.8359],[82.3041,19.8892],[82.2692,19.9753],[82.2375,20.0035],[82.1882,19.9862],[82.1715,20.0052],[82.1285,20.0142],[82.0705,20.057],[82.0373,20.028],[81.9456,20.1052],[81.8968,20.0496],[81.876,20.0521],[81.8553,19.9723],[81.8531,19.9185],[81.8696,19.9026],[81.9681,19.8599],[81.9859,19.8011],[82.0602,19.7964],[82.0632,19.7578],[82.0446,19.7005],[82.059,19.6282],[82.0398,19.5972],[82.0478,19.535],[82.1002,19.5166],[82.1028,19.4661],[82.1273,19.4305],[82.1782,19.4366],[82.186,19.3374],[82.1584,19.2652],[82.1617,19.2023],[82.1805,19.191],[82.1675,19.1364],[82.2191,19.0954],[82.2022,19.0667],[82.2299,19.0274],[82.246,18.9191],[82.2175,18.9222],[82.1754,18.9013],[82.1612,18.8632],[82.1689,18.836],[82.1563,18.7852],[82.0887,18.7602],[82.085,18.7186],[82.0167,18.7195],[81.9654,18.6934],[81.9489,18.6437],[81.8941,18.6427],[81.963,18.5948],[81.9502,18.57],[81.9056,18.5612],[81.8682,18.5249],[81.8572,18.494],[81.7688,18.4181],[81.7503,18.3536],[81.6595,18.3467],[81.6622,18.325],[81.6005,18.3097],[81.5643,18.2752],[81.5373,18.2694],[81.5071,18.1855],[81.526,18.16],[81.5135,18.1006],[81.4825,18.0554],[81.4824,17.9755],[81.4491,17.932],[81.4478,17.8892],[81.4007,17.8943],[81.3961,17.82],[81.2654,17.8111],[81.1683,17.8557],[81.0856,17.7981],[81.0466,17.7824],[81.0082,17.7983],[80.9964,17.8491],[80.9984,17.9168],[80.9698,18.0472],[80.9534,18.082],[80.9562,18.1336],[80.9142,18.1445],[80.8667,18.1403],[80.8585,18.1898],[80.8659,18.2335],[80.8236,18.2395],[80.8241,18.1944],[80.7991,18.1715],[80.7368,18.1772],[80.7372,18.2221],[80.7917,18.2509],[80.7494,18.3076],[80.7315,18.3548],[80.7329,18.403],[80.7021,18.4443],[80.6564,18.4748],[80.6057,18.5483],[80.5353,18.5906],[80.5147,18.6194],[80.4566,18.6298],[80.3944,18.6058],[80.3431,18.5981],[80.3045,18.6834],[80.2729,18.723],[80.2748,18.7655],[80.297,18.7918],[80.3545,18.8266],[80.3263,18.8809],[80.2743,18.9318],[80.2738,18.9945],[80.3052,19.0272],[80.3397,19.0999],[80.3275,19.1353],[80.3893,19.1815],[80.3939,19.2448],[80.4378,19.2577],[80.4856,19.3406],[80.5204,19.3476],[80.5385,19.3776],[80.5785,19.4009],[80.59,19.3518],[80.6234,19.3056],[80.6719,19.3295],[80.7095,19.2817],[80.7599,19.2915],[80.7744,19.3137],[80.853,19.3639],[80.8118,19.4072],[80.8134,19.4336],[80.874,19.445],[80.8984,19.4818],[80.8952,19.5199],[80.857,19.5228],[80.8366,19.5659],[80.7755,19.5624],[80.7698,19.5866],[80.7147,19.6166],[80.6703,19.6092],[80.6764,19.6994],[80.6111,19.7382],[80.5872,19.741],[80.5425,19.7833],[80.5465,19.8177],[80.5198,19.8318],[80.4695,19.8274],[80.4902,19.9023],[80.4498,19.8963],[80.408,19.9126],[80.4113,19.9384],[80.4517,19.9572],[80.4808,19.9342],[80.5236,19.9337],[80.5489,19.9837],[80.5426,20.0106],[80.5567,20.0698],[80.5523,20.1111],[80.5056,20.1445],[80.4601,20.151],[80.4296,20.1361],[80.3885,20.1651],[80.4056,20.2178],[80.3981,20.2441],[80.4881,20.276],[80.5167,20.2661],[80.5461,20.3059],[80.6105,20.3183],[80.6264,20.3325],[80.5915,20.393],[80.6138,20.4359],[80.6263,20.5673],[80.6014,20.6088],[80.5646,20.6037],[80.5215,20.5805],[80.481,20.6184],[80.5213,20.6572],[80.5804,20.673],[80.56,20.726],[80.5492,20.7952],[80.5586,20.8115],[80.5562,20.8881],[80.5345,20.9345],[80.4637,20.9291],[80.4258,21.0059],[80.4497,21.0305],[80.4452,21.1207],[80.4643,21.1749],[80.515,21.1829],[80.6173,21.2297],[80.6511,21.2776],[80.6796,21.2988],[80.66,21.3341],[80.6711,21.3383],[80.7353,21.4609],[80.7276,21.4962],[80.7408,21.5392],[80.7171,21.6025],[80.7338,21.7286],[80.7561,21.7622],[80.7854,21.7403],[80.8154,21.7555],[80.8446,21.8316],[80.8324,21.9086],[80.8979,22.0669],[80.9079,22.1096],[80.9496,22.1172],[80.9939,22.0493],[81.0219,22.1328],[81.0235,22.2292],[81.0895,22.2471],[81.1184,22.2905],[81.1211,22.3412],[81.1058,22.3871],[81.11,22.4356],[81.1564,22.4564],[81.1718,22.4872],[81.2322,22.4522],[81.2813,22.503],[81.3185,22.5167],[81.382,22.5098],[81.3964,22.4401],[81.4229,22.4477],[81.4278,22.4798],[81.4826,22.4885],[81.4965,22.5193],[81.5675,22.5505],[81.605,22.5346],[81.66,22.57],[81.6465,22.5934],[81.6833,22.6469],[81.7131,22.6481],[81.7286,22.6765],[81.7716,22.6764],[81.7523,22.7267],[81.7944,22.7665],[81.767,22.8344],[81.7757,22.8745],[81.8616,22.8893],[81.9505,22.983],[81.9215,23.0408],[81.9295,23.0617],[81.9695,23.081],[82.036,23.0811],[82.0673,23.1161],[82.1111,23.1094],[82.1613,23.1432],[82.1451,23.1634],[82.1455,23.2266],[82.1988,23.3122],[82.1464,23.3608],[82.1194,23.354],[82.1015,23.3981],[82.0569,23.377],[81.9849,23.4149],[81.9764,23.4523],[81.9233,23.5327],[81.8812,23.5151],[81.8211,23.515],[81.8095,23.549],[81.7251,23.5567],[81.6994,23.522],[81.6681,23.533],[81.627,23.4821],[81.61,23.5557],[81.5767,23.5854],[81.6115,23.6017],[81.6203,23.6515],[81.6552,23.6632],[81.6959,23.7214],[81.6757,23.7573],[81.644,23.7731],[81.6514,23.7991],[81.6344,23.8357],[81.6032,23.8537],[81.6102,23.9041],[81.6592,23.9176],[81.725,23.8447],[81.7731,23.8164],[81.8234,23.8079],[81.9045,23.8448],[81.9215,23.8709],[81.9561,23.853],[82.0092,23.8608],[82.0817,23.8164],[82.144,23.8164],[82.2069,23.8266],[82.238,23.8057],[82.2622,23.8211],[82.3352,23.8028],[82.3935,23.7999],[82.4708,23.8106],[82.4974,23.7849],[82.5253,23.7841],[82.5542,23.8262],[82.5908,23.8221],[82.6597,23.8547],[82.6616,23.9077],[82.6989,23.925],[82.7524,23.9198],[82.8103,23.9629],[82.9543,23.8708],[83.0543,23.8793],[83.0751,23.8701],[83.1415,23.8849],[83.1542,23.9041],[83.2079,23.9214],[83.2426,24.0116],[83.2791,24.0183],[83.2821,24.0498],[83.3299,24.1017]]]},"properties":{"ST_NM":"Chhattisgarh","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.2098,28.8579],[77.2243,28.8261],[77.1994,28.7981],[77.2355,28.7609],[77.3048,28.7129],[77.326,28.7099],[77.3163,28.6412],[77.3426,28.622],[77.2971,28.566],[77.3454,28.5133],[77.3141,28.4836],[77.2903,28.4966],[77.2433,28.4788],[77.2495,28.4245],[77.1744,28.4047],[77.1288,28.4407],[77.0947,28.5138],[77.0599,28.5123],[77.0066,28.5413],[76.9517,28.5042],[76.908,28.5137],[76.8914,28.5008],[76.8425,28.5561],[76.8883,28.6319],[76.921,28.631],[76.935,28.6675],[76.9678,28.6996],[76.9446,28.754],[76.9508,28.8183],[76.9918,28.8384],[77.04,28.8318],[77.0617,28.8708],[77.2098,28.8579]]]},"properties":{"ST_NM":"Delhi","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[74.1184,15.652],[74.1674,15.6721],[74.2238,15.669],[74.252,15.6543],[74.2642,15.6159],[74.2493,15.5679],[74.2773,15.5469],[74.2785,15.5175],[74.2523,15.4993],[74.2755,15.4492],[74.2688,15.4191],[74.2831,15.383],[74.323,15.3674],[74.3171,15.3292],[74.336,15.2956],[74.2714,15.2809],[74.2523,15.251],[74.3017,15.2244],[74.3142,15.1804],[74.2836,15.1429],[74.2727,15.0975],[74.2966,15.0412],[74.2519,14.9935],[74.2524,14.9588],[74.1998,14.9261],[74.1793,14.9567],[74.0857,14.9006],[74.044,14.9175],[74.0499,14.9592],[74.0349,14.9972],[73.9972,15.0217],[73.9816,15.0529],[73.9318,15.0791],[73.9259,15.11],[73.949,15.1452],[73.9023,15.3117],[73.8711,15.3712],[73.8427,15.3603],[73.8055,15.3992],[73.8652,15.4289],[73.8472,15.4527],[73.8127,15.456],[73.81,15.4958],[73.7693,15.4914],[73.7555,15.5449],[73.6892,15.7179],[73.6754,15.727],[73.7855,15.7255],[73.8252,15.7416],[73.8565,15.8008],[73.8778,15.7492],[73.9387,15.7427],[73.9635,15.6921],[73.9614,15.6415],[73.9908,15.6115],[74.0838,15.6341],[74.1184,15.652]]]},"properties":{"ST_NM":"Goa","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.5856,30.3796],[77.6035,30.3692],[77.5784,30.3267],[77.4772,30.1824],[77.4297,30.164],[77.4058,30.0894],[77.3825,30.0925],[77.3343,30.0538],[77.2969,30.0534],[77.2764,29.9967],[77.2469,29.9767],[77.1782,29.8458],[77.1792,29.8127],[77.1466,29.7719],[77.1342,29.7185],[77.1559,29.6983],[77.113,29.6097],[77.0964,29.5195],[77.1334,29.4827],[77.1232,29.4554],[77.1484,29.4341],[77.1233,29.3704],[77.1583,29.3029],[77.1388,29.2663],[77.1325,29.2225],[77.1473,29.1796],[77.1341,29.0952],[77.1651,29.0766],[77.2023,28.9872],[77.1967,28.9377],[77.2329,28.9187],[77.2098,28.8579],[77.0617,28.8708],[77.04,28.8318],[76.9918,28.8384],[76.9508,28.8183],[76.9446,28.754],[76.9678,28.6996],[76.935,28.6675],[76.921,28.631],[76.8883,28.6319],[76.8425,28.5561],[76.8914,28.5008],[76.908,28.5137],[76.9517,28.5042],[77.0066,28.5413],[77.0599,28.5123],[77.0947,28.5138],[77.1288,28.4407],[77.1744,28.4047],[77.2495,28.4245],[77.2433,28.4788],[77.2903,28.4966],[77.3141,28.4836],[77.3454,28.5133],[77.3863,28.468],[77.4364,28.431],[77.4776,28.4191],[77.5052,28.3627],[77.4725,28.3367],[77.5062,28.3041],[77.4927,28.252],[77.5188,28.2425],[77.5306,28.1859],[77.5124,28.1249],[77.4811,28.0976],[77.5411,27.982],[77.5294,27.9255],[77.4753,27.9293],[77.4795,27.8979],[77.4132,27.8517],[77.3493,27.8557],[77.3312,27.8311],[77.2837,27.8011],[77.2524,27.7907],[77.2134,27.8016],[77.1833,27.7876],[77.1085,27.7863],[77.0448,27.8218],[77.0358,27.7816],[77.0449,27.7434],[77.0001,27.737],[76.9791,27.6536],[76.9421,27.6738],[76.9155,27.6526],[76.8942,27.7179],[76.915,27.8348],[76.943,27.8539],[76.9315,27.9226],[76.9308,27.9929],[76.9705,28.1384],[76.932,28.1531],[76.8675,28.2199],[76.8084,28.2109],[76.7948,28.1484],[76.7435,28.121],[76.716,28.1279],[76.6516,28.0616],[76.6681,28.0138],[76.6049,28.0039],[76.5447,27.9637],[76.5438,28.0342],[76.4547,28.0423],[76.4992,28.1002],[76.4757,28.1486],[76.3566,28.1437],[76.3366,28.1026],[76.3565,28.0675],[76.3208,28.016],[76.261,28.0675],[76.2281,28.0484],[76.1895,28.0565],[76.1604,27.9984],[76.1866,27.9655],[76.1682,27.9034],[76.2013,27.8928],[76.1938,27.8595],[76.2252,27.8332],[76.1812,27.7975],[76.1323,27.8245],[76.1233,27.851],[76.0878,27.8606],[76.0477,27.8351],[75.9714,27.852],[75.9873,27.9043],[75.9424,27.9132],[75.9769,28.0314],[76.0164,28.0305],[76.0408,28.074],[75.9834,28.0813],[75.946,28.1077],[76.0261,28.1646],[76.0703,28.1652],[76.0403,28.222],[76.0132,28.244],[76.0263,28.275],[75.9578,28.3139],[75.9295,28.3591],[75.8328,28.4054],[75.777,28.4004],[75.7883,28.4536],[75.7356,28.4688],[75.69,28.4999],[75.6658,28.536],[75.6337,28.5445],[75.6224,28.6014],[75.5619,28.6131],[75.5412,28.6605],[75.538,28.7266],[75.5081,28.7886],[75.5196,28.8345],[75.4971,28.8549],[75.5057,28.9359],[75.5274,28.971],[75.5206,29.0044],[75.4582,29.0135],[75.4418,29.0575],[75.3912,29.0627],[75.3946,29.1108],[75.375,29.1352],[75.4067,29.1697],[75.4106,29.2555],[75.3895,29.2612],[75.3296,29.2327],[75.34,29.2828],[75.3229,29.2895],[75.2101,29.2347],[75.1957,29.2634],[75.1196,29.2229],[75.0751,29.2299],[75.05,29.2862],[74.9986,29.2707],[74.9617,29.2803],[74.9608,29.318],[74.9384,29.3618],[74.8505,29.4036],[74.8203,29.3972],[74.7819,29.3579],[74.7396,29.354],[74.7194,29.37],[74.6582,29.372],[74.6545,29.3329],[74.6042,29.3273],[74.6026,29.3653],[74.5661,29.4206],[74.5366,29.4245],[74.5433,29.4679],[74.5846,29.4585],[74.623,29.531],[74.5759,29.5601],[74.5854,29.6539],[74.6098,29.7218],[74.6009,29.7659],[74.535,29.7407],[74.4772,29.7453],[74.4844,29.8143],[74.5391,29.8406],[74.561,29.8696],[74.5436,29.9014],[74.51,29.9082],[74.5272,29.9428],[74.5967,29.9123],[74.6468,29.9043],[74.6582,29.9323],[74.7022,29.9719],[74.7314,29.9615],[74.7794,29.972],[74.8064,29.9921],[74.8562,29.9565],[74.888,29.9671],[74.9228,29.952],[74.9471,29.9085],[74.9905,29.868],[75.0699,29.8771],[75.0888,29.9172],[75.1147,29.8787],[75.0908,29.8527],[75.1368,29.806],[75.191,29.8414],[75.2085,29.7932],[75.2416,29.7546],[75.1969,29.7161],[75.2068,29.6875],[75.1679,29.667],[75.1824,29.6293],[75.2353,29.6021],[75.2222,29.5813],[75.2421,29.5459],[75.3094,29.5608],[75.3166,29.6306],[75.3457,29.696],[75.3918,29.7131],[75.4141,29.77],[75.4539,29.782],[75.5611,29.7707],[75.5721,29.7433],[75.6345,29.7553],[75.6783,29.7761],[75.7028,29.7524],[75.7378,29.814],[75.7885,29.8114],[75.837,29.7943],[75.8702,29.7493],[75.9844,29.7271],[76.0434,29.7427],[76.085,29.8008],[76.1292,29.797],[76.148,29.82],[76.1848,29.8228],[76.1978,29.8448],[76.2438,29.8524],[76.2301,29.8854],[76.1934,29.8857],[76.1782,29.9422],[76.2054,29.9738],[76.2262,30.0587],[76.2489,30.0851],[76.2197,30.1161],[76.2274,30.1445],[76.2853,30.1062],[76.3399,30.0987],[76.4091,30.1468],[76.3872,30.1706],[76.4218,30.1924],[76.4599,30.1295],[76.4625,30.1011],[76.547,30.0762],[76.577,30.11],[76.5993,30.1125],[76.6398,30.1503],[76.6003,30.1839],[76.6239,30.2278],[76.6234,30.2646],[76.688,30.3269],[76.711,30.3258],[76.7461,30.3672],[76.7134,30.3881],[76.735,30.4191],[76.7688,30.4308],[76.8234,30.4116],[76.851,30.4353],[76.9156,30.3653],[76.9394,30.3948],[76.8864,30.4297],[76.9311,30.5009],[76.9164,30.5541],[76.9271,30.6037],[76.8292,30.681],[76.8483,30.7145],[76.8381,30.7549],[76.857,30.7948],[76.8467,30.834],[76.7843,30.8779],[76.7767,30.9043],[76.8246,30.9272],[76.841,30.8917],[76.8759,30.881],[76.9149,30.8897],[76.9512,30.8506],[76.9489,30.8245],[77.0113,30.8107],[77.0205,30.7401],[77.0974,30.7382],[77.1612,30.691],[77.1723,30.6013],[77.1243,30.5651],[77.1353,30.5455],[77.1929,30.5256],[77.2078,30.4744],[77.2705,30.4812],[77.3226,30.4459],[77.4026,30.4293],[77.4341,30.4311],[77.4432,30.3954],[77.4898,30.4106],[77.5185,30.4433],[77.5557,30.3901],[77.5856,30.3796]]]},"properties":{"ST_NM":"Haryana","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[78.3986,32.5257],[78.4478,32.5063],[78.4648,32.4861],[78.4542,32.4524],[78.4941,32.4218],[78.5348,32.4144],[78.477,32.3328],[78.48,32.2736],[78.4548,32.2422],[78.5551,32.2457],[78.6107,32.2123],[78.6038,32.143],[78.6118,32.119],[78.6633,32.1026],[78.7057,32.0663],[78.7343,32.0041],[78.765,32.0027],[78.7714,31.9294],[78.7417,31.9017],[78.7454,31.8431],[78.7027,31.8074],[78.7057,31.774],[78.764,31.6746],[78.7985,31.6823],[78.8098,31.6384],[78.8469,31.608],[78.7978,31.5625],[78.7307,31.5323],[78.7274,31.4899],[78.7587,31.4825],[78.7977,31.4435],[78.7528,31.3854],[78.77,31.3237],[78.7916,31.3046],[78.882,31.2868],[78.9221,31.2254],[78.9575,31.1867],[78.9859,31.1739],[79.0065,31.1192],[78.9592,31.0995],[78.89,31.0971],[78.8436,31.128],[78.8107,31.172],[78.7695,31.1865],[78.6617,31.1893],[78.6486,31.2129],[78.5797,31.226],[78.552,31.2003],[78.4837,31.199],[78.4617,31.2361],[78.4073,31.2559],[78.3703,31.2864],[78.3076,31.2615],[78.2759,31.2614],[78.2432,31.2294],[78.1981,31.2177],[78.1602,31.2256],[78.1036,31.1855],[78.0659,31.1872],[78.0291,31.1625],[77.9847,31.157],[77.9686,31.1726],[77.8638,31.1086],[77.8512,31.0734],[77.8171,31.0559],[77.807,31.0268],[77.8318,30.9941],[77.8101,30.9557],[77.7737,30.9742],[77.749,30.9535],[77.7623,30.9193],[77.8041,30.9236],[77.8057,30.8533],[77.7572,30.8601],[77.7577,30.8352],[77.7074,30.7404],[77.733,30.7354],[77.7733,30.6686],[77.7867,30.6144],[77.7566,30.6045],[77.7718,30.5593],[77.8064,30.5546],[77.8185,30.5081],[77.721,30.4731],[77.688,30.4475],[77.5987,30.4282],[77.576,30.3974],[77.5856,30.3796],[77.5557,30.3901],[77.5185,30.4433],[77.4898,30.4106],[77.4432,30.3954],[77.4341,30.4311],[77.4026,30.4293],[77.3226,30.4459],[77.2705,30.4812],[77.2078,30.4744],[77.1929,30.5256],[77.1353,30.5455],[77.1243,30.5651],[77.1723,30.6013],[77.1612,30.691],[77.0974,30.7382],[77.0205,30.7401],[77.0113,30.8107],[76.9489,30.8245],[76.9512,30.8506],[76.9149,30.8897],[76.8759,30.881],[76.841,30.8917],[76.8246,30.9272],[76.7767,30.9043],[76.7081,30.9704],[76.6732,30.9688],[76.6247,30.9988],[76.611,31.0459],[76.6385,31.1079],[76.6016,31.1286],[76.615,31.19],[76.6454,31.2091],[76.5835,31.2762],[76.5492,31.2528],[76.4861,31.304],[76.4317,31.3269],[76.3721,31.4085],[76.3311,31.4012],[76.3408,31.3635],[76.3076,31.3426],[76.3112,31.3195],[76.2139,31.2995],[76.1808,31.3105],[76.1788,31.3405],[76.1493,31.3533],[76.1698,31.399],[76.1345,31.4505],[76.0979,31.5328],[76.0177,31.6322],[75.9475,31.813],[75.9612,31.8549],[75.8925,31.9618],[75.7797,32.0047],[75.7508,32.0377],[75.6543,32.0776],[75.6021,32.0659],[75.6008,32.0931],[75.6613,32.1369],[75.6632,32.1916],[75.6247,32.1899],[75.6571,32.2512],[75.773,32.2903],[75.8112,32.3486],[75.8453,32.3574],[75.8742,32.3958],[75.9192,32.4121],[75.9014,32.4531],[75.8344,32.5118],[75.8761,32.5505],[75.8847,32.59],[75.9159,32.613],[75.9185,32.654],[75.9011,32.6986],[75.9261,32.7456],[75.8888,32.8032],[75.8113,32.8778],[75.8423,32.9293],[75.9245,32.9062],[75.9539,32.8734],[76.0321,32.9167],[76.0456,32.9378],[76.0973,32.9643],[76.1123,33.0063],[76.1661,33.007],[76.1829,33.0207],[76.2474,33.0216],[76.2953,33.0576],[76.2918,33.1032],[76.3745,33.1542],[76.4104,33.1866],[76.4879,33.1797],[76.5674,33.2103],[76.6053,33.2043],[76.6185,33.1744],[76.7469,33.1792],[76.7758,33.2205],[76.7712,33.2496],[76.7927,33.2566],[76.8344,33.2049],[76.8138,33.1776],[76.8553,33.1143],[76.8852,33.1216],[76.9416,33.0284],[76.973,32.9998],[77.0103,32.9891],[77.049,32.999],[77.0955,32.9711],[77.1497,32.9781],[77.1642,32.9189],[77.2339,32.8937],[77.3197,32.8522],[77.339,32.8168],[77.3739,32.8245],[77.3744,32.8547],[77.3974,32.8785],[77.4449,32.8796],[77.469,32.8584],[77.5017,32.8856],[77.5402,32.8874],[77.6021,32.9426],[77.6315,32.9452],[77.7131,32.9826],[77.8,32.9122],[77.7809,32.8656],[77.8788,32.8188],[77.8841,32.7877],[77.9337,32.7607],[77.9183,32.6912],[77.9518,32.6589],[78.0158,32.6198],[78.0468,32.645],[78.0872,32.6244],[78.1106,32.6626],[78.1478,32.6546],[78.158,32.684],[78.2195,32.6647],[78.253,32.6911],[78.3122,32.7092],[78.3042,32.7342],[78.3572,32.7578],[78.3877,32.7569],[78.3944,32.7156],[78.3796,32.6683],[78.4052,32.6194],[78.348,32.5811],[78.3128,32.5737],[78.3153,32.5254],[78.2946,32.5041],[78.3264,32.472],[78.3986,32.5257]]]},"properties":{"ST_NM":"Himachal Pradesh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[87.7114,25.2577],[87.7787,25.2505],[87.7729,25.2058],[87.7792,25.1436],[87.8014,25.1152],[87.7946,25.0897],[87.8767,25.0344],[87.896,25.011],[87.958,24.9699],[87.9611,24.9227],[87.8908,24.8552],[87.8967,24.8297],[87.8521,24.7618],[87.86,24.7341],[87.9075,24.7216],[87.8905,24.6755],[87.9171,24.6658],[87.9058,24.6314],[87.9133,24.5972],[87.8919,24.5656],[87.8278,24.5578],[87.7991,24.5258],[87.8107,24.4771],[87.7887,24.4155],[87.787,24.3637],[87.7547,24.3098],[87.7001,24.2628],[87.6532,24.2393],[87.7021,24.1745],[87.6844,24.1429],[87.6157,24.1658],[87.5782,24.1554],[87.5852,24.1242],[87.5713,24.0892],[87.5468,24.085],[87.5221,24.1122],[87.4933,24.0541],[87.5091,24.0322],[87.4402,23.9816],[87.3605,24.0129],[87.337,24.034],[87.2344,24.0325],[87.2624,23.9673],[87.2916,23.9585],[87.2951,23.9013],[87.2695,23.8744],[87.2444,23.903],[87.2235,23.8457],[87.1745,23.8547],[87.1517,23.7987],[87.1225,23.7962],[87.0535,23.8227],[87.0108,23.8525],[86.9657,23.8654],[86.9357,23.8522],[86.9157,23.8832],[86.8846,23.8658],[86.8533,23.8258],[86.804,23.8024],[86.8257,23.7776],[86.7985,23.6884],[86.7453,23.68],[86.7182,23.6991],[86.5991,23.6657],[86.5271,23.6296],[86.4618,23.6298],[86.4487,23.6014],[86.3674,23.5398],[86.3682,23.4834],[86.3505,23.4417],[86.3101,23.4118],[86.2604,23.4185],[86.2288,23.4434],[86.1485,23.4654],[86.1605,23.5083],[86.1586,23.5595],[86.0947,23.5631],[86.042,23.5862],[86.0168,23.5475],[86.0397,23.5149],[86.0319,23.4835],[85.9503,23.4709],[85.8761,23.4808],[85.8636,23.4316],[85.8679,23.3295],[85.8394,23.3073],[85.8206,23.2704],[85.8834,23.196],[85.8951,23.155],[86.0375,23.1471],[86.0492,23.1061],[86.0981,23.0854],[86.127,23.0868],[86.156,23.0329],[86.1855,23.0052],[86.2244,22.9946],[86.2932,23.0139],[86.3379,22.9906],[86.364,23.0009],[86.3939,22.981],[86.4256,22.9968],[86.4977,22.9928],[86.5206,22.9705],[86.4912,22.9387],[86.4706,22.9489],[86.4362,22.9229],[86.4647,22.8949],[86.4194,22.791],[86.4695,22.7541],[86.5029,22.7172],[86.5428,22.7222],[86.6413,22.6587],[86.6331,22.611],[86.6585,22.5757],[86.7101,22.5831],[86.7658,22.5757],[86.802,22.5018],[86.7937,22.4777],[86.7512,22.4827],[86.7647,22.4266],[86.8439,22.4015],[86.8332,22.3245],[86.8881,22.2971],[86.8871,22.2576],[86.8231,22.2661],[86.8022,22.2179],[86.7777,22.2368],[86.7569,22.2113],[86.727,22.2168],[86.6829,22.2233],[86.6515,22.2632],[86.5848,22.3006],[86.5262,22.3125],[86.4994,22.3463],[86.411,22.3198],[86.3678,22.3438],[86.3229,22.3848],[86.2941,22.4268],[86.2258,22.453],[86.2115,22.4715],[86.1237,22.4886],[86.104,22.5009],[86.0691,22.5559],[85.9734,22.5058],[85.9603,22.4614],[86.0181,22.4257],[86.0291,22.3858],[85.998,22.3448],[86.0171,22.2973],[85.9885,22.2673],[85.9856,22.2371],[86.0314,22.1925],[85.9967,22.1324],[86.0094,22.1178],[85.9139,21.98],[85.8257,21.9751],[85.766,21.9949],[85.7772,22.0556],[85.8074,22.1161],[85.7302,22.0653],[85.6902,22.0609],[85.6449,22.0947],[85.5994,22.0783],[85.4945,22.1194],[85.4123,22.1616],[85.371,22.161],[85.3527,22.1287],[85.3231,22.1275],[85.2748,22.0816],[85.2516,22.0266],[85.1531,22.0789],[85.1267,22.0748],[85.0999,22.1042],[85.0554,22.1156],[85.0298,22.1624],[85.0524,22.1951],[85.0995,22.2935],[85.0765,22.3561],[85.0877,22.3884],[85.0367,22.4814],[84.9707,22.4516],[84.9543,22.4587],[84.9094,22.4227],[84.8801,22.4489],[84.8358,22.432],[84.8034,22.448],[84.759,22.4467],[84.7501,22.4193],[84.6666,22.4195],[84.6288,22.4345],[84.503,22.4198],[84.4771,22.3869],[84.4289,22.371],[84.4005,22.3464],[84.3675,22.3532],[84.317,22.3423],[84.269,22.3545],[84.2504,22.379],[84.1968,22.3781],[84.141,22.4259],[84.1424,22.4723],[84.113,22.4765],[84.0756,22.5062],[84.0091,22.5261],[84.0028,22.546],[84.0244,22.5919],[84.0494,22.595],[84.084,22.6382],[84.15,22.6365],[84.2381,22.6919],[84.2295,22.7369],[84.2598,22.7677],[84.286,22.764],[84.3147,22.8006],[84.3347,22.8616],[84.3715,22.8647],[84.3962,22.9259],[84.3804,22.9721],[84.3281,22.982],[84.2805,22.964],[84.2425,22.9834],[84.1783,22.9799],[84.1469,22.9905],[84.1254,23.037],[84.1334,23.0831],[84.0722,23.109],[84.0319,23.1579],[84.0634,23.2066],[84.0537,23.2474],[84.0744,23.3336],[84.0231,23.378],[84.0117,23.3537],[83.9693,23.3669],[83.9817,23.4223],[83.971,23.467],[84.0149,23.5042],[84.028,23.5457],[84.03,23.5996],[84.0087,23.6279],[83.9319,23.6205],[83.9397,23.5705],[83.8258,23.5908],[83.7771,23.608],[83.7589,23.6536],[83.7236,23.6839],[83.746,23.7195],[83.7377,23.7605],[83.7076,23.8175],[83.6665,23.8443],[83.5689,23.8667],[83.5488,23.934],[83.5151,23.9815],[83.5082,24.0312],[83.4542,24.0415],[83.4342,24.0843],[83.3878,24.1],[83.3299,24.1017],[83.3547,24.1268],[83.3821,24.1952],[83.3785,24.2291],[83.408,24.2628],[83.4072,24.2888],[83.38,24.3131],[83.4479,24.3711],[83.3859,24.458],[83.4015,24.5035],[83.5033,24.5254],[83.596,24.5126],[83.7546,24.5094],[83.8015,24.5299],[83.8727,24.5322],[83.933,24.5473],[83.9748,24.5914],[83.998,24.6383],[84.034,24.6298],[84.0731,24.5674],[84.0851,24.5136],[84.1039,24.4809],[84.1786,24.5052],[84.1728,24.5451],[84.2361,24.5495],[84.259,24.5342],[84.2972,24.5605],[84.3221,24.5166],[84.3028,24.48],[84.3476,24.3912],[84.4261,24.3572],[84.4244,24.3298],[84.4659,24.3316],[84.5009,24.2876],[84.5337,24.3597],[84.5589,24.376],[84.5675,24.4092],[84.6649,24.3909],[84.6856,24.4556],[84.7272,24.4692],[84.7556,24.5001],[84.7861,24.5036],[84.8022,24.5306],[84.8388,24.5127],[84.8329,24.4699],[84.8709,24.4582],[84.9166,24.3733],[84.9552,24.3715],[85.0315,24.4158],[85.0817,24.3985],[85.1739,24.4206],[85.1615,24.4607],[85.2261,24.4633],[85.2496,24.4908],[85.2825,24.4915],[85.2921,24.5237],[85.3732,24.5248],[85.3975,24.5448],[85.432,24.5315],[85.491,24.5481],[85.5238,24.521],[85.5721,24.5623],[85.5806,24.6008],[85.6152,24.5808],[85.6691,24.5798],[85.6755,24.618],[85.6604,24.6723],[85.7086,24.7268],[85.7045,24.7663],[85.7416,24.8198],[85.7781,24.7965],[85.8201,24.808],[85.8897,24.7927],[85.9204,24.7441],[85.9702,24.733],[85.9804,24.7487],[86.0553,24.7797],[86.0538,24.7559],[86.0942,24.7449],[86.1285,24.6987],[86.1154,24.6437],[86.1246,24.6113],[86.1583,24.5867],[86.2136,24.5943],[86.2924,24.5879],[86.3092,24.5112],[86.2761,24.4659],[86.3159,24.4422],[86.3955,24.4153],[86.413,24.3803],[86.4453,24.3679],[86.4912,24.428],[86.485,24.47],[86.5167,24.5354],[86.5526,24.5444],[86.6032,24.602],[86.6694,24.5662],[86.787,24.6165],[86.8113,24.5689],[86.86,24.5561],[86.9085,24.585],[86.9298,24.6268],[86.9784,24.6401],[86.9954,24.6204],[87.0511,24.6086],[87.0543,24.6697],[87.0805,24.7261],[87.0772,24.8077],[87.1094,24.8517],[87.1571,24.883],[87.145,24.9192],[87.1542,24.9754],[87.1461,25.009],[87.1811,25.0658],[87.2425,25.1027],[87.2955,25.0886],[87.3183,25.1948],[87.3345,25.2162],[87.3709,25.2072],[87.3918,25.2279],[87.463,25.1951],[87.4739,25.2402],[87.4971,25.2599],[87.4873,25.2965],[87.5432,25.2972],[87.5519,25.3327],[87.5844,25.3336],[87.612,25.3128],[87.692,25.3116],[87.7114,25.2577]]]},"properties":{"ST_NM":"Jharkhand","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.8738,12.0426],[79.8571,12.0068],[79.8406,11.9558],[79.8098,11.9753],[79.7493,11.9222],[79.7428,11.9778],[79.7206,11.9927],[79.6916,11.9514],[79.7406,11.9055],[79.71,11.8892],[79.7134,11.8607],[79.77,11.8747],[79.8077,11.8364],[79.807,11.8336],[79.7369,11.8423],[79.7198,11.785],[79.7559,11.7754],[79.7958,11.7855],[79.761,11.6238],[79.7572,11.5575],[79.7661,11.5216],[79.8034,11.4541],[79.8188,11.3943],[79.8431,11.3512],[79.8346,11.3218],[79.8562,11.1761],[79.8544,10.9833],[79.8402,11.0021],[79.7467,11.0026],[79.7209,10.9692],[79.7248,10.929],[79.7769,10.8966],[79.824,10.8842],[79.821,10.8456],[79.8413,10.828],[79.8507,10.8278],[79.8534,10.6359],[79.8699,10.3745],[79.8822,10.3232],[79.8619,10.2831],[79.7685,10.2719],[79.6802,10.282],[79.6363,10.2946],[79.4839,10.3155],[79.3811,10.3164],[79.3666,10.294],[79.3003,10.265],[79.2669,10.229],[79.2287,10.1493],[79.2259,10.1015],[79.2518,10.0511],[79.2443,10.0273],[79.1527,9.9283],[79.1258,9.8909],[79.1189,9.8524],[79.0826,9.8156],[78.9803,9.6896],[78.9549,9.6239],[78.9307,9.5959],[78.9144,9.493],[78.9027,9.4635],[78.9336,9.412],[79.0163,9.331],[79.0665,9.298],[79.1613,9.2839],[79.265,9.2923],[79.3115,9.3278],[79.3352,9.3087],[79.2999,9.2458],[79.2239,9.2581],[79.1904,9.2817],[79.0909,9.2602],[78.9807,9.2745],[78.8758,9.2573],[78.7274,9.2093],[78.7146,9.1889],[78.6649,9.1938],[78.65,9.1613],[78.5748,9.1304],[78.536,9.1376],[78.4151,9.1141],[78.2258,8.972],[78.1987,8.9388],[78.1721,8.8838],[78.1608,8.8052],[78.1954,8.7516],[78.1636,8.7239],[78.1385,8.6802],[78.135,8.6162],[78.1447,8.598],[78.1306,8.5479],[78.1433,8.5017],[78.0637,8.4124],[78.0652,8.3729],[77.9803,8.3436],[77.8909,8.2705],[77.8411,8.2517],[77.8045,8.203],[77.7937,8.1623],[77.758,8.1453],[77.733,8.1639],[77.6373,8.1533],[77.5836,8.1379],[77.5559,8.0766],[77.5309,8.0767],[77.4052,8.1051],[77.3314,8.1274],[77.249,8.1711],[77.1834,8.2198],[77.0978,8.2925],[77.1186,8.3203],[77.1685,8.3326],[77.167,8.3839],[77.2065,8.4443],[77.2135,8.512],[77.2621,8.5067],[77.2751,8.5386],[77.2514,8.6203],[77.2009,8.669],[77.179,8.7307],[77.2297,8.7847],[77.264,8.8421],[77.2567,8.8782],[77.2211,8.9041],[77.1733,8.9916],[77.1493,9.0097],[77.167,9.0449],[77.1925,9.0436],[77.2056,9.0839],[77.2678,9.1534],[77.2567,9.1967],[77.2995,9.311],[77.338,9.3687],[77.3364,9.4124],[77.3659,9.4602],[77.3925,9.4595],[77.3991,9.4962],[77.3657,9.551],[77.3037,9.5988],[77.2696,9.5729],[77.2342,9.5816],[77.2036,9.6145],[77.1677,9.6151],[77.1808,9.6586],[77.2066,9.6945],[77.2049,9.724],[77.2468,9.7985],[77.2269,9.822],[77.2183,9.9049],[77.2728,9.9643],[77.2554,10.0112],[77.2616,10.0336],[77.204,10.0885],[77.2012,10.1072],[77.2443,10.1317],[77.2749,10.1313],[77.2778,10.1934],[77.2636,10.2639],[77.2278,10.3154],[77.2353,10.3529],[77.176,10.3586],[77.1202,10.318],[77.056,10.2873],[77.0516,10.2638],[76.9841,10.2223],[76.9104,10.2351],[76.8967,10.2621],[76.8299,10.3032],[76.8486,10.3674],[76.8233,10.3946],[76.8387,10.5959],[76.8143,10.635],[76.8821,10.639],[76.8661,10.6841],[76.9039,10.7627],[76.901,10.8079],[76.8701,10.809],[76.8308,10.8707],[76.7798,10.8913],[76.7392,10.8946],[76.6591,10.9306],[76.6667,10.9682],[76.7158,11.0405],[76.7465,11.0568],[76.7481,11.1348],[76.7002,11.1536],[76.698,11.1742],[76.7355,11.2157],[76.707,11.2383],[76.6289,11.1943],[76.5338,11.1857],[76.499,11.2114],[76.4489,11.2056],[76.4531,11.2395],[76.5217,11.2707],[76.5422,11.2967],[76.5478,11.359],[76.4604,11.3889],[76.3687,11.4563],[76.326,11.4541],[76.2647,11.4813],[76.2407,11.526],[76.2334,11.5679],[76.279,11.6009],[76.3024,11.5713],[76.3359,11.5958],[76.378,11.602],[76.3881,11.6297],[76.4271,11.6335],[76.4313,11.6665],[76.4566,11.6646],[76.5116,11.7051],[76.5513,11.6724],[76.5596,11.6253],[76.6136,11.6078],[76.6714,11.616],[76.8228,11.6082],[76.85,11.6867],[76.8883,11.7338],[76.9088,11.7952],[76.9699,11.777],[77.0129,11.8147],[77.0387,11.794],[77.0808,11.7366],[77.1168,11.7303],[77.1107,11.7736],[77.1892,11.7926],[77.2386,11.7948],[77.2498,11.8131],[77.2938,11.8091],[77.3351,11.7713],[77.3955,11.7862],[77.428,11.7671],[77.4498,11.7961],[77.4654,11.8752],[77.4905,11.9086],[77.4928,11.9414],[77.5379,11.9325],[77.669,11.9492],[77.6963,12.0158],[77.7266,12.0612],[77.7557,12.0798],[77.7755,12.1185],[77.7532,12.134],[77.7313,12.1801],[77.6125,12.206],[77.5187,12.1945],[77.4722,12.21],[77.4876,12.2806],[77.5271,12.2788],[77.5656,12.3061],[77.5786,12.3358],[77.613,12.3612],[77.6272,12.4585],[77.615,12.5042],[77.5872,12.5148],[77.5793,12.5731],[77.606,12.6281],[77.5989,12.6672],[77.6599,12.6839],[77.6786,12.6604],[77.7404,12.6737],[77.7616,12.7273],[77.7943,12.7578],[77.7991,12.8516],[77.836,12.8704],[77.9389,12.8726],[77.9173,12.838],[77.9407,12.8234],[77.9898,12.8216],[78.0307,12.8525],[78.0765,12.8397],[78.1344,12.7819],[78.2309,12.7607],[78.2401,12.7027],[78.2765,12.7016],[78.2964,12.6711],[78.3794,12.6251],[78.4717,12.6323],[78.4679,12.6759],[78.5038,12.682],[78.5043,12.7249],[78.5547,12.6991],[78.5575,12.7573],[78.5925,12.7827],[78.6077,12.8219],[78.6015,12.8508],[78.6335,12.9314],[78.6209,12.9913],[78.6555,13.0153],[78.7052,13.0153],[78.7145,13.0687],[78.7513,13.055],[78.7877,13.0642],[78.813,13.0891],[78.842,13.0787],[78.8814,13.0982],[78.9061,13.0452],[78.9239,13.0808],[78.9825,13.0864],[79.0634,13.0531],[79.0809,13.0258],[79.1085,13.0388],[79.1631,13.0203],[79.1848,13.0299],[79.1856,13.0753],[79.2344,13.1053],[79.2269,13.1589],[79.3099,13.112],[79.365,13.1308],[79.3561,13.1646],[79.3921,13.1925],[79.4316,13.1893],[79.4531,13.2384],[79.4185,13.243],[79.4138,13.3002],[79.3983,13.3302],[79.4952,13.3452],[79.5373,13.3386],[79.54,13.2724],[79.574,13.259],[79.6062,13.2882],[79.6518,13.2918],[79.6936,13.2735],[79.7598,13.2075],[79.7947,13.2421],[79.735,13.276],[79.7618,13.3127],[79.7917,13.2935],[79.8173,13.3186],[79.9313,13.3515],[79.958,13.3792],[79.9396,13.4251],[79.9733,13.4297],[79.9724,13.4691],[80.0078,13.4783],[80.0284,13.5388],[80.0771,13.5264],[80.0782,13.4888],[80.1446,13.5013],[80.1619,13.4883],[80.2259,13.4851],[80.2422,13.4725],[80.2683,13.5645],[80.301,13.4787],[80.3238,13.4501],[80.3464,13.3154],[80.3447,13.2762],[80.2862,13.0602],[80.2595,12.9369],[80.2478,12.8103],[80.2551,12.7831],[80.1656,12.5276],[80.1564,12.4601],[80.1377,12.4106],[80.0568,12.3262],[79.8846,12.0645],[79.8738,12.0426]],[[79.6384,11.9863],[79.6184,11.9261],[79.6559,11.9079],[79.6693,11.9375],[79.6384,11.9863]]]},"properties":{"ST_NM":"Tamil Nadu","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[79.396,25.0322],[79.3737,25.0467],[79.3894,25.0918],[79.4239,25.045],[79.396,25.0322]]],[[[80.0651,28.8367],[80.1185,28.828],[80.1713,28.782],[80.2161,28.7546],[80.2505,28.7573],[80.2768,28.7115],[80.3194,28.6977],[80.3256,28.6664],[80.377,28.6289],[80.4161,28.6395],[80.4623,28.6216],[80.4721,28.5908],[80.5235,28.555],[80.5034,28.6644],[80.5397,28.6902],[80.6111,28.6387],[80.6516,28.6343],[80.7144,28.5686],[80.7687,28.5659],[80.7842,28.5293],[80.8438,28.4996],[80.8963,28.5071],[80.9052,28.4663],[80.9786,28.434],[80.9979,28.4521],[81.058,28.4139],[81.0803,28.389],[81.2106,28.3607],[81.2339,28.326],[81.2327,28.2889],[81.3207,28.1972],[81.3181,28.145],[81.3639,28.1413],[81.3906,28.1736],[81.4444,28.1618],[81.4839,28.1186],[81.4781,28.0826],[81.5511,28.0472],[81.6439,27.9931],[81.6988,27.9877],[81.8046,27.9038],[81.8332,27.8977],[81.8993,27.8536],[81.9679,27.9288],[82.0699,27.9233],[82.121,27.8659],[82.1533,27.8668],[82.208,27.843],[82.3037,27.7737],[82.3678,27.7434],[82.4024,27.704],[82.4492,27.6797],[82.5167,27.6913],[82.5408,27.6858],[82.605,27.7058],[82.7086,27.716],[82.7136,27.6645],[82.7378,27.6427],[82.7539,27.5848],[82.7351,27.5027],[82.9292,27.5011],[82.9688,27.4637],[83.0349,27.4488],[83.1621,27.4573],[83.1883,27.4539],[83.2112,27.4232],[83.2723,27.3834],[83.2962,27.334],[83.3385,27.3337],[83.3745,27.3595],[83.4029,27.401],[83.385,27.4361],[83.4095,27.4787],[83.6149,27.4693],[83.8308,27.3699],[83.8635,27.3441],[83.8715,27.3073],[83.9043,27.3266],[83.9292,27.2916],[83.9118,27.246],[83.9557,27.2353],[83.987,27.1976],[83.9474,27.1118],[83.9647,27.0843],[84.0165,27.1055],[84.0056,27.0603],[84.0495,27.0345],[84.0564,26.9902],[84.0443,26.9315],[84.0798,26.8779],[84.1298,26.893],[84.1406,26.8527],[84.1661,26.8338],[84.2188,26.8714],[84.2541,26.8566],[84.26,26.807],[84.2326,26.7537],[84.2549,26.7267],[84.3061,26.7496],[84.3303,26.684],[84.4106,26.6702],[84.4195,26.6261],[84.3528,26.6199],[84.2847,26.5996],[84.1593,26.6361],[84.0882,26.6362],[84.09,26.607],[84.0478,26.5363],[84.0069,26.5256],[83.9402,26.5253],[83.9152,26.5029],[83.9108,26.4497],[83.9915,26.4323],[84.0186,26.4471],[84.0683,26.3884],[84.1755,26.3732],[84.1861,26.3137],[84.1769,26.265],[84.0599,26.2236],[84.0262,26.1966],[84.056,26.1001],[84.0887,26.1003],[84.2066,25.9989],[84.3119,25.9438],[84.354,25.9588],[84.4119,25.9308],[84.4276,25.8913],[84.5109,25.8714],[84.534,25.8763],[84.5508,25.8407],[84.6248,25.7919],[84.61,25.7552],[84.5603,25.7369],[84.5611,25.6839],[84.5202,25.675],[84.4621,25.7089],[84.4297,25.7111],[84.3646,25.7419],[84.3285,25.7311],[84.324,25.6704],[84.2941,25.6602],[84.2232,25.6625],[84.1989,25.7022],[84.1544,25.7274],[84.1051,25.7212],[84.075,25.6953],[84.0813,25.6365],[84.0174,25.6148],[83.9142,25.5452],[83.8079,25.4091],[83.7712,25.3969],[83.7423,25.4099],[83.6946,25.3712],[83.6636,25.3725],[83.6298,25.3301],[83.5372,25.3036],[83.4093,25.2456],[83.4035,25.2164],[83.3536,25.1886],[83.3434,25.0509],[83.3436,24.9663],[83.3617,24.9537],[83.377,24.86],[83.4014,24.8194],[83.3912,24.7891],[83.4281,24.7682],[83.4849,24.704],[83.5204,24.6775],[83.5019,24.6486],[83.5437,24.6283],[83.5227,24.5986],[83.5223,24.5477],[83.5033,24.5254],[83.4015,24.5035],[83.3859,24.458],[83.4479,24.3711],[83.38,24.3131],[83.4072,24.2888],[83.408,24.2628],[83.3785,24.2291],[83.3821,24.1952],[83.3547,24.1268],[83.3299,24.1017],[83.2821,24.0498],[83.2791,24.0183],[83.2426,24.0116],[83.2079,23.9214],[83.1542,23.9041],[83.1415,23.8849],[83.0751,23.8701],[83.0543,23.8793],[82.9543,23.8708],[82.8103,23.9629],[82.8038,24.0036],[82.7513,24.0119],[82.7742,24.0748],[82.7123,24.0886],[82.6646,24.1298],[82.7281,24.1356],[82.7443,24.1656],[82.7364,24.2229],[82.7728,24.3076],[82.764,24.3707],[82.7134,24.3813],[82.7434,24.4987],[82.7207,24.5138],[82.7482,24.5613],[82.8008,24.5801],[82.7738,24.6418],[82.7287,24.6357],[82.671,24.697],[82.5391,24.6478],[82.5239,24.6726],[82.4569,24.6733],[82.4277,24.7022],[82.4073,24.6829],[82.418,24.6415],[82.4019,24.5914],[82.3299,24.6185],[82.273,24.6752],[82.2351,24.6709],[82.2556,24.7494],[82.0977,24.8162],[82.0107,24.8469],[81.9598,24.8372],[81.9079,24.8814],[81.9196,24.9278],[81.9079,24.9801],[81.8352,25.0173],[81.7927,25.0045],[81.7458,25.0335],[81.7084,25.0353],[81.6686,25.0715],[81.6117,25.0563],[81.6054,25.0787],[81.6378,25.1004],[81.6027,25.1364],[81.5787,25.1908],[81.5186,25.1861],[81.4842,25.116],[81.4992,25.077],[81.4225,25.099],[81.4069,25.1272],[81.3565,25.1634],[81.292,25.1619],[81.2662,25.1396],[81.263,25.0519],[81.2237,24.9988],[81.2153,24.9329],[81.1722,24.9573],[81.1396,24.8875],[81.0967,24.9209],[81.0897,24.9463],[81.0339,24.9526],[80.9964,24.9281],[80.929,24.9612],[80.8296,24.918],[80.8088,24.9489],[80.8552,25.004],[80.8355,25.0241],[80.8781,25.0655],[80.8688,25.1165],[80.9043,25.1589],[80.8823,25.1831],[80.8486,25.163],[80.8254,25.1215],[80.8038,25.1376],[80.7605,25.1347],[80.7306,25.1129],[80.7834,25.0759],[80.7663,25.0528],[80.7291,25.0672],[80.6812,25.053],[80.6763,25.0786],[80.6233,25.0886],[80.6325,25.1226],[80.6019,25.1505],[80.5924,25.0902],[80.5523,25.0628],[80.5067,25.084],[80.5062,25.0428],[80.5465,25.0321],[80.5309,25.0013],[80.5008,25.0045],[80.4569,24.981],[80.449,25.0787],[80.4083,25.0571],[80.3774,25.0069],[80.3477,25.0177],[80.331,24.9922],[80.2879,25.0381],[80.3304,25.0475],[80.3506,25.0904],[80.3527,25.1303],[80.4317,25.1776],[80.408,25.2177],[80.3482,25.2785],[80.3108,25.2864],[80.3221,25.3346],[80.3163,25.3858],[80.2639,25.4241],[80.2535,25.4008],[80.1959,25.4019],[80.1311,25.3342],[80.089,25.3558],[80.0727,25.3368],[80.0343,25.3421],[80.0221,25.2976],[79.9808,25.2618],[79.9366,25.2475],[79.8772,25.2509],[79.8513,25.2275],[79.8661,25.1411],[79.8258,25.1071],[79.747,25.1393],[79.6758,25.1237],[79.6083,25.1281],[79.5692,25.1718],[79.5187,25.1199],[79.525,25.0974],[79.4827,25.0797],[79.4263,25.1191],[79.4053,25.1062],[79.3842,25.1427],[79.3903,25.1701],[79.4382,25.1968],[79.447,25.2445],[79.3686,25.2924],[79.3421,25.329],[79.2998,25.3377],[79.269,25.3051],[79.2807,25.2617],[79.345,25.2508],[79.3447,25.2173],[79.307,25.2249],[79.3136,25.1361],[79.2824,25.1173],[79.2404,25.1131],[79.2038,25.1259],[79.1658,25.1075],[79.116,25.1399],[79.0948,25.176],[79.031,25.1384],[79.0309,25.1849],[79.0636,25.222],[79.0222,25.2413],[79.0059,25.195],[78.9538,25.219],[78.921,25.2007],[78.8903,25.1607],[78.8717,25.188],[78.9201,25.2736],[78.9639,25.2994],[78.8841,25.3441],[78.8641,25.3102],[78.8519,25.2302],[78.7977,25.2892],[78.8802,25.3859],[78.9013,25.3616],[78.9438,25.3491],[78.9763,25.42],[78.9205,25.5138],[78.9528,25.5375],[78.8841,25.5544],[78.8844,25.5156],[78.8415,25.5125],[78.8662,25.4657],[78.8354,25.4558],[78.7967,25.4828],[78.7318,25.46],[78.759,25.4307],[78.7486,25.3916],[78.7746,25.353],[78.7267,25.3434],[78.7153,25.3717],[78.6627,25.3822],[78.7115,25.4281],[78.6582,25.441],[78.6448,25.4146],[78.602,25.4089],[78.585,25.3468],[78.538,25.3595],[78.533,25.3009],[78.5608,25.2646],[78.5705,25.2052],[78.6007,25.1554],[78.6019,25.0978],[78.6273,25.0869],[78.6527,25.0499],[78.6361,24.9593],[78.6634,24.9384],[78.6766,24.8986],[78.7533,24.869],[78.7899,24.8104],[78.7701,24.7577],[78.7812,24.7069],[78.7465,24.662],[78.757,24.5989],[78.7838,24.5886],[78.8348,24.6048],[78.8831,24.6414],[78.935,24.5608],[78.9501,24.5007],[78.9185,24.4951],[78.9151,24.4582],[78.9936,24.4227],[78.963,24.3442],[78.9096,24.2961],[78.9167,24.269],[78.8846,24.2505],[78.888,24.227],[78.8471,24.2139],[78.7894,24.1771],[78.7645,24.2321],[78.7031,24.2269],[78.6686,24.24],[78.6602,24.2674],[78.5961,24.3351],[78.502,24.3903],[78.478,24.339],[78.4385,24.3123],[78.4098,24.2711],[78.3819,24.2731],[78.3297,24.3257],[78.3658,24.386],[78.2707,24.4462],[78.2711,24.4774],[78.2448,24.4874],[78.2266,24.5339],[78.2645,24.5522],[78.2768,24.6619],[78.2256,24.753],[78.2357,24.7717],[78.1723,24.8778],[78.334,24.9949],[78.3472,25.0245],[78.3395,25.0872],[78.3861,25.1038],[78.4112,25.1295],[78.4166,25.1835],[78.3821,25.2226],[78.372,25.2589],[78.3386,25.2919],[78.3279,25.3523],[78.301,25.362],[78.3691,25.4386],[78.4287,25.4879],[78.4195,25.5335],[78.4938,25.5786],[78.5447,25.5616],[78.5979,25.5705],[78.6583,25.5599],[78.7162,25.6045],[78.8105,25.6194],[78.8167,25.6763],[78.7633,25.7199],[78.7713,25.7497],[78.8083,25.8009],[78.8492,25.8281],[78.8842,25.913],[78.9333,25.9485],[78.9525,25.988],[78.9479,26.0263],[79.0121,26.0832],[78.9521,26.1293],[78.9943,26.1462],[79.0252,26.2207],[79.0653,26.2298],[79.0621,26.2736],[79.135,26.3248],[79.1205,26.3483],[79.0845,26.3581],[79.0914,26.4046],[79.1237,26.4116],[79.1295,26.4404],[79.0627,26.4532],[79.0679,26.4969],[79.0189,26.541],[78.9876,26.5931],[79.0165,26.6007],[78.9938,26.6405],[79.0084,26.6639],[78.9151,26.7062],[78.8694,26.6994],[78.8159,26.7624],[78.7719,26.7701],[78.7215,26.7964],[78.6806,26.7859],[78.6745,26.7657],[78.63,26.7732],[78.613,26.752],[78.5775,26.7485],[78.522,26.7803],[78.4596,26.7883],[78.4269,26.8256],[78.3952,26.8171],[78.3615,26.8691],[78.2835,26.8545],[78.2711,26.8142],[78.223,26.8306],[78.2027,26.8654],[78.2326,26.8743],[78.2723,26.9192],[78.1687,26.9478],[78.1245,26.9493],[78.1112,26.8959],[78.0569,26.9068],[77.987,26.8893],[77.9678,26.9037],[77.9088,26.9064],[77.9043,26.8833],[77.8505,26.9127],[77.7747,26.9322],[77.7324,26.9201],[77.7226,26.8743],[77.6076,26.8278],[77.5007,26.817],[77.4875,26.7881],[77.4366,26.7676],[77.4206,26.8106],[77.4266,26.859],[77.4902,26.9005],[77.5832,26.9242],[77.7114,26.9974],[77.6798,27.0471],[77.6656,27.0173],[77.6018,27.0225],[77.5772,27.0683],[77.5376,27.0983],[77.6037,27.1238],[77.6218,27.1722],[77.6584,27.1701],[77.6811,27.1944],[77.6168,27.2865],[77.6125,27.3319],[77.5483,27.3366],[77.5072,27.3771],[77.4395,27.3907],[77.4211,27.422],[77.4337,27.46],[77.399,27.5002],[77.34,27.5266],[77.3345,27.5913],[77.3171,27.6068],[77.3462,27.6395],[77.3409,27.7036],[77.3194,27.7335],[77.3015,27.7949],[77.2837,27.8011],[77.3312,27.8311],[77.3493,27.8557],[77.4132,27.8517],[77.4795,27.8979],[77.4753,27.9293],[77.5294,27.9255],[77.5411,27.982],[77.4811,28.0976],[77.5124,28.1249],[77.5306,28.1859],[77.5188,28.2425],[77.4927,28.252],[77.5062,28.3041],[77.4725,28.3367],[77.5052,28.3627],[77.4776,28.4191],[77.4364,28.431],[77.3863,28.468],[77.3454,28.5133],[77.2971,28.566],[77.3426,28.622],[77.3163,28.6412],[77.326,28.7099],[77.3048,28.7129],[77.2355,28.7609],[77.1994,28.7981],[77.2243,28.8261],[77.2098,28.8579],[77.2329,28.9187],[77.1967,28.9377],[77.2023,28.9872],[77.1651,29.0766],[77.1341,29.0952],[77.1473,29.1796],[77.1325,29.2225],[77.1388,29.2663],[77.1583,29.3029],[77.1233,29.3704],[77.1484,29.4341],[77.1232,29.4554],[77.1334,29.4827],[77.0964,29.5195],[77.113,29.6097],[77.1559,29.6983],[77.1342,29.7185],[77.1466,29.7719],[77.1792,29.8127],[77.1782,29.8458],[77.2469,29.9767],[77.2764,29.9967],[77.2969,30.0534],[77.3343,30.0538],[77.3825,30.0925],[77.4058,30.0894],[77.4297,30.164],[77.4772,30.1824],[77.5784,30.3267],[77.6035,30.3692],[77.5856,30.3796],[77.576,30.3974],[77.6472,30.4048],[77.6765,30.3878],[77.7208,30.3309],[77.8463,30.2721],[77.937,30.2492],[77.912,30.1826],[77.8661,30.1192],[77.828,30.086],[77.7997,30.0873],[77.77,30.0426],[77.782,30.0187],[77.7441,29.9837],[77.7305,29.9317],[77.7472,29.9101],[77.7173,29.8875],[77.7415,29.8521],[77.7803,29.7651],[77.7697,29.7177],[77.8105,29.7024],[77.83,29.6683],[77.879,29.7003],[77.9264,29.7143],[77.9826,29.6406],[77.9675,29.5801],[78.0183,29.5983],[78.0575,29.6307],[78.1305,29.6526],[78.1805,29.6969],[78.2039,29.7373],[78.2459,29.7346],[78.2909,29.7587],[78.3357,29.7967],[78.3927,29.7675],[78.5068,29.7295],[78.5215,29.6579],[78.5416,29.6263],[78.6177,29.5581],[78.6505,29.5461],[78.7109,29.5005],[78.7433,29.5013],[78.7997,29.4646],[78.9253,29.4339],[78.9122,29.3943],[78.8402,29.346],[78.7954,29.3251],[78.7669,29.3366],[78.7272,29.3056],[78.7899,29.2477],[78.8733,29.2237],[78.9346,29.1297],[78.9823,29.1431],[79.0248,29.1125],[79.0505,29.157],[79.1502,29.1187],[79.1425,29.067],[79.2045,29.021],[79.2449,29.0101],[79.3068,28.9667],[79.3563,28.9678],[79.408,28.952],[79.4276,28.9128],[79.4256,28.8665],[79.533,28.8698],[79.5565,28.8993],[79.5843,28.8792],[79.5844,28.8463],[79.6561,28.8698],[79.7067,28.8411],[79.7491,28.8718],[79.7998,28.8875],[79.8461,28.8732],[79.8243,28.8073],[79.9246,28.7751],[79.9544,28.7229],[80.0301,28.7487],[80.0681,28.8029],[80.0651,28.8367]]]]},"properties":{"ST_NM":"Uttar Pradesh","region":"north"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[88.5194,21.5864],[88.5455,21.5381],[88.5283,21.5278],[88.4891,21.5503],[88.4929,21.5933],[88.5194,21.5864]]],[[[88.3594,21.8048],[88.2937,21.783],[88.2689,21.8152],[88.3043,21.8306],[88.3157,21.8542],[88.3516,21.8539],[88.3594,21.8048]]],[[[87.9502,21.5923],[87.9631,21.6438],[87.9912,21.6277],[87.9502,21.5923]]],[[[88.8378,21.605],[88.8813,21.5902],[88.9063,21.5584],[88.8669,21.5328],[88.829,21.56],[88.8378,21.605]]],[[[88.7736,21.6328],[88.7964,21.596],[88.7646,21.5665],[88.7289,21.5691],[88.7058,21.6002],[88.7163,21.6315],[88.7736,21.6328]]],[[[88.5846,21.6015],[88.5727,21.5702],[88.5136,21.5988],[88.519,21.6479],[88.5652,21.6249],[88.5846,21.6015]]],[[[88.6051,21.6149],[88.5595,21.6413],[88.5821,21.6632],[88.6051,21.6149]]],[[[88.3206,21.6069],[88.3098,21.7055],[88.3481,21.6847],[88.3434,21.6304],[88.3206,21.6069]]],[[[88.4063,21.7328],[88.4206,21.7028],[88.4102,21.6514],[88.4302,21.6255],[88.4057,21.6064],[88.3828,21.6485],[88.3827,21.6813],[88.4063,21.7328]]],[[[88.9664,21.7407],[88.9875,21.6908],[88.9648,21.6568],[88.9322,21.7456],[88.9664,21.7407]]],[[[88.9204,21.6311],[88.8916,21.6511],[88.8667,21.7062],[88.8802,21.7404],[88.9369,21.7008],[88.9204,21.6311]]],[[[89.0148,21.7781],[89.0743,21.7036],[89.0931,21.6383],[89.0728,21.6125],[89.0416,21.6095],[89.0239,21.6349],[89.0124,21.7141],[88.9765,21.7298],[88.9568,21.7665],[88.9941,21.7874],[89.0148,21.7781]]],[[[88.8375,21.7661],[88.8393,21.7193],[88.856,21.6533],[88.836,21.6194],[88.8048,21.6345],[88.8211,21.6672],[88.8191,21.7058],[88.7839,21.7326],[88.8375,21.7661]]],[[[88.45,21.7914],[88.4514,21.7188],[88.4705,21.6746],[88.4528,21.6111],[88.4177,21.6551],[88.432,21.6967],[88.4255,21.7607],[88.45,21.7914]]],[[[88.1258,21.6736],[88.1469,21.6451],[88.1207,21.6238],[88.0438,21.6436],[88.0326,21.6876],[88.1034,21.7855],[88.1303,21.7567],[88.1214,21.7385],[88.1351,21.6995],[88.1258,21.6736]]],[[[88.5553,21.7615],[88.6069,21.6771],[88.5199,21.7251],[88.5089,21.744],[88.5198,21.7914],[88.5526,21.8094],[88.5553,21.7615]]],[[[88.8951,21.7845],[88.8828,21.7524],[88.8665,21.7797],[88.836,21.7885],[88.8449,21.8582],[88.8709,21.8526],[88.8783,21.8056],[88.8951,21.7845]]],[[[88.7773,21.8688],[88.8209,21.8685],[88.8167,21.8226],[88.7799,21.7709],[88.7807,21.7378],[88.755,21.7074],[88.8055,21.6983],[88.7892,21.6537],[88.7464,21.6621],[88.7095,21.6948],[88.6928,21.7411],[88.7119,21.809],[88.6958,21.8596],[88.7138,21.9016],[88.7773,21.8688]]],[[[88.4243,21.7978],[88.4034,21.7389],[88.3823,21.782],[88.4243,21.7978]]],[[[88.354,21.796],[88.343,21.7281],[88.3087,21.7353],[88.3011,21.7751],[88.354,21.796]]],[[[88.1329,21.8734],[88.1653,21.8241],[88.1708,21.7379],[88.1491,21.6806],[88.1279,21.7307],[88.1382,21.7538],[88.1115,21.7906],[88.0842,21.7925],[88.106,21.8456],[88.1329,21.8734]]],[[[88.982,21.8961],[89.0249,21.8666],[89.0276,21.8316],[88.9949,21.8161],[88.9562,21.83],[88.982,21.8961]]],[[[88.6325,21.8698],[88.6516,21.8703],[88.641,21.789],[88.6144,21.8126],[88.6325,21.8698]]],[[[88.9435,21.9149],[88.9679,21.9085],[88.967,21.868],[88.9471,21.8518],[88.9451,21.8008],[88.9302,21.7709],[88.9007,21.7622],[88.9004,21.7885],[88.8883,21.8023],[88.8772,21.8519],[88.8506,21.9147],[88.8942,21.9147],[88.9153,21.933],[88.9435,21.9149]]],[[[88.4897,21.8476],[88.4461,21.8077],[88.3932,21.8266],[88.4001,21.8776],[88.4438,21.907],[88.4747,21.8898],[88.4897,21.8476]]],[[[88.7374,21.9227],[88.8033,21.916],[88.7956,21.8789],[88.7666,21.8814],[88.7374,21.9227]]],[[[88.7455,27.142],[88.7981,27.1393],[88.8638,27.1102],[88.8755,27.065],[88.8669,26.9931],[88.896,26.9692],[88.9173,26.9981],[88.9483,26.967],[88.9412,26.9309],[88.9754,26.9128],[89.022,26.9227],[89.0894,26.8893],[89.0939,26.8394],[89.1289,26.8065],[89.1718,26.8146],[89.256,26.8078],[89.3157,26.8436],[89.3697,26.8573],[89.3822,26.8364],[89.4287,26.8353],[89.4545,26.7979],[89.502,26.8106],[89.6399,26.7773],[89.6279,26.7225],[89.668,26.7367],[89.7344,26.7257],[89.7638,26.6988],[89.7993,26.7083],[89.8518,26.6972],[89.8633,26.6813],[89.8497,26.6281],[89.8695,26.614],[89.852,26.5228],[89.8688,26.4522],[89.833,26.385],[89.781,26.3528],[89.7139,26.2292],[89.7196,26.1659],[89.6846,26.1613],[89.6797,26.2136],[89.6354,26.2234],[89.6435,26.1828],[89.6126,26.1779],[89.5977,26.1322],[89.6287,26.1146],[89.6458,26.0631],[89.5785,26.0263],[89.5878,25.9802],[89.5404,25.97],[89.5318,26.0036],[89.4627,25.9981],[89.4282,26.0125],[89.357,26.0083],[89.3022,26.0478],[89.2545,26.0645],[89.2499,26.1026],[89.2197,26.1266],[89.1541,26.1414],[89.1357,26.1876],[89.1428,26.2136],[89.1089,26.3045],[89.0826,26.398],[89.0379,26.3997],[88.9572,26.4593],[88.9108,26.3704],[88.9748,26.3512],[88.9826,26.3096],[89.0276,26.2829],[89.045,26.2412],[88.9528,26.2419],[88.9264,26.2842],[88.8758,26.2868],[88.839,26.232],[88.8129,26.2557],[88.8131,26.2973],[88.7934,26.3103],[88.7174,26.2883],[88.677,26.255],[88.6664,26.2918],[88.6986,26.3313],[88.684,26.4032],[88.6275,26.439],[88.5643,26.4553],[88.5204,26.5083],[88.4887,26.509],[88.483,26.5392],[88.4302,26.5458],[88.4095,26.6314],[88.3765,26.5953],[88.3494,26.5123],[88.3631,26.4867],[88.4146,26.4698],[88.4608,26.4667],[88.4957,26.4375],[88.5143,26.3868],[88.5019,26.3605],[88.4624,26.3577],[88.4115,26.3377],[88.3485,26.2822],[88.3511,26.2221],[88.1771,26.1479],[88.182,26.0735],[88.1713,26.0319],[88.1495,26.019],[88.0869,25.9166],[88.0936,25.8739],[88.1128,25.8551],[88.1158,25.8039],[88.1567,25.7792],[88.24,25.8105],[88.2692,25.7808],[88.3566,25.7209],[88.4023,25.6718],[88.455,25.6632],[88.446,25.615],[88.4931,25.5619],[88.5531,25.5162],[88.6086,25.5164],[88.646,25.4786],[88.6997,25.4713],[88.7078,25.4999],[88.7614,25.5254],[88.8,25.5242],[88.8297,25.4898],[88.8401,25.3635],[88.8664,25.3417],[88.9061,25.3367],[88.9156,25.3111],[89.0088,25.2942],[89.005,25.2682],[88.9561,25.2538],[88.9498,25.18],[88.8763,25.1784],[88.8315,25.2054],[88.7986,25.1702],[88.715,25.2065],[88.6191,25.205],[88.5784,25.177],[88.5594,25.1911],[88.474,25.2093],[88.444,25.1975],[88.4602,25.1402],[88.4423,25.1154],[88.4353,25.0556],[88.4447,25.0258],[88.4137,24.9951],[88.4167,24.9747],[88.3804,24.9397],[88.3411,24.9416],[88.3305,24.8723],[88.2632,24.8921],[88.2516,24.9334],[88.2221,24.96],[88.1695,24.9498],[88.1527,24.9065],[88.1634,24.8505],[88.1107,24.8138],[88.0648,24.7507],[88.0617,24.7219],[88.0244,24.6881],[88.0774,24.6312],[88.11,24.5738],[88.1239,24.517],[88.243,24.4611],[88.3416,24.4382],[88.3825,24.3956],[88.4812,24.3523],[88.4952,24.3296],[88.5592,24.3081],[88.6475,24.3109],[88.6835,24.3244],[88.7261,24.2963],[88.7413,24.254],[88.7322,24.1719],[88.7446,24.1457],[88.7114,24.1216],[88.7428,24.0352],[88.7354,23.9152],[88.6532,23.8671],[88.5846,23.8696],[88.6023,23.8167],[88.5723,23.7823],[88.5624,23.6364],[88.5936,23.64],[88.6015,23.6062],[88.6381,23.5973],[88.6544,23.5564],[88.7433,23.483],[88.7931,23.5021],[88.7928,23.4438],[88.7655,23.4479],[88.7497,23.4011],[88.7589,23.3771],[88.7095,23.289],[88.7186,23.2548],[88.7785,23.2206],[88.8094,23.2535],[88.8802,23.23],[88.9116,23.2336],[88.9421,23.2057],[88.9346,23.1716],[88.8991,23.112],[88.8692,23.1003],[88.8785,23.0251],[88.8598,22.9441],[88.8907,22.9286],[88.9099,22.8799],[88.9503,22.8761],[88.9695,22.844],[88.9585,22.7958],[88.9123,22.7578],[88.9275,22.7194],[88.9605,22.6983],[88.9314,22.6342],[88.9588,22.6114],[88.9389,22.5873],[88.9733,22.5012],[88.9957,22.4718],[88.9727,22.4112],[88.9918,22.3911],[88.9844,22.3307],[89.0251,22.2985],[89.0332,22.2593],[89.0687,22.1938],[89.0712,22.1565],[89.0425,22.0917],[89.0549,22.047],[89.0746,22.028],[89.0662,21.9416],[89.0144,21.9207],[89.0076,21.9028],[88.9326,21.9426],[88.8447,21.926],[88.826,21.9414],[88.7568,21.9611],[88.7617,22.0291],[88.7054,21.9904],[88.6926,21.9534],[88.6333,21.9548],[88.634,21.9956],[88.6571,22.0244],[88.6371,22.0438],[88.5987,21.9823],[88.6067,21.918],[88.5796,21.8919],[88.5463,21.9048],[88.5393,21.8593],[88.4985,21.875],[88.5066,21.9032],[88.4317,21.9096],[88.3547,21.8675],[88.306,21.8604],[88.2953,21.8325],[88.2616,21.8173],[88.2559,21.801],[88.2814,21.7574],[88.2757,21.7214],[88.3022,21.6788],[88.2862,21.6105],[88.3024,21.5864],[88.2571,21.5574],[88.2188,21.6093],[88.236,21.645],[88.2101,21.725],[88.2121,21.7831],[88.1918,21.8479],[88.1641,21.8836],[88.1647,21.9435],[88.1456,21.9591],[88.1877,21.9953],[88.2135,22.0378],[88.2192,22.1025],[88.1894,22.1822],[88.1032,22.2148],[88.1698,22.1491],[88.1867,22.1046],[88.1674,22.0782],[88.0978,22.0283],[88.0601,22.0179],[88.0255,21.9674],[87.9866,21.8707],[87.9488,21.8242],[87.882,21.785],[87.8494,21.7405],[87.8064,21.7089],[87.6682,21.6488],[87.5943,21.6372],[87.4862,21.6098],[87.4683,21.6641],[87.4706,21.7052],[87.4444,21.7682],[87.374,21.772],[87.3473,21.7921],[87.2765,21.8052],[87.2466,21.8613],[87.2389,21.8999],[87.2551,21.9267],[87.2359,21.9571],[87.1634,21.9691],[87.1615,21.9356],[87.1199,21.9272],[87.0909,21.8992],[87.0986,21.8658],[87.0397,21.8674],[87.0019,21.913],[87.032,21.9957],[87.0282,22.0379],[86.9926,22.055],[86.9601,22.0879],[86.8519,22.1029],[86.8378,22.0977],[86.7948,22.1572],[86.7218,22.1468],[86.727,22.2168],[86.7569,22.2113],[86.7777,22.2368],[86.8022,22.2179],[86.8231,22.2661],[86.8871,22.2576],[86.8881,22.2971],[86.8332,22.3245],[86.8439,22.4015],[86.7647,22.4266],[86.7512,22.4827],[86.7937,22.4777],[86.802,22.5018],[86.7658,22.5757],[86.7101,22.5831],[86.6585,22.5757],[86.6331,22.611],[86.6413,22.6587],[86.5428,22.7222],[86.5029,22.7172],[86.4695,22.7541],[86.4194,22.791],[86.4647,22.8949],[86.4362,22.9229],[86.4706,22.9489],[86.4912,22.9387],[86.5206,22.9705],[86.4977,22.9928],[86.4256,22.9968],[86.3939,22.981],[86.364,23.0009],[86.3379,22.9906],[86.2932,23.0139],[86.2244,22.9946],[86.1855,23.0052],[86.156,23.0329],[86.127,23.0868],[86.0981,23.0854],[86.0492,23.1061],[86.0375,23.1471],[85.8951,23.155],[85.8834,23.196],[85.8206,23.2704],[85.8394,23.3073],[85.8679,23.3295],[85.8636,23.4316],[85.8761,23.4808],[85.9503,23.4709],[86.0319,23.4835],[86.0397,23.5149],[86.0168,23.5475],[86.042,23.5862],[86.0947,23.5631],[86.1586,23.5595],[86.1605,23.5083],[86.1485,23.4654],[86.2288,23.4434],[86.2604,23.4185],[86.3101,23.4118],[86.3505,23.4417],[86.3682,23.4834],[86.3674,23.5398],[86.4487,23.6014],[86.4618,23.6298],[86.5271,23.6296],[86.5991,23.6657],[86.7182,23.6991],[86.7453,23.68],[86.7985,23.6884],[86.8257,23.7776],[86.804,23.8024],[86.8533,23.8258],[86.8846,23.8658],[86.9157,23.8832],[86.9357,23.8522],[86.9657,23.8654],[87.0108,23.8525],[87.0535,23.8227],[87.1225,23.7962],[87.1517,23.7987],[87.1745,23.8547],[87.2235,23.8457],[87.2444,23.903],[87.2695,23.8744],[87.2951,23.9013],[87.2916,23.9585],[87.2624,23.9673],[87.2344,24.0325],[87.337,24.034],[87.3605,24.0129],[87.4402,23.9816],[87.5091,24.0322],[87.4933,24.0541],[87.5221,24.1122],[87.5468,24.085],[87.5713,24.0892],[87.5852,24.1242],[87.5782,24.1554],[87.6157,24.1658],[87.6844,24.1429],[87.7021,24.1745],[87.6532,24.2393],[87.7001,24.2628],[87.7547,24.3098],[87.787,24.3637],[87.7887,24.4155],[87.8107,24.4771],[87.7991,24.5258],[87.8278,24.5578],[87.8919,24.5656],[87.9133,24.5972],[87.9058,24.6314],[87.9171,24.6658],[87.8905,24.6755],[87.9075,24.7216],[87.86,24.7341],[87.8521,24.7618],[87.8967,24.8297],[87.8908,24.8552],[87.9611,24.9227],[87.958,24.9699],[87.896,25.011],[87.8767,25.0344],[87.7946,25.0897],[87.8014,25.1152],[87.7792,25.1436],[87.7729,25.2058],[87.7787,25.2505],[87.7114,25.2577],[87.7636,25.2648],[87.819,25.2425],[87.8452,25.2634],[87.8524,25.2952],[87.7842,25.3401],[87.7895,25.3769],[87.7643,25.386],[87.787,25.4493],[87.8306,25.4619],[87.8661,25.497],[87.9027,25.5048],[87.926,25.5387],[87.9662,25.5363],[88.0306,25.4907],[88.0653,25.4894],[88.0715,25.5158],[88.0314,25.5541],[88.0216,25.5962],[88.0477,25.6582],[88.0497,25.7022],[87.9679,25.7261],[87.9352,25.769],[87.9099,25.7809],[87.8923,25.8658],[87.8307,25.8709],[87.8108,25.928],[87.8452,25.9624],[87.8568,26.0247],[87.931,26.0823],[87.9498,26.0602],[87.9844,26.1018],[87.9797,26.1442],[88.0138,26.1492],[88.0348,26.1792],[88.0732,26.1752],[88.092,26.2023],[88.157,26.2557],[88.2277,26.2849],[88.2808,26.327],[88.2819,26.3749],[88.2341,26.3918],[88.2609,26.4196],[88.2257,26.4801],[88.1826,26.5042],[88.2354,26.5448],[88.1892,26.5596],[88.1349,26.5235],[88.1054,26.5511],[88.1628,26.6464],[88.1669,26.6994],[88.1814,26.7199],[88.1864,26.774],[88.1663,26.85],[88.1384,26.8975],[88.121,26.9505],[88.1331,26.9823],[88.0902,27.007],[88.0799,27.0343],[88.0398,27.0354],[87.9948,27.1315],[88.0089,27.141],[88.0148,27.2117],[88.0288,27.2207],[88.0788,27.2013],[88.0962,27.1334],[88.1536,27.1098],[88.1817,27.1325],[88.2322,27.1185],[88.2787,27.1305],[88.3166,27.1256],[88.3566,27.0953],[88.4306,27.0794],[88.4662,27.1122],[88.5291,27.1478],[88.5331,27.1767],[88.589,27.1893],[88.6574,27.1597],[88.6822,27.1768],[88.7165,27.1415],[88.7455,27.142]]]]},"properties":{"ST_NM":"West Bengal","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[84.7647,19.0773],[84.6844,18.9675],[84.6036,18.8898],[84.5574,18.817],[84.5511,18.7901],[84.5124,18.7585],[84.4535,18.6934],[84.4372,18.6574],[84.3683,18.5932],[84.3551,18.5554],[84.2547,18.4748],[84.1484,18.3738],[84.1297,18.315],[84.0741,18.278],[83.8607,18.1745],[83.7506,18.1293],[83.6928,18.0966],[83.5686,18.0099],[83.5316,17.9511],[83.4727,17.9136],[83.4203,17.8571],[83.411,17.8094],[83.357,17.7582],[83.3475,17.7276],[83.2971,17.694],[83.2821,17.6607],[83.2396,17.6316],[83.2157,17.5937],[83.1629,17.5608],[83.1023,17.5417],[83.0116,17.5013],[82.9951,17.4752],[82.703,17.3439],[82.5491,17.2539],[82.4213,17.1553],[82.3204,17.0582],[82.2877,17.013],[82.2482,16.9048],[82.2667,16.8718],[82.3024,16.8745],[82.3556,16.8578],[82.3592,16.8145],[82.3442,16.7478],[82.3614,16.7049],[82.3168,16.6593],[82.3299,16.621],[82.3131,16.5623],[82.2313,16.541],[81.9729,16.4097],[81.8346,16.3671],[81.7195,16.3067],[81.6906,16.3278],[81.5027,16.3551],[81.3907,16.34],[81.3164,16.3105],[81.2683,16.2786],[81.2137,16.2076],[81.1873,16.0934],[81.1496,16.0247],[81.1484,15.9791],[81.061,15.9008],[81.0047,15.8382],[80.9953,15.8035],[81.0082,15.7541],[80.9359,15.7168],[80.8437,15.7069],[80.8162,15.7133],[80.8111,15.7648],[80.7817,15.8635],[80.7267,15.8793],[80.6493,15.8788],[80.5745,15.8628],[80.4899,15.8333],[80.4102,15.7935],[80.3262,15.7337],[80.2822,15.6857],[80.243,15.6149],[80.2295,15.5385],[80.2086,15.4792],[80.1407,15.3927],[80.1113,15.3456],[80.0834,15.2622],[80.0896,15.2155],[80.0471,15.0831],[80.0639,14.9484],[80.0868,14.8696],[80.0885,14.8252],[80.1124,14.7397],[80.1435,14.7019],[80.1639,14.6318],[80.196,14.5865],[80.1798,14.5058],[80.1672,14.3444],[80.1493,14.3044],[80.1296,14.2201],[80.1272,14.1502],[80.1467,14.0411],[80.2181,13.8814],[80.2552,13.7794],[80.2331,13.683],[80.2428,13.6158],[80.2683,13.5645],[80.2422,13.4725],[80.2259,13.4851],[80.1619,13.4883],[80.1446,13.5013],[80.0782,13.4888],[80.0771,13.5264],[80.0284,13.5388],[80.0078,13.4783],[79.9724,13.4691],[79.9733,13.4297],[79.9396,13.4251],[79.958,13.3792],[79.9313,13.3515],[79.8173,13.3186],[79.7917,13.2935],[79.7618,13.3127],[79.735,13.276],[79.7947,13.2421],[79.7598,13.2075],[79.6936,13.2735],[79.6518,13.2918],[79.6062,13.2882],[79.574,13.259],[79.54,13.2724],[79.5373,13.3386],[79.4952,13.3452],[79.3983,13.3302],[79.4138,13.3002],[79.4185,13.243],[79.4531,13.2384],[79.4316,13.1893],[79.3921,13.1925],[79.3561,13.1646],[79.365,13.1308],[79.3099,13.112],[79.2269,13.1589],[79.2344,13.1053],[79.1856,13.0753],[79.1848,13.0299],[79.1631,13.0203],[79.1085,13.0388],[79.0809,13.0258],[79.0634,13.0531],[78.9825,13.0864],[78.9239,13.0808],[78.9061,13.0452],[78.8814,13.0982],[78.842,13.0787],[78.813,13.0891],[78.7877,13.0642],[78.7513,13.055],[78.7145,13.0687],[78.7052,13.0153],[78.6555,13.0153],[78.6209,12.9913],[78.6335,12.9314],[78.6015,12.8508],[78.6077,12.8219],[78.5925,12.7827],[78.5575,12.7573],[78.5547,12.6991],[78.5043,12.7249],[78.5038,12.682],[78.4679,12.6759],[78.4717,12.6323],[78.3794,12.6251],[78.2964,12.6711],[78.2765,12.7016],[78.2401,12.7027],[78.2309,12.7607],[78.2456,12.7883],[78.2522,12.8606],[78.3124,12.8586],[78.3136,12.8765],[78.3602,12.937],[78.3887,12.9069],[78.4683,12.9009],[78.4121,12.9436],[78.4674,12.9751],[78.4622,13.0433],[78.5142,13.0619],[78.5166,13.1304],[78.5501,13.1642],[78.5773,13.1719],[78.5593,13.2862],[78.4793,13.3013],[78.3776,13.3632],[78.3745,13.462],[78.3824,13.5251],[78.4067,13.5769],[78.3852,13.5922],[78.3259,13.5949],[78.2593,13.585],[78.2437,13.5976],[78.1902,13.5902],[78.2042,13.6285],[78.1691,13.654],[78.0897,13.6591],[78.0859,13.6922],[78.1208,13.7157],[78.0915,13.7423],[78.1265,13.7885],[78.1148,13.8629],[78.0489,13.8961],[78.0462,13.8622],[77.9921,13.8689],[77.9559,13.831],[77.9522,13.8903],[77.9844,13.8976],[77.9875,13.9555],[77.9674,13.9602],[77.9268,13.9054],[77.8957,13.9411],[77.8144,13.9308],[77.8371,13.8698],[77.7822,13.8439],[77.7888,13.8232],[77.7316,13.8076],[77.7033,13.7698],[77.6513,13.7841],[77.6136,13.752],[77.5717,13.7382],[77.5407,13.756],[77.4921,13.6899],[77.4553,13.6823],[77.4501,13.7109],[77.4706,13.7581],[77.4453,13.8111],[77.4155,13.8398],[77.3624,13.8543],[77.3368,13.8328],[77.3165,13.8633],[77.2567,13.8466],[77.2199,13.8678],[77.1686,13.8645],[77.1629,13.7985],[77.1731,13.7621],[77.106,13.7678],[77.0647,13.7439],[77.0245,13.7793],[76.9969,13.7478],[76.978,13.8269],[77.0185,13.8726],[77.0417,13.9335],[76.9938,13.9626],[77.0003,13.9895],[76.9352,14.0328],[76.9717,14.0581],[76.9735,14.0836],[76.9443,14.1208],[76.8895,14.1357],[76.8945,14.1678],[77.0055,14.184],[77.0204,14.1572],[77.0316,14.0569],[77.0753,14.0435],[77.1318,14.044],[77.1411,14.0039],[77.2454,14.012],[77.2773,14.0347],[77.3108,14.0326],[77.3611,13.9909],[77.368,13.9503],[77.3544,13.9042],[77.435,13.915],[77.4379,13.9756],[77.3797,13.9899],[77.3849,14.0161],[77.3323,14.0307],[77.3976,14.1096],[77.3789,14.1359],[77.3937,14.1743],[77.467,14.1717],[77.5035,14.1572],[77.517,14.1861],[77.4945,14.2243],[77.5039,14.2638],[77.4789,14.2922],[77.4121,14.3365],[77.379,14.3228],[77.3887,14.2696],[77.4054,14.2667],[77.4183,14.2091],[77.3926,14.1989],[77.3595,14.234],[77.3638,14.2759],[77.2893,14.2813],[77.2866,14.3401],[77.2461,14.3175],[77.1974,14.3212],[77.1389,14.34],[77.1105,14.2687],[77.1149,14.2232],[77.0812,14.2142],[77.0525,14.2455],[77.0057,14.2358],[76.9401,14.2446],[76.9249,14.2738],[76.9457,14.3132],[76.9034,14.3227],[76.8848,14.3476],[76.8848,14.3957],[76.9158,14.4207],[76.9478,14.4132],[76.9748,14.4854],[76.9007,14.4892],[76.868,14.4741],[76.8556,14.5096],[76.8052,14.5375],[76.765,14.6022],[76.7763,14.6832],[76.803,14.7419],[76.7827,14.786],[76.8368,14.7908],[76.8515,14.8086],[76.8525,14.887],[76.8639,14.8956],[76.8675,14.9699],[76.7672,14.9749],[76.7902,15.0207],[76.7736,15.0592],[76.8021,15.095],[76.836,15.0793],[76.8779,15.0355],[76.9496,15.0304],[77.0496,15.0331],[77.0825,15.0061],[77.113,15.0341],[77.1301,15.1008],[77.1564,15.123],[77.1692,15.1714],[77.1548,15.2148],[77.1251,15.227],[77.1519,15.2754],[77.1183,15.2954],[77.117,15.3258],[77.0744,15.3259],[77.0448,15.3557],[77.0473,15.39],[77.032,15.4356],[77.0108,15.4488],[76.9746,15.5105],[77.0289,15.5005],[77.0305,15.6345],[77.0832,15.6592],[77.1215,15.6311],[77.1289,15.6659],[77.0787,15.6952],[77.0798,15.7274],[77.0491,15.7303],[77.0632,15.8296],[77.0252,15.8375],[77.0702,15.9078],[77.1026,15.9287],[77.1853,15.9568],[77.3011,15.958],[77.3795,15.9398],[77.4351,15.9478],[77.5135,15.9268],[77.6128,15.9175],[77.6575,15.8859],[77.7128,15.8945],[77.8036,15.8742],[77.8606,15.8847],[77.8904,15.9058],[77.9388,15.8831],[77.9754,15.8834],[78.0088,15.8648],[78.0255,15.9024],[78.0836,15.8409],[78.1242,15.837],[78.1754,15.8581],[78.1871,15.9117],[78.2522,15.9362],[78.2625,16.0267],[78.3069,16.0107],[78.3266,16.0368],[78.3655,16.0468],[78.4079,16.0748],[78.4791,16.0674],[78.5518,16.0428],[78.61,16.0872],[78.6503,16.0788],[78.6812,16.0348],[78.7355,16.0082],[78.7855,16.0212],[78.8371,16.0704],[78.8347,16.1452],[78.8693,16.1457],[78.8895,16.0847],[78.9222,16.1059],[78.9111,16.1885],[78.9866,16.2112],[79.0091,16.24],[79.1034,16.2234],[79.1238,16.2311],[79.1699,16.2099],[79.2208,16.2344],[79.2338,16.3358],[79.2081,16.3802],[79.2145,16.4847],[79.2273,16.5238],[79.2617,16.567],[79.2955,16.563],[79.3372,16.5821],[79.4187,16.5803],[79.4403,16.6149],[79.5104,16.6358],[79.5421,16.6323],[79.604,16.6724],[79.635,16.6611],[79.6622,16.6867],[79.7157,16.6892],[79.7446,16.7191],[79.7841,16.7306],[79.8124,16.6946],[79.8589,16.7047],[79.8855,16.6874],[79.8942,16.6492],[79.9324,16.6314],[79.9648,16.645],[79.9958,16.7001],[80.0306,16.7148],[80.055,16.7447],[80.0727,16.8165],[80.0171,16.8543],[80.0043,16.8801],[80.0396,16.9171],[80.0555,16.9715],[80.0952,16.9907],[80.1402,16.9906],[80.1702,17.0169],[80.2021,17.0171],[80.2649,16.9973],[80.3066,16.9738],[80.3217,16.8797],[80.3409,16.8598],[80.4078,16.849],[80.4642,16.82],[80.4645,16.7955],[80.5171,16.7759],[80.5702,16.7681],[80.6053,16.798],[80.5629,16.8329],[80.5683,16.8694],[80.5956,16.8843],[80.6019,16.9186],[80.5345,16.9614],[80.4985,16.9557],[80.4935,16.9275],[80.4497,16.9548],[80.3714,16.9759],[80.407,17.0158],[80.3873,17.0713],[80.4172,17.0735],[80.4386,17.0376],[80.4649,17.0301],[80.5054,17.0685],[80.5141,17.1221],[80.564,17.1338],[80.58,17.1531],[80.6369,17.1284],[80.6995,17.0838],[80.8288,17.0528],[80.8715,17.0699],[80.8794,17.1609],[80.924,17.1579],[80.9189,17.2198],[80.9984,17.1905],[81.0377,17.1934],[81.0796,17.2156],[81.1712,17.231],[81.1861,17.2485],[81.1767,17.2877],[81.1904,17.3249],[81.2683,17.3201],[81.2885,17.3281],[81.3226,17.3746],[81.3134,17.4082],[81.2455,17.4331],[81.2027,17.434],[81.1483,17.4637],[81.1596,17.4844],[81.1245,17.5271],[81.0801,17.5151],[81.0148,17.5222],[80.9984,17.5647],[80.9694,17.5981],[80.8554,17.6019],[80.8657,17.6355],[80.9111,17.6381],[80.8858,17.6813],[80.8855,17.7357],[80.9463,17.7602],[81.0406,17.7477],[81.0582,17.7331],[81.1015,17.7677],[81.0856,17.7981],[81.1683,17.8557],[81.2654,17.8111],[81.3961,17.82],[81.4186,17.8149],[81.4787,17.8375],[81.4885,17.8144],[81.5635,17.8272],[81.6188,17.8241],[81.6622,17.8816],[81.7104,17.8739],[81.7879,17.926],[81.8082,17.9564],[81.9635,18.0019],[82.007,18.0584],[82.075,18.0759],[82.1672,18.0527],[82.1873,18.0158],[82.2645,17.9956],[82.2709,18.058],[82.2897,18.0696],[82.3422,18.0587],[82.3476,18.0891],[82.3325,18.1276],[82.3517,18.1724],[82.3138,18.1848],[82.343,18.2813],[82.3731,18.2818],[82.3907,18.3272],[82.381,18.4346],[82.4718,18.5433],[82.5042,18.5144],[82.5259,18.5164],[82.5413,18.4216],[82.6053,18.3821],[82.5924,18.3291],[82.5966,18.265],[82.6367,18.2376],[82.6549,18.297],[82.7692,18.3382],[82.7888,18.3639],[82.7804,18.4315],[82.8139,18.4516],[82.8703,18.4193],[82.938,18.3616],[82.9751,18.3635],[83.0202,18.3924],[83.0527,18.3807],[83.0753,18.4041],[83.0191,18.4572],[83.0732,18.5155],[83.0436,18.545],[82.999,18.6215],[83.0226,18.655],[83.056,18.6662],[83.0707,18.7062],[83.1372,18.7863],[83.1913,18.7541],[83.2227,18.776],[83.2695,18.7653],[83.2807,18.7971],[83.346,18.8278],[83.4041,18.8449],[83.3903,18.883],[83.3484,18.9263],[83.3088,18.9998],[83.3636,19.0176],[83.3991,19.01],[83.4599,18.9557],[83.4765,19.0085],[83.4653,19.0886],[83.5164,19.0575],[83.573,19.0623],[83.5997,19.1364],[83.6497,19.1231],[83.664,19.0765],[83.7002,19.0253],[83.7456,18.9967],[83.7927,19.0189],[83.8219,18.9601],[83.8438,18.8761],[83.8945,18.8172],[84.0365,18.8173],[84.0916,18.7602],[84.1671,18.7893],[84.2243,18.7997],[84.2655,18.7852],[84.2869,18.8049],[84.319,18.788],[84.3601,18.8621],[84.416,18.8985],[84.4367,18.9238],[84.4288,18.97],[84.4762,18.9921],[84.4946,19.0319],[84.5669,19.0707],[84.5921,19.0232],[84.6257,19.0671],[84.6007,19.1275],[84.6526,19.1303],[84.6688,19.1669],[84.7126,19.1539],[84.6957,19.1273],[84.7647,19.0773]]]},"properties":{"ST_NM":"Andhra Pradesh","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[79.8544,10.9833],[79.8523,10.8309],[79.8413,10.828],[79.821,10.8456],[79.824,10.8842],[79.7769,10.8966],[79.7248,10.929],[79.7209,10.9692],[79.7467,11.0026],[79.8402,11.0021],[79.8544,10.9833]]],[[[79.807,11.8336],[79.7958,11.7855],[79.7559,11.7754],[79.7198,11.785],[79.7369,11.8423],[79.807,11.8336]]],[[[79.8406,11.9558],[79.8077,11.8364],[79.77,11.8747],[79.7134,11.8607],[79.71,11.8892],[79.7406,11.9055],[79.6916,11.9514],[79.7206,11.9927],[79.7428,11.9778],[79.7493,11.9222],[79.8098,11.9753],[79.8406,11.9558]]],[[[79.6384,11.9863],[79.6693,11.9375],[79.6559,11.9079],[79.6184,11.9261],[79.6384,11.9863]]]]},"properties":{"ST_NM":"Puducherry","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.66,21.3341],[80.6796,21.2988],[80.6511,21.2776],[80.6173,21.2297],[80.515,21.1829],[80.4643,21.1749],[80.4452,21.1207],[80.4497,21.0305],[80.4258,21.0059],[80.4637,20.9291],[80.5345,20.9345],[80.5562,20.8881],[80.5586,20.8115],[80.5492,20.7952],[80.56,20.726],[80.5804,20.673],[80.5213,20.6572],[80.481,20.6184],[80.5215,20.5805],[80.5646,20.6037],[80.6014,20.6088],[80.6263,20.5673],[80.6138,20.4359],[80.5915,20.393],[80.6264,20.3325],[80.6105,20.3183],[80.5461,20.3059],[80.5167,20.2661],[80.4881,20.276],[80.3981,20.2441],[80.4056,20.2178],[80.3885,20.1651],[80.4296,20.1361],[80.4601,20.151],[80.5056,20.1445],[80.5523,20.1111],[80.5567,20.0698],[80.5426,20.0106],[80.5489,19.9837],[80.5236,19.9337],[80.4808,19.9342],[80.4517,19.9572],[80.4113,19.9384],[80.408,19.9126],[80.4498,19.8963],[80.4902,19.9023],[80.4695,19.8274],[80.5198,19.8318],[80.5465,19.8177],[80.5425,19.7833],[80.5872,19.741],[80.6111,19.7382],[80.6764,19.6994],[80.6703,19.6092],[80.7147,19.6166],[80.7698,19.5866],[80.7755,19.5624],[80.8366,19.5659],[80.857,19.5228],[80.8952,19.5199],[80.8984,19.4818],[80.874,19.445],[80.8134,19.4336],[80.8118,19.4072],[80.853,19.3639],[80.7744,19.3137],[80.7599,19.2915],[80.7095,19.2817],[80.6719,19.3295],[80.6234,19.3056],[80.59,19.3518],[80.5785,19.4009],[80.5385,19.3776],[80.5204,19.3476],[80.4856,19.3406],[80.4378,19.2577],[80.3939,19.2448],[80.3893,19.1815],[80.3275,19.1353],[80.3397,19.0999],[80.3052,19.0272],[80.2738,18.9945],[80.2743,18.9318],[80.3263,18.8809],[80.3545,18.8266],[80.297,18.7918],[80.2748,18.7655],[80.2729,18.723],[80.2185,18.7079],[80.1787,18.6833],[80.1558,18.7006],[80.1123,18.6829],[80.0495,18.7287],[80.0188,18.7702],[79.9732,18.7718],[79.914,18.8261],[79.9616,18.8667],[79.9578,18.9363],[79.9383,19.0406],[79.8698,19.0423],[79.8584,19.0959],[79.8742,19.1243],[79.9446,19.1671],[79.9242,19.2155],[79.9364,19.2641],[79.9659,19.3111],[79.9591,19.336],[79.9779,19.4004],[79.9439,19.4707],[79.9055,19.5],[79.8638,19.5112],[79.8322,19.5391],[79.8163,19.574],[79.7786,19.5997],[79.7353,19.605],[79.7144,19.5869],[79.6322,19.5751],[79.6148,19.5608],[79.6005,19.5095],[79.5186,19.5431],[79.5008,19.5074],[79.469,19.5096],[79.4333,19.5373],[79.4055,19.5356],[79.3574,19.5776],[79.3184,19.5767],[79.273,19.5989],[79.2371,19.5572],[79.24,19.5353],[79.2075,19.5061],[79.2224,19.4676],[79.1897,19.4591],[79.1618,19.4878],[79.046,19.5483],[78.998,19.5401],[78.9753,19.5511],[78.9558,19.5997],[78.9555,19.6559],[78.8599,19.6895],[78.8407,19.7554],[78.7863,19.7765],[78.699,19.7886],[78.6036,19.8184],[78.5527,19.824],[78.475,19.8155],[78.423,19.8176],[78.3874,19.8446],[78.3807,19.8804],[78.3369,19.883],[78.307,19.9143],[78.2998,19.841],[78.3364,19.8379],[78.3647,19.7812],[78.3432,19.7132],[78.3118,19.691],[78.2762,19.6924],[78.2627,19.6651],[78.2905,19.646],[78.3037,19.5693],[78.275,19.552],[78.3092,19.4811],[78.3044,19.4561],[78.2445,19.4288],[78.22,19.433],[78.1925,19.4067],[78.1721,19.3597],[78.1937,19.3145],[78.1767,19.2778],[78.1753,19.2376],[78.1429,19.23],[78.1171,19.2486],[78.0557,19.2371],[78.0425,19.2706],[77.9435,19.3427],[77.9117,19.3163],[77.8635,19.3041],[77.8714,19.2538],[77.8477,19.1896],[77.838,19.1376],[77.8486,19.0865],[77.8049,19.1012],[77.8004,19.0511],[77.7648,19.0626],[77.7742,18.9974],[77.8218,18.9785],[77.8163,18.9473],[77.8586,18.9491],[77.8433,18.9087],[77.8844,18.9048],[77.9033,18.8666],[77.9489,18.8433],[77.84,18.8048],[77.7897,18.6949],[77.7596,18.7067],[77.7301,18.6672],[77.7504,18.5889],[77.7385,18.5568],[77.7016,18.5552],[77.6514,18.5323],[77.6396,18.5549],[77.6005,18.5273],[77.5764,18.4868],[77.5836,18.4451],[77.5567,18.4192],[77.5516,18.3889],[77.5204,18.3579],[77.5581,18.3314],[77.5514,18.2919],[77.5243,18.3078],[77.4927,18.2672],[77.4476,18.27],[77.4377,18.3103],[77.4102,18.3016],[77.3715,18.3251],[77.395,18.3478],[77.4141,18.3931],[77.3729,18.4011],[77.3535,18.4477],[77.3173,18.4433],[77.2418,18.4126],[77.2118,18.3163],[77.2094,18.2881],[77.1749,18.2849],[77.1404,18.2078],[77.0985,18.1929],[77.1126,18.1568],[77.064,18.1506],[76.997,18.1648],[76.9907,18.19],[76.952,18.1881],[76.9206,18.1182],[76.9571,18.1083],[76.945,18.0484],[76.9057,18.0097],[76.9207,17.9416],[76.8844,17.8945],[76.8522,17.9008],[76.738,17.8594],[76.7871,17.8332],[76.7826,17.8066],[76.7344,17.782],[76.6907,17.6835],[76.6333,17.7282],[76.6119,17.7701],[76.5872,17.7075],[76.563,17.7646],[76.5307,17.7583],[76.5241,17.7154],[76.4873,17.7148],[76.4867,17.6584],[76.4293,17.645],[76.4197,17.6037],[76.3316,17.596],[76.3466,17.5126],[76.3307,17.4702],[76.3333,17.4339],[76.3716,17.4364],[76.3635,17.3777],[76.4092,17.3714],[76.3832,17.3145],[76.2764,17.3346],[76.2721,17.3606],[76.1963,17.3636],[76.1627,17.3452],[76.1198,17.3704],[76.087,17.3359],[76.0624,17.3545],[75.926,17.3249],[75.8215,17.4212],[75.8043,17.3678],[75.7652,17.4059],[75.7308,17.4204],[75.6836,17.4169],[75.6749,17.457],[75.6331,17.4772],[75.6091,17.3941],[75.5742,17.3833],[75.5809,17.3512],[75.6101,17.345],[75.6038,17.3055],[75.6303,17.2739],[75.6542,17.2738],[75.662,17.2146],[75.6285,17.1887],[75.6504,17.1157],[75.6724,17.116],[75.6768,17.0654],[75.6661,16.9798],[75.6102,16.9717],[75.607,17.0046],[75.5673,17.0091],[75.5634,16.9676],[75.5294,16.9694],[75.4891,16.9444],[75.4656,16.9884],[75.4279,16.9665],[75.3922,16.9801],[75.3424,16.9563],[75.2797,16.9566],[75.29,16.904],[75.2648,16.8628],[75.2277,16.8432],[75.1828,16.8432],[75.1766,16.8677],[75.1366,16.8745],[75.1176,16.9135],[75.0643,16.9422],[74.9894,16.9523],[74.9232,16.9393],[74.9606,16.8812],[74.9266,16.8641],[74.9104,16.8351],[74.9198,16.7729],[74.8499,16.7728],[74.7748,16.7517],[74.7322,16.7183],[74.6911,16.7155],[74.6894,16.6767],[74.6573,16.6431],[74.6888,16.6166],[74.6359,16.5839],[74.5686,16.5539],[74.5436,16.5953],[74.5446,16.6355],[74.4908,16.6298],[74.4635,16.6045],[74.3967,16.5833],[74.3788,16.5284],[74.3176,16.5537],[74.291,16.5049],[74.2971,16.4645],[74.3298,16.4475],[74.3393,16.391],[74.3191,16.3716],[74.3173,16.3278],[74.3632,16.2856],[74.416,16.2801],[74.4177,16.258],[74.5032,16.2254],[74.4896,16.1774],[74.4913,16.1043],[74.4816,16.0889],[74.4288,16.112],[74.365,16.0584],[74.3811,16.0355],[74.4333,16.0589],[74.4631,16.038],[74.4283,15.9523],[74.3457,15.8508],[74.3665,15.8259],[74.3676,15.7858],[74.308,15.7485],[74.2397,15.7435],[74.2015,15.7586],[74.1616,15.7513],[74.1259,15.7241],[74.1317,15.6936],[74.1184,15.652],[74.0838,15.6341],[73.9908,15.6115],[73.9614,15.6415],[73.9635,15.6921],[73.9387,15.7427],[73.8778,15.7492],[73.8565,15.8008],[73.8252,15.7416],[73.7855,15.7255],[73.6754,15.727],[73.6293,15.8471],[73.5869,15.9107],[73.51,15.9422],[73.4897,15.9879],[73.4833,16.0362],[73.4575,16.0629],[73.4566,16.1288],[73.4049,16.2972],[73.3682,16.3639],[73.3589,16.4326],[73.3188,16.5188],[73.3337,16.5593],[73.3198,16.6076],[73.3516,16.623],[73.3305,16.6871],[73.3055,16.7299],[73.3181,16.7956],[73.2956,16.8169],[73.2942,16.8697],[73.2801,16.9048],[73.296,16.9844],[73.2787,16.9931],[73.2887,17.0583],[73.2448,17.2225],[73.199,17.3051],[73.2494,17.2961],[73.2064,17.3849],[73.1755,17.3902],[73.1938,17.4648],[73.1809,17.5096],[73.1422,17.5457],[73.1484,17.5977],[73.1141,17.6895],[73.136,17.7077],[73.0898,17.845],[73.0556,17.932],[73.0288,17.9496],[73.0357,17.9803],[72.9714,18.1316],[72.9892,18.1577],[72.9761,18.2011],[72.9353,18.227],[72.9373,18.2747],[72.9636,18.2805],[72.9746,18.2402],[73.0207,18.241],[73.0691,18.2086],[73.0642,18.3054],[73.0184,18.2842],[72.9691,18.3017],[72.9532,18.335],[72.9113,18.3659],[72.8965,18.4682],[72.9171,18.5307],[72.9312,18.5375],[72.8851,18.6343],[72.8655,18.6519],[72.8644,18.8051],[72.8106,18.8943],[72.8238,18.9397],[72.8144,18.9825],[72.827,19.09],[72.8142,19.1291],[72.7817,19.1587],[72.7966,19.1945],[72.7759,19.2258],[72.7869,19.3071],[72.8,19.3299],[72.7597,19.3721],[72.7443,19.4622],[72.7722,19.4862],[72.732,19.5272],[72.7164,19.5929],[72.7783,19.6078],[72.7423,19.6505],[72.7136,19.646],[72.7084,19.7101],[72.6851,19.7586],[72.6913,19.7955],[72.6549,19.8349],[72.6879,19.8726],[72.6643,19.9313],[72.7039,19.9654],[72.7578,19.8988],[72.7736,19.9456],[72.7684,19.9779],[72.7224,19.9946],[72.7081,20.0711],[72.7263,20.0817],[72.7375,20.1348],[72.7752,20.1319],[72.817,20.1561],[72.8211,20.1877],[72.8705,20.2281],[72.9616,20.2088],[72.9925,20.1177],[73.0396,20.0671],[73.0559,20.099],[73.1533,20.0729],[73.1709,20.0521],[73.2132,20.091],[73.2107,20.1205],[73.2547,20.127],[73.2782,20.1487],[73.2813,20.1902],[73.3016,20.2099],[73.3429,20.1995],[73.4166,20.1982],[73.413,20.2694],[73.4274,20.278],[73.4118,20.3638],[73.38,20.3939],[73.4209,20.4278],[73.4677,20.4964],[73.4742,20.5831],[73.4292,20.5962],[73.4202,20.6272],[73.3942,20.6407],[73.4484,20.6922],[73.5313,20.6741],[73.5509,20.6485],[73.5996,20.6368],[73.6269,20.5849],[73.6696,20.5632],[73.7155,20.5764],[73.7463,20.5683],[73.775,20.5995],[73.8384,20.6205],[73.8382,20.6547],[73.8119,20.692],[73.8627,20.7032],[73.8745,20.7296],[73.9049,20.7253],[73.9422,20.7423],[73.9236,20.8512],[73.9256,20.8883],[73.8882,20.9352],[73.9011,20.9821],[73.8677,20.9859],[73.8148,21.0233],[73.7801,21.0643],[73.7297,21.0822],[73.7058,21.1081],[73.6517,21.1074],[73.6431,21.1394],[73.7296,21.1652],[73.8157,21.1739],[73.8259,21.1999],[73.8116,21.231],[73.8487,21.2746],[73.8794,21.2658],[73.9425,21.3001],[73.9518,21.3952],[74.0083,21.4228],[74.0443,21.4191],[74.0466,21.4486],[74.214,21.4815],[74.2558,21.4766],[74.3206,21.4984],[74.3208,21.529],[74.2761,21.5619],[74.2634,21.5398],[74.2003,21.5323],[74.1577,21.5687],[74.0433,21.5456],[74.011,21.5491],[73.9675,21.5226],[73.9288,21.523],[73.8534,21.4973],[73.8348,21.5202],[73.8122,21.6025],[73.8386,21.633],[73.8849,21.6535],[73.881,21.7146],[73.8362,21.7468],[73.8263,21.8426],[73.8711,21.8412],[73.9296,21.8644],[74.0526,21.9271],[74.1467,21.9528],[74.1938,21.9257],[74.281,21.933],[74.3089,21.9724],[74.3411,21.974],[74.3901,22.0215],[74.4317,22.0302],[74.4394,21.9767],[74.4891,21.9558],[74.5093,21.9207],[74.5101,21.8292],[74.5003,21.8068],[74.5141,21.7659],[74.513,21.7185],[74.5478,21.7187],[74.5821,21.6649],[74.6642,21.6523],[74.6871,21.6317],[74.7837,21.6108],[74.8289,21.6097],[74.8689,21.6314],[75.0517,21.5665],[75.0899,21.5153],[75.1077,21.4622],[75.2071,21.4128],[75.3002,21.3912],[75.3824,21.3793],[75.4265,21.3907],[75.4964,21.3873],[75.5415,21.3691],[75.6164,21.388],[75.6701,21.3745],[75.7033,21.388],[75.8332,21.3766],[75.874,21.3925],[75.9105,21.3824],[75.9629,21.3896],[75.9866,21.3687],[76.0478,21.349],[76.0956,21.3711],[76.1284,21.2866],[76.1592,21.2535],[76.1652,21.1694],[76.1102,21.1612],[76.1354,21.1207],[76.1917,21.0866],[76.2719,21.0888],[76.2789,21.0701],[76.3804,21.0751],[76.4373,21.1001],[76.4931,21.1938],[76.5298,21.1818],[76.5608,21.1987],[76.6232,21.1849],[76.6626,21.2804],[76.6215,21.3322],[76.6827,21.3784],[76.7402,21.4113],[76.7443,21.4398],[76.7858,21.465],[76.7956,21.4894],[76.7635,21.5205],[76.7894,21.5398],[76.782,21.5686],[76.7994,21.595],[76.8273,21.5883],[76.8549,21.6133],[76.9012,21.5965],[76.9133,21.6118],[77.0084,21.6801],[77.0624,21.7071],[77.1296,21.7222],[77.2104,21.6896],[77.2268,21.7167],[77.26,21.714],[77.324,21.7527],[77.4058,21.7525],[77.456,21.7601],[77.5007,21.7468],[77.5438,21.7038],[77.5618,21.6657],[77.5762,21.5771],[77.6118,21.5385],[77.5751,21.5264],[77.5082,21.5509],[77.4546,21.5537],[77.4224,21.5169],[77.4417,21.4714],[77.4735,21.4542],[77.4917,21.3741],[77.5144,21.3759],[77.5314,21.419],[77.5633,21.3932],[77.6497,21.3921],[77.6773,21.3753],[77.7371,21.3622],[77.7467,21.3796],[77.7966,21.389],[77.8225,21.4072],[77.9019,21.3773],[77.981,21.4024],[78.0661,21.4374],[78.1763,21.4991],[78.182,21.5566],[78.2234,21.5526],[78.2635,21.5659],[78.2644,21.5913],[78.3208,21.5718],[78.3557,21.573],[78.408,21.6084],[78.4339,21.5356],[78.4571,21.4959],[78.5049,21.5266],[78.5408,21.5235],[78.5854,21.4867],[78.6881,21.4819],[78.7278,21.4623],[78.805,21.4904],[78.9411,21.5112],[78.9123,21.5488],[78.9165,21.5909],[78.9753,21.6176],[79.0123,21.5994],[79.1028,21.6014],[79.1631,21.6585],[79.2239,21.6486],[79.2212,21.6939],[79.2681,21.7154],[79.2909,21.6925],[79.4007,21.677],[79.4152,21.6908],[79.4962,21.674],[79.512,21.584],[79.578,21.5413],[79.7334,21.6033],[79.7899,21.5874],[79.8312,21.5467],[79.8631,21.5308],[79.9184,21.5244],[79.9298,21.5525],[79.9715,21.5577],[80.0005,21.5336],[80.0314,21.5556],[80.0723,21.5567],[80.1287,21.6114],[80.1546,21.6065],[80.1928,21.6355],[80.254,21.6245],[80.328,21.5711],[80.3308,21.5479],[80.3765,21.5233],[80.3848,21.4894],[80.4181,21.4484],[80.3959,21.405],[80.4129,21.3763],[80.4461,21.3711],[80.4611,21.403],[80.5392,21.3827],[80.6214,21.3203],[80.66,21.3341]]]},"properties":{"ST_NM":"Maharashtra","region":"west"}}]}');
+module.exports = JSON.parse('{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.2339,26.6825],[95.2104,26.7312],[95.2311,26.7651],[95.1815,26.8613],[95.2303,26.8837],[95.1915,26.9849],[95.1946,27.0313],[95.2463,27.0239],[95.3167,27.0829],[95.3648,27.1083],[95.3979,27.1085],[95.4581,27.1381],[95.4558,27.2037],[95.5073,27.2595],[95.5453,27.26],[95.5875,27.223],[95.6315,27.2296],[95.742,27.2668],[95.8517,27.2869],[95.8693,27.2601],[95.9583,27.3102],[95.9891,27.3566],[96.0178,27.3695],[95.974,27.4218],[95.9412,27.4374],[95.8422,27.4269],[95.8791,27.4968],[95.8757,27.5466],[95.8304,27.5632],[95.7924,27.598],[95.7902,27.6448],[95.7703,27.658],[95.7623,27.7151],[95.7759,27.7537],[95.8377,27.8242],[95.8703,27.8328],[95.9043,27.8619],[95.9703,27.9629],[95.8238,27.9716],[95.6052,27.9547],[95.5426,27.9082],[95.5222,27.8831],[95.3795,27.8393],[95.3087,27.8681],[94.8523,27.7277],[94.8478,27.7057],[94.7969,27.6957],[94.7542,27.6606],[94.7167,27.6583],[94.5867,27.6182],[94.4989,27.5723],[94.4513,27.5719],[94.4184,27.5976],[94.3698,27.5749],[94.2764,27.5904],[94.237,27.6325],[94.2239,27.5766],[94.2466,27.5696],[94.2682,27.5209],[94.1645,27.4769],[94.1593,27.4617],[94.0895,27.4071],[94.068,27.3717],[93.9912,27.3284],[93.8993,27.2392],[93.8372,27.1717],[93.8053,27.1482],[93.8356,27.0744],[93.7149,27.0143],[93.6574,26.9664],[93.5866,26.9506],[93.5247,26.9486],[93.489,26.9363],[93.4487,26.9509],[93.324,26.9602],[93.2616,26.9536],[93.0214,26.9136],[92.9171,26.963],[92.8838,27.0005],[92.7632,27.0274],[92.7228,27.0183],[92.6774,27.0318],[92.6447,26.9868],[92.589,26.9617],[92.4474,26.9589],[92.3983,26.9248],[92.3631,26.9346],[92.3026,26.9227],[92.1947,26.8901],[92.1121,26.8919],[92.1174,26.9317],[92.1038,27.007],[92.0285,27.078],[92.0372,27.1378],[92.0261,27.1712],[92.0571,27.189],[92.0705,27.2231],[92.071,27.2768],[92.1025,27.2685],[92.1183,27.2922],[92.0599,27.3267],[92.0472,27.3788],[92.0557,27.3996],[92.0252,27.4412],[92.0201,27.4793],[91.9408,27.4603],[91.8507,27.4823],[91.8301,27.4687],[91.7754,27.4643],[91.7155,27.4734],[91.6919,27.5026],[91.655,27.4828],[91.5964,27.5394],[91.5641,27.5841],[91.5599,27.6334],[91.594,27.6832],[91.626,27.7059],[91.6305,27.8008],[91.6013,27.8209],[91.5679,27.8154],[91.5723,27.8608],[91.6718,27.8567],[91.6965,27.8221],[91.7485,27.8033],[91.8301,27.8075],[91.8625,27.7368],[91.8806,27.7217],[91.947,27.7285],[91.9858,27.7698],[92.0572,27.7589],[92.158,27.8368],[92.2022,27.8568],[92.257,27.8619],[92.309,27.7788],[92.3814,27.7946],[92.4154,27.8226],[92.4453,27.8003],[92.494,27.8363],[92.5621,27.8205],[92.6065,27.877],[92.6706,27.8996],[92.741,27.9889],[92.7112,28.0328],[92.6647,28.0624],[92.682,28.1176],[92.7849,28.1834],[92.8212,28.197],[92.8298,28.1711],[92.897,28.2042],[92.9148,28.2346],[92.9664,28.2614],[93.0021,28.2303],[93.0355,28.2627],[93.0238,28.2995],[93.0972,28.3066],[93.1266,28.3263],[93.1955,28.3175],[93.2245,28.3405],[93.2334,28.4002],[93.1923,28.4256],[93.2311,28.4776],[93.2779,28.5045],[93.3074,28.566],[93.3021,28.5993],[93.3346,28.6335],[93.4141,28.6526],[93.4479,28.6758],[93.4764,28.6533],[93.4977,28.6837],[93.5266,28.6609],[93.609,28.6555],[93.7335,28.6888],[93.7771,28.668],[93.8459,28.7068],[93.9213,28.6697],[93.9673,28.7226],[93.9704,28.7508],[94.0033,28.7749],[93.9872,28.7978],[93.997,28.8409],[94.0321,28.853],[94.081,28.9054],[94.1573,28.9543],[94.1873,29.0388],[94.2171,29.0838],[94.2902,29.148],[94.3526,29.15],[94.3748,29.19],[94.4337,29.2267],[94.4969,29.2164],[94.5603,29.2286],[94.5764,29.275],[94.6133,29.301],[94.6308,29.3485],[94.7135,29.3041],[94.7688,29.2523],[94.8,29.2094],[94.8,29.1639],[94.8738,29.1836],[94.9207,29.1615],[95.1,29.1427],[95.1151,29.12],[95.179,29.1073],[95.2521,29.1085],[95.2514,29.0671],[95.304,29.0614],[95.4111,29.0324],[95.4553,29.0352],[95.4902,29.088],[95.5047,29.1414],[95.5479,29.1269],[95.5464,29.2141],[95.5871,29.2164],[95.6001,29.2604],[95.6326,29.2475],[95.7285,29.3009],[95.7791,29.3549],[95.7925,29.3364],[95.8417,29.3522],[95.8823,29.39],[95.9585,29.381],[96.0571,29.4568],[96.0821,29.4617],[96.1512,29.3973],[96.1868,29.3424],[96.184,29.307],[96.2349,29.241],[96.2936,29.2332],[96.3133,29.2565],[96.3757,29.2811],[96.3934,29.2538],[96.3467,29.1681],[96.2607,29.1574],[96.2179,29.1353],[96.2007,29.1031],[96.1699,29.0848],[96.1507,29.0503],[96.1849,28.985],[96.1452,28.9343],[96.1664,28.9026],[96.228,28.926],[96.2937,28.9954],[96.3467,29.029],[96.4357,29.0342],[96.5251,29.0758],[96.4772,28.9904],[96.4872,28.9616],[96.5209,28.9614],[96.5382,28.917],[96.5369,28.88],[96.6151,28.7741],[96.5849,28.717],[96.5213,28.7045],[96.4695,28.6801],[96.494,28.6391],[96.3995,28.5577],[96.3534,28.556],[96.3231,28.5257],[96.3596,28.505],[96.3655,28.4747],[96.2645,28.4123],[96.3183,28.3812],[96.3693,28.3893],[96.3976,28.3393],[96.4211,28.3457],[96.4303,28.3865],[96.4566,28.414],[96.5085,28.413],[96.5779,28.4578],[96.6628,28.4603],[96.7555,28.4096],[96.7722,28.3681],[96.85,28.3621],[96.8964,28.3796],[96.9235,28.3386],[96.994,28.3095],[97.0493,28.3513],[97.0901,28.3629],[97.1234,28.3493],[97.1666,28.2951],[97.2214,28.2926],[97.2384,28.2677],[97.2791,28.2687],[97.3715,28.2176],[97.3688,28.1924],[97.3275,28.1549],[97.3357,28.1114],[97.3068,28.0851],[97.3083,28.0617],[97.3625,28.0597],[97.3949,28.0255],[97.3744,27.9775],[97.3747,27.9091],[97.3609,27.8762],[97.3049,27.9213],[97.2527,27.901],[97.1565,27.8141],[97.1335,27.8066],[97.0885,27.7351],[97.0615,27.7486],[97.0225,27.7421],[96.9773,27.6637],[96.9351,27.6617],[96.903,27.614],[96.9067,27.5443],[96.9265,27.527],[96.903,27.4536],[96.9605,27.404],[96.9623,27.3738],[96.9984,27.3188],[97.0349,27.2951],[97.086,27.2396],[97.0901,27.2147],[97.1636,27.1422],[97.1382,27.0915],[97.1191,27.1043],[97.0624,27.0988],[97.0309,27.1302],[96.964,27.1613],[96.9013,27.1686],[96.8568,27.1925],[96.8856,27.2269],[96.8843,27.2602],[96.8511,27.2698],[96.7967,27.3458],[96.6057,27.3658],[96.5955,27.3405],[96.5076,27.299],[96.4214,27.3014],[96.407,27.2876],[96.3337,27.286],[96.3074,27.2942],[96.2728,27.2729],[96.2308,27.2767],[96.0889,27.2201],[96.0223,27.1797],[96.0157,27.1529],[95.9687,27.1001],[95.9457,27.0514],[95.8755,27.0149],[95.8023,27.0151],[95.7552,26.954],[95.7449,26.898],[95.7231,26.8815],[95.6668,26.9027],[95.6461,26.8845],[95.5998,26.8113],[95.5432,26.8354],[95.5081,26.8095],[95.4826,26.7468],[95.4593,26.7429],[95.4306,26.7],[95.3445,26.6753],[95.304,26.651],[95.2339,26.6825]]]},"properties":{"ST_NM":"Arunachal Pradesh","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.1946,27.0313],[95.1083,26.977],[95.0809,26.9502],[94.982,26.9134],[94.9552,26.9401],[94.8905,26.9296],[94.8175,26.8478],[94.7997,26.7999],[94.7681,26.7869],[94.6937,26.733],[94.6245,26.7155],[94.5903,26.6967],[94.5392,26.7063],[94.4597,26.6369],[94.4042,26.6119],[94.4052,26.5488],[94.3743,26.5075],[94.3208,26.4756],[94.2933,26.4712],[94.2812,26.5487],[94.2562,26.5413],[94.2365,26.5062],[94.1851,26.4585],[94.1718,26.4159],[94.1715,26.3381],[94.1197,26.3289],[94.0474,26.2491],[94.0318,26.1975],[94.0077,26.1826],[93.9889,26.1334],[93.9971,26.107],[93.9624,26.0366],[93.9541,25.9694],[93.9786,25.9168],[93.9159,25.8838],[93.876,25.8426],[93.8522,25.8583],[93.79,25.8113],[93.7776,25.8507],[93.796,25.9035],[93.777,25.958],[93.735,25.9237],[93.6814,25.9039],[93.702,25.8516],[93.6775,25.8279],[93.6391,25.8163],[93.6177,25.7766],[93.5423,25.7308],[93.5311,25.6927],[93.4965,25.6546],[93.4248,25.6304],[93.3584,25.5574],[93.3529,25.5281],[93.3844,25.4695],[93.4155,25.4451],[93.4553,25.4345],[93.4729,25.3861],[93.4515,25.3541],[93.4539,25.3249],[93.4704,25.3052],[93.4206,25.2777],[93.3864,25.2428],[93.354,25.1875],[93.3323,25.0939],[93.2993,25.0495],[93.266,25.0442],[93.2472,25.0181],[93.2622,24.9688],[93.2367,24.9373],[93.2488,24.9156],[93.2261,24.8738],[93.1953,24.8444],[93.1914,24.8045],[93.1541,24.7888],[93.1347,24.8107],[93.105,24.7917],[93.1071,24.7406],[93.0789,24.7047],[93.0891,24.5735],[93.0491,24.5425],[93.0327,24.4936],[93.0455,24.4762],[93.0335,24.4271],[93.0087,24.4118],[92.9339,24.3924],[92.907,24.4114],[92.8617,24.3987],[92.8451,24.3798],[92.8042,24.4176],[92.7637,24.5211],[92.6897,24.3537],[92.6491,24.3287],[92.6225,24.3316],[92.6122,24.2536],[92.5506,24.2471],[92.5243,24.1716],[92.4607,24.138],[92.4368,24.1529],[92.4188,24.1928],[92.4224,24.255],[92.2923,24.2505],[92.206,24.2385],[92.2188,24.2857],[92.2598,24.3585],[92.2465,24.4425],[92.23,24.4523],[92.2117,24.5045],[92.2312,24.547],[92.2544,24.6781],[92.2949,24.7329],[92.2885,24.7883],[92.2682,24.8299],[92.2422,24.8404],[92.2469,24.9085],[92.3503,24.8893],[92.3869,24.8514],[92.4758,24.8675],[92.4967,24.9022],[92.4837,24.9307],[92.4514,24.9385],[92.4184,24.9665],[92.4252,25.0297],[92.4597,25.0371],[92.4809,25.1087],[92.5388,25.1006],[92.5248,25.1353],[92.588,25.1289],[92.6278,25.1375],[92.6583,25.172],[92.6938,25.1793],[92.7428,25.2068],[92.7748,25.1997],[92.7683,25.2667],[92.7918,25.2844],[92.782,25.3328],[92.6362,25.4267],[92.6088,25.4136],[92.6004,25.4649],[92.5736,25.4906],[92.6428,25.5349],[92.6227,25.5658],[92.585,25.5506],[92.5566,25.5714],[92.5526,25.615],[92.4974,25.6241],[92.4702,25.6752],[92.4403,25.6922],[92.4441,25.7199],[92.373,25.7503],[92.3642,25.7375],[92.2643,25.7092],[92.225,25.7162],[92.1638,25.6671],[92.1547,25.7063],[92.1627,25.744],[92.1477,25.773],[92.151,25.8158],[92.1772,25.8728],[92.214,25.8948],[92.1524,25.9444],[92.1641,25.9704],[92.2627,26.0327],[92.2582,26.0636],[92.1691,26.0776],[92.1319,26.0444],[92.1078,26.0508],[92.0637,26.0341],[91.9885,26.0376],[91.9337,26.0104],[91.8749,26.0379],[91.8791,26.0981],[91.8212,26.1176],[91.7253,26.0463],[91.72,25.9537],[91.6705,25.9042],[91.621,25.9324],[91.6356,25.9617],[91.6347,26.0129],[91.5708,26.0259],[91.5079,25.9089],[91.4694,25.8593],[91.3653,25.8401],[91.3356,25.8408],[91.2745,25.7505],[91.2224,25.7227],[91.1782,25.7774],[91.2034,25.8442],[91.1475,25.8506],[91.1196,25.8328],[91.0669,25.8258],[91.0305,25.8859],[90.9659,25.8885],[90.9594,25.9313],[90.9142,25.9258],[90.8748,25.9426],[90.8091,25.9475],[90.778,25.9087],[90.7138,25.9518],[90.6285,25.9177],[90.6241,25.9393],[90.5767,25.9368],[90.5149,25.8962],[90.5349,25.9497],[90.4761,26.0097],[90.4302,25.989],[90.3997,26.0126],[90.3497,26.0042],[90.3274,25.9745],[90.1867,25.9475],[90.177,25.9589],[90.113,25.9543],[90.0862,25.9196],[90.0245,25.8956],[90.0035,25.8393],[89.951,25.8212],[89.955,25.7676],[89.9266,25.7385],[89.8956,25.7316],[89.9444,25.6793],[89.9531,25.6537],[90.0202,25.6076],[89.9372,25.5647],[89.8852,25.5551],[89.8708,25.4759],[89.8544,25.4674],[89.8481,25.4787],[89.8758,25.581],[89.8812,25.6294],[89.8709,25.6627],[89.8332,25.7182],[89.8412,25.7607],[89.8261,25.8107],[89.8329,25.8702],[89.8783,25.9242],[89.8484,25.9427],[89.8591,25.9692],[89.8441,26.0064],[89.8214,26.0121],[89.7946,26.0887],[89.742,26.1595],[89.7196,26.1659],[89.7139,26.2292],[89.781,26.3528],[89.833,26.385],[89.8688,26.4522],[89.852,26.5228],[89.8695,26.614],[89.8497,26.6281],[89.8633,26.6813],[89.8518,26.6972],[89.8624,26.737],[89.8976,26.7243],[90.0492,26.7304],[90.1947,26.7737],[90.1877,26.8071],[90.2308,26.8588],[90.2999,26.8484],[90.3479,26.8753],[90.3567,26.901],[90.4168,26.9046],[90.5464,26.8168],[90.6758,26.7844],[90.6931,26.7708],[90.8263,26.7769],[90.9914,26.7908],[91.0541,26.7808],[91.0976,26.8221],[91.1463,26.8111],[91.2368,26.812],[91.2976,26.7869],[91.3373,26.7806],[91.3762,26.7954],[91.4081,26.84],[91.4952,26.7912],[91.593,26.8052],[91.6259,26.821],[91.6901,26.8068],[91.7207,26.8119],[91.8242,26.8639],[91.8594,26.9132],[91.893,26.9187],[91.9643,26.8821],[91.9836,26.8579],[92.0562,26.8467],[92.1024,26.8673],[92.1121,26.8919],[92.1947,26.8901],[92.3026,26.9227],[92.3631,26.9346],[92.3983,26.9248],[92.4474,26.9589],[92.589,26.9617],[92.6447,26.9868],[92.6774,27.0318],[92.7228,27.0183],[92.7632,27.0274],[92.8838,27.0005],[92.9171,26.963],[93.0214,26.9136],[93.2616,26.9536],[93.324,26.9602],[93.4487,26.9509],[93.489,26.9363],[93.5247,26.9486],[93.5866,26.9506],[93.6574,26.9664],[93.7149,27.0143],[93.8356,27.0744],[93.8053,27.1482],[93.8372,27.1717],[93.8993,27.2392],[93.9912,27.3284],[94.068,27.3717],[94.0895,27.4071],[94.1593,27.4617],[94.1645,27.4769],[94.2682,27.5209],[94.2466,27.5696],[94.2239,27.5766],[94.237,27.6325],[94.2764,27.5904],[94.3698,27.5749],[94.4184,27.5976],[94.4513,27.5719],[94.4989,27.5723],[94.5867,27.6182],[94.7167,27.6583],[94.7542,27.6606],[94.7969,27.6957],[94.8478,27.7057],[94.8523,27.7277],[95.3087,27.8681],[95.3795,27.8393],[95.5222,27.8831],[95.5426,27.9082],[95.6052,27.9547],[95.8238,27.9716],[95.9703,27.9629],[95.9043,27.8619],[95.8703,27.8328],[95.8377,27.8242],[95.7759,27.7537],[95.7623,27.7151],[95.7703,27.658],[95.7902,27.6448],[95.7924,27.598],[95.8304,27.5632],[95.8757,27.5466],[95.8791,27.4968],[95.8422,27.4269],[95.9412,27.4374],[95.974,27.4218],[96.0178,27.3695],[95.9891,27.3566],[95.9583,27.3102],[95.8693,27.2601],[95.8517,27.2869],[95.742,27.2668],[95.6315,27.2296],[95.5875,27.223],[95.5453,27.26],[95.5073,27.2595],[95.4558,27.2037],[95.4581,27.1381],[95.3979,27.1085],[95.3648,27.1083],[95.3167,27.0829],[95.2463,27.0239],[95.1946,27.0313]]]},"properties":{"ST_NM":"Assam","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.8381,30.7549],[76.8483,30.7145],[76.8292,30.681],[76.8086,30.6674],[76.7524,30.6845],[76.7128,30.7413],[76.7117,30.7617],[76.7715,30.7953],[76.815,30.753],[76.8381,30.7549]]]},"properties":{"ST_NM":"Chandigarh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.5514,18.2919],[77.6055,18.2813],[77.5731,18.2394],[77.5853,18.2196],[77.5747,18.1765],[77.5969,18.1559],[77.597,18.0868],[77.5484,18.0652],[77.5538,18.0358],[77.6278,17.9968],[77.6495,17.95],[77.623,17.9455],[77.6191,17.9041],[77.57,17.8676],[77.5675,17.8454],[77.509,17.7878],[77.5599,17.7634],[77.5471,17.7285],[77.5218,17.7259],[77.4525,17.6947],[77.4556,17.6318],[77.4441,17.5844],[77.4941,17.5684],[77.5284,17.5754],[77.5506,17.5517],[77.5938,17.5645],[77.5957,17.5366],[77.662,17.5228],[77.6524,17.4827],[77.513,17.4309],[77.5249,17.3647],[77.503,17.3572],[77.4536,17.374],[77.456,17.331],[77.438,17.2919],[77.4585,17.2813],[77.3802,17.2225],[77.3625,17.1638],[77.3778,17.1401],[77.4647,17.1078],[77.4967,17.0427],[77.5022,17.0094],[77.4791,16.9945],[77.4541,16.9139],[77.4641,16.8506],[77.4576,16.8282],[77.4745,16.7813],[77.4432,16.7625],[77.427,16.7285],[77.4741,16.7166],[77.4639,16.6763],[77.4189,16.6686],[77.4678,16.6098],[77.4611,16.5849],[77.4238,16.5689],[77.4169,16.5173],[77.3815,16.5157],[77.369,16.4887],[77.2642,16.4726],[77.269,16.4305],[77.2882,16.4087],[77.3787,16.3854],[77.4227,16.3664],[77.4897,16.385],[77.5882,16.3328],[77.5956,16.3168],[77.5048,16.2758],[77.4901,16.2553],[77.4998,16.2178],[77.4898,16.1196],[77.5069,16.079],[77.494,16.037],[77.5141,16.0081],[77.5135,15.9268],[77.4351,15.9478],[77.3795,15.9398],[77.3011,15.958],[77.1853,15.9568],[77.1026,15.9287],[77.0702,15.9078],[77.0252,15.8375],[77.0632,15.8296],[77.0491,15.7303],[77.0798,15.7274],[77.0787,15.6952],[77.1289,15.6659],[77.1215,15.6311],[77.0832,15.6592],[77.0305,15.6345],[77.0289,15.5005],[76.9746,15.5105],[77.0108,15.4488],[77.032,15.4356],[77.0473,15.39],[77.0448,15.3557],[77.0744,15.3259],[77.117,15.3258],[77.1183,15.2954],[77.1519,15.2754],[77.1251,15.227],[77.1548,15.2148],[77.1692,15.1714],[77.1564,15.123],[77.1301,15.1008],[77.113,15.0341],[77.0825,15.0061],[77.0496,15.0331],[76.9496,15.0304],[76.8779,15.0355],[76.836,15.0793],[76.8021,15.095],[76.7736,15.0592],[76.7902,15.0207],[76.7672,14.9749],[76.8675,14.9699],[76.8639,14.8956],[76.8525,14.887],[76.8515,14.8086],[76.8368,14.7908],[76.7827,14.786],[76.803,14.7419],[76.7763,14.6832],[76.765,14.6022],[76.8052,14.5375],[76.8556,14.5096],[76.868,14.4741],[76.9007,14.4892],[76.9748,14.4854],[76.9478,14.4132],[76.9158,14.4207],[76.8848,14.3957],[76.8848,14.3476],[76.9034,14.3227],[76.9457,14.3132],[76.9249,14.2738],[76.9401,14.2446],[77.0057,14.2358],[77.0525,14.2455],[77.0812,14.2142],[77.1149,14.2232],[77.1105,14.2687],[77.1389,14.34],[77.1974,14.3212],[77.2461,14.3175],[77.2866,14.3401],[77.2893,14.2813],[77.3638,14.2759],[77.3595,14.234],[77.3926,14.1989],[77.4183,14.2091],[77.4054,14.2667],[77.3887,14.2696],[77.379,14.3228],[77.4121,14.3365],[77.4789,14.2922],[77.5039,14.2638],[77.4945,14.2243],[77.517,14.1861],[77.5035,14.1572],[77.467,14.1717],[77.3937,14.1743],[77.3789,14.1359],[77.3976,14.1096],[77.3323,14.0307],[77.3849,14.0161],[77.3797,13.9899],[77.4379,13.9756],[77.435,13.915],[77.3544,13.9042],[77.368,13.9503],[77.3611,13.9909],[77.3108,14.0326],[77.2773,14.0347],[77.2454,14.012],[77.1411,14.0039],[77.1318,14.044],[77.0753,14.0435],[77.0316,14.0569],[77.0204,14.1572],[77.0055,14.184],[76.8945,14.1678],[76.8895,14.1357],[76.9443,14.1208],[76.9735,14.0836],[76.9717,14.0581],[76.9352,14.0328],[77.0003,13.9895],[76.9938,13.9626],[77.0417,13.9335],[77.0185,13.8726],[76.978,13.8269],[76.9969,13.7478],[77.0245,13.7793],[77.0647,13.7439],[77.106,13.7678],[77.1731,13.7621],[77.1629,13.7985],[77.1686,13.8645],[77.2199,13.8678],[77.2567,13.8466],[77.3165,13.8633],[77.3368,13.8328],[77.3624,13.8543],[77.4155,13.8398],[77.4453,13.8111],[77.4706,13.7581],[77.4501,13.7109],[77.4553,13.6823],[77.4921,13.6899],[77.5407,13.756],[77.5717,13.7382],[77.6136,13.752],[77.6513,13.7841],[77.7033,13.7698],[77.7316,13.8076],[77.7888,13.8232],[77.7822,13.8439],[77.8371,13.8698],[77.8144,13.9308],[77.8957,13.9411],[77.9268,13.9054],[77.9674,13.9602],[77.9875,13.9555],[77.9844,13.8976],[77.9522,13.8903],[77.9559,13.831],[77.9921,13.8689],[78.0462,13.8622],[78.0489,13.8961],[78.1148,13.8629],[78.1265,13.7885],[78.0915,13.7423],[78.1208,13.7157],[78.0859,13.6922],[78.0897,13.6591],[78.1691,13.654],[78.2042,13.6285],[78.1902,13.5902],[78.2437,13.5976],[78.2593,13.585],[78.3259,13.5949],[78.3852,13.5922],[78.4067,13.5769],[78.3824,13.5251],[78.3745,13.462],[78.3776,13.3632],[78.4793,13.3013],[78.5593,13.2862],[78.5773,13.1719],[78.5501,13.1642],[78.5166,13.1304],[78.5142,13.0619],[78.4622,13.0433],[78.4674,12.9751],[78.4121,12.9436],[78.4683,12.9009],[78.3887,12.9069],[78.3602,12.937],[78.3136,12.8765],[78.3124,12.8586],[78.2522,12.8606],[78.2456,12.7883],[78.2309,12.7607],[78.1344,12.7819],[78.0765,12.8397],[78.0307,12.8525],[77.9898,12.8216],[77.9407,12.8234],[77.9173,12.838],[77.9389,12.8726],[77.836,12.8704],[77.7991,12.8516],[77.7943,12.7578],[77.7616,12.7273],[77.7404,12.6737],[77.6786,12.6604],[77.6599,12.6839],[77.5989,12.6672],[77.606,12.6281],[77.5793,12.5731],[77.5872,12.5148],[77.615,12.5042],[77.6272,12.4585],[77.613,12.3612],[77.5786,12.3358],[77.5656,12.3061],[77.5271,12.2788],[77.4876,12.2806],[77.4722,12.21],[77.5187,12.1945],[77.6125,12.206],[77.7313,12.1801],[77.7532,12.134],[77.7755,12.1185],[77.7557,12.0798],[77.7266,12.0612],[77.6963,12.0158],[77.669,11.9492],[77.5379,11.9325],[77.4928,11.9414],[77.4905,11.9086],[77.4654,11.8752],[77.4498,11.7961],[77.428,11.7671],[77.3955,11.7862],[77.3351,11.7713],[77.2938,11.8091],[77.2498,11.8131],[77.2386,11.7948],[77.1892,11.7926],[77.1107,11.7736],[77.1168,11.7303],[77.0808,11.7366],[77.0387,11.794],[77.0129,11.8147],[76.9699,11.777],[76.9088,11.7952],[76.8883,11.7338],[76.85,11.6867],[76.8228,11.6082],[76.6714,11.616],[76.6136,11.6078],[76.5596,11.6253],[76.5513,11.6724],[76.5116,11.7051],[76.4566,11.6646],[76.4313,11.6665],[76.4085,11.6896],[76.4247,11.721],[76.4111,11.7582],[76.3397,11.7391],[76.2802,11.8124],[76.227,11.8062],[76.2069,11.862],[76.1149,11.8667],[76.1125,11.9788],[76.0701,11.9672],[76.0032,11.9315],[75.8968,11.9448],[75.83,11.9841],[75.8011,12.037],[75.8027,12.0795],[75.7504,12.0843],[75.7277,12.0726],[75.6872,12.1103],[75.6489,12.1086],[75.6209,12.1552],[75.577,12.1569],[75.5408,12.2005],[75.5054,12.2708],[75.4849,12.29],[75.4327,12.2934],[75.4109,12.346],[75.4219,12.3727],[75.3659,12.412],[75.3705,12.4566],[75.4233,12.4668],[75.4179,12.4976],[75.3819,12.5021],[75.3454,12.4631],[75.3322,12.4996],[75.2801,12.5242],[75.2721,12.5702],[75.2118,12.5794],[75.2019,12.6286],[75.1541,12.6239],[75.161,12.673],[75.1107,12.6831],[75.0424,12.6721],[75.0503,12.7195],[74.9825,12.7385],[75.0062,12.7709],[74.9275,12.7787],[74.8696,12.7607],[74.824,12.8514],[74.793,12.998],[74.7503,13.1797],[74.6997,13.3429],[74.693,13.4586],[74.6638,13.6524],[74.6462,13.6807],[74.6296,13.7799],[74.6096,13.8599],[74.57,13.9466],[74.5151,13.9869],[74.4695,14.1882],[74.4534,14.2004],[74.4131,14.3176],[74.3945,14.4185],[74.3554,14.5089],[74.3164,14.5193],[74.3151,14.5434],[74.2782,14.6192],[74.2826,14.6737],[74.25,14.7395],[74.2058,14.7286],[74.1278,14.7804],[74.1252,14.8367],[74.0857,14.9006],[74.1793,14.9567],[74.1998,14.9261],[74.2524,14.9588],[74.2519,14.9935],[74.2966,15.0412],[74.2727,15.0975],[74.2836,15.1429],[74.3142,15.1804],[74.3017,15.2244],[74.2523,15.251],[74.2714,15.2809],[74.336,15.2956],[74.3171,15.3292],[74.323,15.3674],[74.2831,15.383],[74.2688,15.4191],[74.2755,15.4492],[74.2523,15.4993],[74.2785,15.5175],[74.2773,15.5469],[74.2493,15.5679],[74.2642,15.6159],[74.252,15.6543],[74.2238,15.669],[74.1674,15.6721],[74.1184,15.652],[74.1317,15.6936],[74.1259,15.7241],[74.1616,15.7513],[74.2015,15.7586],[74.2397,15.7435],[74.308,15.7485],[74.3676,15.7858],[74.3665,15.8259],[74.3457,15.8508],[74.4283,15.9523],[74.4631,16.038],[74.4333,16.0589],[74.3811,16.0355],[74.365,16.0584],[74.4288,16.112],[74.4816,16.0889],[74.4913,16.1043],[74.4896,16.1774],[74.5032,16.2254],[74.4177,16.258],[74.416,16.2801],[74.3632,16.2856],[74.3173,16.3278],[74.3191,16.3716],[74.3393,16.391],[74.3298,16.4475],[74.2971,16.4645],[74.291,16.5049],[74.3176,16.5537],[74.3788,16.5284],[74.3967,16.5833],[74.4635,16.6045],[74.4908,16.6298],[74.5446,16.6355],[74.5436,16.5953],[74.5686,16.5539],[74.6359,16.5839],[74.6888,16.6166],[74.6573,16.6431],[74.6894,16.6767],[74.6911,16.7155],[74.7322,16.7183],[74.7748,16.7517],[74.8499,16.7728],[74.9198,16.7729],[74.9104,16.8351],[74.9266,16.8641],[74.9606,16.8812],[74.9232,16.9393],[74.9894,16.9523],[75.0643,16.9422],[75.1176,16.9135],[75.1366,16.8745],[75.1766,16.8677],[75.1828,16.8432],[75.2277,16.8432],[75.2648,16.8628],[75.29,16.904],[75.2797,16.9566],[75.3424,16.9563],[75.3922,16.9801],[75.4279,16.9665],[75.4656,16.9884],[75.4891,16.9444],[75.5294,16.9694],[75.5634,16.9676],[75.5673,17.0091],[75.607,17.0046],[75.6102,16.9717],[75.6661,16.9798],[75.6768,17.0654],[75.6724,17.116],[75.6504,17.1157],[75.6285,17.1887],[75.662,17.2146],[75.6542,17.2738],[75.6303,17.2739],[75.6038,17.3055],[75.6101,17.345],[75.5809,17.3512],[75.5742,17.3833],[75.6091,17.3941],[75.6331,17.4772],[75.6749,17.457],[75.6836,17.4169],[75.7308,17.4204],[75.7652,17.4059],[75.8043,17.3678],[75.8215,17.4212],[75.926,17.3249],[76.0624,17.3545],[76.087,17.3359],[76.1198,17.3704],[76.1627,17.3452],[76.1963,17.3636],[76.2721,17.3606],[76.2764,17.3346],[76.3832,17.3145],[76.4092,17.3714],[76.3635,17.3777],[76.3716,17.4364],[76.3333,17.4339],[76.3307,17.4702],[76.3466,17.5126],[76.3316,17.596],[76.4197,17.6037],[76.4293,17.645],[76.4867,17.6584],[76.4873,17.7148],[76.5241,17.7154],[76.5307,17.7583],[76.563,17.7646],[76.5872,17.7075],[76.6119,17.7701],[76.6333,17.7282],[76.6907,17.6835],[76.7344,17.782],[76.7826,17.8066],[76.7871,17.8332],[76.738,17.8594],[76.8522,17.9008],[76.8844,17.8945],[76.9207,17.9416],[76.9057,18.0097],[76.945,18.0484],[76.9571,18.1083],[76.9206,18.1182],[76.952,18.1881],[76.9907,18.19],[76.997,18.1648],[77.064,18.1506],[77.1126,18.1568],[77.0985,18.1929],[77.1404,18.2078],[77.1749,18.2849],[77.2094,18.2881],[77.2118,18.3163],[77.2418,18.4126],[77.3173,18.4433],[77.3535,18.4477],[77.3729,18.4011],[77.4141,18.3931],[77.395,18.3478],[77.3715,18.3251],[77.4102,18.3016],[77.4377,18.3103],[77.4476,18.27],[77.4927,18.2672],[77.5243,18.3078],[77.5514,18.2919]]]},"properties":{"ST_NM":"Karnataka","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[94.6755,25.4456],[94.66,25.4054],[94.6323,25.3883],[94.6347,25.3581],[94.5853,25.2651],[94.5758,25.2145],[94.593,25.1918],[94.6412,25.166],[94.6975,25.1549],[94.7349,25.1342],[94.7447,25.0801],[94.7388,25.0236],[94.7071,24.9871],[94.7018,24.9296],[94.6866,24.8929],[94.6316,24.839],[94.6182,24.7855],[94.6285,24.756],[94.5852,24.7047],[94.5452,24.7105],[94.5449,24.6688],[94.515,24.6107],[94.4539,24.5648],[94.408,24.4405],[94.3505,24.3351],[94.3217,24.3289],[94.3219,24.2772],[94.2915,24.233],[94.2764,24.1734],[94.2597,24.1653],[94.2545,24.0825],[94.2373,24.0354],[94.1697,23.9284],[94.1566,23.8482],[94.1183,23.837],[94.0961,23.8892],[94.0488,23.888],[94.0405,23.9107],[93.8946,23.9523],[93.8196,23.9236],[93.7578,24.0032],[93.7216,23.9979],[93.6238,24.0114],[93.6072,23.9716],[93.5002,23.9447],[93.4617,23.9761],[93.4166,24.0719],[93.3577,24.0915],[93.3284,24.0808],[93.3262,24.0485],[93.2864,24.0475],[93.2503,24.0802],[93.2253,24.0846],[93.2119,24.0486],[93.1243,24.0607],[93.0784,24.1018],[93.052,24.0895],[92.991,24.1156],[93.0205,24.2319],[93.0079,24.2869],[93.0336,24.321],[93.0177,24.3499],[93.0246,24.3926],[93.0087,24.4118],[93.0335,24.4271],[93.0455,24.4762],[93.0327,24.4936],[93.0491,24.5425],[93.0891,24.5735],[93.0789,24.7047],[93.1071,24.7406],[93.105,24.7917],[93.1347,24.8107],[93.1541,24.7888],[93.1914,24.8045],[93.1953,24.8444],[93.2261,24.8738],[93.2488,24.9156],[93.2367,24.9373],[93.2622,24.9688],[93.2472,25.0181],[93.266,25.0442],[93.2993,25.0495],[93.3323,25.0939],[93.354,25.1875],[93.3864,25.2428],[93.4206,25.2777],[93.4704,25.3052],[93.4539,25.3249],[93.5064,25.2688],[93.5474,25.2481],[93.6052,25.199],[93.6374,25.2639],[93.6814,25.3285],[93.7422,25.404],[93.8049,25.4631],[93.8008,25.4963],[93.759,25.5118],[93.7672,25.5342],[93.8158,25.5423],[93.8344,25.5606],[93.8884,25.5651],[93.9546,25.5504],[94.0022,25.5851],[94.0476,25.5759],[94.0928,25.5296],[94.1375,25.5183],[94.1499,25.5432],[94.1859,25.5316],[94.2216,25.4908],[94.2846,25.5079],[94.3185,25.5025],[94.418,25.5384],[94.425,25.5865],[94.479,25.6152],[94.4945,25.6096],[94.5839,25.6849],[94.5901,25.6366],[94.56,25.5982],[94.5679,25.5009],[94.616,25.4625],[94.6755,25.4456]]]},"properties":{"ST_NM":"Manipur","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.4252,25.0297],[92.2293,25.0972],[92.1996,25.1254],[92.1355,25.1433],[92.1224,25.1659],[92.0746,25.1862],[92.0108,25.1891],[91.9832,25.1716],[91.9471,25.1833],[91.8064,25.1694],[91.7466,25.1717],[91.6889,25.1381],[91.642,25.1243],[91.6029,25.1737],[91.4931,25.1347],[91.4318,25.1557],[91.4139,25.1725],[91.3453,25.1725],[91.2646,25.2068],[91.1253,25.1931],[91.0815,25.2019],[90.9655,25.1714],[90.8694,25.1597],[90.8195,25.1635],[90.7901,25.1824],[90.7605,25.1652],[90.6889,25.1611],[90.665,25.1846],[90.6363,25.1732],[90.5104,25.1685],[90.4446,25.1438],[90.3774,25.1618],[90.3317,25.1917],[90.2145,25.2032],[90.1597,25.2235],[90.1124,25.2242],[90.0599,25.256],[89.9809,25.2853],[89.9722,25.301],[89.9081,25.3078],[89.8694,25.2872],[89.8401,25.3185],[89.814,25.3699],[89.8342,25.4349],[89.8544,25.4674],[89.8708,25.4759],[89.8852,25.5551],[89.9372,25.5647],[90.0202,25.6076],[89.9531,25.6537],[89.9444,25.6793],[89.8956,25.7316],[89.9266,25.7385],[89.955,25.7676],[89.951,25.8212],[90.0035,25.8393],[90.0245,25.8956],[90.0862,25.9196],[90.113,25.9543],[90.177,25.9589],[90.1867,25.9475],[90.3274,25.9745],[90.3497,26.0042],[90.3997,26.0126],[90.4302,25.989],[90.4761,26.0097],[90.5349,25.9497],[90.5149,25.8962],[90.5767,25.9368],[90.6241,25.9393],[90.6285,25.9177],[90.7138,25.9518],[90.778,25.9087],[90.8091,25.9475],[90.8748,25.9426],[90.9142,25.9258],[90.9594,25.9313],[90.9659,25.8885],[91.0305,25.8859],[91.0669,25.8258],[91.1196,25.8328],[91.1475,25.8506],[91.2034,25.8442],[91.1782,25.7774],[91.2224,25.7227],[91.2745,25.7505],[91.3356,25.8408],[91.3653,25.8401],[91.4694,25.8593],[91.5079,25.9089],[91.5708,26.0259],[91.6347,26.0129],[91.6356,25.9617],[91.621,25.9324],[91.6705,25.9042],[91.72,25.9537],[91.7253,26.0463],[91.8212,26.1176],[91.8791,26.0981],[91.8749,26.0379],[91.9337,26.0104],[91.9885,26.0376],[92.0637,26.0341],[92.1078,26.0508],[92.1319,26.0444],[92.1691,26.0776],[92.2582,26.0636],[92.2627,26.0327],[92.1641,25.9704],[92.1524,25.9444],[92.214,25.8948],[92.1772,25.8728],[92.151,25.8158],[92.1477,25.773],[92.1627,25.744],[92.1547,25.7063],[92.1638,25.6671],[92.225,25.7162],[92.2643,25.7092],[92.3642,25.7375],[92.373,25.7503],[92.4441,25.7199],[92.4403,25.6922],[92.4702,25.6752],[92.4974,25.6241],[92.5526,25.615],[92.5566,25.5714],[92.585,25.5506],[92.6227,25.5658],[92.6428,25.5349],[92.5736,25.4906],[92.6004,25.4649],[92.6088,25.4136],[92.6362,25.4267],[92.782,25.3328],[92.7918,25.2844],[92.7683,25.2667],[92.7748,25.1997],[92.7428,25.2068],[92.6938,25.1793],[92.6583,25.172],[92.6278,25.1375],[92.588,25.1289],[92.5248,25.1353],[92.5388,25.1006],[92.4809,25.1087],[92.4597,25.0371],[92.4252,25.0297]]]},"properties":{"ST_NM":"Meghalaya","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[93.0087,24.4118],[93.0246,24.3926],[93.0177,24.3499],[93.0336,24.321],[93.0079,24.2869],[93.0205,24.2319],[92.991,24.1156],[93.052,24.0895],[93.0784,24.1018],[93.1243,24.0607],[93.2119,24.0486],[93.2253,24.0846],[93.2503,24.0802],[93.2864,24.0475],[93.3262,24.0485],[93.3386,24.0215],[93.3334,23.9789],[93.3537,23.9466],[93.3931,23.921],[93.3848,23.8725],[93.4021,23.8122],[93.3916,23.7571],[93.4061,23.7122],[93.4355,23.6782],[93.4223,23.6596],[93.428,23.5882],[93.418,23.5392],[93.3943,23.4992],[93.3884,23.4487],[93.4019,23.3897],[93.3704,23.3324],[93.3698,23.257],[93.3855,23.2195],[93.3679,23.1464],[93.327,23.0391],[93.2944,23.007],[93.2413,23.0067],[93.2103,23.0474],[93.1831,23.0597],[93.1265,23.044],[93.1229,23.0079],[93.1547,22.9178],[93.1362,22.9133],[93.11,22.8182],[93.0942,22.8062],[93.1066,22.7545],[93.0909,22.7042],[93.1094,22.6351],[93.1402,22.5927],[93.1149,22.5629],[93.1093,22.5246],[93.1346,22.4929],[93.1395,22.4537],[93.1852,22.4277],[93.1864,22.3387],[93.1993,22.256],[93.1417,22.2457],[93.1612,22.1965],[93.1277,22.1734],[93.1109,22.2043],[93.0627,22.2078],[93.0393,22.139],[93.0042,22.0755],[92.978,21.9982],[92.9516,22.0302],[92.9155,21.9798],[92.8645,22.0242],[92.8572,22.0666],[92.8183,22.0752],[92.7283,22.1476],[92.6968,22.1434],[92.6819,22.1038],[92.6796,22.0115],[92.6526,22.0165],[92.6346,21.9835],[92.599,22.0063],[92.6,22.0519],[92.5748,22.1153],[92.5958,22.1752],[92.5835,22.2992],[92.5623,22.3723],[92.544,22.49],[92.5481,22.5073],[92.5222,22.5603],[92.5377,22.577],[92.5261,22.6729],[92.5074,22.7378],[92.4825,22.747],[92.4554,22.8254],[92.4634,22.8554],[92.4194,22.9116],[92.3716,22.9368],[92.3918,23.057],[92.3609,23.0988],[92.3672,23.1251],[92.3475,23.2367],[92.4005,23.2364],[92.3842,23.3079],[92.3672,23.318],[92.3776,23.3626],[92.3563,23.3712],[92.3327,23.4351],[92.3118,23.5604],[92.2742,23.6482],[92.2917,23.6819],[92.2654,23.7251],[92.257,23.8129],[92.2896,23.8683],[92.3239,23.905],[92.3085,23.9682],[92.326,23.9975],[92.3164,24.0675],[92.3315,24.1524],[92.3244,24.1978],[92.2923,24.2505],[92.4224,24.255],[92.4188,24.1928],[92.4368,24.1529],[92.4607,24.138],[92.5243,24.1716],[92.5506,24.2471],[92.6122,24.2536],[92.6225,24.3316],[92.6491,24.3287],[92.6897,24.3537],[92.7637,24.5211],[92.8042,24.4176],[92.8451,24.3798],[92.8617,24.3987],[92.907,24.4114],[92.9339,24.3924],[93.0087,24.4118]]]},"properties":{"ST_NM":"Mizoram","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[95.1946,27.0313],[95.1915,26.9849],[95.2303,26.8837],[95.1815,26.8613],[95.2311,26.7651],[95.2104,26.7312],[95.2339,26.6825],[95.2085,26.6478],[95.1491,26.616],[95.1543,26.5828],[95.1072,26.5415],[95.1141,26.5184],[95.0729,26.4725],[95.1322,26.3777],[95.1223,26.3573],[95.1282,26.2932],[95.1187,26.2263],[95.1424,26.2119],[95.1171,26.1629],[95.1181,26.1006],[95.1647,26.0925],[95.1857,26.0733],[95.1589,26.0248],[95.0956,25.9558],[95.0484,25.9352],[95.0128,25.8984],[95.0089,25.8669],[95.0496,25.7927],[95.0408,25.7423],[95.004,25.729],[94.9248,25.6497],[94.9148,25.6075],[94.8347,25.553],[94.8055,25.4918],[94.6834,25.4662],[94.6755,25.4456],[94.616,25.4625],[94.5679,25.5009],[94.56,25.5982],[94.5901,25.6366],[94.5839,25.6849],[94.4945,25.6096],[94.479,25.6152],[94.425,25.5865],[94.418,25.5384],[94.3185,25.5025],[94.2846,25.5079],[94.2216,25.4908],[94.1859,25.5316],[94.1499,25.5432],[94.1375,25.5183],[94.0928,25.5296],[94.0476,25.5759],[94.0022,25.5851],[93.9546,25.5504],[93.8884,25.5651],[93.8344,25.5606],[93.8158,25.5423],[93.7672,25.5342],[93.759,25.5118],[93.8008,25.4963],[93.8049,25.4631],[93.7422,25.404],[93.6814,25.3285],[93.6374,25.2639],[93.6052,25.199],[93.5474,25.2481],[93.5064,25.2688],[93.4539,25.3249],[93.4515,25.3541],[93.4729,25.3861],[93.4553,25.4345],[93.4155,25.4451],[93.3844,25.4695],[93.3529,25.5281],[93.3584,25.5574],[93.4248,25.6304],[93.4965,25.6546],[93.5311,25.6927],[93.5423,25.7308],[93.6177,25.7766],[93.6391,25.8163],[93.6775,25.8279],[93.702,25.8516],[93.6814,25.9039],[93.735,25.9237],[93.777,25.958],[93.796,25.9035],[93.7776,25.8507],[93.79,25.8113],[93.8522,25.8583],[93.876,25.8426],[93.9159,25.8838],[93.9786,25.9168],[93.9541,25.9694],[93.9624,26.0366],[93.9971,26.107],[93.9889,26.1334],[94.0077,26.1826],[94.0318,26.1975],[94.0474,26.2491],[94.1197,26.3289],[94.1715,26.3381],[94.1718,26.4159],[94.1851,26.4585],[94.2365,26.5062],[94.2562,26.5413],[94.2812,26.5487],[94.2933,26.4712],[94.3208,26.4756],[94.3743,26.5075],[94.4052,26.5488],[94.4042,26.6119],[94.4597,26.6369],[94.5392,26.7063],[94.5903,26.6967],[94.6245,26.7155],[94.6937,26.733],[94.7681,26.7869],[94.7997,26.7999],[94.8175,26.8478],[94.8905,26.9296],[94.9552,26.9401],[94.982,26.9134],[95.0809,26.9502],[95.1083,26.977],[95.1946,27.0313]]]},"properties":{"ST_NM":"Nagaland","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.7767,30.9043],[76.7843,30.8779],[76.8467,30.834],[76.857,30.7948],[76.8381,30.7549],[76.815,30.753],[76.7715,30.7953],[76.7117,30.7617],[76.7128,30.7413],[76.7524,30.6845],[76.8086,30.6674],[76.8292,30.681],[76.9271,30.6037],[76.9164,30.5541],[76.9311,30.5009],[76.8864,30.4297],[76.9394,30.3948],[76.9156,30.3653],[76.851,30.4353],[76.8234,30.4116],[76.7688,30.4308],[76.735,30.4191],[76.7134,30.3881],[76.7461,30.3672],[76.711,30.3258],[76.688,30.3269],[76.6234,30.2646],[76.6239,30.2278],[76.6003,30.1839],[76.6398,30.1503],[76.5993,30.1125],[76.577,30.11],[76.547,30.0762],[76.4625,30.1011],[76.4599,30.1295],[76.4218,30.1924],[76.3872,30.1706],[76.4091,30.1468],[76.3399,30.0987],[76.2853,30.1062],[76.2274,30.1445],[76.2197,30.1161],[76.2489,30.0851],[76.2262,30.0587],[76.2054,29.9738],[76.1782,29.9422],[76.1934,29.8857],[76.2301,29.8854],[76.2438,29.8524],[76.1978,29.8448],[76.1848,29.8228],[76.148,29.82],[76.1292,29.797],[76.085,29.8008],[76.0434,29.7427],[75.9844,29.7271],[75.8702,29.7493],[75.837,29.7943],[75.7885,29.8114],[75.7378,29.814],[75.7028,29.7524],[75.6783,29.7761],[75.6345,29.7553],[75.5721,29.7433],[75.5611,29.7707],[75.4539,29.782],[75.4141,29.77],[75.3918,29.7131],[75.3457,29.696],[75.3166,29.6306],[75.3094,29.5608],[75.2421,29.5459],[75.2222,29.5813],[75.2353,29.6021],[75.1824,29.6293],[75.1679,29.667],[75.2068,29.6875],[75.1969,29.7161],[75.2416,29.7546],[75.2085,29.7932],[75.191,29.8414],[75.1368,29.806],[75.0908,29.8527],[75.1147,29.8787],[75.0888,29.9172],[75.0699,29.8771],[74.9905,29.868],[74.9471,29.9085],[74.9228,29.952],[74.888,29.9671],[74.8562,29.9565],[74.8064,29.9921],[74.7794,29.972],[74.7314,29.9615],[74.7022,29.9719],[74.6582,29.9323],[74.6468,29.9043],[74.5967,29.9123],[74.5272,29.9428],[74.1017,29.9671],[73.8955,29.9741],[73.8863,30.0121],[73.904,30.05],[73.9299,30.0685],[73.9707,30.1251],[73.9726,30.1981],[73.9622,30.2634],[73.9317,30.3186],[73.8798,30.3598],[73.9648,30.4247],[73.9641,30.4564],[73.9927,30.5142],[74.0501,30.5371],[74.0723,30.5229],[74.1285,30.6323],[74.1491,30.6316],[74.2192,30.6935],[74.2326,30.7245],[74.2654,30.7249],[74.2974,30.7771],[74.3248,30.8495],[74.3482,30.855],[74.3659,30.8929],[74.4237,30.9296],[74.4569,30.9642],[74.5087,30.9673],[74.5464,30.9924],[74.548,31.0325],[74.5744,31.0568],[74.5969,31.0376],[74.6711,31.0536],[74.7024,31.0917],[74.6891,31.128],[74.6403,31.1197],[74.6009,31.1321],[74.6007,31.088],[74.5513,31.0865],[74.5484,31.1221],[74.5103,31.132],[74.5099,31.1734],[74.5326,31.2497],[74.5367,31.3302],[74.5538,31.3665],[74.5834,31.3791],[74.5964,31.4163],[74.6435,31.4161],[74.6532,31.4553],[74.6128,31.5274],[74.616,31.5575],[74.5754,31.6039],[74.5554,31.6079],[74.5242,31.687],[74.4866,31.7151],[74.5139,31.74],[74.5594,31.7579],[74.5706,31.837],[74.6159,31.8894],[74.6366,31.884],[74.6771,31.9262],[74.7076,31.9231],[74.7816,31.9558],[74.8189,31.9587],[74.8287,31.9983],[74.9274,32.0664],[75.0123,32.0357],[75.0688,32.0636],[75.1018,32.0594],[75.1228,32.0815],[75.1959,32.0836],[75.2769,32.1156],[75.2854,32.1518],[75.3139,32.1722],[75.3313,32.2197],[75.3655,32.2199],[75.3718,32.2797],[75.3438,32.279],[75.3317,32.3269],[75.3414,32.3461],[75.419,32.32],[75.4657,32.327],[75.5425,32.3056],[75.5395,32.3362],[75.5967,32.3777],[75.687,32.3905],[75.7373,32.4296],[75.7295,32.4532],[75.7777,32.4657],[75.8344,32.5118],[75.9014,32.4531],[75.9192,32.4121],[75.8742,32.3958],[75.8453,32.3574],[75.8112,32.3486],[75.773,32.2903],[75.6571,32.2512],[75.6247,32.1899],[75.6632,32.1916],[75.6613,32.1369],[75.6008,32.0931],[75.6021,32.0659],[75.6543,32.0776],[75.7508,32.0377],[75.7797,32.0047],[75.8925,31.9618],[75.9612,31.8549],[75.9475,31.813],[76.0177,31.6322],[76.0979,31.5328],[76.1345,31.4505],[76.1698,31.399],[76.1493,31.3533],[76.1788,31.3405],[76.1808,31.3105],[76.2139,31.2995],[76.3112,31.3195],[76.3076,31.3426],[76.3408,31.3635],[76.3311,31.4012],[76.3721,31.4085],[76.4317,31.3269],[76.4861,31.304],[76.5492,31.2528],[76.5835,31.2762],[76.6454,31.2091],[76.615,31.19],[76.6016,31.1286],[76.6385,31.1079],[76.611,31.0459],[76.6247,30.9988],[76.6732,30.9688],[76.7081,30.9704],[76.7767,30.9043]]]},"properties":{"ST_NM":"Punjab","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[74.5272,29.9428],[74.51,29.9082],[74.5436,29.9014],[74.561,29.8696],[74.5391,29.8406],[74.4844,29.8143],[74.4772,29.7453],[74.535,29.7407],[74.6009,29.7659],[74.6098,29.7218],[74.5854,29.6539],[74.5759,29.5601],[74.623,29.531],[74.5846,29.4585],[74.5433,29.4679],[74.5366,29.4245],[74.5661,29.4206],[74.6026,29.3653],[74.6042,29.3273],[74.6545,29.3329],[74.6582,29.372],[74.7194,29.37],[74.7396,29.354],[74.7819,29.3579],[74.8203,29.3972],[74.8505,29.4036],[74.9384,29.3618],[74.9608,29.318],[74.9617,29.2803],[74.9986,29.2707],[75.05,29.2862],[75.0751,29.2299],[75.1196,29.2229],[75.1957,29.2634],[75.2101,29.2347],[75.3229,29.2895],[75.34,29.2828],[75.3296,29.2327],[75.3895,29.2612],[75.4106,29.2555],[75.4067,29.1697],[75.375,29.1352],[75.3946,29.1108],[75.3912,29.0627],[75.4418,29.0575],[75.4582,29.0135],[75.5206,29.0044],[75.5274,28.971],[75.5057,28.9359],[75.4971,28.8549],[75.5196,28.8345],[75.5081,28.7886],[75.538,28.7266],[75.5412,28.6605],[75.5619,28.6131],[75.6224,28.6014],[75.6337,28.5445],[75.6658,28.536],[75.69,28.4999],[75.7356,28.4688],[75.7883,28.4536],[75.777,28.4004],[75.8328,28.4054],[75.9295,28.3591],[75.9578,28.3139],[76.0263,28.275],[76.0132,28.244],[76.0403,28.222],[76.0703,28.1652],[76.0261,28.1646],[75.946,28.1077],[75.9834,28.0813],[76.0408,28.074],[76.0164,28.0305],[75.9769,28.0314],[75.9424,27.9132],[75.9873,27.9043],[75.9714,27.852],[76.0477,27.8351],[76.0878,27.8606],[76.1233,27.851],[76.1323,27.8245],[76.1812,27.7975],[76.2252,27.8332],[76.1938,27.8595],[76.2013,27.8928],[76.1682,27.9034],[76.1866,27.9655],[76.1604,27.9984],[76.1895,28.0565],[76.2281,28.0484],[76.261,28.0675],[76.3208,28.016],[76.3565,28.0675],[76.3366,28.1026],[76.3566,28.1437],[76.4757,28.1486],[76.4992,28.1002],[76.4547,28.0423],[76.5438,28.0342],[76.5447,27.9637],[76.6049,28.0039],[76.6681,28.0138],[76.6516,28.0616],[76.716,28.1279],[76.7435,28.121],[76.7948,28.1484],[76.8084,28.2109],[76.8675,28.2199],[76.932,28.1531],[76.9705,28.1384],[76.9308,27.9929],[76.9315,27.9226],[76.943,27.8539],[76.915,27.8348],[76.8942,27.7179],[76.9155,27.6526],[76.9421,27.6738],[76.9791,27.6536],[77.0001,27.737],[77.0449,27.7434],[77.0358,27.7816],[77.0448,27.8218],[77.1085,27.7863],[77.1833,27.7876],[77.2134,27.8016],[77.2524,27.7907],[77.2837,27.8011],[77.3015,27.7949],[77.3194,27.7335],[77.3409,27.7036],[77.3462,27.6395],[77.3171,27.6068],[77.3345,27.5913],[77.34,27.5266],[77.399,27.5002],[77.4337,27.46],[77.4211,27.422],[77.4395,27.3907],[77.5072,27.3771],[77.5483,27.3366],[77.6125,27.3319],[77.6168,27.2865],[77.6811,27.1944],[77.6584,27.1701],[77.6218,27.1722],[77.6037,27.1238],[77.5376,27.0983],[77.5772,27.0683],[77.6018,27.0225],[77.6656,27.0173],[77.6798,27.0471],[77.7114,26.9974],[77.5832,26.9242],[77.4902,26.9005],[77.4266,26.859],[77.4206,26.8106],[77.4366,26.7676],[77.4875,26.7881],[77.5007,26.817],[77.6076,26.8278],[77.7226,26.8743],[77.7324,26.9201],[77.7747,26.9322],[77.8505,26.9127],[77.9043,26.8833],[77.9088,26.9064],[77.9678,26.9037],[77.987,26.8893],[78.0569,26.9068],[78.1112,26.8959],[78.1245,26.9493],[78.1687,26.9478],[78.2723,26.9192],[78.2326,26.8743],[78.2027,26.8654],[78.223,26.8306],[78.1689,26.8126],[78.1551,26.7841],[78.1165,26.7966],[78.0921,26.7149],[78.0952,26.6793],[77.9975,26.694],[77.9536,26.6592],[77.8984,26.6555],[77.8967,26.6175],[77.8273,26.596],[77.8325,26.5615],[77.7834,26.5521],[77.7388,26.5295],[77.7127,26.4982],[77.6755,26.503],[77.6149,26.4536],[77.5621,26.4368],[77.5235,26.4073],[77.4395,26.4039],[77.4443,26.3616],[77.3765,26.3653],[77.3209,26.3334],[77.3167,26.3118],[77.2706,26.2673],[77.2039,26.23],[77.1351,26.2334],[77.1004,26.1859],[77.0324,26.1729],[76.999,26.1301],[76.9481,26.1028],[76.9018,26.0935],[76.8861,26.0492],[76.84,26.0261],[76.8134,25.9977],[76.8051,25.9609],[76.751,25.9164],[76.7064,25.9001],[76.6711,25.9102],[76.6318,25.9],[76.6239,25.8713],[76.5914,25.8755],[76.5305,25.8119],[76.5156,25.7773],[76.5205,25.7273],[76.4752,25.7128],[76.5032,25.6729],[76.4989,25.6375],[76.5163,25.5282],[76.5546,25.4838],[76.5553,25.4534],[76.5884,25.4305],[76.5981,25.3939],[76.6363,25.3838],[76.6699,25.3488],[76.7007,25.3514],[76.7289,25.3288],[76.7805,25.3158],[76.8572,25.3327],[76.902,25.3235],[76.9295,25.3029],[77.0314,25.2945],[77.0457,25.3194],[77.0835,25.3367],[77.1252,25.3305],[77.1635,25.3086],[77.2092,25.3062],[77.2369,25.3802],[77.2943,25.4244],[77.3311,25.4274],[77.3709,25.4084],[77.3502,25.3822],[77.3497,25.3289],[77.378,25.3155],[77.3741,25.2745],[77.3554,25.2633],[77.4145,25.2204],[77.3962,25.1378],[77.3758,25.1048],[77.31,25.0807],[77.2887,25.1064],[77.1746,25.1117],[77.1669,25.0849],[77.0821,25.0582],[76.9885,25.0724],[76.9659,25.0515],[76.8762,25.0415],[76.8619,24.9614],[76.923,24.9136],[76.9125,24.8882],[76.9418,24.8587],[76.8818,24.837],[76.8321,24.8378],[76.8026,24.8093],[76.8484,24.7661],[76.8561,24.7425],[76.9014,24.7342],[76.9635,24.7565],[76.9983,24.7182],[77.0307,24.7122],[77.0651,24.6438],[77.0713,24.5724],[77.0547,24.5264],[77.029,24.4961],[76.9778,24.4612],[76.9169,24.4832],[76.9207,24.528],[76.8841,24.5215],[76.8621,24.5484],[76.8164,24.5336],[76.8465,24.4864],[76.8521,24.451],[76.8396,24.4131],[76.8518,24.3707],[76.8415,24.3225],[76.8631,24.2731],[76.9118,24.2381],[76.9224,24.2116],[76.9008,24.1272],[76.8546,24.1357],[76.802,24.1165],[76.7564,24.1691],[76.7006,24.1677],[76.6779,24.2041],[76.7022,24.2414],[76.6402,24.2684],[76.5957,24.2441],[76.5618,24.1734],[76.5276,24.157],[76.5048,24.2031],[76.3925,24.217],[76.3398,24.244],[76.2867,24.2283],[76.2856,24.2096],[76.2045,24.2172],[76.2038,24.3038],[76.1861,24.3286],[76.1587,24.2828],[76.146,24.2244],[76.1177,24.1947],[76.1141,24.1626],[76.1311,24.1154],[76.1271,24.088],[76.0429,24.0661],[75.9987,24.0207],[75.9635,24.0187],[75.9849,23.9737],[75.9871,23.9403],[75.9375,23.8966],[75.8447,23.8839],[75.8189,23.8684],[75.7646,23.8753],[75.7353,23.8985],[75.7179,23.8117],[75.6538,23.7981],[75.5835,23.7947],[75.5592,23.8186],[75.5659,23.8534],[75.4929,23.9061],[75.4594,23.9205],[75.4689,23.9744],[75.5211,24.0246],[75.5846,23.9906],[75.6324,23.9956],[75.6709,24.018],[75.7018,23.9665],[75.7649,23.9923],[75.7821,24.0426],[75.8368,24.057],[75.835,24.0917],[75.7929,24.0918],[75.752,24.148],[75.7731,24.202],[75.8181,24.2387],[75.813,24.292],[75.7664,24.2981],[75.7382,24.3348],[75.7519,24.4276],[75.7894,24.4716],[75.8098,24.4339],[75.8388,24.4141],[75.8753,24.4265],[75.9092,24.455],[75.9031,24.5044],[75.9235,24.5342],[75.9066,24.5758],[75.8786,24.5834],[75.8252,24.6675],[75.8376,24.7253],[75.8026,24.7562],[75.7572,24.7615],[75.6832,24.7241],[75.646,24.6851],[75.6087,24.6818],[75.5831,24.7133],[75.5339,24.7123],[75.4554,24.6806],[75.3492,24.7008],[75.2284,24.7176],[75.1975,24.7433],[75.211,24.7977],[75.2504,24.8095],[75.273,24.8427],[75.2978,24.8071],[75.3976,24.8418],[75.3736,24.8677],[75.3182,24.8604],[75.2634,24.8748],[75.2819,24.953],[75.3203,24.9016],[75.3371,24.9553],[75.3135,24.9801],[75.3343,25.0411],[75.2676,25.0425],[75.1925,25.0335],[75.17,25.0489],[75.1515,24.9892],[75.1136,24.9668],[75.1192,24.8824],[75.0765,24.8806],[75.0483,24.8499],[74.9482,24.8645],[74.9106,24.8939],[74.9134,24.9161],[74.8597,24.9617],[74.8336,24.9596],[74.8259,24.8993],[74.8591,24.8384],[74.8609,24.7985],[74.9815,24.7636],[74.9922,24.6944],[74.943,24.6404],[74.89,24.634],[74.8739,24.6491],[74.8176,24.7454],[74.7802,24.7297],[74.7837,24.6916],[74.8142,24.6659],[74.7796,24.6153],[74.7865,24.5858],[74.7537,24.5538],[74.7444,24.4685],[74.8151,24.4686],[74.8253,24.4001],[74.7809,24.3385],[74.7817,24.2902],[74.7471,24.2534],[74.7775,24.2387],[74.8678,24.243],[74.9071,24.201],[74.8823,24.1796],[74.9033,24.1092],[74.939,24.0544],[74.9785,24.0365],[74.9621,23.9774],[74.9288,23.9541],[74.9025,23.8732],[74.9088,23.8356],[74.9404,23.7647],[74.9039,23.6748],[74.9365,23.6286],[74.87,23.5918],[74.84,23.5499],[74.8029,23.5325],[74.7,23.5039],[74.6519,23.4624],[74.6162,23.4599],[74.575,23.4233],[74.5689,23.3763],[74.5424,23.3647],[74.5232,23.3211],[74.5438,23.2804],[74.6201,23.2768],[74.6489,23.256],[74.7011,23.2648],[74.7443,23.2114],[74.7153,23.1908],[74.6714,23.2001],[74.5965,23.1379],[74.5432,23.1305],[74.5394,23.1034],[74.4641,23.0817],[74.4322,23.105],[74.3845,23.1111],[74.3244,23.0614],[74.2834,23.0954],[74.2738,23.158],[74.2029,23.1902],[74.1728,23.1557],[74.1278,23.176],[74.1408,23.2229],[74.1388,23.266],[74.1069,23.2937],[74.0377,23.2954],[74.0287,23.3316],[73.8884,23.3561],[73.8303,23.4262],[73.779,23.4312],[73.7673,23.453],[73.7132,23.4143],[73.6913,23.4582],[73.6462,23.4413],[73.6332,23.4691],[73.6564,23.5074],[73.6331,23.5286],[73.6475,23.5743],[73.6417,23.6274],[73.6152,23.6521],[73.5687,23.6529],[73.5227,23.6071],[73.5056,23.6387],[73.5073,23.7028],[73.4735,23.7051],[73.4108,23.7801],[73.3797,23.767],[73.3561,23.7849],[73.3679,23.8141],[73.3542,23.8518],[73.3875,23.9158],[73.4201,23.9248],[73.4046,24.0411],[73.3387,24.0987],[73.2824,24.0192],[73.2395,24.004],[73.1932,24.0409],[73.2139,24.0776],[73.1589,24.0982],[73.1294,24.1226],[73.0675,24.1946],[73.0941,24.2468],[73.1255,24.2733],[73.1354,24.3083],[73.1665,24.2992],[73.2193,24.3638],[73.1962,24.3764],[73.152,24.3543],[73.0765,24.3965],[73.101,24.4273],[73.1017,24.4711],[73.086,24.4984],[73.0435,24.4692],[72.9998,24.4832],[72.9695,24.4529],[72.9619,24.4058],[72.9776,24.3734],[72.9107,24.3371],[72.8498,24.3719],[72.8037,24.3632],[72.7326,24.3635],[72.6892,24.4116],[72.6809,24.465],[72.6563,24.4621],[72.576,24.4788],[72.5412,24.5186],[72.4932,24.459],[72.5004,24.4169],[72.4573,24.4147],[72.4302,24.4801],[72.4416,24.5147],[72.3795,24.5127],[72.3539,24.5635],[72.2902,24.5503],[72.2463,24.5862],[72.2644,24.6044],[72.2337,24.6404],[72.1648,24.6212],[72.0898,24.6586],[72.0847,24.7069],[72.0583,24.7124],[71.9841,24.6863],[71.9784,24.6573],[71.9255,24.6359],[71.9075,24.6774],[71.8578,24.6664],[71.8522,24.6092],[71.8025,24.631],[71.8024,24.6719],[71.7717,24.6753],[71.7079,24.6617],[71.6554,24.6391],[71.6079,24.677],[71.4778,24.6795],[71.3782,24.6261],[71.3478,24.661],[71.3137,24.648],[71.2876,24.6158],[71.112,24.6757],[71.0985,24.6876],[71.0652,24.7176],[70.9918,24.8636],[70.9374,24.9388],[70.908,25.0438],[70.8882,25.1483],[70.7513,25.2779],[70.7365,25.3326],[70.6645,25.3971],[70.6717,25.4204],[70.6782,25.5257],[70.6669,25.5314],[70.6737,25.676],[70.647,25.7128],[70.6085,25.7151],[70.5299,25.6836],[70.3867,25.6739],[70.2684,25.7138],[70.2222,25.7932],[70.1741,25.8285],[70.0995,25.9383],[70.0832,26.0834],[70.1409,26.156],[70.1749,26.252],[70.1634,26.295],[70.1851,26.3743],[70.1767,26.424],[70.1843,26.4804],[70.174,26.5514],[70.1172,26.587],[70.056,26.6006],[69.9344,26.5815],[69.8859,26.5788],[69.7917,26.5983],[69.7195,26.6548],[69.5101,26.7436],[69.4842,26.8049],[69.4975,26.8669],[69.5131,27.01],[69.5869,27.1835],[69.6446,27.2252],[69.7021,27.2839],[69.76,27.3211],[69.8629,27.4022],[69.9335,27.4978],[70.0257,27.5629],[70.1322,27.8056],[70.2258,27.9008],[70.2958,27.9359],[70.3719,28.0118],[70.5054,28.037],[70.5892,28.0104],[70.5983,27.9931],[70.6771,27.9218],[70.684,27.8282],[70.7591,27.7212],[70.8716,27.7056],[70.9058,27.7095],[71.2051,27.8353],[71.3826,27.8725],[71.666,27.8778],[71.8983,27.9615],[71.9277,28.1216],[72.0164,28.2276],[72.1322,28.3129],[72.2061,28.3941],[72.2993,28.6695],[72.4037,28.7832],[72.4793,28.8122],[72.7325,28.9476],[72.9452,29.0277],[73.0043,29.1529],[73.0845,29.2358],[73.2824,29.572],[73.336,29.7416],[73.397,29.9459],[73.5971,30.0189],[73.8062,30.0677],[73.8303,30.0935],[73.9726,30.1981],[73.9707,30.1251],[73.9299,30.0685],[73.904,30.05],[73.8863,30.0121],[73.8955,29.9741],[74.1017,29.9671],[74.5272,29.9428]]]},"properties":{"ST_NM":"Rajasthan","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[88.7455,27.142],[88.7165,27.1415],[88.6822,27.1768],[88.6574,27.1597],[88.589,27.1893],[88.5331,27.1767],[88.5291,27.1478],[88.4662,27.1122],[88.4306,27.0794],[88.3566,27.0953],[88.3166,27.1256],[88.2787,27.1305],[88.2322,27.1185],[88.1817,27.1325],[88.1536,27.1098],[88.0962,27.1334],[88.0788,27.2013],[88.0288,27.2207],[88.0148,27.2117],[88.0328,27.2853],[88.0684,27.3351],[88.0423,27.3698],[88.0478,27.4053],[88.075,27.4268],[88.0471,27.4751],[88.0614,27.541],[88.0831,27.5888],[88.1137,27.6097],[88.1193,27.6433],[88.1432,27.6626],[88.1588,27.7405],[88.1782,27.7465],[88.1964,27.8538],[88.1347,27.8817],[88.1204,27.9212],[88.1449,27.9643],[88.1844,27.9439],[88.2124,27.9647],[88.2534,27.9448],[88.2864,27.9663],[88.3519,27.9896],[88.4107,27.9832],[88.4151,27.9992],[88.4676,28.0167],[88.4962,28.054],[88.545,28.0335],[88.5596,28.0838],[88.6462,28.0987],[88.6835,28.0779],[88.7561,28.0761],[88.7929,28.0488],[88.844,27.9926],[88.837,27.9292],[88.8605,27.9277],[88.8829,27.89],[88.8807,27.8296],[88.8566,27.8153],[88.8651,27.742],[88.8482,27.6678],[88.8152,27.6462],[88.8045,27.5944],[88.7698,27.5712],[88.7908,27.5315],[88.777,27.4693],[88.8048,27.4151],[88.838,27.3793],[88.8612,27.3867],[88.895,27.3321],[88.9154,27.3307],[88.9033,27.2726],[88.8318,27.2625],[88.8033,27.248],[88.7877,27.1817],[88.7455,27.142]]]},"properties":{"ST_NM":"Sikkim","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[92.2117,24.5045],[92.23,24.4523],[92.2465,24.4425],[92.2598,24.3585],[92.2188,24.2857],[92.206,24.2385],[92.2923,24.2505],[92.3244,24.1978],[92.3315,24.1524],[92.3164,24.0675],[92.326,23.9975],[92.3085,23.9682],[92.3239,23.905],[92.2896,23.8683],[92.257,23.8129],[92.2654,23.7251],[92.2044,23.7062],[92.1704,23.7058],[92.118,23.7311],[92.1078,23.6934],[92.0745,23.6466],[92.0066,23.6654],[91.9835,23.7282],[91.9584,23.7386],[91.9371,23.6905],[91.9756,23.4953],[91.9434,23.4644],[91.9479,23.4354],[91.9055,23.4327],[91.8636,23.4083],[91.8039,23.3321],[91.7644,23.3099],[91.7892,23.2044],[91.8058,23.1802],[91.8222,23.0862],[91.784,23.0375],[91.7216,22.9888],[91.575,22.9688],[91.5423,22.9996],[91.5503,23.0385],[91.5112,23.1043],[91.491,23.1578],[91.5031,23.1922],[91.4485,23.26],[91.4155,23.2626],[91.3863,23.2276],[91.3847,23.1563],[91.4161,23.0812],[91.3964,23.0561],[91.3469,23.1024],[91.3247,23.1688],[91.3236,23.2377],[91.3101,23.3091],[91.2835,23.3834],[91.2831,23.4193],[91.2538,23.4879],[91.2004,23.5169],[91.2078,23.5397],[91.1608,23.5945],[91.1603,23.6527],[91.2019,23.655],[91.202,23.6902],[91.1531,23.6918],[91.1657,23.7496],[91.2095,23.7518],[91.2478,23.8298],[91.2195,23.8792],[91.2802,23.9823],[91.3216,23.9947],[91.3599,23.9855],[91.3969,24.0485],[91.3759,24.1056],[91.4727,24.0984],[91.5397,24.0732],[91.581,24.0744],[91.6313,24.1036],[91.6291,24.1383],[91.6493,24.1953],[91.6822,24.163],[91.7264,24.1412],[91.7571,24.1438],[91.7469,24.2452],[91.8606,24.1817],[91.8844,24.1411],[91.9105,24.1406],[91.9423,24.2631],[91.922,24.3373],[91.9821,24.3596],[92.0008,24.3955],[92.0831,24.3751],[92.1142,24.3868],[92.1396,24.4255],[92.1687,24.4343],[92.1498,24.4907],[92.1689,24.5272],[92.2117,24.5045]]]},"properties":{"ST_NM":"Tripura","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.0651,28.8367],[80.0681,28.8029],[80.0301,28.7487],[79.9544,28.7229],[79.9246,28.7751],[79.8243,28.8073],[79.8461,28.8732],[79.7998,28.8875],[79.7491,28.8718],[79.7067,28.8411],[79.6561,28.8698],[79.5844,28.8463],[79.5843,28.8792],[79.5565,28.8993],[79.533,28.8698],[79.4256,28.8665],[79.4276,28.9128],[79.408,28.952],[79.3563,28.9678],[79.3068,28.9667],[79.2449,29.0101],[79.2045,29.021],[79.1425,29.067],[79.1502,29.1187],[79.0505,29.157],[79.0248,29.1125],[78.9823,29.1431],[78.9346,29.1297],[78.8733,29.2237],[78.7899,29.2477],[78.7272,29.3056],[78.7669,29.3366],[78.7954,29.3251],[78.8402,29.346],[78.9122,29.3943],[78.9253,29.4339],[78.7997,29.4646],[78.7433,29.5013],[78.7109,29.5005],[78.6505,29.5461],[78.6177,29.5581],[78.5416,29.6263],[78.5215,29.6579],[78.5068,29.7295],[78.3927,29.7675],[78.3357,29.7967],[78.2909,29.7587],[78.2459,29.7346],[78.2039,29.7373],[78.1805,29.6969],[78.1305,29.6526],[78.0575,29.6307],[78.0183,29.5983],[77.9675,29.5801],[77.9826,29.6406],[77.9264,29.7143],[77.879,29.7003],[77.83,29.6683],[77.8105,29.7024],[77.7697,29.7177],[77.7803,29.7651],[77.7415,29.8521],[77.7173,29.8875],[77.7472,29.9101],[77.7305,29.9317],[77.7441,29.9837],[77.782,30.0187],[77.77,30.0426],[77.7997,30.0873],[77.828,30.086],[77.8661,30.1192],[77.912,30.1826],[77.937,30.2492],[77.8463,30.2721],[77.7208,30.3309],[77.6765,30.3878],[77.6472,30.4048],[77.576,30.3974],[77.5987,30.4282],[77.688,30.4475],[77.721,30.4731],[77.8185,30.5081],[77.8064,30.5546],[77.7718,30.5593],[77.7566,30.6045],[77.7867,30.6144],[77.7733,30.6686],[77.733,30.7354],[77.7074,30.7404],[77.7577,30.8352],[77.7572,30.8601],[77.8057,30.8533],[77.8041,30.9236],[77.7623,30.9193],[77.749,30.9535],[77.7737,30.9742],[77.8101,30.9557],[77.8318,30.9941],[77.807,31.0268],[77.8171,31.0559],[77.8512,31.0734],[77.8638,31.1086],[77.9686,31.1726],[77.9847,31.157],[78.0291,31.1625],[78.0659,31.1872],[78.1036,31.1855],[78.1602,31.2256],[78.1981,31.2177],[78.2432,31.2294],[78.2759,31.2614],[78.3076,31.2615],[78.3703,31.2864],[78.4073,31.2559],[78.4617,31.2361],[78.4837,31.199],[78.552,31.2003],[78.5797,31.226],[78.6486,31.2129],[78.6617,31.1893],[78.7695,31.1865],[78.8107,31.172],[78.8436,31.128],[78.89,31.0971],[78.9592,31.0995],[79.0065,31.1192],[78.9859,31.1739],[78.9575,31.1867],[78.9221,31.2254],[78.882,31.2868],[78.9096,31.3092],[78.9424,31.365],[78.9766,31.3626],[78.9987,31.3399],[79.0158,31.4232],[79.0505,31.4266],[79.0961,31.4517],[79.1391,31.4333],[79.1737,31.3837],[79.1669,31.361],[79.2116,31.3499],[79.217,31.3136],[79.2468,31.2914],[79.2224,31.2629],[79.2968,31.2166],[79.3184,31.1359],[79.4102,31.1073],[79.418,31.0428],[79.4338,31.0228],[79.5069,31.0321],[79.5241,30.9899],[79.5553,30.9559],[79.6009,30.9393],[79.6649,30.9684],[79.7354,30.9797],[79.7532,31.0064],[79.8181,30.9715],[79.8744,30.9673],[79.8889,30.9183],[79.9305,30.8816],[79.9628,30.8887],[80.0504,30.845],[80.0877,30.7956],[80.1249,30.7809],[80.1737,30.8083],[80.209,30.7525],[80.2488,30.7431],[80.2324,30.692],[80.1984,30.6866],[80.2195,30.6431],[80.2094,30.588],[80.2544,30.5645],[80.3154,30.565],[80.3469,30.5208],[80.4173,30.5173],[80.4661,30.4905],[80.4974,30.4877],[80.5478,30.4478],[80.6056,30.4707],[80.6893,30.4147],[80.7151,30.4142],[80.8267,30.3144],[80.9076,30.3041],[80.9269,30.2672],[80.9985,30.268],[81.0323,30.2463],[81.0345,30.1976],[80.9749,30.1926],[80.9284,30.1748],[80.9222,30.2076],[80.8941,30.2104],[80.8715,30.1603],[80.8781,30.1337],[80.8041,30.0888],[80.7361,29.9997],[80.6779,29.9587],[80.6044,29.9582],[80.5714,29.9146],[80.553,29.849],[80.4634,29.801],[80.4071,29.7938],[80.369,29.7497],[80.3686,29.7228],[80.3921,29.6654],[80.4205,29.6296],[80.4059,29.5915],[80.3483,29.5545],[80.342,29.5108],[80.2957,29.4871],[80.2423,29.4419],[80.2429,29.411],[80.2733,29.3933],[80.2717,29.3629],[80.3184,29.3014],[80.2905,29.2301],[80.2979,29.2052],[80.2588,29.1872],[80.2705,29.1469],[80.233,29.1193],[80.1862,29.136],[80.1451,29.1032],[80.1295,29.0613],[80.1269,29.0055],[80.0967,28.9757],[80.0589,28.9158],[80.0651,28.8367]]]},"properties":{"ST_NM":"Uttarakhand","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.2729,18.723],[80.3045,18.6834],[80.3431,18.5981],[80.3944,18.6058],[80.4566,18.6298],[80.5147,18.6194],[80.5353,18.5906],[80.6057,18.5483],[80.6564,18.4748],[80.7021,18.4443],[80.7329,18.403],[80.7315,18.3548],[80.7494,18.3076],[80.7917,18.2509],[80.7372,18.2221],[80.7368,18.1772],[80.7991,18.1715],[80.8241,18.1944],[80.8236,18.2395],[80.8659,18.2335],[80.8585,18.1898],[80.8667,18.1403],[80.9142,18.1445],[80.9562,18.1336],[80.9534,18.082],[80.9698,18.0472],[80.9984,17.9168],[80.9964,17.8491],[81.0082,17.7983],[81.0466,17.7824],[81.0856,17.7981],[81.1015,17.7677],[81.0582,17.7331],[81.0406,17.7477],[80.9463,17.7602],[80.8855,17.7357],[80.8858,17.6813],[80.9111,17.6381],[80.8657,17.6355],[80.8554,17.6019],[80.9694,17.5981],[80.9984,17.5647],[81.0148,17.5222],[81.0801,17.5151],[81.1245,17.5271],[81.1596,17.4844],[81.1483,17.4637],[81.2027,17.434],[81.2455,17.4331],[81.3134,17.4082],[81.3226,17.3746],[81.2885,17.3281],[81.2683,17.3201],[81.1904,17.3249],[81.1767,17.2877],[81.1861,17.2485],[81.1712,17.231],[81.0796,17.2156],[81.0377,17.1934],[80.9984,17.1905],[80.9189,17.2198],[80.924,17.1579],[80.8794,17.1609],[80.8715,17.0699],[80.8288,17.0528],[80.6995,17.0838],[80.6369,17.1284],[80.58,17.1531],[80.564,17.1338],[80.5141,17.1221],[80.5054,17.0685],[80.4649,17.0301],[80.4386,17.0376],[80.4172,17.0735],[80.3873,17.0713],[80.407,17.0158],[80.3714,16.9759],[80.4497,16.9548],[80.4935,16.9275],[80.4985,16.9557],[80.5345,16.9614],[80.6019,16.9186],[80.5956,16.8843],[80.5683,16.8694],[80.5629,16.8329],[80.6053,16.798],[80.5702,16.7681],[80.5171,16.7759],[80.4645,16.7955],[80.4642,16.82],[80.4078,16.849],[80.3409,16.8598],[80.3217,16.8797],[80.3066,16.9738],[80.2649,16.9973],[80.2021,17.0171],[80.1702,17.0169],[80.1402,16.9906],[80.0952,16.9907],[80.0555,16.9715],[80.0396,16.9171],[80.0043,16.8801],[80.0171,16.8543],[80.0727,16.8165],[80.055,16.7447],[80.0306,16.7148],[79.9958,16.7001],[79.9648,16.645],[79.9324,16.6314],[79.8942,16.6492],[79.8855,16.6874],[79.8589,16.7047],[79.8124,16.6946],[79.7841,16.7306],[79.7446,16.7191],[79.7157,16.6892],[79.6622,16.6867],[79.635,16.6611],[79.604,16.6724],[79.5421,16.6323],[79.5104,16.6358],[79.4403,16.6149],[79.4187,16.5803],[79.3372,16.5821],[79.2955,16.563],[79.2617,16.567],[79.2273,16.5238],[79.2145,16.4847],[79.2081,16.3802],[79.2338,16.3358],[79.2208,16.2344],[79.1699,16.2099],[79.1238,16.2311],[79.1034,16.2234],[79.0091,16.24],[78.9866,16.2112],[78.9111,16.1885],[78.9222,16.1059],[78.8895,16.0847],[78.8693,16.1457],[78.8347,16.1452],[78.8371,16.0704],[78.7855,16.0212],[78.7355,16.0082],[78.6812,16.0348],[78.6503,16.0788],[78.61,16.0872],[78.5518,16.0428],[78.4791,16.0674],[78.4079,16.0748],[78.3655,16.0468],[78.3266,16.0368],[78.3069,16.0107],[78.2625,16.0267],[78.2522,15.9362],[78.1871,15.9117],[78.1754,15.8581],[78.1242,15.837],[78.0836,15.8409],[78.0255,15.9024],[78.0088,15.8648],[77.9754,15.8834],[77.9388,15.8831],[77.8904,15.9058],[77.8606,15.8847],[77.8036,15.8742],[77.7128,15.8945],[77.6575,15.8859],[77.6128,15.9175],[77.5135,15.9268],[77.5141,16.0081],[77.494,16.037],[77.5069,16.079],[77.4898,16.1196],[77.4998,16.2178],[77.4901,16.2553],[77.5048,16.2758],[77.5956,16.3168],[77.5882,16.3328],[77.4897,16.385],[77.4227,16.3664],[77.3787,16.3854],[77.2882,16.4087],[77.269,16.4305],[77.2642,16.4726],[77.369,16.4887],[77.3815,16.5157],[77.4169,16.5173],[77.4238,16.5689],[77.4611,16.5849],[77.4678,16.6098],[77.4189,16.6686],[77.4639,16.6763],[77.4741,16.7166],[77.427,16.7285],[77.4432,16.7625],[77.4745,16.7813],[77.4576,16.8282],[77.4641,16.8506],[77.4541,16.9139],[77.4791,16.9945],[77.5022,17.0094],[77.4967,17.0427],[77.4647,17.1078],[77.3778,17.1401],[77.3625,17.1638],[77.3802,17.2225],[77.4585,17.2813],[77.438,17.2919],[77.456,17.331],[77.4536,17.374],[77.503,17.3572],[77.5249,17.3647],[77.513,17.4309],[77.6524,17.4827],[77.662,17.5228],[77.5957,17.5366],[77.5938,17.5645],[77.5506,17.5517],[77.5284,17.5754],[77.4941,17.5684],[77.4441,17.5844],[77.4556,17.6318],[77.4525,17.6947],[77.5218,17.7259],[77.5471,17.7285],[77.5599,17.7634],[77.509,17.7878],[77.5675,17.8454],[77.57,17.8676],[77.6191,17.9041],[77.623,17.9455],[77.6495,17.95],[77.6278,17.9968],[77.5538,18.0358],[77.5484,18.0652],[77.597,18.0868],[77.5969,18.1559],[77.5747,18.1765],[77.5853,18.2196],[77.5731,18.2394],[77.6055,18.2813],[77.5514,18.2919],[77.5581,18.3314],[77.5204,18.3579],[77.5516,18.3889],[77.5567,18.4192],[77.5836,18.4451],[77.5764,18.4868],[77.6005,18.5273],[77.6396,18.5549],[77.6514,18.5323],[77.7016,18.5552],[77.7385,18.5568],[77.7504,18.5889],[77.7301,18.6672],[77.7596,18.7067],[77.7897,18.6949],[77.84,18.8048],[77.9489,18.8433],[77.9033,18.8666],[77.8844,18.9048],[77.8433,18.9087],[77.8586,18.9491],[77.8163,18.9473],[77.8218,18.9785],[77.7742,18.9974],[77.7648,19.0626],[77.8004,19.0511],[77.8049,19.1012],[77.8486,19.0865],[77.838,19.1376],[77.8477,19.1896],[77.8714,19.2538],[77.8635,19.3041],[77.9117,19.3163],[77.9435,19.3427],[78.0425,19.2706],[78.0557,19.2371],[78.1171,19.2486],[78.1429,19.23],[78.1753,19.2376],[78.1767,19.2778],[78.1937,19.3145],[78.1721,19.3597],[78.1925,19.4067],[78.22,19.433],[78.2445,19.4288],[78.3044,19.4561],[78.3092,19.4811],[78.275,19.552],[78.3037,19.5693],[78.2905,19.646],[78.2627,19.6651],[78.2762,19.6924],[78.3118,19.691],[78.3432,19.7132],[78.3647,19.7812],[78.3364,19.8379],[78.2998,19.841],[78.307,19.9143],[78.3369,19.883],[78.3807,19.8804],[78.3874,19.8446],[78.423,19.8176],[78.475,19.8155],[78.5527,19.824],[78.6036,19.8184],[78.699,19.7886],[78.7863,19.7765],[78.8407,19.7554],[78.8599,19.6895],[78.9555,19.6559],[78.9558,19.5997],[78.9753,19.5511],[78.998,19.5401],[79.046,19.5483],[79.1618,19.4878],[79.1897,19.4591],[79.2224,19.4676],[79.2075,19.5061],[79.24,19.5353],[79.2371,19.5572],[79.273,19.5989],[79.3184,19.5767],[79.3574,19.5776],[79.4055,19.5356],[79.4333,19.5373],[79.469,19.5096],[79.5008,19.5074],[79.5186,19.5431],[79.6005,19.5095],[79.6148,19.5608],[79.6322,19.5751],[79.7144,19.5869],[79.7353,19.605],[79.7786,19.5997],[79.8163,19.574],[79.8322,19.5391],[79.8638,19.5112],[79.9055,19.5],[79.9439,19.4707],[79.9779,19.4004],[79.9591,19.336],[79.9659,19.3111],[79.9364,19.2641],[79.9242,19.2155],[79.9446,19.1671],[79.8742,19.1243],[79.8584,19.0959],[79.8698,19.0423],[79.9383,19.0406],[79.9578,18.9363],[79.9616,18.8667],[79.914,18.8261],[79.9732,18.7718],[80.0188,18.7702],[80.0495,18.7287],[80.1123,18.6829],[80.1558,18.7006],[80.1787,18.6833],[80.2185,18.7079],[80.2729,18.723]]]},"properties":{"ST_NM":"Telangana","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[88.1054,26.5511],[88.1349,26.5235],[88.1892,26.5596],[88.2354,26.5448],[88.1826,26.5042],[88.2257,26.4801],[88.2609,26.4196],[88.2341,26.3918],[88.2819,26.3749],[88.2808,26.327],[88.2277,26.2849],[88.157,26.2557],[88.092,26.2023],[88.0732,26.1752],[88.0348,26.1792],[88.0138,26.1492],[87.9797,26.1442],[87.9844,26.1018],[87.9498,26.0602],[87.931,26.0823],[87.8568,26.0247],[87.8452,25.9624],[87.8108,25.928],[87.8307,25.8709],[87.8923,25.8658],[87.9099,25.7809],[87.9352,25.769],[87.9679,25.7261],[88.0497,25.7022],[88.0477,25.6582],[88.0216,25.5962],[88.0314,25.5541],[88.0715,25.5158],[88.0653,25.4894],[88.0306,25.4907],[87.9662,25.5363],[87.926,25.5387],[87.9027,25.5048],[87.8661,25.497],[87.8306,25.4619],[87.787,25.4493],[87.7643,25.386],[87.7895,25.3769],[87.7842,25.3401],[87.8524,25.2952],[87.8452,25.2634],[87.819,25.2425],[87.7636,25.2648],[87.7114,25.2577],[87.692,25.3116],[87.612,25.3128],[87.5844,25.3336],[87.5519,25.3327],[87.5432,25.2972],[87.4873,25.2965],[87.4971,25.2599],[87.4739,25.2402],[87.463,25.1951],[87.3918,25.2279],[87.3709,25.2072],[87.3345,25.2162],[87.3183,25.1948],[87.2955,25.0886],[87.2425,25.1027],[87.1811,25.0658],[87.1461,25.009],[87.1542,24.9754],[87.145,24.9192],[87.1571,24.883],[87.1094,24.8517],[87.0772,24.8077],[87.0805,24.7261],[87.0543,24.6697],[87.0511,24.6086],[86.9954,24.6204],[86.9784,24.6401],[86.9298,24.6268],[86.9085,24.585],[86.86,24.5561],[86.8113,24.5689],[86.787,24.6165],[86.6694,24.5662],[86.6032,24.602],[86.5526,24.5444],[86.5167,24.5354],[86.485,24.47],[86.4912,24.428],[86.4453,24.3679],[86.413,24.3803],[86.3955,24.4153],[86.3159,24.4422],[86.2761,24.4659],[86.3092,24.5112],[86.2924,24.5879],[86.2136,24.5943],[86.1583,24.5867],[86.1246,24.6113],[86.1154,24.6437],[86.1285,24.6987],[86.0942,24.7449],[86.0538,24.7559],[86.0553,24.7797],[85.9804,24.7487],[85.9702,24.733],[85.9204,24.7441],[85.8897,24.7927],[85.8201,24.808],[85.7781,24.7965],[85.7416,24.8198],[85.7045,24.7663],[85.7086,24.7268],[85.6604,24.6723],[85.6755,24.618],[85.6691,24.5798],[85.6152,24.5808],[85.5806,24.6008],[85.5721,24.5623],[85.5238,24.521],[85.491,24.5481],[85.432,24.5315],[85.3975,24.5448],[85.3732,24.5248],[85.2921,24.5237],[85.2825,24.4915],[85.2496,24.4908],[85.2261,24.4633],[85.1615,24.4607],[85.1739,24.4206],[85.0817,24.3985],[85.0315,24.4158],[84.9552,24.3715],[84.9166,24.3733],[84.8709,24.4582],[84.8329,24.4699],[84.8388,24.5127],[84.8022,24.5306],[84.7861,24.5036],[84.7556,24.5001],[84.7272,24.4692],[84.6856,24.4556],[84.6649,24.3909],[84.5675,24.4092],[84.5589,24.376],[84.5337,24.3597],[84.5009,24.2876],[84.4659,24.3316],[84.4244,24.3298],[84.4261,24.3572],[84.3476,24.3912],[84.3028,24.48],[84.3221,24.5166],[84.2972,24.5605],[84.259,24.5342],[84.2361,24.5495],[84.1728,24.5451],[84.1786,24.5052],[84.1039,24.4809],[84.0851,24.5136],[84.0731,24.5674],[84.034,24.6298],[83.998,24.6383],[83.9748,24.5914],[83.933,24.5473],[83.8727,24.5322],[83.8015,24.5299],[83.7546,24.5094],[83.596,24.5126],[83.5033,24.5254],[83.5223,24.5477],[83.5227,24.5986],[83.5437,24.6283],[83.5019,24.6486],[83.5204,24.6775],[83.4849,24.704],[83.4281,24.7682],[83.3912,24.7891],[83.4014,24.8194],[83.377,24.86],[83.3617,24.9537],[83.3436,24.9663],[83.3434,25.0509],[83.3536,25.1886],[83.4035,25.2164],[83.4093,25.2456],[83.5372,25.3036],[83.6298,25.3301],[83.6636,25.3725],[83.6946,25.3712],[83.7423,25.4099],[83.7712,25.3969],[83.8079,25.4091],[83.9142,25.5452],[84.0174,25.6148],[84.0813,25.6365],[84.075,25.6953],[84.1051,25.7212],[84.1544,25.7274],[84.1989,25.7022],[84.2232,25.6625],[84.2941,25.6602],[84.324,25.6704],[84.3285,25.7311],[84.3646,25.7419],[84.4297,25.7111],[84.4621,25.7089],[84.5202,25.675],[84.5611,25.6839],[84.5603,25.7369],[84.61,25.7552],[84.6248,25.7919],[84.5508,25.8407],[84.534,25.8763],[84.5109,25.8714],[84.4276,25.8913],[84.4119,25.9308],[84.354,25.9588],[84.3119,25.9438],[84.2066,25.9989],[84.0887,26.1003],[84.056,26.1001],[84.0262,26.1966],[84.0599,26.2236],[84.1769,26.265],[84.1861,26.3137],[84.1755,26.3732],[84.0683,26.3884],[84.0186,26.4471],[83.9915,26.4323],[83.9108,26.4497],[83.9152,26.5029],[83.9402,26.5253],[84.0069,26.5256],[84.0478,26.5363],[84.09,26.607],[84.0882,26.6362],[84.1593,26.6361],[84.2847,26.5996],[84.3528,26.6199],[84.4195,26.6261],[84.4106,26.6702],[84.3303,26.684],[84.3061,26.7496],[84.2549,26.7267],[84.2326,26.7537],[84.26,26.807],[84.2541,26.8566],[84.2188,26.8714],[84.1661,26.8338],[84.1406,26.8527],[84.1298,26.893],[84.0798,26.8779],[84.0443,26.9315],[84.0564,26.9902],[84.0495,27.0345],[84.0056,27.0603],[84.0165,27.1055],[83.9647,27.0843],[83.9474,27.1118],[83.987,27.1976],[83.9557,27.2353],[83.9118,27.246],[83.9292,27.2916],[83.9043,27.3266],[83.8715,27.3073],[83.8635,27.3441],[83.8819,27.3651],[83.8324,27.4309],[83.8698,27.4374],[84.0465,27.4459],[84.0645,27.4781],[84.0929,27.4904],[84.1056,27.5212],[84.1754,27.4743],[84.2585,27.451],[84.2792,27.3962],[84.354,27.3716],[84.4222,27.3715],[84.6202,27.3393],[84.6899,27.2216],[84.6748,27.1034],[84.6461,27.0758],[84.6448,27.0457],[84.7571,27.0028],[84.793,26.9964],[84.8219,27.0212],[84.8577,26.9887],[84.9108,26.968],[84.9607,26.9611],[84.9702,26.918],[85.0576,26.8494],[85.099,26.8712],[85.1926,26.8671],[85.1767,26.8097],[85.2119,26.7579],[85.2325,26.7622],[85.3343,26.7417],[85.4077,26.7917],[85.451,26.782],[85.4953,26.7972],[85.5752,26.8606],[85.6794,26.8437],[85.7216,26.8203],[85.7347,26.7959],[85.7252,26.7092],[85.7323,26.6536],[85.8174,26.6028],[85.8507,26.6085],[85.8595,26.5701],[85.9138,26.6085],[85.9448,26.6129],[85.9536,26.6465],[86.0282,26.6662],[86.1183,26.6304],[86.1361,26.6065],[86.171,26.6168],[86.1954,26.5955],[86.2351,26.5918],[86.2529,26.6149],[86.3075,26.6203],[86.4559,26.5678],[86.4989,26.5422],[86.542,26.5383],[86.563,26.5019],[86.6255,26.4806],[86.6318,26.4647],[86.696,26.4486],[86.7407,26.4253],[86.7677,26.4589],[86.8335,26.4393],[86.8935,26.4615],[86.9294,26.4898],[86.9334,26.5154],[87.0165,26.5318],[87.0409,26.5684],[87.0718,26.5407],[87.0911,26.4508],[87.1622,26.4045],[87.2353,26.4152],[87.2652,26.406],[87.2655,26.3736],[87.3116,26.3718],[87.3402,26.3477],[87.3556,26.3887],[87.388,26.4192],[87.4637,26.4402],[87.5159,26.4308],[87.5843,26.3934],[87.6513,26.3934],[87.7128,26.4274],[87.7638,26.4101],[87.7927,26.469],[87.8483,26.4369],[87.8636,26.4685],[87.8991,26.4786],[87.9173,26.4304],[87.9974,26.365],[88.0685,26.415],[88.0992,26.4561],[88.1106,26.4976],[88.1054,26.5511]]]},"properties":{"ST_NM":"Bihar","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.4313,11.6665],[76.4271,11.6335],[76.3881,11.6297],[76.378,11.602],[76.3359,11.5958],[76.3024,11.5713],[76.279,11.6009],[76.2334,11.5679],[76.2407,11.526],[76.2647,11.4813],[76.326,11.4541],[76.3687,11.4563],[76.4604,11.3889],[76.5478,11.359],[76.5422,11.2967],[76.5217,11.2707],[76.4531,11.2395],[76.4489,11.2056],[76.499,11.2114],[76.5338,11.1857],[76.6289,11.1943],[76.707,11.2383],[76.7355,11.2157],[76.698,11.1742],[76.7002,11.1536],[76.7481,11.1348],[76.7465,11.0568],[76.7158,11.0405],[76.6667,10.9682],[76.6591,10.9306],[76.7392,10.8946],[76.7798,10.8913],[76.8308,10.8707],[76.8701,10.809],[76.901,10.8079],[76.9039,10.7627],[76.8661,10.6841],[76.8821,10.639],[76.8143,10.635],[76.8387,10.5959],[76.8233,10.3946],[76.8486,10.3674],[76.8299,10.3032],[76.8967,10.2621],[76.9104,10.2351],[76.9841,10.2223],[77.0516,10.2638],[77.056,10.2873],[77.1202,10.318],[77.176,10.3586],[77.2353,10.3529],[77.2278,10.3154],[77.2636,10.2639],[77.2778,10.1934],[77.2749,10.1313],[77.2443,10.1317],[77.2012,10.1072],[77.204,10.0885],[77.2616,10.0336],[77.2554,10.0112],[77.2728,9.9643],[77.2183,9.9049],[77.2269,9.822],[77.2468,9.7985],[77.2049,9.724],[77.2066,9.6945],[77.1808,9.6586],[77.1677,9.6151],[77.2036,9.6145],[77.2342,9.5816],[77.2696,9.5729],[77.3037,9.5988],[77.3657,9.551],[77.3991,9.4962],[77.3925,9.4595],[77.3659,9.4602],[77.3364,9.4124],[77.338,9.3687],[77.2995,9.311],[77.2567,9.1967],[77.2678,9.1534],[77.2056,9.0839],[77.1925,9.0436],[77.167,9.0449],[77.1493,9.0097],[77.1733,8.9916],[77.2211,8.9041],[77.2567,8.8782],[77.264,8.8421],[77.2297,8.7847],[77.179,8.7307],[77.2009,8.669],[77.2514,8.6203],[77.2751,8.5386],[77.2621,8.5067],[77.2135,8.512],[77.2065,8.4443],[77.167,8.3839],[77.1685,8.3326],[77.1186,8.3203],[77.0978,8.2925],[76.9713,8.3923],[76.9676,8.4097],[76.7019,8.7369],[76.6717,8.7841],[76.6102,8.8597],[76.5655,8.8804],[76.5424,8.9134],[76.5167,9.0177],[76.353,9.3767],[76.3155,9.5031],[76.2963,9.6281],[76.2841,9.7489],[76.2603,9.8832],[76.2026,10.0528],[76.1867,10.1169],[76.139,10.2537],[76.1167,10.3339],[76.0671,10.456],[76.0319,10.5175],[75.9225,10.7613],[75.9072,10.804],[75.8876,10.898],[75.8302,11.1167],[75.8045,11.1596],[75.7596,11.2888],[75.7156,11.3933],[75.6807,11.4509],[75.6373,11.4656],[75.6186,11.4875],[75.5609,11.6438],[75.5366,11.6939],[75.5306,11.704],[75.4379,11.8056],[75.379,11.8598],[75.3658,11.8535],[75.2516,12.0087],[75.2042,12.0056],[75.1566,12.11],[75.042,12.3882],[75.0317,12.3918],[74.974,12.5014],[74.8696,12.7607],[74.9275,12.7787],[75.0062,12.7709],[74.9825,12.7385],[75.0503,12.7195],[75.0424,12.6721],[75.1107,12.6831],[75.161,12.673],[75.1541,12.6239],[75.2019,12.6286],[75.2118,12.5794],[75.2721,12.5702],[75.2801,12.5242],[75.3322,12.4996],[75.3454,12.4631],[75.3819,12.5021],[75.4179,12.4976],[75.4233,12.4668],[75.3705,12.4566],[75.3659,12.412],[75.4219,12.3727],[75.4109,12.346],[75.4327,12.2934],[75.4849,12.29],[75.5054,12.2708],[75.5408,12.2005],[75.577,12.1569],[75.6209,12.1552],[75.6489,12.1086],[75.6872,12.1103],[75.7277,12.0726],[75.7504,12.0843],[75.8027,12.0795],[75.8011,12.037],[75.83,11.9841],[75.8968,11.9448],[76.0032,11.9315],[76.0701,11.9672],[76.1125,11.9788],[76.1149,11.8667],[76.2069,11.862],[76.227,11.8062],[76.2802,11.8124],[76.3397,11.7391],[76.4111,11.7582],[76.4247,11.721],[76.4085,11.6896],[76.4313,11.6665]]]},"properties":{"ST_NM":"Kerala","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[82.8103,23.9629],[82.7524,23.9198],[82.6989,23.925],[82.6616,23.9077],[82.6597,23.8547],[82.5908,23.8221],[82.5542,23.8262],[82.5253,23.7841],[82.4974,23.7849],[82.4708,23.8106],[82.3935,23.7999],[82.3352,23.8028],[82.2622,23.8211],[82.238,23.8057],[82.2069,23.8266],[82.144,23.8164],[82.0817,23.8164],[82.0092,23.8608],[81.9561,23.853],[81.9215,23.8709],[81.9045,23.8448],[81.8234,23.8079],[81.7731,23.8164],[81.725,23.8447],[81.6592,23.9176],[81.6102,23.9041],[81.6032,23.8537],[81.6344,23.8357],[81.6514,23.7991],[81.644,23.7731],[81.6757,23.7573],[81.6959,23.7214],[81.6552,23.6632],[81.6203,23.6515],[81.6115,23.6017],[81.5767,23.5854],[81.61,23.5557],[81.627,23.4821],[81.6681,23.533],[81.6994,23.522],[81.7251,23.5567],[81.8095,23.549],[81.8211,23.515],[81.8812,23.5151],[81.9233,23.5327],[81.9764,23.4523],[81.9849,23.4149],[82.0569,23.377],[82.1015,23.3981],[82.1194,23.354],[82.1464,23.3608],[82.1988,23.3122],[82.1455,23.2266],[82.1451,23.1634],[82.1613,23.1432],[82.1111,23.1094],[82.0673,23.1161],[82.036,23.0811],[81.9695,23.081],[81.9295,23.0617],[81.9215,23.0408],[81.9505,22.983],[81.8616,22.8893],[81.7757,22.8745],[81.767,22.8344],[81.7944,22.7665],[81.7523,22.7267],[81.7716,22.6764],[81.7286,22.6765],[81.7131,22.6481],[81.6833,22.6469],[81.6465,22.5934],[81.66,22.57],[81.605,22.5346],[81.5675,22.5505],[81.4965,22.5193],[81.4826,22.4885],[81.4278,22.4798],[81.4229,22.4477],[81.3964,22.4401],[81.382,22.5098],[81.3185,22.5167],[81.2813,22.503],[81.2322,22.4522],[81.1718,22.4872],[81.1564,22.4564],[81.11,22.4356],[81.1058,22.3871],[81.1211,22.3412],[81.1184,22.2905],[81.0895,22.2471],[81.0235,22.2292],[81.0219,22.1328],[80.9939,22.0493],[80.9496,22.1172],[80.9079,22.1096],[80.8979,22.0669],[80.8324,21.9086],[80.8446,21.8316],[80.8154,21.7555],[80.7854,21.7403],[80.7561,21.7622],[80.7338,21.7286],[80.7171,21.6025],[80.7408,21.5392],[80.7276,21.4962],[80.7353,21.4609],[80.6711,21.3383],[80.66,21.3341],[80.6214,21.3203],[80.5392,21.3827],[80.4611,21.403],[80.4461,21.3711],[80.4129,21.3763],[80.3959,21.405],[80.4181,21.4484],[80.3848,21.4894],[80.3765,21.5233],[80.3308,21.5479],[80.328,21.5711],[80.254,21.6245],[80.1928,21.6355],[80.1546,21.6065],[80.1287,21.6114],[80.0723,21.5567],[80.0314,21.5556],[80.0005,21.5336],[79.9715,21.5577],[79.9298,21.5525],[79.9184,21.5244],[79.8631,21.5308],[79.8312,21.5467],[79.7899,21.5874],[79.7334,21.6033],[79.578,21.5413],[79.512,21.584],[79.4962,21.674],[79.4152,21.6908],[79.4007,21.677],[79.2909,21.6925],[79.2681,21.7154],[79.2212,21.6939],[79.2239,21.6486],[79.1631,21.6585],[79.1028,21.6014],[79.0123,21.5994],[78.9753,21.6176],[78.9165,21.5909],[78.9123,21.5488],[78.9411,21.5112],[78.805,21.4904],[78.7278,21.4623],[78.6881,21.4819],[78.5854,21.4867],[78.5408,21.5235],[78.5049,21.5266],[78.4571,21.4959],[78.4339,21.5356],[78.408,21.6084],[78.3557,21.573],[78.3208,21.5718],[78.2644,21.5913],[78.2635,21.5659],[78.2234,21.5526],[78.182,21.5566],[78.1763,21.4991],[78.0661,21.4374],[77.981,21.4024],[77.9019,21.3773],[77.8225,21.4072],[77.7966,21.389],[77.7467,21.3796],[77.7371,21.3622],[77.6773,21.3753],[77.6497,21.3921],[77.5633,21.3932],[77.5314,21.419],[77.5144,21.3759],[77.4917,21.3741],[77.4735,21.4542],[77.4417,21.4714],[77.4224,21.5169],[77.4546,21.5537],[77.5082,21.5509],[77.5751,21.5264],[77.6118,21.5385],[77.5762,21.5771],[77.5618,21.6657],[77.5438,21.7038],[77.5007,21.7468],[77.456,21.7601],[77.4058,21.7525],[77.324,21.7527],[77.26,21.714],[77.2268,21.7167],[77.2104,21.6896],[77.1296,21.7222],[77.0624,21.7071],[77.0084,21.6801],[76.9133,21.6118],[76.9012,21.5965],[76.8549,21.6133],[76.8273,21.5883],[76.7994,21.595],[76.782,21.5686],[76.7894,21.5398],[76.7635,21.5205],[76.7956,21.4894],[76.7858,21.465],[76.7443,21.4398],[76.7402,21.4113],[76.6827,21.3784],[76.6215,21.3322],[76.6626,21.2804],[76.6232,21.1849],[76.5608,21.1987],[76.5298,21.1818],[76.4931,21.1938],[76.4373,21.1001],[76.3804,21.0751],[76.2789,21.0701],[76.2719,21.0888],[76.1917,21.0866],[76.1354,21.1207],[76.1102,21.1612],[76.1652,21.1694],[76.1592,21.2535],[76.1284,21.2866],[76.0956,21.3711],[76.0478,21.349],[75.9866,21.3687],[75.9629,21.3896],[75.9105,21.3824],[75.874,21.3925],[75.8332,21.3766],[75.7033,21.388],[75.6701,21.3745],[75.6164,21.388],[75.5415,21.3691],[75.4964,21.3873],[75.4265,21.3907],[75.3824,21.3793],[75.3002,21.3912],[75.2071,21.4128],[75.1077,21.4622],[75.0899,21.5153],[75.0517,21.5665],[74.8689,21.6314],[74.8289,21.6097],[74.7837,21.6108],[74.6871,21.6317],[74.6642,21.6523],[74.5821,21.6649],[74.5478,21.7187],[74.513,21.7185],[74.5141,21.7659],[74.5003,21.8068],[74.5101,21.8292],[74.5093,21.9207],[74.4891,21.9558],[74.4394,21.9767],[74.4317,22.0302],[74.3901,22.0215],[74.3411,21.974],[74.3089,21.9724],[74.281,21.933],[74.1938,21.9257],[74.1467,21.9528],[74.1435,21.9897],[74.1012,21.9994],[74.1703,22.0916],[74.1285,22.0946],[74.1307,22.1445],[74.1165,22.2162],[74.0723,22.219],[74.0745,22.2656],[74.0538,22.3037],[74.0959,22.371],[74.1281,22.333],[74.1902,22.3202],[74.2704,22.413],[74.2037,22.4461],[74.1194,22.4188],[74.0863,22.4699],[74.0829,22.5066],[74.0533,22.5086],[74.0384,22.5347],[74.0747,22.5513],[74.1345,22.5197],[74.2104,22.565],[74.232,22.6123],[74.2769,22.6459],[74.3609,22.6338],[74.3842,22.6474],[74.4018,22.7315],[74.4648,22.8164],[74.4766,22.8555],[74.4606,22.9079],[74.4184,22.9173],[74.3782,22.9069],[74.3395,22.9528],[74.3643,22.9814],[74.3244,23.0614],[74.3845,23.1111],[74.4322,23.105],[74.4641,23.0817],[74.5394,23.1034],[74.5432,23.1305],[74.5965,23.1379],[74.6714,23.2001],[74.7153,23.1908],[74.7443,23.2114],[74.7011,23.2648],[74.6489,23.256],[74.6201,23.2768],[74.5438,23.2804],[74.5232,23.3211],[74.5424,23.3647],[74.5689,23.3763],[74.575,23.4233],[74.6162,23.4599],[74.6519,23.4624],[74.7,23.5039],[74.8029,23.5325],[74.84,23.5499],[74.87,23.5918],[74.9365,23.6286],[74.9039,23.6748],[74.9404,23.7647],[74.9088,23.8356],[74.9025,23.8732],[74.9288,23.9541],[74.9621,23.9774],[74.9785,24.0365],[74.939,24.0544],[74.9033,24.1092],[74.8823,24.1796],[74.9071,24.201],[74.8678,24.243],[74.7775,24.2387],[74.7471,24.2534],[74.7817,24.2902],[74.7809,24.3385],[74.8253,24.4001],[74.8151,24.4686],[74.7444,24.4685],[74.7537,24.5538],[74.7865,24.5858],[74.7796,24.6153],[74.8142,24.6659],[74.7837,24.6916],[74.7802,24.7297],[74.8176,24.7454],[74.8739,24.6491],[74.89,24.634],[74.943,24.6404],[74.9922,24.6944],[74.9815,24.7636],[74.8609,24.7985],[74.8591,24.8384],[74.8259,24.8993],[74.8336,24.9596],[74.8597,24.9617],[74.9134,24.9161],[74.9106,24.8939],[74.9482,24.8645],[75.0483,24.8499],[75.0765,24.8806],[75.1192,24.8824],[75.1136,24.9668],[75.1515,24.9892],[75.17,25.0489],[75.1925,25.0335],[75.2676,25.0425],[75.3343,25.0411],[75.3135,24.9801],[75.3371,24.9553],[75.3203,24.9016],[75.2819,24.953],[75.2634,24.8748],[75.3182,24.8604],[75.3736,24.8677],[75.3976,24.8418],[75.2978,24.8071],[75.273,24.8427],[75.2504,24.8095],[75.211,24.7977],[75.1975,24.7433],[75.2284,24.7176],[75.3492,24.7008],[75.4554,24.6806],[75.5339,24.7123],[75.5831,24.7133],[75.6087,24.6818],[75.646,24.6851],[75.6832,24.7241],[75.7572,24.7615],[75.8026,24.7562],[75.8376,24.7253],[75.8252,24.6675],[75.8786,24.5834],[75.9066,24.5758],[75.9235,24.5342],[75.9031,24.5044],[75.9092,24.455],[75.8753,24.4265],[75.8388,24.4141],[75.8098,24.4339],[75.7894,24.4716],[75.7519,24.4276],[75.7382,24.3348],[75.7664,24.2981],[75.813,24.292],[75.8181,24.2387],[75.7731,24.202],[75.752,24.148],[75.7929,24.0918],[75.835,24.0917],[75.8368,24.057],[75.7821,24.0426],[75.7649,23.9923],[75.7018,23.9665],[75.6709,24.018],[75.6324,23.9956],[75.5846,23.9906],[75.5211,24.0246],[75.4689,23.9744],[75.4594,23.9205],[75.4929,23.9061],[75.5659,23.8534],[75.5592,23.8186],[75.5835,23.7947],[75.6538,23.7981],[75.7179,23.8117],[75.7353,23.8985],[75.7646,23.8753],[75.8189,23.8684],[75.8447,23.8839],[75.9375,23.8966],[75.9871,23.9403],[75.9849,23.9737],[75.9635,24.0187],[75.9987,24.0207],[76.0429,24.0661],[76.1271,24.088],[76.1311,24.1154],[76.1141,24.1626],[76.1177,24.1947],[76.146,24.2244],[76.1587,24.2828],[76.1861,24.3286],[76.2038,24.3038],[76.2045,24.2172],[76.2856,24.2096],[76.2867,24.2283],[76.3398,24.244],[76.3925,24.217],[76.5048,24.2031],[76.5276,24.157],[76.5618,24.1734],[76.5957,24.2441],[76.6402,24.2684],[76.7022,24.2414],[76.6779,24.2041],[76.7006,24.1677],[76.7564,24.1691],[76.802,24.1165],[76.8546,24.1357],[76.9008,24.1272],[76.9224,24.2116],[76.9118,24.2381],[76.8631,24.2731],[76.8415,24.3225],[76.8518,24.3707],[76.8396,24.4131],[76.8521,24.451],[76.8465,24.4864],[76.8164,24.5336],[76.8621,24.5484],[76.8841,24.5215],[76.9207,24.528],[76.9169,24.4832],[76.9778,24.4612],[77.029,24.4961],[77.0547,24.5264],[77.0713,24.5724],[77.0651,24.6438],[77.0307,24.7122],[76.9983,24.7182],[76.9635,24.7565],[76.9014,24.7342],[76.8561,24.7425],[76.8484,24.7661],[76.8026,24.8093],[76.8321,24.8378],[76.8818,24.837],[76.9418,24.8587],[76.9125,24.8882],[76.923,24.9136],[76.8619,24.9614],[76.8762,25.0415],[76.9659,25.0515],[76.9885,25.0724],[77.0821,25.0582],[77.1669,25.0849],[77.1746,25.1117],[77.2887,25.1064],[77.31,25.0807],[77.3758,25.1048],[77.3962,25.1378],[77.4145,25.2204],[77.3554,25.2633],[77.3741,25.2745],[77.378,25.3155],[77.3497,25.3289],[77.3502,25.3822],[77.3709,25.4084],[77.3311,25.4274],[77.2943,25.4244],[77.2369,25.3802],[77.2092,25.3062],[77.1635,25.3086],[77.1252,25.3305],[77.0835,25.3367],[77.0457,25.3194],[77.0314,25.2945],[76.9295,25.3029],[76.902,25.3235],[76.8572,25.3327],[76.7805,25.3158],[76.7289,25.3288],[76.7007,25.3514],[76.6699,25.3488],[76.6363,25.3838],[76.5981,25.3939],[76.5884,25.4305],[76.5553,25.4534],[76.5546,25.4838],[76.5163,25.5282],[76.4989,25.6375],[76.5032,25.6729],[76.4752,25.7128],[76.5205,25.7273],[76.5156,25.7773],[76.5305,25.8119],[76.5914,25.8755],[76.6239,25.8713],[76.6318,25.9],[76.6711,25.9102],[76.7064,25.9001],[76.751,25.9164],[76.8051,25.9609],[76.8134,25.9977],[76.84,26.0261],[76.8861,26.0492],[76.9018,26.0935],[76.9481,26.1028],[76.999,26.1301],[77.0324,26.1729],[77.1004,26.1859],[77.1351,26.2334],[77.2039,26.23],[77.2706,26.2673],[77.3167,26.3118],[77.3209,26.3334],[77.3765,26.3653],[77.4443,26.3616],[77.4395,26.4039],[77.5235,26.4073],[77.5621,26.4368],[77.6149,26.4536],[77.6755,26.503],[77.7127,26.4982],[77.7388,26.5295],[77.7834,26.5521],[77.8325,26.5615],[77.8273,26.596],[77.8967,26.6175],[77.8984,26.6555],[77.9536,26.6592],[77.9975,26.694],[78.0952,26.6793],[78.0921,26.7149],[78.1165,26.7966],[78.1551,26.7841],[78.1689,26.8126],[78.223,26.8306],[78.2711,26.8142],[78.2835,26.8545],[78.3615,26.8691],[78.3952,26.8171],[78.4269,26.8256],[78.4596,26.7883],[78.522,26.7803],[78.5775,26.7485],[78.613,26.752],[78.63,26.7732],[78.6745,26.7657],[78.6806,26.7859],[78.7215,26.7964],[78.7719,26.7701],[78.8159,26.7624],[78.8694,26.6994],[78.9151,26.7062],[79.0084,26.6639],[78.9938,26.6405],[79.0165,26.6007],[78.9876,26.5931],[79.0189,26.541],[79.0679,26.4969],[79.0627,26.4532],[79.1295,26.4404],[79.1237,26.4116],[79.0914,26.4046],[79.0845,26.3581],[79.1205,26.3483],[79.135,26.3248],[79.0621,26.2736],[79.0653,26.2298],[79.0252,26.2207],[78.9943,26.1462],[78.9521,26.1293],[79.0121,26.0832],[78.9479,26.0263],[78.9525,25.988],[78.9333,25.9485],[78.8842,25.913],[78.8492,25.8281],[78.8083,25.8009],[78.7713,25.7497],[78.7633,25.7199],[78.8167,25.6763],[78.8105,25.6194],[78.7162,25.6045],[78.6583,25.5599],[78.5979,25.5705],[78.5447,25.5616],[78.4938,25.5786],[78.4195,25.5335],[78.4287,25.4879],[78.3691,25.4386],[78.301,25.362],[78.3279,25.3523],[78.3386,25.2919],[78.372,25.2589],[78.3821,25.2226],[78.4166,25.1835],[78.4112,25.1295],[78.3861,25.1038],[78.3395,25.0872],[78.3472,25.0245],[78.334,24.9949],[78.1723,24.8778],[78.2357,24.7717],[78.2256,24.753],[78.2768,24.6619],[78.2645,24.5522],[78.2266,24.5339],[78.2448,24.4874],[78.2711,24.4774],[78.2707,24.4462],[78.3658,24.386],[78.3297,24.3257],[78.3819,24.2731],[78.4098,24.2711],[78.4385,24.3123],[78.478,24.339],[78.502,24.3903],[78.5961,24.3351],[78.6602,24.2674],[78.6686,24.24],[78.7031,24.2269],[78.7645,24.2321],[78.7894,24.1771],[78.8471,24.2139],[78.888,24.227],[78.8846,24.2505],[78.9167,24.269],[78.9096,24.2961],[78.963,24.3442],[78.9936,24.4227],[78.9151,24.4582],[78.9185,24.4951],[78.9501,24.5007],[78.935,24.5608],[78.8831,24.6414],[78.8348,24.6048],[78.7838,24.5886],[78.757,24.5989],[78.7465,24.662],[78.7812,24.7069],[78.7701,24.7577],[78.7899,24.8104],[78.7533,24.869],[78.6766,24.8986],[78.6634,24.9384],[78.6361,24.9593],[78.6527,25.0499],[78.6273,25.0869],[78.6019,25.0978],[78.6007,25.1554],[78.5705,25.2052],[78.5608,25.2646],[78.533,25.3009],[78.538,25.3595],[78.585,25.3468],[78.602,25.4089],[78.6448,25.4146],[78.6582,25.441],[78.7115,25.4281],[78.6627,25.3822],[78.7153,25.3717],[78.7267,25.3434],[78.7746,25.353],[78.7486,25.3916],[78.759,25.4307],[78.7318,25.46],[78.7967,25.4828],[78.8354,25.4558],[78.8662,25.4657],[78.8415,25.5125],[78.8844,25.5156],[78.8841,25.5544],[78.9528,25.5375],[78.9205,25.5138],[78.9763,25.42],[78.9438,25.3491],[78.9013,25.3616],[78.8802,25.3859],[78.7977,25.2892],[78.8519,25.2302],[78.8641,25.3102],[78.8841,25.3441],[78.9639,25.2994],[78.9201,25.2736],[78.8717,25.188],[78.8903,25.1607],[78.921,25.2007],[78.9538,25.219],[79.0059,25.195],[79.0222,25.2413],[79.0636,25.222],[79.0309,25.1849],[79.031,25.1384],[79.0948,25.176],[79.116,25.1399],[79.1658,25.1075],[79.2038,25.1259],[79.2404,25.1131],[79.2824,25.1173],[79.3136,25.1361],[79.307,25.2249],[79.3447,25.2173],[79.345,25.2508],[79.2807,25.2617],[79.269,25.3051],[79.2998,25.3377],[79.3421,25.329],[79.3686,25.2924],[79.447,25.2445],[79.4382,25.1968],[79.3903,25.1701],[79.3842,25.1427],[79.4053,25.1062],[79.4263,25.1191],[79.4827,25.0797],[79.525,25.0974],[79.5187,25.1199],[79.5692,25.1718],[79.6083,25.1281],[79.6758,25.1237],[79.747,25.1393],[79.8258,25.1071],[79.8661,25.1411],[79.8513,25.2275],[79.8772,25.2509],[79.9366,25.2475],[79.9808,25.2618],[80.0221,25.2976],[80.0343,25.3421],[80.0727,25.3368],[80.089,25.3558],[80.1311,25.3342],[80.1959,25.4019],[80.2535,25.4008],[80.2639,25.4241],[80.3163,25.3858],[80.3221,25.3346],[80.3108,25.2864],[80.3482,25.2785],[80.408,25.2177],[80.4317,25.1776],[80.3527,25.1303],[80.3506,25.0904],[80.3304,25.0475],[80.2879,25.0381],[80.331,24.9922],[80.3477,25.0177],[80.3774,25.0069],[80.4083,25.0571],[80.449,25.0787],[80.4569,24.981],[80.5008,25.0045],[80.5309,25.0013],[80.5465,25.0321],[80.5062,25.0428],[80.5067,25.084],[80.5523,25.0628],[80.5924,25.0902],[80.6019,25.1505],[80.6325,25.1226],[80.6233,25.0886],[80.6763,25.0786],[80.6812,25.053],[80.7291,25.0672],[80.7663,25.0528],[80.7834,25.0759],[80.7306,25.1129],[80.7605,25.1347],[80.8038,25.1376],[80.8254,25.1215],[80.8486,25.163],[80.8823,25.1831],[80.9043,25.1589],[80.8688,25.1165],[80.8781,25.0655],[80.8355,25.0241],[80.8552,25.004],[80.8088,24.9489],[80.8296,24.918],[80.929,24.9612],[80.9964,24.9281],[81.0339,24.9526],[81.0897,24.9463],[81.0967,24.9209],[81.1396,24.8875],[81.1722,24.9573],[81.2153,24.9329],[81.2237,24.9988],[81.263,25.0519],[81.2662,25.1396],[81.292,25.1619],[81.3565,25.1634],[81.4069,25.1272],[81.4225,25.099],[81.4992,25.077],[81.4842,25.116],[81.5186,25.1861],[81.5787,25.1908],[81.6027,25.1364],[81.6378,25.1004],[81.6054,25.0787],[81.6117,25.0563],[81.6686,25.0715],[81.7084,25.0353],[81.7458,25.0335],[81.7927,25.0045],[81.8352,25.0173],[81.9079,24.9801],[81.9196,24.9278],[81.9079,24.8814],[81.9598,24.8372],[82.0107,24.8469],[82.0977,24.8162],[82.2556,24.7494],[82.2351,24.6709],[82.273,24.6752],[82.3299,24.6185],[82.4019,24.5914],[82.418,24.6415],[82.4073,24.6829],[82.4277,24.7022],[82.4569,24.6733],[82.5239,24.6726],[82.5391,24.6478],[82.671,24.697],[82.7287,24.6357],[82.7738,24.6418],[82.8008,24.5801],[82.7482,24.5613],[82.7207,24.5138],[82.7434,24.4987],[82.7134,24.3813],[82.764,24.3707],[82.7728,24.3076],[82.7364,24.2229],[82.7443,24.1656],[82.7281,24.1356],[82.6646,24.1298],[82.7123,24.0886],[82.7742,24.0748],[82.7513,24.0119],[82.8038,24.0036],[82.8103,23.9629]],[[79.396,25.0322],[79.4239,25.045],[79.3894,25.0918],[79.3737,25.0467],[79.396,25.0322]]]},"properties":{"ST_NM":"Madhya Pradesh","region":"west"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[93.8372,7.2402],[93.8711,7.1865],[93.88,7.0911],[93.8976,7.0806],[93.9331,7.0111],[93.931,6.9623],[93.8899,6.9024],[93.892,6.8067],[93.8455,6.817],[93.829,6.7551],[93.8013,6.7631],[93.8043,6.8022],[93.7796,6.835],[93.7696,6.891],[93.7442,6.9076],[93.7372,6.9644],[93.6943,7.0132],[93.6704,7.0177],[93.6463,7.1305],[93.6656,7.1418],[93.6803,7.1933],[93.7225,7.1893],[93.7405,7.2091],[93.7968,7.2139],[93.8372,7.2402]]],[[[93.7,7.4457],[93.7087,7.4047],[93.7432,7.3771],[93.7131,7.3122],[93.6673,7.2869],[93.636,7.2444],[93.617,7.27],[93.6191,7.3627],[93.6958,7.3962],[93.7,7.4457]]],[[[93.3713,8.0219],[93.3976,8.007],[93.3928,7.9736],[93.451,7.9366],[93.464,7.894],[93.4159,7.9079],[93.3679,7.8837],[93.3127,7.9291],[93.301,7.9613],[93.324,8.0108],[93.3713,8.0219]]],[[[93.5367,8.0283],[93.5696,7.9982],[93.5601,7.9346],[93.4985,7.9861],[93.5367,8.0283]]],[[[93.1168,8.3566],[93.1322,8.3486],[93.1165,8.2761],[93.1475,8.2421],[93.1119,8.2254],[93.0751,8.2785],[93.0853,8.34],[93.1168,8.3566]]],[[[92.7924,9.2387],[92.8126,9.2191],[92.8266,9.1411],[92.8004,9.1233],[92.7291,9.1264],[92.7175,9.1476],[92.7174,9.2095],[92.7636,9.217],[92.7924,9.2387]]],[[[92.5206,10.8978],[92.554,10.8688],[92.5647,10.8055],[92.5857,10.7899],[92.583,10.7415],[92.597,10.6813],[92.5503,10.6379],[92.5415,10.5948],[92.5685,10.5784],[92.5315,10.5209],[92.4988,10.5136],[92.4522,10.5448],[92.3843,10.5447],[92.4203,10.6133],[92.385,10.6699],[92.3783,10.7826],[92.3972,10.7794],[92.4616,10.8613],[92.5206,10.8978]]],[[[93.5119,8.2351],[93.5341,8.198],[93.4954,8.1664],[93.501,8.1388],[93.5406,8.0701],[93.5015,8.0777],[93.4757,8.0647],[93.4496,8.125],[93.4496,8.1802],[93.5119,8.2351]]],[[[92.2143,11.595],[92.2683,11.5854],[92.2719,11.5354],[92.2586,11.5181],[92.2133,11.5307],[92.2143,11.595]]],[[[92.9664,12.0413],[92.9952,12.0378],[93.0526,11.8996],[93.0372,11.8823],[92.9996,11.9368],[92.938,11.9864],[92.9664,12.0413]]],[[[92.9991,12.1063],[93.0045,12.0478],[92.9713,12.0554],[92.9541,12.0802],[92.9636,12.1118],[92.9991,12.1063]]],[[[92.9871,12.1601],[93.0027,12.1122],[92.9624,12.1136],[92.952,12.1473],[92.9871,12.1601]]],[[[93.0718,12.2105],[93.0935,12.1465],[93.0741,12.0848],[93.0363,12.1311],[93.0561,12.1944],[93.0718,12.2105]]],[[[92.6389,11.5105],[92.6678,11.4893],[92.6836,11.4328],[92.6533,11.41],[92.6886,11.37],[92.6374,11.3471],[92.6007,11.3463],[92.5806,11.3706],[92.5867,11.4012],[92.6244,11.4195],[92.61,11.4586],[92.6389,11.5105]]],[[[92.7205,12.8991],[92.7184,12.875],[92.6649,12.8119],[92.6482,12.8605],[92.6639,12.882],[92.6925,12.9924],[92.7185,12.9825],[92.7205,12.8991]]],[[[92.8394,13.1265],[92.8125,13.1538],[92.8268,13.2366],[92.832,13.3524],[92.8807,13.4065],[92.8714,13.4724],[92.9331,13.4992],[92.9479,13.5324],[92.9891,13.5661],[93.0321,13.5645],[93.0434,13.5257],[93.0285,13.4283],[93.0573,13.3977],[93.0387,13.3512],[93.0026,13.3544],[92.9823,13.3293],[93.0439,13.2589],[93.0552,13.2334],[93.0309,13.1776],[93.0333,13.0819],[93.0121,13.05],[92.967,13.0183],[92.9144,13.0522],[92.9015,13.022],[92.9112,12.9899],[92.8821,12.9792],[92.8593,12.9021],[92.8007,12.9001],[92.7919,12.9285],[92.7965,13.0805],[92.8394,13.1265]]],[[[92.7346,12.2398],[92.7609,12.2285],[92.7467,12.1805],[92.7206,12.1975],[92.7346,12.2398]]],[[[92.8102,12.3131],[92.8338,12.3],[92.8695,12.3009],[92.8739,12.2059],[92.8494,12.1507],[92.7631,12.0643],[92.7376,12.0987],[92.7687,12.1842],[92.7696,12.2385],[92.7417,12.2444],[92.8102,12.3131]]],[[[92.696,12.2391],[92.717,12.174],[92.7562,12.163],[92.7336,12.1034],[92.7782,12.0262],[92.7139,11.9884],[92.7052,11.9279],[92.733,11.9077],[92.7627,11.9401],[92.7859,11.9255],[92.7896,11.8838],[92.7535,11.7182],[92.7013,11.6957],[92.6952,11.6665],[92.6624,11.657],[92.6775,11.6134],[92.7182,11.6821],[92.7554,11.6645],[92.7507,11.6087],[92.7105,11.4883],[92.6987,11.5075],[92.6449,11.524],[92.6489,11.5724],[92.6175,11.5881],[92.5911,11.6709],[92.5918,11.7313],[92.5527,11.7184],[92.5496,11.8234],[92.5143,11.8484],[92.5279,11.8962],[92.5644,11.9435],[92.6083,11.8964],[92.6124,11.9993],[92.6237,12.0278],[92.6236,12.1077],[92.6443,12.1788],[92.696,12.2391]]],[[[92.9011,12.9109],[92.9242,12.8839],[92.9521,12.8059],[92.928,12.7753],[92.9674,12.739],[92.9563,12.6405],[92.9584,12.5772],[92.9724,12.5311],[92.953,12.5023],[92.9406,12.4506],[92.9186,12.4231],[92.8276,12.4238],[92.882,12.3331],[92.8312,12.3029],[92.8096,12.3158],[92.77,12.3166],[92.7192,12.3003],[92.699,12.3309],[92.7051,12.3705],[92.6978,12.4262],[92.7079,12.4933],[92.6986,12.5154],[92.7091,12.5603],[92.704,12.6082],[92.7422,12.6721],[92.7284,12.6979],[92.7396,12.7313],[92.7195,12.7889],[92.7218,12.8254],[92.7533,12.8485],[92.78,12.8238],[92.7903,12.89],[92.8207,12.8962],[92.8435,12.8753],[92.9011,12.9109]]]]},"properties":{"ST_NM":"Andaman and Nicobar","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[72.3623,22.0291],[72.4286,22.0016],[72.4445,21.9703],[72.4391,21.9298],[72.4084,21.8981],[72.3895,21.8205],[72.352,21.7975],[72.3207,21.8202],[72.2998,21.8827],[72.2929,21.9705],[72.3204,22.0058],[72.3623,22.0291]]],[[[69.629,22.4587],[69.6569,22.4268],[69.6366,22.4055],[69.5904,22.4305],[69.629,22.4587]]],[[[74.3244,23.0614],[74.3643,22.9814],[74.3395,22.9528],[74.3782,22.9069],[74.4184,22.9173],[74.4606,22.9079],[74.4766,22.8555],[74.4648,22.8164],[74.4018,22.7315],[74.3842,22.6474],[74.3609,22.6338],[74.2769,22.6459],[74.232,22.6123],[74.2104,22.565],[74.1345,22.5197],[74.0747,22.5513],[74.0384,22.5347],[74.0533,22.5086],[74.0829,22.5066],[74.0863,22.4699],[74.1194,22.4188],[74.2037,22.4461],[74.2704,22.413],[74.1902,22.3202],[74.1281,22.333],[74.0959,22.371],[74.0538,22.3037],[74.0745,22.2656],[74.0723,22.219],[74.1165,22.2162],[74.1307,22.1445],[74.1285,22.0946],[74.1703,22.0916],[74.1012,21.9994],[74.1435,21.9897],[74.1467,21.9528],[74.0526,21.9271],[73.9296,21.8644],[73.8711,21.8412],[73.8263,21.8426],[73.8362,21.7468],[73.881,21.7146],[73.8849,21.6535],[73.8386,21.633],[73.8122,21.6025],[73.8348,21.5202],[73.8534,21.4973],[73.9288,21.523],[73.9675,21.5226],[74.011,21.5491],[74.0433,21.5456],[74.1577,21.5687],[74.2003,21.5323],[74.2634,21.5398],[74.2761,21.5619],[74.3208,21.529],[74.3206,21.4984],[74.2558,21.4766],[74.214,21.4815],[74.0466,21.4486],[74.0443,21.4191],[74.0083,21.4228],[73.9518,21.3952],[73.9425,21.3001],[73.8794,21.2658],[73.8487,21.2746],[73.8116,21.231],[73.8259,21.1999],[73.8157,21.1739],[73.7296,21.1652],[73.6431,21.1394],[73.6517,21.1074],[73.7058,21.1081],[73.7297,21.0822],[73.7801,21.0643],[73.8148,21.0233],[73.8677,20.9859],[73.9011,20.9821],[73.8882,20.9352],[73.9256,20.8883],[73.9236,20.8512],[73.9422,20.7423],[73.9049,20.7253],[73.8745,20.7296],[73.8627,20.7032],[73.8119,20.692],[73.8382,20.6547],[73.8384,20.6205],[73.775,20.5995],[73.7463,20.5683],[73.7155,20.5764],[73.6696,20.5632],[73.6269,20.5849],[73.5996,20.6368],[73.5509,20.6485],[73.5313,20.6741],[73.4484,20.6922],[73.3942,20.6407],[73.4202,20.6272],[73.4292,20.5962],[73.4742,20.5831],[73.4677,20.4964],[73.4209,20.4278],[73.38,20.3939],[73.4118,20.3638],[73.4274,20.278],[73.413,20.2694],[73.4166,20.1982],[73.3429,20.1995],[73.3016,20.2099],[73.2813,20.1902],[73.2782,20.1487],[73.2547,20.127],[73.2107,20.1205],[73.1856,20.1558],[73.1991,20.1944],[73.1332,20.2057],[73.1421,20.1773],[73.0997,20.1561],[73.0629,20.1697],[73.0602,20.2233],[73.1657,20.2829],[73.1514,20.3172],[73.1014,20.3028],[73.0775,20.3229],[73.0383,20.3173],[73.0358,20.2923],[72.9417,20.2925],[72.9119,20.269],[72.954,20.2369],[72.9616,20.2088],[72.8705,20.2281],[72.8211,20.1877],[72.817,20.1561],[72.7752,20.1319],[72.7375,20.1348],[72.7457,20.2018],[72.74,20.2431],[72.7776,20.3368],[72.8212,20.3677],[72.8907,20.3726],[72.8573,20.4188],[72.8854,20.4625],[72.8556,20.4675],[72.8845,20.5023],[72.8982,20.583],[72.8542,20.7148],[72.8426,20.7773],[72.7856,20.916],[72.7466,20.9563],[72.7221,21.0344],[72.665,21.0996],[72.6315,21.082],[72.6188,21.1141],[72.6381,21.211],[72.6004,21.2898],[72.6006,21.3232],[72.6541,21.3461],[72.6493,21.3728],[72.6726,21.4263],[72.651,21.4534],[72.7058,21.5269],[72.6846,21.5442],[72.6354,21.5353],[72.6122,21.5852],[72.6351,21.6182],[72.7,21.6455],[72.7823,21.6423],[72.7899,21.6631],[72.7276,21.686],[72.6929,21.6784],[72.6238,21.682],[72.5527,21.6616],[72.5278,21.6782],[72.5399,21.7292],[72.5794,21.7401],[72.5955,21.804],[72.6187,21.8104],[72.6378,21.9606],[72.5825,21.9184],[72.583,21.8904],[72.5218,21.8803],[72.509,21.9442],[72.5228,22.0413],[72.5437,22.1291],[72.5667,22.1822],[72.621,22.2168],[72.6564,22.2129],[72.6965,22.1865],[72.7582,22.1742],[72.8091,22.2236],[72.8443,22.2344],[72.8745,22.2205],[72.9133,22.2404],[72.9107,22.267],[72.872,22.2849],[72.8398,22.2812],[72.7638,22.234],[72.7372,22.2753],[72.6822,22.276],[72.5803,22.3011],[72.5167,22.3056],[72.5003,22.2777],[72.4653,22.2599],[72.4273,22.2095],[72.4081,22.2296],[72.4186,22.3018],[72.3733,22.3158],[72.358,22.2476],[72.3392,22.2137],[72.3386,22.1767],[72.3086,22.1469],[72.2695,22.0596],[72.2254,22.0545],[72.2473,22.0133],[72.2418,21.9757],[72.2117,21.962],[72.2032,21.9137],[72.2173,21.8669],[72.2425,21.8297],[72.1919,21.8267],[72.1772,21.8036],[72.1939,21.7503],[72.2202,21.7365],[72.2353,21.6967],[72.2799,21.6942],[72.3094,21.639],[72.2772,21.5652],[72.2688,21.5222],[72.2107,21.4209],[72.1325,21.339],[72.0844,21.2463],[72.1124,21.2],[72.0175,21.1538],[72.0013,21.1769],[71.9713,21.1289],[71.8939,21.1088],[71.8782,21.0895],[71.8381,21.0902],[71.7794,21.0299],[71.711,21.0189],[71.6495,20.9964],[71.5655,20.9493],[71.5114,20.9446],[71.4769,20.8945],[71.4408,20.8708],[71.4049,20.8688],[71.3215,20.847],[71.2018,20.7887],[71.1575,20.7795],[71.1489,20.7581],[71.0925,20.7573],[71.0802,20.7384],[71.0075,20.7374],[70.9749,20.7274],[70.9203,20.7428],[70.8781,20.7284],[70.8736,20.7042],[70.8031,20.7005],[70.7039,20.7385],[70.6438,20.7792],[70.6271,20.768],[70.5416,20.8029],[70.4256,20.8631],[70.4028,20.8863],[70.3206,20.9277],[70.256,20.9747],[70.1683,21.0484],[70.0478,21.1568],[69.9598,21.2505],[69.8153,21.4168],[69.6988,21.5427],[69.6027,21.637],[69.5845,21.6377],[69.4775,21.7343],[69.433,21.7665],[69.3649,21.8344],[69.282,21.8955],[69.2172,21.9576],[69.0483,22.1365],[68.9559,22.2415],[68.9364,22.3114],[68.9558,22.3358],[68.9691,22.3895],[69.0064,22.4394],[69.054,22.4655],[69.0352,22.3905],[69.0721,22.3872],[69.1634,22.404],[69.1758,22.3778],[69.1569,22.3158],[69.1593,22.2768],[69.1367,22.1952],[69.1786,22.2126],[69.2377,22.2227],[69.2406,22.2582],[69.2922,22.2752],[69.334,22.3031],[69.336,22.3225],[69.4244,22.3166],[69.4896,22.3377],[69.4995,22.3661],[69.5435,22.3768],[69.5919,22.3588],[69.6558,22.3596],[69.6632,22.3934],[69.7006,22.3961],[69.7005,22.4607],[69.7437,22.4588],[69.8448,22.472],[69.8622,22.4622],[69.9467,22.5281],[70.0378,22.5617],[70.1248,22.5528],[70.1773,22.605],[70.2231,22.6731],[70.2224,22.7088],[70.2488,22.747],[70.2925,22.766],[70.3259,22.8394],[70.3761,22.9084],[70.4141,22.927],[70.4265,22.9041],[70.4094,22.8526],[70.4547,22.8451],[70.4831,22.9126],[70.4789,22.9752],[70.5391,22.9643],[70.5478,23.0004],[70.5934,23.0553],[70.6888,23.1173],[70.7126,23.1548],[70.7179,23.1892],[70.6667,23.2289],[70.6359,23.1854],[70.5052,23.1766],[70.408,23.2176],[70.3006,23.2087],[70.3085,23.1811],[70.2158,23.1285],[70.1078,22.9778],[70.0627,22.9547],[70.062,22.9201],[69.939,22.8975],[69.8988,22.8711],[69.863,22.8698],[69.7125,22.8059],[69.6475,22.796],[69.5801,22.8157],[69.5311,22.802],[69.4686,22.7978],[69.3017,22.8332],[69.2686,22.825],[69.1946,22.8389],[69.0443,22.9302],[68.9554,22.9735],[68.8021,23.0643],[68.7615,23.0785],[68.6569,23.151],[68.5322,23.2805],[68.5619,23.3137],[68.5563,23.3569],[68.5006,23.3694],[68.4586,23.3672],[68.4334,23.4155],[68.3998,23.4201],[68.4131,23.4858],[68.3264,23.4961],[68.3101,23.5786],[68.2741,23.5948],[68.1789,23.5927],[68.1193,23.6159],[68.0938,23.6668],[68.1062,23.6809],[68.1622,23.6865],[68.2024,23.7661],[68.1993,23.8466],[68.2084,23.875],[68.2501,23.895],[68.2889,23.9319],[68.3342,23.9259],[68.345,23.9724],[68.3971,23.97],[68.7504,23.9713],[68.754,23.9779],[68.7693,24.2674],[68.7646,24.2959],[68.8306,24.3119],[68.8573,24.2143],[68.8748,24.2123],[68.9069,24.2798],[68.9455,24.3026],[68.9846,24.2276],[69.0034,24.223],[69.0949,24.274],[69.1938,24.2362],[69.313,24.2813],[69.3749,24.269],[69.4431,24.28],[69.5052,24.269],[69.5942,24.2928],[69.7315,24.1709],[70.0252,24.171],[70.067,24.1991],[70.11,24.2948],[70.2539,24.3255],[70.3267,24.3519],[70.3685,24.3507],[70.4116,24.3752],[70.4723,24.3887],[70.5729,24.4217],[70.5989,24.4042],[70.5623,24.3508],[70.5847,24.2777],[70.5711,24.2514],[70.6441,24.2247],[70.7135,24.2154],[70.806,24.2206],[70.8516,24.2442],[70.8784,24.3017],[70.9469,24.3485],[70.9858,24.3654],[71.02,24.3478],[71.0492,24.3563],[71.0841,24.3945],[71.1196,24.4026],[71.103,24.4359],[71.0372,24.4324],[70.9985,24.4441],[71.0046,24.5232],[70.9874,24.5433],[70.9863,24.5953],[71.0084,24.6355],[71.0742,24.6623],[71.0985,24.6876],[71.112,24.6757],[71.2876,24.6158],[71.3137,24.648],[71.3478,24.661],[71.3782,24.6261],[71.4778,24.6795],[71.6079,24.677],[71.6554,24.6391],[71.7079,24.6617],[71.7717,24.6753],[71.8024,24.6719],[71.8025,24.631],[71.8522,24.6092],[71.8578,24.6664],[71.9075,24.6774],[71.9255,24.6359],[71.9784,24.6573],[71.9841,24.6863],[72.0583,24.7124],[72.0847,24.7069],[72.0898,24.6586],[72.1648,24.6212],[72.2337,24.6404],[72.2644,24.6044],[72.2463,24.5862],[72.2902,24.5503],[72.3539,24.5635],[72.3795,24.5127],[72.4416,24.5147],[72.4302,24.4801],[72.4573,24.4147],[72.5004,24.4169],[72.4932,24.459],[72.5412,24.5186],[72.576,24.4788],[72.6563,24.4621],[72.6809,24.465],[72.6892,24.4116],[72.7326,24.3635],[72.8037,24.3632],[72.8498,24.3719],[72.9107,24.3371],[72.9776,24.3734],[72.9619,24.4058],[72.9695,24.4529],[72.9998,24.4832],[73.0435,24.4692],[73.086,24.4984],[73.1017,24.4711],[73.101,24.4273],[73.0765,24.3965],[73.152,24.3543],[73.1962,24.3764],[73.2193,24.3638],[73.1665,24.2992],[73.1354,24.3083],[73.1255,24.2733],[73.0941,24.2468],[73.0675,24.1946],[73.1294,24.1226],[73.1589,24.0982],[73.2139,24.0776],[73.1932,24.0409],[73.2395,24.004],[73.2824,24.0192],[73.3387,24.0987],[73.4046,24.0411],[73.4201,23.9248],[73.3875,23.9158],[73.3542,23.8518],[73.3679,23.8141],[73.3561,23.7849],[73.3797,23.767],[73.4108,23.7801],[73.4735,23.7051],[73.5073,23.7028],[73.5056,23.6387],[73.5227,23.6071],[73.5687,23.6529],[73.6152,23.6521],[73.6417,23.6274],[73.6475,23.5743],[73.6331,23.5286],[73.6564,23.5074],[73.6332,23.4691],[73.6462,23.4413],[73.6913,23.4582],[73.7132,23.4143],[73.7673,23.453],[73.779,23.4312],[73.8303,23.4262],[73.8884,23.3561],[74.0287,23.3316],[74.0377,23.2954],[74.1069,23.2937],[74.1388,23.266],[74.1408,23.2229],[74.1278,23.176],[74.1728,23.1557],[74.2029,23.1902],[74.2738,23.158],[74.2834,23.0954],[74.3244,23.0614]]],[[[70.0168,22.6],[70.0328,22.5728],[70.0014,22.5546],[69.9855,22.5887],[70.0168,22.6]]]]},"properties":{"ST_NM":"Gujarat","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[72.7621,11.1829],[72.7636,11.1932],[72.7722,11.2169],[72.7795,11.2426],[72.787,11.2586],[72.7901,11.2555],[72.7807,11.232],[72.7779,11.2197],[72.7697,11.2057],[72.7621,11.1829]]]},"properties":{"ST_NM":"Lakshadweep","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[84.7647,19.0773],[84.6957,19.1273],[84.7126,19.1539],[84.6688,19.1669],[84.6526,19.1303],[84.6007,19.1275],[84.6257,19.0671],[84.5921,19.0232],[84.5669,19.0707],[84.4946,19.0319],[84.4762,18.9921],[84.4288,18.97],[84.4367,18.9238],[84.416,18.8985],[84.3601,18.8621],[84.319,18.788],[84.2869,18.8049],[84.2655,18.7852],[84.2243,18.7997],[84.1671,18.7893],[84.0916,18.7602],[84.0365,18.8173],[83.8945,18.8172],[83.8438,18.8761],[83.8219,18.9601],[83.7927,19.0189],[83.7456,18.9967],[83.7002,19.0253],[83.664,19.0765],[83.6497,19.1231],[83.5997,19.1364],[83.573,19.0623],[83.5164,19.0575],[83.4653,19.0886],[83.4765,19.0085],[83.4599,18.9557],[83.3991,19.01],[83.3636,19.0176],[83.3088,18.9998],[83.3484,18.9263],[83.3903,18.883],[83.4041,18.8449],[83.346,18.8278],[83.2807,18.7971],[83.2695,18.7653],[83.2227,18.776],[83.1913,18.7541],[83.1372,18.7863],[83.0707,18.7062],[83.056,18.6662],[83.0226,18.655],[82.999,18.6215],[83.0436,18.545],[83.0732,18.5155],[83.0191,18.4572],[83.0753,18.4041],[83.0527,18.3807],[83.0202,18.3924],[82.9751,18.3635],[82.938,18.3616],[82.8703,18.4193],[82.8139,18.4516],[82.7804,18.4315],[82.7888,18.3639],[82.7692,18.3382],[82.6549,18.297],[82.6367,18.2376],[82.5966,18.265],[82.5924,18.3291],[82.6053,18.3821],[82.5413,18.4216],[82.5259,18.5164],[82.5042,18.5144],[82.4718,18.5433],[82.381,18.4346],[82.3907,18.3272],[82.3731,18.2818],[82.343,18.2813],[82.3138,18.1848],[82.3517,18.1724],[82.3325,18.1276],[82.3476,18.0891],[82.3422,18.0587],[82.2897,18.0696],[82.2709,18.058],[82.2645,17.9956],[82.1873,18.0158],[82.1672,18.0527],[82.075,18.0759],[82.007,18.0584],[81.9635,18.0019],[81.8082,17.9564],[81.7879,17.926],[81.7104,17.8739],[81.6622,17.8816],[81.6188,17.8241],[81.5635,17.8272],[81.4885,17.8144],[81.4787,17.8375],[81.4186,17.8149],[81.3961,17.82],[81.4007,17.8943],[81.4478,17.8892],[81.4491,17.932],[81.4824,17.9755],[81.4825,18.0554],[81.5135,18.1006],[81.526,18.16],[81.5071,18.1855],[81.5373,18.2694],[81.5643,18.2752],[81.6005,18.3097],[81.6622,18.325],[81.6595,18.3467],[81.7503,18.3536],[81.7688,18.4181],[81.8572,18.494],[81.8682,18.5249],[81.9056,18.5612],[81.9502,18.57],[81.963,18.5948],[81.8941,18.6427],[81.9489,18.6437],[81.9654,18.6934],[82.0167,18.7195],[82.085,18.7186],[82.0887,18.7602],[82.1563,18.7852],[82.1689,18.836],[82.1612,18.8632],[82.1754,18.9013],[82.2175,18.9222],[82.246,18.9191],[82.2299,19.0274],[82.2022,19.0667],[82.2191,19.0954],[82.1675,19.1364],[82.1805,19.191],[82.1617,19.2023],[82.1584,19.2652],[82.186,19.3374],[82.1782,19.4366],[82.1273,19.4305],[82.1028,19.4661],[82.1002,19.5166],[82.0478,19.535],[82.0398,19.5972],[82.059,19.6282],[82.0446,19.7005],[82.0632,19.7578],[82.0602,19.7964],[81.9859,19.8011],[81.9681,19.8599],[81.8696,19.9026],[81.8531,19.9185],[81.8553,19.9723],[81.876,20.0521],[81.8968,20.0496],[81.9456,20.1052],[82.0373,20.028],[82.0705,20.057],[82.1285,20.0142],[82.1715,20.0052],[82.1882,19.9862],[82.2375,20.0035],[82.2692,19.9753],[82.3041,19.8892],[82.3453,19.8359],[82.418,19.9041],[82.4848,19.9078],[82.5046,19.8907],[82.6038,19.8663],[82.5758,19.8334],[82.5832,19.7792],[82.6271,19.7938],[82.6521,19.8322],[82.7039,19.832],[82.7196,19.8675],[82.7074,19.9021],[82.7181,19.9888],[82.6343,20.0033],[82.5913,19.9921],[82.5511,20.0162],[82.4947,20.0228],[82.401,20.0546],[82.3909,20.1622],[82.4122,20.1798],[82.4234,20.2193],[82.4113,20.2602],[82.4355,20.2857],[82.4314,20.3129],[82.4004,20.3393],[82.438,20.4342],[82.3978,20.4727],[82.3894,20.517],[82.3365,20.5539],[82.3437,20.5957],[82.3765,20.6324],[82.3741,20.6674],[82.3514,20.7063],[82.3395,20.8469],[82.3604,20.8726],[82.4064,20.8689],[82.4109,20.8443],[82.4549,20.8266],[82.4812,20.8496],[82.4881,20.9087],[82.5601,20.9467],[82.6298,21.04],[82.6121,21.0683],[82.65,21.1064],[82.6366,21.1479],[82.6972,21.164],[82.7559,21.1669],[82.7857,21.1448],[82.8415,21.1674],[82.9422,21.1605],[82.9837,21.1801],[83.0122,21.1449],[83.0779,21.1119],[83.1388,21.1094],[83.1986,21.1642],[83.2221,21.232],[83.2176,21.2557],[83.2681,21.2773],[83.2591,21.3375],[83.2742,21.3773],[83.3903,21.3427],[83.3987,21.4052],[83.354,21.448],[83.3492,21.5121],[83.3723,21.5627],[83.3698,21.6004],[83.3928,21.6273],[83.4432,21.6555],[83.4662,21.6097],[83.4868,21.6433],[83.4181,21.6799],[83.4536,21.6946],[83.4888,21.7481],[83.469,21.7869],[83.4933,21.8182],[83.5256,21.7981],[83.6057,21.9141],[83.5373,21.9779],[83.5502,22.0535],[83.5938,22.0732],[83.5627,22.103],[83.6078,22.1537],[83.6277,22.2042],[83.7057,22.2467],[83.7579,22.2403],[83.7796,22.2736],[83.8253,22.2923],[83.8299,22.3235],[83.8658,22.3431],[83.8975,22.3379],[83.9234,22.3584],[83.971,22.359],[84.0065,22.3822],[84.0469,22.4375],[84.0409,22.4731],[83.9807,22.5021],[84.0091,22.5261],[84.0756,22.5062],[84.113,22.4765],[84.1424,22.4723],[84.141,22.4259],[84.1968,22.3781],[84.2504,22.379],[84.269,22.3545],[84.317,22.3423],[84.3675,22.3532],[84.4005,22.3464],[84.4289,22.371],[84.4771,22.3869],[84.503,22.4198],[84.6288,22.4345],[84.6666,22.4195],[84.7501,22.4193],[84.759,22.4467],[84.8034,22.448],[84.8358,22.432],[84.8801,22.4489],[84.9094,22.4227],[84.9543,22.4587],[84.9707,22.4516],[85.0367,22.4814],[85.0877,22.3884],[85.0765,22.3561],[85.0995,22.2935],[85.0524,22.1951],[85.0298,22.1624],[85.0554,22.1156],[85.0999,22.1042],[85.1267,22.0748],[85.1531,22.0789],[85.2516,22.0266],[85.2748,22.0816],[85.3231,22.1275],[85.3527,22.1287],[85.371,22.161],[85.4123,22.1616],[85.4945,22.1194],[85.5994,22.0783],[85.6449,22.0947],[85.6902,22.0609],[85.7302,22.0653],[85.8074,22.1161],[85.7772,22.0556],[85.766,21.9949],[85.8257,21.9751],[85.9139,21.98],[86.0094,22.1178],[85.9967,22.1324],[86.0314,22.1925],[85.9856,22.2371],[85.9885,22.2673],[86.0171,22.2973],[85.998,22.3448],[86.0291,22.3858],[86.0181,22.4257],[85.9603,22.4614],[85.9734,22.5058],[86.0691,22.5559],[86.104,22.5009],[86.1237,22.4886],[86.2115,22.4715],[86.2258,22.453],[86.2941,22.4268],[86.3229,22.3848],[86.3678,22.3438],[86.411,22.3198],[86.4994,22.3463],[86.5262,22.3125],[86.5848,22.3006],[86.6515,22.2632],[86.6829,22.2233],[86.727,22.2168],[86.7218,22.1468],[86.7948,22.1572],[86.8378,22.0977],[86.8519,22.1029],[86.9601,22.0879],[86.9926,22.055],[87.0282,22.0379],[87.032,21.9957],[87.0019,21.913],[87.0397,21.8674],[87.0986,21.8658],[87.0909,21.8992],[87.1199,21.9272],[87.1615,21.9356],[87.1634,21.9691],[87.2359,21.9571],[87.2551,21.9267],[87.2389,21.8999],[87.2466,21.8613],[87.2765,21.8052],[87.3473,21.7921],[87.374,21.772],[87.4444,21.7682],[87.4706,21.7052],[87.4683,21.6641],[87.4862,21.6098],[87.425,21.5726],[87.393,21.543],[87.2355,21.5383],[87.1478,21.5087],[87.1102,21.4844],[87.0386,21.4201],[86.9842,21.3896],[86.945,21.3528],[86.8907,21.2553],[86.8633,21.2226],[86.8408,21.1578],[86.8525,21.0946],[86.9513,20.8982],[86.9768,20.8609],[86.9718,20.7939],[86.9079,20.7933],[86.8952,20.7639],[87.0221,20.7703],[87.0556,20.715],[86.888,20.6047],[86.7761,20.5224],[86.7304,20.4415],[86.7308,20.4114],[86.7589,20.3903],[86.7878,20.4049],[86.8098,20.375],[86.7844,20.3323],[86.7223,20.2903],[86.5955,20.2245],[86.5204,20.1702],[86.4915,20.1182],[86.4346,20.0531],[86.4088,19.9951],[86.355,19.948],[86.3239,19.9462],[86.23,19.9022],[86.0577,19.8504],[85.9444,19.8286],[85.7808,19.7815],[85.6791,19.7451],[85.4978,19.6571],[85.4085,19.618],[85.3073,19.5615],[85.1429,19.4456],[85.1042,19.413],[85.0794,19.375],[84.9803,19.3156],[84.8789,19.2313],[84.8085,19.1542],[84.7647,19.0773]]]},"properties":{"ST_NM":"Odisha","region":"east"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[73.2107,20.1205],[73.2132,20.091],[73.1709,20.0521],[73.1533,20.0729],[73.0559,20.099],[73.0396,20.0671],[72.9925,20.1177],[72.9616,20.2088],[72.954,20.2369],[72.9119,20.269],[72.9417,20.2925],[73.0358,20.2923],[73.0383,20.3173],[73.0775,20.3229],[73.1014,20.3028],[73.1514,20.3172],[73.1657,20.2829],[73.0602,20.2233],[73.0629,20.1697],[73.0997,20.1561],[73.1421,20.1773],[73.1332,20.2057],[73.1991,20.1944],[73.1856,20.1558],[73.2107,20.1205]]],[[[72.8212,20.3677],[72.8277,20.4317],[72.8556,20.4675],[72.8854,20.4625],[72.8573,20.4188],[72.8907,20.3726],[72.8212,20.3677]]],[[[71.0075,20.7374],[70.9788,20.7049],[70.9198,20.7104],[70.9203,20.7428],[70.9749,20.7274],[71.0075,20.7374]]]]},"properties":{"ST_NM":"Dadra and Nagar Haveli and Daman and Diu","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[78.3986,32.5257],[78.3264,32.472],[78.2946,32.5041],[78.3153,32.5254],[78.3128,32.5737],[78.348,32.5811],[78.4052,32.6194],[78.3796,32.6683],[78.3944,32.7156],[78.3877,32.7569],[78.3572,32.7578],[78.3042,32.7342],[78.3122,32.7092],[78.253,32.6911],[78.2195,32.6647],[78.158,32.684],[78.1478,32.6546],[78.1106,32.6626],[78.0872,32.6244],[78.0468,32.645],[78.0158,32.6198],[77.9518,32.6589],[77.9183,32.6912],[77.9337,32.7607],[77.8841,32.7877],[77.8788,32.8188],[77.7809,32.8656],[77.8,32.9122],[77.7131,32.9826],[77.6315,32.9452],[77.6021,32.9426],[77.5402,32.8874],[77.5017,32.8856],[77.469,32.8584],[77.4449,32.8796],[77.3974,32.8785],[77.3744,32.8547],[77.3739,32.8245],[77.339,32.8168],[77.3197,32.8522],[77.2339,32.8937],[77.1642,32.9189],[77.1497,32.9781],[77.0955,32.9711],[77.049,32.999],[77.0103,32.9891],[76.973,32.9998],[76.9416,33.0284],[76.8852,33.1216],[76.8553,33.1143],[76.8138,33.1776],[76.8344,33.2049],[76.7927,33.2566],[76.7712,33.2496],[76.7372,33.261],[76.7172,33.3293],[76.6706,33.342],[76.6394,33.3929],[76.6287,33.4349],[76.5776,33.4297],[76.5763,33.4531],[76.5417,33.47],[76.507,33.5103],[76.4579,33.5372],[76.384,33.5525],[76.3592,33.6034],[76.3001,33.6009],[76.303,33.5676],[76.2596,33.5651],[76.2255,33.5474],[76.2299,33.6308],[76.2698,33.6431],[76.2711,33.7309],[76.2389,33.7721],[76.2008,33.7753],[76.1583,33.8082],[76.1509,33.8361],[76.0846,33.8883],[76.0477,33.9291],[76.0261,33.9934],[75.9779,34.0005],[75.9435,33.9874],[75.8519,33.9814],[75.8641,34.0125],[75.8199,34.0453],[75.7664,34.06],[75.748,34.0966],[75.7126,34.1149],[75.687,34.159],[75.6989,34.2151],[75.6551,34.2427],[75.595,34.1982],[75.5797,34.2144],[75.4971,34.2334],[75.4744,34.2809],[75.406,34.2845],[75.3934,34.2951],[75.372,34.4066],[75.3197,34.4347],[75.3459,34.508],[75.3411,34.5527],[75.2454,34.625],[75.175,34.6455],[75.0779,34.6384],[75.0208,34.626],[74.9253,34.6635],[74.8776,34.6607],[74.7496,34.6688],[74.6515,34.6974],[74.6063,34.7264],[74.5935,34.7569],[74.5525,34.7726],[74.4607,34.7807],[74.4045,34.7778],[74.4402,34.8397],[74.5054,34.8635],[74.5678,34.873],[74.5763,34.9001],[74.5716,34.9658],[74.5873,35.0096],[74.5354,35.0315],[74.5416,35.0667],[74.5154,35.0948],[74.4398,35.1181],[74.3803,35.0576],[74.3084,35.06],[74.2532,35.0374],[74.2282,35.0826],[74.1628,35.0862],[74.1335,35.1075],[74.1012,35.1453],[74.0442,35.1459],[73.9912,35.1842],[73.9628,35.1735],[73.9164,35.2117],[73.8644,35.2103],[73.846,35.2291],[73.7767,35.2433],[73.7309,35.2168],[73.7144,35.2279],[73.7263,35.2777],[73.6991,35.3227],[73.6996,35.3578],[73.7381,35.4274],[73.7948,35.4614],[73.7852,35.5238],[73.7342,35.5361],[73.72,35.5529],[73.6719,35.5507],[73.6385,35.5703],[73.5571,35.5551],[73.5313,35.5706],[73.481,35.5767],[73.406,35.5634],[73.3689,35.6036],[73.272,35.6292],[73.2148,35.6745],[73.1386,35.718],[73.1342,35.7849],[73.1523,35.842],[73.0784,35.8857],[73.0374,35.8542],[72.9872,35.8606],[72.9287,35.8449],[72.9009,35.8811],[72.7983,35.8669],[72.7766,35.8434],[72.7227,35.8533],[72.6905,35.8323],[72.645,35.8657],[72.5944,35.875],[72.5688,35.9067],[72.5331,35.9168],[72.5305,35.9523],[72.5554,35.9961],[72.5953,36.0267],[72.5855,36.0498],[72.5311,36.0718],[72.5359,36.1139],[72.5731,36.1503],[72.5509,36.1805],[72.5629,36.2159],[72.5964,36.2636],[72.6341,36.276],[72.6812,36.2622],[72.7498,36.3045],[72.7778,36.3092],[72.8363,36.3654],[72.8894,36.3972],[72.8767,36.4375],[72.9215,36.4623],[72.9621,36.4669],[73.0212,36.5243],[73.0608,36.5371],[73.1117,36.6094],[73.0901,36.6424],[73.0842,36.6817],[73.1304,36.6876],[73.1931,36.7202],[73.2142,36.6993],[73.2519,36.7083],[73.3173,36.7067],[73.3684,36.732],[73.4355,36.7439],[73.5291,36.7201],[73.6048,36.715],[73.6066,36.6979],[73.6998,36.6842],[73.7242,36.7094],[73.79,36.7039],[73.8082,36.7161],[73.8654,36.6994],[73.8967,36.7022],[73.8992,36.7491],[73.8628,36.7876],[73.833,36.7873],[73.8021,36.8156],[73.7257,36.832],[73.7182,36.8565],[73.6806,36.8849],[73.6895,36.9115],[73.7481,36.896],[73.8779,36.8937],[73.9369,36.8733],[73.999,36.8236],[74.0513,36.8059],[74.0918,36.8379],[74.1455,36.8464],[74.1726,36.9033],[74.2605,36.8859],[74.312,36.9151],[74.3674,36.9583],[74.4285,36.9891],[74.5328,36.9854],[74.5745,36.9494],[74.5885,37.0279],[74.7077,37.077],[74.7273,37.0253],[74.7516,37.0109],[74.7779,37.0291],[74.8329,37.0242],[74.8451,36.9893],[74.9131,36.9085],[74.9404,36.9341],[75.0177,36.9757],[75.0861,36.9423],[75.1348,36.9567],[75.2013,37.0205],[75.2639,37.0513],[75.3439,37.0507],[75.3442,37.0024],[75.3733,36.9607],[75.4269,36.9513],[75.4077,36.9161],[75.447,36.8797],[75.4779,36.8062],[75.6154,36.761],[75.6741,36.6954],[75.7472,36.5878],[75.8051,36.5537],[75.848,36.5437],[75.9223,36.5019],[75.9959,36.4837],[76.0681,36.477],[76.124,36.4369],[76.172,36.3897],[76.1975,36.3869],[76.2536,36.3472],[76.3512,36.3593],[76.4308,36.3076],[76.4548,36.2408],[76.4805,36.2109],[76.5368,36.1949],[76.5618,36.1725],[76.6,36.165],[76.6361,36.1844],[76.7052,36.1246],[76.7248,36.0779],[76.7995,36.0485],[76.8038,36.0163],[76.767,36.0075],[76.7216,35.9529],[76.7845,35.8894],[76.8026,35.8499],[76.8641,35.826],[76.8937,35.7992],[76.934,35.7835],[77.0321,35.7759],[77.0803,35.7973],[77.1183,35.7959],[77.1646,35.7581],[77.1741,35.7312],[77.2233,35.7145],[77.3153,35.6995],[77.3571,35.7172],[77.4028,35.6607],[77.4366,35.6406],[77.4258,35.6101],[77.4556,35.5931],[77.4593,35.5472],[77.4389,35.5176],[77.3771,35.5499],[77.3209,35.5363],[77.3474,35.4932],[77.3765,35.4779],[77.4493,35.4624],[77.5156,35.4881],[77.6227,35.4716],[77.7241,35.4766],[77.7361,35.5227],[77.777,35.4942],[77.8243,35.51],[77.8999,35.4676],[77.9659,35.5745],[78.0449,35.5848],[78.0763,35.5487],[78.1359,35.5384],[78.1651,35.6127],[78.1984,35.6531],[78.2537,35.6452],[78.2707,35.6684],[78.2719,35.7215],[78.3374,35.7201],[78.3891,35.7379],[78.4218,35.7848],[78.5198,35.7633],[78.5791,35.8076],[78.6095,35.8134],[78.6567,35.8535],[78.7174,35.8678],[78.7673,35.8692],[78.803,35.8553],[78.9384,35.8791],[78.9568,35.8912],[79.007,35.8535],[79.1294,35.8355],[79.1787,35.8698],[79.1963,35.8981],[79.1883,35.9467],[79.2403,35.9863],[79.3853,35.99],[79.4016,35.9183],[79.4241,35.8946],[79.5168,35.883],[79.5583,35.8613],[79.6639,35.8348],[79.7445,35.7999],[79.8673,35.7824],[79.9169,35.8218],[79.9523,35.8367],[79.9975,35.8373],[80.0366,35.7993],[80.0566,35.7495],[80.0865,35.7247],[80.1138,35.6765],[80.2357,35.6415],[80.2898,35.607],[80.3096,35.5537],[80.327,35.4721],[80.2794,35.4404],[80.2819,35.3875],[80.2693,35.3438],[80.234,35.2762],[80.227,35.2277],[80.1819,35.1663],[80.1762,35.1365],[80.1842,35.0628],[80.1692,34.9885],[80.122,34.893],[80.0715,34.8281],[80.0674,34.7144],[79.943,34.6807],[79.8591,34.6884],[79.7704,34.6221],[79.7909,34.5922],[79.7569,34.5544],[79.8087,34.5309],[79.7924,34.4847],[79.7318,34.478],[79.5787,34.4896],[79.507,34.4739],[79.5266,34.4176],[79.558,34.4108],[79.558,34.3321],[79.5906,34.2813],[79.5827,34.238],[79.5356,34.2055],[79.5095,34.2102],[79.4932,34.1796],[79.4932,34.1355],[79.4597,34.1016],[79.4327,34.093],[79.4127,34.0555],[79.4182,34.014],[79.3741,34.0331],[79.2587,34.0481],[79.1965,34.0509],[79.1501,34.0678],[79.1423,34.0349],[79.0826,34.0216],[79.0133,34.05],[78.9391,34.0237],[78.9042,33.9759],[79.0187,33.7754],[79.0523,33.7781],[79.019,33.7054],[79.0525,33.6778],[79.0906,33.6792],[79.104,33.6134],[79.0287,33.6258],[78.9884,33.6109],[78.9178,33.6333],[78.9139,33.5757],[78.9391,33.5263],[78.9319,33.4325],[78.992,33.3305],[79.0243,33.329],[79.0958,33.2943],[79.1327,33.2898],[79.2391,33.2975],[79.3142,33.2729],[79.3643,33.2824],[79.4534,33.2583],[79.4367,33.1896],[79.3919,33.1242],[79.3759,33.0845],[79.392,33.0539],[79.3808,33.0275],[79.334,33.0161],[79.3819,32.9721],[79.4077,32.9699],[79.4625,32.9198],[79.5717,32.7822],[79.6017,32.7767],[79.6253,32.7373],[79.5142,32.6079],[79.4683,32.5761],[79.4466,32.5323],[79.3979,32.5369],[79.393,32.5721],[79.338,32.5918],[79.2757,32.5338],[79.1936,32.4828],[79.1305,32.4707],[79.1458,32.4368],[79.1136,32.384],[79.0591,32.3904],[79.0131,32.3771],[78.9775,32.339],[78.9587,32.3668],[78.902,32.3927],[78.8574,32.4404],[78.8258,32.4385],[78.775,32.5729],[78.7911,32.6182],[78.7481,32.6813],[78.7216,32.661],[78.6606,32.6533],[78.6176,32.5958],[78.5867,32.6157],[78.5343,32.6084],[78.4946,32.5807],[78.4425,32.5697],[78.4258,32.5311],[78.3986,32.5257]]]},"properties":{"ST_NM":"Ladakh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[76.7712,33.2496],[76.7758,33.2205],[76.7469,33.1792],[76.6185,33.1744],[76.6053,33.2043],[76.5674,33.2103],[76.4879,33.1797],[76.4104,33.1866],[76.3745,33.1542],[76.2918,33.1032],[76.2953,33.0576],[76.2474,33.0216],[76.1829,33.0207],[76.1661,33.007],[76.1123,33.0063],[76.0973,32.9643],[76.0456,32.9378],[76.0321,32.9167],[75.9539,32.8734],[75.9245,32.9062],[75.8423,32.9293],[75.8113,32.8778],[75.8888,32.8032],[75.9261,32.7456],[75.9011,32.6986],[75.9185,32.654],[75.9159,32.613],[75.8847,32.59],[75.8761,32.5505],[75.8344,32.5118],[75.7777,32.4657],[75.7295,32.4532],[75.7373,32.4296],[75.687,32.3905],[75.5967,32.3777],[75.5395,32.3362],[75.5425,32.3056],[75.4657,32.327],[75.419,32.32],[75.3414,32.3461],[75.3317,32.3269],[75.2126,32.4024],[75.2009,32.4202],[75.1329,32.4259],[75.1079,32.46],[75.0269,32.4965],[75.018,32.4663],[74.9475,32.4473],[74.8207,32.497],[74.8121,32.4797],[74.7114,32.4782],[74.6806,32.4919],[74.6496,32.5973],[74.6663,32.6756],[74.6549,32.7282],[74.7048,32.821],[74.7046,32.8418],[74.6336,32.8097],[74.6306,32.7666],[74.5542,32.759],[74.51,32.7467],[74.4596,32.7886],[74.4022,32.7796],[74.3828,32.7575],[74.3084,32.7922],[74.299,32.8241],[74.2165,32.8449],[74.1774,32.8827],[74.0545,32.9114],[74.0515,32.9304],[73.9874,32.9354],[73.9965,32.9598],[73.9575,32.9866],[73.892,33.0024],[73.8219,33.0054],[73.8057,32.971],[73.7395,33.0432],[73.7345,33.0663],[73.6878,33.0881],[73.6271,33.0895],[73.6248,33.1115],[73.6574,33.2048],[73.6048,33.2513],[73.5822,33.329],[73.5578,33.3681],[73.5972,33.4441],[73.6241,33.4572],[73.5952,33.4922],[73.6176,33.5456],[73.6188,33.5772],[73.5726,33.6179],[73.5624,33.6755],[73.5911,33.6996],[73.5905,33.7537],[73.5576,33.7832],[73.5854,33.899],[73.5488,33.9311],[73.5142,34.0062],[73.488,34.1757],[73.4923,34.2197],[73.4255,34.349],[73.3996,34.359],[73.4246,34.4418],[73.4421,34.5649],[73.5527,34.5927],[73.6181,34.5854],[73.6387,34.5657],[73.6594,34.61],[73.6895,34.6431],[73.6695,34.6892],[73.7058,34.7249],[73.7306,34.771],[73.773,34.7964],[73.8203,34.7955],[73.8429,34.8153],[73.9173,34.814],[73.9542,34.835],[73.9719,34.8632],[74.0295,34.8771],[74.043,34.9214],[74.0734,34.9406],[74.0644,34.9982],[74.1031,35.0142],[74.0655,35.048],[74.0943,35.097],[74.1335,35.1075],[74.1628,35.0862],[74.2282,35.0826],[74.2532,35.0374],[74.3084,35.06],[74.3803,35.0576],[74.4398,35.1181],[74.5154,35.0948],[74.5416,35.0667],[74.5354,35.0315],[74.5873,35.0096],[74.5716,34.9658],[74.5763,34.9001],[74.5678,34.873],[74.5054,34.8635],[74.4402,34.8397],[74.4045,34.7778],[74.4607,34.7807],[74.5525,34.7726],[74.5935,34.7569],[74.6063,34.7264],[74.6515,34.6974],[74.7496,34.6688],[74.8776,34.6607],[74.9253,34.6635],[75.0208,34.626],[75.0779,34.6384],[75.175,34.6455],[75.2454,34.625],[75.3411,34.5527],[75.3459,34.508],[75.3197,34.4347],[75.372,34.4066],[75.3934,34.2951],[75.406,34.2845],[75.4744,34.2809],[75.4971,34.2334],[75.5797,34.2144],[75.595,34.1982],[75.6551,34.2427],[75.6989,34.2151],[75.687,34.159],[75.7126,34.1149],[75.748,34.0966],[75.7664,34.06],[75.8199,34.0453],[75.8641,34.0125],[75.8519,33.9814],[75.9435,33.9874],[75.9779,34.0005],[76.0261,33.9934],[76.0477,33.9291],[76.0846,33.8883],[76.1509,33.8361],[76.1583,33.8082],[76.2008,33.7753],[76.2389,33.7721],[76.2711,33.7309],[76.2698,33.6431],[76.2299,33.6308],[76.2255,33.5474],[76.2596,33.5651],[76.303,33.5676],[76.3001,33.6009],[76.3592,33.6034],[76.384,33.5525],[76.4579,33.5372],[76.507,33.5103],[76.5417,33.47],[76.5763,33.4531],[76.5776,33.4297],[76.6287,33.4349],[76.6394,33.3929],[76.6706,33.342],[76.7172,33.3293],[76.7372,33.261],[76.7712,33.2496]]]},"properties":{"ST_NM":"Jammu and Kashmir","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[83.3299,24.1017],[83.3878,24.1],[83.4342,24.0843],[83.4542,24.0415],[83.5082,24.0312],[83.5151,23.9815],[83.5488,23.934],[83.5689,23.8667],[83.6665,23.8443],[83.7076,23.8175],[83.7377,23.7605],[83.746,23.7195],[83.7236,23.6839],[83.7589,23.6536],[83.7771,23.608],[83.8258,23.5908],[83.9397,23.5705],[83.9319,23.6205],[84.0087,23.6279],[84.03,23.5996],[84.028,23.5457],[84.0149,23.5042],[83.971,23.467],[83.9817,23.4223],[83.9693,23.3669],[84.0117,23.3537],[84.0231,23.378],[84.0744,23.3336],[84.0537,23.2474],[84.0634,23.2066],[84.0319,23.1579],[84.0722,23.109],[84.1334,23.0831],[84.1254,23.037],[84.1469,22.9905],[84.1783,22.9799],[84.2425,22.9834],[84.2805,22.964],[84.3281,22.982],[84.3804,22.9721],[84.3962,22.9259],[84.3715,22.8647],[84.3347,22.8616],[84.3147,22.8006],[84.286,22.764],[84.2598,22.7677],[84.2295,22.7369],[84.2381,22.6919],[84.15,22.6365],[84.084,22.6382],[84.0494,22.595],[84.0244,22.5919],[84.0028,22.546],[84.0091,22.5261],[83.9807,22.5021],[84.0409,22.4731],[84.0469,22.4375],[84.0065,22.3822],[83.971,22.359],[83.9234,22.3584],[83.8975,22.3379],[83.8658,22.3431],[83.8299,22.3235],[83.8253,22.2923],[83.7796,22.2736],[83.7579,22.2403],[83.7057,22.2467],[83.6277,22.2042],[83.6078,22.1537],[83.5627,22.103],[83.5938,22.0732],[83.5502,22.0535],[83.5373,21.9779],[83.6057,21.9141],[83.5256,21.7981],[83.4933,21.8182],[83.469,21.7869],[83.4888,21.7481],[83.4536,21.6946],[83.4181,21.6799],[83.4868,21.6433],[83.4662,21.6097],[83.4432,21.6555],[83.3928,21.6273],[83.3698,21.6004],[83.3723,21.5627],[83.3492,21.5121],[83.354,21.448],[83.3987,21.4052],[83.3903,21.3427],[83.2742,21.3773],[83.2591,21.3375],[83.2681,21.2773],[83.2176,21.2557],[83.2221,21.232],[83.1986,21.1642],[83.1388,21.1094],[83.0779,21.1119],[83.0122,21.1449],[82.9837,21.1801],[82.9422,21.1605],[82.8415,21.1674],[82.7857,21.1448],[82.7559,21.1669],[82.6972,21.164],[82.6366,21.1479],[82.65,21.1064],[82.6121,21.0683],[82.6298,21.04],[82.5601,20.9467],[82.4881,20.9087],[82.4812,20.8496],[82.4549,20.8266],[82.4109,20.8443],[82.4064,20.8689],[82.3604,20.8726],[82.3395,20.8469],[82.3514,20.7063],[82.3741,20.6674],[82.3765,20.6324],[82.3437,20.5957],[82.3365,20.5539],[82.3894,20.517],[82.3978,20.4727],[82.438,20.4342],[82.4004,20.3393],[82.4314,20.3129],[82.4355,20.2857],[82.4113,20.2602],[82.4234,20.2193],[82.4122,20.1798],[82.3909,20.1622],[82.401,20.0546],[82.4947,20.0228],[82.5511,20.0162],[82.5913,19.9921],[82.6343,20.0033],[82.7181,19.9888],[82.7074,19.9021],[82.7196,19.8675],[82.7039,19.832],[82.6521,19.8322],[82.6271,19.7938],[82.5832,19.7792],[82.5758,19.8334],[82.6038,19.8663],[82.5046,19.8907],[82.4848,19.9078],[82.418,19.9041],[82.3453,19.8359],[82.3041,19.8892],[82.2692,19.9753],[82.2375,20.0035],[82.1882,19.9862],[82.1715,20.0052],[82.1285,20.0142],[82.0705,20.057],[82.0373,20.028],[81.9456,20.1052],[81.8968,20.0496],[81.876,20.0521],[81.8553,19.9723],[81.8531,19.9185],[81.8696,19.9026],[81.9681,19.8599],[81.9859,19.8011],[82.0602,19.7964],[82.0632,19.7578],[82.0446,19.7005],[82.059,19.6282],[82.0398,19.5972],[82.0478,19.535],[82.1002,19.5166],[82.1028,19.4661],[82.1273,19.4305],[82.1782,19.4366],[82.186,19.3374],[82.1584,19.2652],[82.1617,19.2023],[82.1805,19.191],[82.1675,19.1364],[82.2191,19.0954],[82.2022,19.0667],[82.2299,19.0274],[82.246,18.9191],[82.2175,18.9222],[82.1754,18.9013],[82.1612,18.8632],[82.1689,18.836],[82.1563,18.7852],[82.0887,18.7602],[82.085,18.7186],[82.0167,18.7195],[81.9654,18.6934],[81.9489,18.6437],[81.8941,18.6427],[81.963,18.5948],[81.9502,18.57],[81.9056,18.5612],[81.8682,18.5249],[81.8572,18.494],[81.7688,18.4181],[81.7503,18.3536],[81.6595,18.3467],[81.6622,18.325],[81.6005,18.3097],[81.5643,18.2752],[81.5373,18.2694],[81.5071,18.1855],[81.526,18.16],[81.5135,18.1006],[81.4825,18.0554],[81.4824,17.9755],[81.4491,17.932],[81.4478,17.8892],[81.4007,17.8943],[81.3961,17.82],[81.2654,17.8111],[81.1683,17.8557],[81.0856,17.7981],[81.0466,17.7824],[81.0082,17.7983],[80.9964,17.8491],[80.9984,17.9168],[80.9698,18.0472],[80.9534,18.082],[80.9562,18.1336],[80.9142,18.1445],[80.8667,18.1403],[80.8585,18.1898],[80.8659,18.2335],[80.8236,18.2395],[80.8241,18.1944],[80.7991,18.1715],[80.7368,18.1772],[80.7372,18.2221],[80.7917,18.2509],[80.7494,18.3076],[80.7315,18.3548],[80.7329,18.403],[80.7021,18.4443],[80.6564,18.4748],[80.6057,18.5483],[80.5353,18.5906],[80.5147,18.6194],[80.4566,18.6298],[80.3944,18.6058],[80.3431,18.5981],[80.3045,18.6834],[80.2729,18.723],[80.2748,18.7655],[80.297,18.7918],[80.3545,18.8266],[80.3263,18.8809],[80.2743,18.9318],[80.2738,18.9945],[80.3052,19.0272],[80.3397,19.0999],[80.3275,19.1353],[80.3893,19.1815],[80.3939,19.2448],[80.4378,19.2577],[80.4856,19.3406],[80.5204,19.3476],[80.5385,19.3776],[80.5785,19.4009],[80.59,19.3518],[80.6234,19.3056],[80.6719,19.3295],[80.7095,19.2817],[80.7599,19.2915],[80.7744,19.3137],[80.853,19.3639],[80.8118,19.4072],[80.8134,19.4336],[80.874,19.445],[80.8984,19.4818],[80.8952,19.5199],[80.857,19.5228],[80.8366,19.5659],[80.7755,19.5624],[80.7698,19.5866],[80.7147,19.6166],[80.6703,19.6092],[80.6764,19.6994],[80.6111,19.7382],[80.5872,19.741],[80.5425,19.7833],[80.5465,19.8177],[80.5198,19.8318],[80.4695,19.8274],[80.4902,19.9023],[80.4498,19.8963],[80.408,19.9126],[80.4113,19.9384],[80.4517,19.9572],[80.4808,19.9342],[80.5236,19.9337],[80.5489,19.9837],[80.5426,20.0106],[80.5567,20.0698],[80.5523,20.1111],[80.5056,20.1445],[80.4601,20.151],[80.4296,20.1361],[80.3885,20.1651],[80.4056,20.2178],[80.3981,20.2441],[80.4881,20.276],[80.5167,20.2661],[80.5461,20.3059],[80.6105,20.3183],[80.6264,20.3325],[80.5915,20.393],[80.6138,20.4359],[80.6263,20.5673],[80.6014,20.6088],[80.5646,20.6037],[80.5215,20.5805],[80.481,20.6184],[80.5213,20.6572],[80.5804,20.673],[80.56,20.726],[80.5492,20.7952],[80.5586,20.8115],[80.5562,20.8881],[80.5345,20.9345],[80.4637,20.9291],[80.4258,21.0059],[80.4497,21.0305],[80.4452,21.1207],[80.4643,21.1749],[80.515,21.1829],[80.6173,21.2297],[80.6511,21.2776],[80.6796,21.2988],[80.66,21.3341],[80.6711,21.3383],[80.7353,21.4609],[80.7276,21.4962],[80.7408,21.5392],[80.7171,21.6025],[80.7338,21.7286],[80.7561,21.7622],[80.7854,21.7403],[80.8154,21.7555],[80.8446,21.8316],[80.8324,21.9086],[80.8979,22.0669],[80.9079,22.1096],[80.9496,22.1172],[80.9939,22.0493],[81.0219,22.1328],[81.0235,22.2292],[81.0895,22.2471],[81.1184,22.2905],[81.1211,22.3412],[81.1058,22.3871],[81.11,22.4356],[81.1564,22.4564],[81.1718,22.4872],[81.2322,22.4522],[81.2813,22.503],[81.3185,22.5167],[81.382,22.5098],[81.3964,22.4401],[81.4229,22.4477],[81.4278,22.4798],[81.4826,22.4885],[81.4965,22.5193],[81.5675,22.5505],[81.605,22.5346],[81.66,22.57],[81.6465,22.5934],[81.6833,22.6469],[81.7131,22.6481],[81.7286,22.6765],[81.7716,22.6764],[81.7523,22.7267],[81.7944,22.7665],[81.767,22.8344],[81.7757,22.8745],[81.8616,22.8893],[81.9505,22.983],[81.9215,23.0408],[81.9295,23.0617],[81.9695,23.081],[82.036,23.0811],[82.0673,23.1161],[82.1111,23.1094],[82.1613,23.1432],[82.1451,23.1634],[82.1455,23.2266],[82.1988,23.3122],[82.1464,23.3608],[82.1194,23.354],[82.1015,23.3981],[82.0569,23.377],[81.9849,23.4149],[81.9764,23.4523],[81.9233,23.5327],[81.8812,23.5151],[81.8211,23.515],[81.8095,23.549],[81.7251,23.5567],[81.6994,23.522],[81.6681,23.533],[81.627,23.4821],[81.61,23.5557],[81.5767,23.5854],[81.6115,23.6017],[81.6203,23.6515],[81.6552,23.6632],[81.6959,23.7214],[81.6757,23.7573],[81.644,23.7731],[81.6514,23.7991],[81.6344,23.8357],[81.6032,23.8537],[81.6102,23.9041],[81.6592,23.9176],[81.725,23.8447],[81.7731,23.8164],[81.8234,23.8079],[81.9045,23.8448],[81.9215,23.8709],[81.9561,23.853],[82.0092,23.8608],[82.0817,23.8164],[82.144,23.8164],[82.2069,23.8266],[82.238,23.8057],[82.2622,23.8211],[82.3352,23.8028],[82.3935,23.7999],[82.4708,23.8106],[82.4974,23.7849],[82.5253,23.7841],[82.5542,23.8262],[82.5908,23.8221],[82.6597,23.8547],[82.6616,23.9077],[82.6989,23.925],[82.7524,23.9198],[82.8103,23.9629],[82.9543,23.8708],[83.0543,23.8793],[83.0751,23.8701],[83.1415,23.8849],[83.1542,23.9041],[83.2079,23.9214],[83.2426,24.0116],[83.2791,24.0183],[83.2821,24.0498],[83.3299,24.1017]]]},"properties":{"ST_NM":"Chhattisgarh","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.2098,28.8579],[77.2243,28.8261],[77.1994,28.7981],[77.2355,28.7609],[77.3048,28.7129],[77.326,28.7099],[77.3163,28.6412],[77.3426,28.622],[77.2971,28.566],[77.3454,28.5133],[77.3141,28.4836],[77.2903,28.4966],[77.2433,28.4788],[77.2495,28.4245],[77.1744,28.4047],[77.1288,28.4407],[77.0947,28.5138],[77.0599,28.5123],[77.0066,28.5413],[76.9517,28.5042],[76.908,28.5137],[76.8914,28.5008],[76.8425,28.5561],[76.8883,28.6319],[76.921,28.631],[76.935,28.6675],[76.9678,28.6996],[76.9446,28.754],[76.9508,28.8183],[76.9918,28.8384],[77.04,28.8318],[77.0617,28.8708],[77.2098,28.8579]]]},"properties":{"ST_NM":"NCT of Delhi","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[74.1184,15.652],[74.1674,15.6721],[74.2238,15.669],[74.252,15.6543],[74.2642,15.6159],[74.2493,15.5679],[74.2773,15.5469],[74.2785,15.5175],[74.2523,15.4993],[74.2755,15.4492],[74.2688,15.4191],[74.2831,15.383],[74.323,15.3674],[74.3171,15.3292],[74.336,15.2956],[74.2714,15.2809],[74.2523,15.251],[74.3017,15.2244],[74.3142,15.1804],[74.2836,15.1429],[74.2727,15.0975],[74.2966,15.0412],[74.2519,14.9935],[74.2524,14.9588],[74.1998,14.9261],[74.1793,14.9567],[74.0857,14.9006],[74.044,14.9175],[74.0499,14.9592],[74.0349,14.9972],[73.9972,15.0217],[73.9816,15.0529],[73.9318,15.0791],[73.9259,15.11],[73.949,15.1452],[73.9023,15.3117],[73.8711,15.3712],[73.8427,15.3603],[73.8055,15.3992],[73.8652,15.4289],[73.8472,15.4527],[73.8127,15.456],[73.81,15.4958],[73.7693,15.4914],[73.7555,15.5449],[73.6892,15.7179],[73.6754,15.727],[73.7855,15.7255],[73.8252,15.7416],[73.8565,15.8008],[73.8778,15.7492],[73.9387,15.7427],[73.9635,15.6921],[73.9614,15.6415],[73.9908,15.6115],[74.0838,15.6341],[74.1184,15.652]]]},"properties":{"ST_NM":"Goa","region":"west"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[77.5856,30.3796],[77.6035,30.3692],[77.5784,30.3267],[77.4772,30.1824],[77.4297,30.164],[77.4058,30.0894],[77.3825,30.0925],[77.3343,30.0538],[77.2969,30.0534],[77.2764,29.9967],[77.2469,29.9767],[77.1782,29.8458],[77.1792,29.8127],[77.1466,29.7719],[77.1342,29.7185],[77.1559,29.6983],[77.113,29.6097],[77.0964,29.5195],[77.1334,29.4827],[77.1232,29.4554],[77.1484,29.4341],[77.1233,29.3704],[77.1583,29.3029],[77.1388,29.2663],[77.1325,29.2225],[77.1473,29.1796],[77.1341,29.0952],[77.1651,29.0766],[77.2023,28.9872],[77.1967,28.9377],[77.2329,28.9187],[77.2098,28.8579],[77.0617,28.8708],[77.04,28.8318],[76.9918,28.8384],[76.9508,28.8183],[76.9446,28.754],[76.9678,28.6996],[76.935,28.6675],[76.921,28.631],[76.8883,28.6319],[76.8425,28.5561],[76.8914,28.5008],[76.908,28.5137],[76.9517,28.5042],[77.0066,28.5413],[77.0599,28.5123],[77.0947,28.5138],[77.1288,28.4407],[77.1744,28.4047],[77.2495,28.4245],[77.2433,28.4788],[77.2903,28.4966],[77.3141,28.4836],[77.3454,28.5133],[77.3863,28.468],[77.4364,28.431],[77.4776,28.4191],[77.5052,28.3627],[77.4725,28.3367],[77.5062,28.3041],[77.4927,28.252],[77.5188,28.2425],[77.5306,28.1859],[77.5124,28.1249],[77.4811,28.0976],[77.5411,27.982],[77.5294,27.9255],[77.4753,27.9293],[77.4795,27.8979],[77.4132,27.8517],[77.3493,27.8557],[77.3312,27.8311],[77.2837,27.8011],[77.2524,27.7907],[77.2134,27.8016],[77.1833,27.7876],[77.1085,27.7863],[77.0448,27.8218],[77.0358,27.7816],[77.0449,27.7434],[77.0001,27.737],[76.9791,27.6536],[76.9421,27.6738],[76.9155,27.6526],[76.8942,27.7179],[76.915,27.8348],[76.943,27.8539],[76.9315,27.9226],[76.9308,27.9929],[76.9705,28.1384],[76.932,28.1531],[76.8675,28.2199],[76.8084,28.2109],[76.7948,28.1484],[76.7435,28.121],[76.716,28.1279],[76.6516,28.0616],[76.6681,28.0138],[76.6049,28.0039],[76.5447,27.9637],[76.5438,28.0342],[76.4547,28.0423],[76.4992,28.1002],[76.4757,28.1486],[76.3566,28.1437],[76.3366,28.1026],[76.3565,28.0675],[76.3208,28.016],[76.261,28.0675],[76.2281,28.0484],[76.1895,28.0565],[76.1604,27.9984],[76.1866,27.9655],[76.1682,27.9034],[76.2013,27.8928],[76.1938,27.8595],[76.2252,27.8332],[76.1812,27.7975],[76.1323,27.8245],[76.1233,27.851],[76.0878,27.8606],[76.0477,27.8351],[75.9714,27.852],[75.9873,27.9043],[75.9424,27.9132],[75.9769,28.0314],[76.0164,28.0305],[76.0408,28.074],[75.9834,28.0813],[75.946,28.1077],[76.0261,28.1646],[76.0703,28.1652],[76.0403,28.222],[76.0132,28.244],[76.0263,28.275],[75.9578,28.3139],[75.9295,28.3591],[75.8328,28.4054],[75.777,28.4004],[75.7883,28.4536],[75.7356,28.4688],[75.69,28.4999],[75.6658,28.536],[75.6337,28.5445],[75.6224,28.6014],[75.5619,28.6131],[75.5412,28.6605],[75.538,28.7266],[75.5081,28.7886],[75.5196,28.8345],[75.4971,28.8549],[75.5057,28.9359],[75.5274,28.971],[75.5206,29.0044],[75.4582,29.0135],[75.4418,29.0575],[75.3912,29.0627],[75.3946,29.1108],[75.375,29.1352],[75.4067,29.1697],[75.4106,29.2555],[75.3895,29.2612],[75.3296,29.2327],[75.34,29.2828],[75.3229,29.2895],[75.2101,29.2347],[75.1957,29.2634],[75.1196,29.2229],[75.0751,29.2299],[75.05,29.2862],[74.9986,29.2707],[74.9617,29.2803],[74.9608,29.318],[74.9384,29.3618],[74.8505,29.4036],[74.8203,29.3972],[74.7819,29.3579],[74.7396,29.354],[74.7194,29.37],[74.6582,29.372],[74.6545,29.3329],[74.6042,29.3273],[74.6026,29.3653],[74.5661,29.4206],[74.5366,29.4245],[74.5433,29.4679],[74.5846,29.4585],[74.623,29.531],[74.5759,29.5601],[74.5854,29.6539],[74.6098,29.7218],[74.6009,29.7659],[74.535,29.7407],[74.4772,29.7453],[74.4844,29.8143],[74.5391,29.8406],[74.561,29.8696],[74.5436,29.9014],[74.51,29.9082],[74.5272,29.9428],[74.5967,29.9123],[74.6468,29.9043],[74.6582,29.9323],[74.7022,29.9719],[74.7314,29.9615],[74.7794,29.972],[74.8064,29.9921],[74.8562,29.9565],[74.888,29.9671],[74.9228,29.952],[74.9471,29.9085],[74.9905,29.868],[75.0699,29.8771],[75.0888,29.9172],[75.1147,29.8787],[75.0908,29.8527],[75.1368,29.806],[75.191,29.8414],[75.2085,29.7932],[75.2416,29.7546],[75.1969,29.7161],[75.2068,29.6875],[75.1679,29.667],[75.1824,29.6293],[75.2353,29.6021],[75.2222,29.5813],[75.2421,29.5459],[75.3094,29.5608],[75.3166,29.6306],[75.3457,29.696],[75.3918,29.7131],[75.4141,29.77],[75.4539,29.782],[75.5611,29.7707],[75.5721,29.7433],[75.6345,29.7553],[75.6783,29.7761],[75.7028,29.7524],[75.7378,29.814],[75.7885,29.8114],[75.837,29.7943],[75.8702,29.7493],[75.9844,29.7271],[76.0434,29.7427],[76.085,29.8008],[76.1292,29.797],[76.148,29.82],[76.1848,29.8228],[76.1978,29.8448],[76.2438,29.8524],[76.2301,29.8854],[76.1934,29.8857],[76.1782,29.9422],[76.2054,29.9738],[76.2262,30.0587],[76.2489,30.0851],[76.2197,30.1161],[76.2274,30.1445],[76.2853,30.1062],[76.3399,30.0987],[76.4091,30.1468],[76.3872,30.1706],[76.4218,30.1924],[76.4599,30.1295],[76.4625,30.1011],[76.547,30.0762],[76.577,30.11],[76.5993,30.1125],[76.6398,30.1503],[76.6003,30.1839],[76.6239,30.2278],[76.6234,30.2646],[76.688,30.3269],[76.711,30.3258],[76.7461,30.3672],[76.7134,30.3881],[76.735,30.4191],[76.7688,30.4308],[76.8234,30.4116],[76.851,30.4353],[76.9156,30.3653],[76.9394,30.3948],[76.8864,30.4297],[76.9311,30.5009],[76.9164,30.5541],[76.9271,30.6037],[76.8292,30.681],[76.8483,30.7145],[76.8381,30.7549],[76.857,30.7948],[76.8467,30.834],[76.7843,30.8779],[76.7767,30.9043],[76.8246,30.9272],[76.841,30.8917],[76.8759,30.881],[76.9149,30.8897],[76.9512,30.8506],[76.9489,30.8245],[77.0113,30.8107],[77.0205,30.7401],[77.0974,30.7382],[77.1612,30.691],[77.1723,30.6013],[77.1243,30.5651],[77.1353,30.5455],[77.1929,30.5256],[77.2078,30.4744],[77.2705,30.4812],[77.3226,30.4459],[77.4026,30.4293],[77.4341,30.4311],[77.4432,30.3954],[77.4898,30.4106],[77.5185,30.4433],[77.5557,30.3901],[77.5856,30.3796]]]},"properties":{"ST_NM":"Haryana","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[78.3986,32.5257],[78.4478,32.5063],[78.4648,32.4861],[78.4542,32.4524],[78.4941,32.4218],[78.5348,32.4144],[78.477,32.3328],[78.48,32.2736],[78.4548,32.2422],[78.5551,32.2457],[78.6107,32.2123],[78.6038,32.143],[78.6118,32.119],[78.6633,32.1026],[78.7057,32.0663],[78.7343,32.0041],[78.765,32.0027],[78.7714,31.9294],[78.7417,31.9017],[78.7454,31.8431],[78.7027,31.8074],[78.7057,31.774],[78.764,31.6746],[78.7985,31.6823],[78.8098,31.6384],[78.8469,31.608],[78.7978,31.5625],[78.7307,31.5323],[78.7274,31.4899],[78.7587,31.4825],[78.7977,31.4435],[78.7528,31.3854],[78.77,31.3237],[78.7916,31.3046],[78.882,31.2868],[78.9221,31.2254],[78.9575,31.1867],[78.9859,31.1739],[79.0065,31.1192],[78.9592,31.0995],[78.89,31.0971],[78.8436,31.128],[78.8107,31.172],[78.7695,31.1865],[78.6617,31.1893],[78.6486,31.2129],[78.5797,31.226],[78.552,31.2003],[78.4837,31.199],[78.4617,31.2361],[78.4073,31.2559],[78.3703,31.2864],[78.3076,31.2615],[78.2759,31.2614],[78.2432,31.2294],[78.1981,31.2177],[78.1602,31.2256],[78.1036,31.1855],[78.0659,31.1872],[78.0291,31.1625],[77.9847,31.157],[77.9686,31.1726],[77.8638,31.1086],[77.8512,31.0734],[77.8171,31.0559],[77.807,31.0268],[77.8318,30.9941],[77.8101,30.9557],[77.7737,30.9742],[77.749,30.9535],[77.7623,30.9193],[77.8041,30.9236],[77.8057,30.8533],[77.7572,30.8601],[77.7577,30.8352],[77.7074,30.7404],[77.733,30.7354],[77.7733,30.6686],[77.7867,30.6144],[77.7566,30.6045],[77.7718,30.5593],[77.8064,30.5546],[77.8185,30.5081],[77.721,30.4731],[77.688,30.4475],[77.5987,30.4282],[77.576,30.3974],[77.5856,30.3796],[77.5557,30.3901],[77.5185,30.4433],[77.4898,30.4106],[77.4432,30.3954],[77.4341,30.4311],[77.4026,30.4293],[77.3226,30.4459],[77.2705,30.4812],[77.2078,30.4744],[77.1929,30.5256],[77.1353,30.5455],[77.1243,30.5651],[77.1723,30.6013],[77.1612,30.691],[77.0974,30.7382],[77.0205,30.7401],[77.0113,30.8107],[76.9489,30.8245],[76.9512,30.8506],[76.9149,30.8897],[76.8759,30.881],[76.841,30.8917],[76.8246,30.9272],[76.7767,30.9043],[76.7081,30.9704],[76.6732,30.9688],[76.6247,30.9988],[76.611,31.0459],[76.6385,31.1079],[76.6016,31.1286],[76.615,31.19],[76.6454,31.2091],[76.5835,31.2762],[76.5492,31.2528],[76.4861,31.304],[76.4317,31.3269],[76.3721,31.4085],[76.3311,31.4012],[76.3408,31.3635],[76.3076,31.3426],[76.3112,31.3195],[76.2139,31.2995],[76.1808,31.3105],[76.1788,31.3405],[76.1493,31.3533],[76.1698,31.399],[76.1345,31.4505],[76.0979,31.5328],[76.0177,31.6322],[75.9475,31.813],[75.9612,31.8549],[75.8925,31.9618],[75.7797,32.0047],[75.7508,32.0377],[75.6543,32.0776],[75.6021,32.0659],[75.6008,32.0931],[75.6613,32.1369],[75.6632,32.1916],[75.6247,32.1899],[75.6571,32.2512],[75.773,32.2903],[75.8112,32.3486],[75.8453,32.3574],[75.8742,32.3958],[75.9192,32.4121],[75.9014,32.4531],[75.8344,32.5118],[75.8761,32.5505],[75.8847,32.59],[75.9159,32.613],[75.9185,32.654],[75.9011,32.6986],[75.9261,32.7456],[75.8888,32.8032],[75.8113,32.8778],[75.8423,32.9293],[75.9245,32.9062],[75.9539,32.8734],[76.0321,32.9167],[76.0456,32.9378],[76.0973,32.9643],[76.1123,33.0063],[76.1661,33.007],[76.1829,33.0207],[76.2474,33.0216],[76.2953,33.0576],[76.2918,33.1032],[76.3745,33.1542],[76.4104,33.1866],[76.4879,33.1797],[76.5674,33.2103],[76.6053,33.2043],[76.6185,33.1744],[76.7469,33.1792],[76.7758,33.2205],[76.7712,33.2496],[76.7927,33.2566],[76.8344,33.2049],[76.8138,33.1776],[76.8553,33.1143],[76.8852,33.1216],[76.9416,33.0284],[76.973,32.9998],[77.0103,32.9891],[77.049,32.999],[77.0955,32.9711],[77.1497,32.9781],[77.1642,32.9189],[77.2339,32.8937],[77.3197,32.8522],[77.339,32.8168],[77.3739,32.8245],[77.3744,32.8547],[77.3974,32.8785],[77.4449,32.8796],[77.469,32.8584],[77.5017,32.8856],[77.5402,32.8874],[77.6021,32.9426],[77.6315,32.9452],[77.7131,32.9826],[77.8,32.9122],[77.7809,32.8656],[77.8788,32.8188],[77.8841,32.7877],[77.9337,32.7607],[77.9183,32.6912],[77.9518,32.6589],[78.0158,32.6198],[78.0468,32.645],[78.0872,32.6244],[78.1106,32.6626],[78.1478,32.6546],[78.158,32.684],[78.2195,32.6647],[78.253,32.6911],[78.3122,32.7092],[78.3042,32.7342],[78.3572,32.7578],[78.3877,32.7569],[78.3944,32.7156],[78.3796,32.6683],[78.4052,32.6194],[78.348,32.5811],[78.3128,32.5737],[78.3153,32.5254],[78.2946,32.5041],[78.3264,32.472],[78.3986,32.5257]]]},"properties":{"ST_NM":"Himachal Pradesh","region":"north"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[87.7114,25.2577],[87.7787,25.2505],[87.7729,25.2058],[87.7792,25.1436],[87.8014,25.1152],[87.7946,25.0897],[87.8767,25.0344],[87.896,25.011],[87.958,24.9699],[87.9611,24.9227],[87.8908,24.8552],[87.8967,24.8297],[87.8521,24.7618],[87.86,24.7341],[87.9075,24.7216],[87.8905,24.6755],[87.9171,24.6658],[87.9058,24.6314],[87.9133,24.5972],[87.8919,24.5656],[87.8278,24.5578],[87.7991,24.5258],[87.8107,24.4771],[87.7887,24.4155],[87.787,24.3637],[87.7547,24.3098],[87.7001,24.2628],[87.6532,24.2393],[87.7021,24.1745],[87.6844,24.1429],[87.6157,24.1658],[87.5782,24.1554],[87.5852,24.1242],[87.5713,24.0892],[87.5468,24.085],[87.5221,24.1122],[87.4933,24.0541],[87.5091,24.0322],[87.4402,23.9816],[87.3605,24.0129],[87.337,24.034],[87.2344,24.0325],[87.2624,23.9673],[87.2916,23.9585],[87.2951,23.9013],[87.2695,23.8744],[87.2444,23.903],[87.2235,23.8457],[87.1745,23.8547],[87.1517,23.7987],[87.1225,23.7962],[87.0535,23.8227],[87.0108,23.8525],[86.9657,23.8654],[86.9357,23.8522],[86.9157,23.8832],[86.8846,23.8658],[86.8533,23.8258],[86.804,23.8024],[86.8257,23.7776],[86.7985,23.6884],[86.7453,23.68],[86.7182,23.6991],[86.5991,23.6657],[86.5271,23.6296],[86.4618,23.6298],[86.4487,23.6014],[86.3674,23.5398],[86.3682,23.4834],[86.3505,23.4417],[86.3101,23.4118],[86.2604,23.4185],[86.2288,23.4434],[86.1485,23.4654],[86.1605,23.5083],[86.1586,23.5595],[86.0947,23.5631],[86.042,23.5862],[86.0168,23.5475],[86.0397,23.5149],[86.0319,23.4835],[85.9503,23.4709],[85.8761,23.4808],[85.8636,23.4316],[85.8679,23.3295],[85.8394,23.3073],[85.8206,23.2704],[85.8834,23.196],[85.8951,23.155],[86.0375,23.1471],[86.0492,23.1061],[86.0981,23.0854],[86.127,23.0868],[86.156,23.0329],[86.1855,23.0052],[86.2244,22.9946],[86.2932,23.0139],[86.3379,22.9906],[86.364,23.0009],[86.3939,22.981],[86.4256,22.9968],[86.4977,22.9928],[86.5206,22.9705],[86.4912,22.9387],[86.4706,22.9489],[86.4362,22.9229],[86.4647,22.8949],[86.4194,22.791],[86.4695,22.7541],[86.5029,22.7172],[86.5428,22.7222],[86.6413,22.6587],[86.6331,22.611],[86.6585,22.5757],[86.7101,22.5831],[86.7658,22.5757],[86.802,22.5018],[86.7937,22.4777],[86.7512,22.4827],[86.7647,22.4266],[86.8439,22.4015],[86.8332,22.3245],[86.8881,22.2971],[86.8871,22.2576],[86.8231,22.2661],[86.8022,22.2179],[86.7777,22.2368],[86.7569,22.2113],[86.727,22.2168],[86.6829,22.2233],[86.6515,22.2632],[86.5848,22.3006],[86.5262,22.3125],[86.4994,22.3463],[86.411,22.3198],[86.3678,22.3438],[86.3229,22.3848],[86.2941,22.4268],[86.2258,22.453],[86.2115,22.4715],[86.1237,22.4886],[86.104,22.5009],[86.0691,22.5559],[85.9734,22.5058],[85.9603,22.4614],[86.0181,22.4257],[86.0291,22.3858],[85.998,22.3448],[86.0171,22.2973],[85.9885,22.2673],[85.9856,22.2371],[86.0314,22.1925],[85.9967,22.1324],[86.0094,22.1178],[85.9139,21.98],[85.8257,21.9751],[85.766,21.9949],[85.7772,22.0556],[85.8074,22.1161],[85.7302,22.0653],[85.6902,22.0609],[85.6449,22.0947],[85.5994,22.0783],[85.4945,22.1194],[85.4123,22.1616],[85.371,22.161],[85.3527,22.1287],[85.3231,22.1275],[85.2748,22.0816],[85.2516,22.0266],[85.1531,22.0789],[85.1267,22.0748],[85.0999,22.1042],[85.0554,22.1156],[85.0298,22.1624],[85.0524,22.1951],[85.0995,22.2935],[85.0765,22.3561],[85.0877,22.3884],[85.0367,22.4814],[84.9707,22.4516],[84.9543,22.4587],[84.9094,22.4227],[84.8801,22.4489],[84.8358,22.432],[84.8034,22.448],[84.759,22.4467],[84.7501,22.4193],[84.6666,22.4195],[84.6288,22.4345],[84.503,22.4198],[84.4771,22.3869],[84.4289,22.371],[84.4005,22.3464],[84.3675,22.3532],[84.317,22.3423],[84.269,22.3545],[84.2504,22.379],[84.1968,22.3781],[84.141,22.4259],[84.1424,22.4723],[84.113,22.4765],[84.0756,22.5062],[84.0091,22.5261],[84.0028,22.546],[84.0244,22.5919],[84.0494,22.595],[84.084,22.6382],[84.15,22.6365],[84.2381,22.6919],[84.2295,22.7369],[84.2598,22.7677],[84.286,22.764],[84.3147,22.8006],[84.3347,22.8616],[84.3715,22.8647],[84.3962,22.9259],[84.3804,22.9721],[84.3281,22.982],[84.2805,22.964],[84.2425,22.9834],[84.1783,22.9799],[84.1469,22.9905],[84.1254,23.037],[84.1334,23.0831],[84.0722,23.109],[84.0319,23.1579],[84.0634,23.2066],[84.0537,23.2474],[84.0744,23.3336],[84.0231,23.378],[84.0117,23.3537],[83.9693,23.3669],[83.9817,23.4223],[83.971,23.467],[84.0149,23.5042],[84.028,23.5457],[84.03,23.5996],[84.0087,23.6279],[83.9319,23.6205],[83.9397,23.5705],[83.8258,23.5908],[83.7771,23.608],[83.7589,23.6536],[83.7236,23.6839],[83.746,23.7195],[83.7377,23.7605],[83.7076,23.8175],[83.6665,23.8443],[83.5689,23.8667],[83.5488,23.934],[83.5151,23.9815],[83.5082,24.0312],[83.4542,24.0415],[83.4342,24.0843],[83.3878,24.1],[83.3299,24.1017],[83.3547,24.1268],[83.3821,24.1952],[83.3785,24.2291],[83.408,24.2628],[83.4072,24.2888],[83.38,24.3131],[83.4479,24.3711],[83.3859,24.458],[83.4015,24.5035],[83.5033,24.5254],[83.596,24.5126],[83.7546,24.5094],[83.8015,24.5299],[83.8727,24.5322],[83.933,24.5473],[83.9748,24.5914],[83.998,24.6383],[84.034,24.6298],[84.0731,24.5674],[84.0851,24.5136],[84.1039,24.4809],[84.1786,24.5052],[84.1728,24.5451],[84.2361,24.5495],[84.259,24.5342],[84.2972,24.5605],[84.3221,24.5166],[84.3028,24.48],[84.3476,24.3912],[84.4261,24.3572],[84.4244,24.3298],[84.4659,24.3316],[84.5009,24.2876],[84.5337,24.3597],[84.5589,24.376],[84.5675,24.4092],[84.6649,24.3909],[84.6856,24.4556],[84.7272,24.4692],[84.7556,24.5001],[84.7861,24.5036],[84.8022,24.5306],[84.8388,24.5127],[84.8329,24.4699],[84.8709,24.4582],[84.9166,24.3733],[84.9552,24.3715],[85.0315,24.4158],[85.0817,24.3985],[85.1739,24.4206],[85.1615,24.4607],[85.2261,24.4633],[85.2496,24.4908],[85.2825,24.4915],[85.2921,24.5237],[85.3732,24.5248],[85.3975,24.5448],[85.432,24.5315],[85.491,24.5481],[85.5238,24.521],[85.5721,24.5623],[85.5806,24.6008],[85.6152,24.5808],[85.6691,24.5798],[85.6755,24.618],[85.6604,24.6723],[85.7086,24.7268],[85.7045,24.7663],[85.7416,24.8198],[85.7781,24.7965],[85.8201,24.808],[85.8897,24.7927],[85.9204,24.7441],[85.9702,24.733],[85.9804,24.7487],[86.0553,24.7797],[86.0538,24.7559],[86.0942,24.7449],[86.1285,24.6987],[86.1154,24.6437],[86.1246,24.6113],[86.1583,24.5867],[86.2136,24.5943],[86.2924,24.5879],[86.3092,24.5112],[86.2761,24.4659],[86.3159,24.4422],[86.3955,24.4153],[86.413,24.3803],[86.4453,24.3679],[86.4912,24.428],[86.485,24.47],[86.5167,24.5354],[86.5526,24.5444],[86.6032,24.602],[86.6694,24.5662],[86.787,24.6165],[86.8113,24.5689],[86.86,24.5561],[86.9085,24.585],[86.9298,24.6268],[86.9784,24.6401],[86.9954,24.6204],[87.0511,24.6086],[87.0543,24.6697],[87.0805,24.7261],[87.0772,24.8077],[87.1094,24.8517],[87.1571,24.883],[87.145,24.9192],[87.1542,24.9754],[87.1461,25.009],[87.1811,25.0658],[87.2425,25.1027],[87.2955,25.0886],[87.3183,25.1948],[87.3345,25.2162],[87.3709,25.2072],[87.3918,25.2279],[87.463,25.1951],[87.4739,25.2402],[87.4971,25.2599],[87.4873,25.2965],[87.5432,25.2972],[87.5519,25.3327],[87.5844,25.3336],[87.612,25.3128],[87.692,25.3116],[87.7114,25.2577]]]},"properties":{"ST_NM":"Jharkhand","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.8738,12.0426],[79.8571,12.0068],[79.8406,11.9558],[79.8098,11.9753],[79.7493,11.9222],[79.7428,11.9778],[79.7206,11.9927],[79.6916,11.9514],[79.7406,11.9055],[79.71,11.8892],[79.7134,11.8607],[79.77,11.8747],[79.8077,11.8364],[79.807,11.8336],[79.7369,11.8423],[79.7198,11.785],[79.7559,11.7754],[79.7958,11.7855],[79.761,11.6238],[79.7572,11.5575],[79.7661,11.5216],[79.8034,11.4541],[79.8188,11.3943],[79.8431,11.3512],[79.8346,11.3218],[79.8562,11.1761],[79.8544,10.9833],[79.8402,11.0021],[79.7467,11.0026],[79.7209,10.9692],[79.7248,10.929],[79.7769,10.8966],[79.824,10.8842],[79.821,10.8456],[79.8413,10.828],[79.8507,10.8278],[79.8534,10.6359],[79.8699,10.3745],[79.8822,10.3232],[79.8619,10.2831],[79.7685,10.2719],[79.6802,10.282],[79.6363,10.2946],[79.4839,10.3155],[79.3811,10.3164],[79.3666,10.294],[79.3003,10.265],[79.2669,10.229],[79.2287,10.1493],[79.2259,10.1015],[79.2518,10.0511],[79.2443,10.0273],[79.1527,9.9283],[79.1258,9.8909],[79.1189,9.8524],[79.0826,9.8156],[78.9803,9.6896],[78.9549,9.6239],[78.9307,9.5959],[78.9144,9.493],[78.9027,9.4635],[78.9336,9.412],[79.0163,9.331],[79.0665,9.298],[79.1613,9.2839],[79.265,9.2923],[79.3115,9.3278],[79.3352,9.3087],[79.2999,9.2458],[79.2239,9.2581],[79.1904,9.2817],[79.0909,9.2602],[78.9807,9.2745],[78.8758,9.2573],[78.7274,9.2093],[78.7146,9.1889],[78.6649,9.1938],[78.65,9.1613],[78.5748,9.1304],[78.536,9.1376],[78.4151,9.1141],[78.2258,8.972],[78.1987,8.9388],[78.1721,8.8838],[78.1608,8.8052],[78.1954,8.7516],[78.1636,8.7239],[78.1385,8.6802],[78.135,8.6162],[78.1447,8.598],[78.1306,8.5479],[78.1433,8.5017],[78.0637,8.4124],[78.0652,8.3729],[77.9803,8.3436],[77.8909,8.2705],[77.8411,8.2517],[77.8045,8.203],[77.7937,8.1623],[77.758,8.1453],[77.733,8.1639],[77.6373,8.1533],[77.5836,8.1379],[77.5559,8.0766],[77.5309,8.0767],[77.4052,8.1051],[77.3314,8.1274],[77.249,8.1711],[77.1834,8.2198],[77.0978,8.2925],[77.1186,8.3203],[77.1685,8.3326],[77.167,8.3839],[77.2065,8.4443],[77.2135,8.512],[77.2621,8.5067],[77.2751,8.5386],[77.2514,8.6203],[77.2009,8.669],[77.179,8.7307],[77.2297,8.7847],[77.264,8.8421],[77.2567,8.8782],[77.2211,8.9041],[77.1733,8.9916],[77.1493,9.0097],[77.167,9.0449],[77.1925,9.0436],[77.2056,9.0839],[77.2678,9.1534],[77.2567,9.1967],[77.2995,9.311],[77.338,9.3687],[77.3364,9.4124],[77.3659,9.4602],[77.3925,9.4595],[77.3991,9.4962],[77.3657,9.551],[77.3037,9.5988],[77.2696,9.5729],[77.2342,9.5816],[77.2036,9.6145],[77.1677,9.6151],[77.1808,9.6586],[77.2066,9.6945],[77.2049,9.724],[77.2468,9.7985],[77.2269,9.822],[77.2183,9.9049],[77.2728,9.9643],[77.2554,10.0112],[77.2616,10.0336],[77.204,10.0885],[77.2012,10.1072],[77.2443,10.1317],[77.2749,10.1313],[77.2778,10.1934],[77.2636,10.2639],[77.2278,10.3154],[77.2353,10.3529],[77.176,10.3586],[77.1202,10.318],[77.056,10.2873],[77.0516,10.2638],[76.9841,10.2223],[76.9104,10.2351],[76.8967,10.2621],[76.8299,10.3032],[76.8486,10.3674],[76.8233,10.3946],[76.8387,10.5959],[76.8143,10.635],[76.8821,10.639],[76.8661,10.6841],[76.9039,10.7627],[76.901,10.8079],[76.8701,10.809],[76.8308,10.8707],[76.7798,10.8913],[76.7392,10.8946],[76.6591,10.9306],[76.6667,10.9682],[76.7158,11.0405],[76.7465,11.0568],[76.7481,11.1348],[76.7002,11.1536],[76.698,11.1742],[76.7355,11.2157],[76.707,11.2383],[76.6289,11.1943],[76.5338,11.1857],[76.499,11.2114],[76.4489,11.2056],[76.4531,11.2395],[76.5217,11.2707],[76.5422,11.2967],[76.5478,11.359],[76.4604,11.3889],[76.3687,11.4563],[76.326,11.4541],[76.2647,11.4813],[76.2407,11.526],[76.2334,11.5679],[76.279,11.6009],[76.3024,11.5713],[76.3359,11.5958],[76.378,11.602],[76.3881,11.6297],[76.4271,11.6335],[76.4313,11.6665],[76.4566,11.6646],[76.5116,11.7051],[76.5513,11.6724],[76.5596,11.6253],[76.6136,11.6078],[76.6714,11.616],[76.8228,11.6082],[76.85,11.6867],[76.8883,11.7338],[76.9088,11.7952],[76.9699,11.777],[77.0129,11.8147],[77.0387,11.794],[77.0808,11.7366],[77.1168,11.7303],[77.1107,11.7736],[77.1892,11.7926],[77.2386,11.7948],[77.2498,11.8131],[77.2938,11.8091],[77.3351,11.7713],[77.3955,11.7862],[77.428,11.7671],[77.4498,11.7961],[77.4654,11.8752],[77.4905,11.9086],[77.4928,11.9414],[77.5379,11.9325],[77.669,11.9492],[77.6963,12.0158],[77.7266,12.0612],[77.7557,12.0798],[77.7755,12.1185],[77.7532,12.134],[77.7313,12.1801],[77.6125,12.206],[77.5187,12.1945],[77.4722,12.21],[77.4876,12.2806],[77.5271,12.2788],[77.5656,12.3061],[77.5786,12.3358],[77.613,12.3612],[77.6272,12.4585],[77.615,12.5042],[77.5872,12.5148],[77.5793,12.5731],[77.606,12.6281],[77.5989,12.6672],[77.6599,12.6839],[77.6786,12.6604],[77.7404,12.6737],[77.7616,12.7273],[77.7943,12.7578],[77.7991,12.8516],[77.836,12.8704],[77.9389,12.8726],[77.9173,12.838],[77.9407,12.8234],[77.9898,12.8216],[78.0307,12.8525],[78.0765,12.8397],[78.1344,12.7819],[78.2309,12.7607],[78.2401,12.7027],[78.2765,12.7016],[78.2964,12.6711],[78.3794,12.6251],[78.4717,12.6323],[78.4679,12.6759],[78.5038,12.682],[78.5043,12.7249],[78.5547,12.6991],[78.5575,12.7573],[78.5925,12.7827],[78.6077,12.8219],[78.6015,12.8508],[78.6335,12.9314],[78.6209,12.9913],[78.6555,13.0153],[78.7052,13.0153],[78.7145,13.0687],[78.7513,13.055],[78.7877,13.0642],[78.813,13.0891],[78.842,13.0787],[78.8814,13.0982],[78.9061,13.0452],[78.9239,13.0808],[78.9825,13.0864],[79.0634,13.0531],[79.0809,13.0258],[79.1085,13.0388],[79.1631,13.0203],[79.1848,13.0299],[79.1856,13.0753],[79.2344,13.1053],[79.2269,13.1589],[79.3099,13.112],[79.365,13.1308],[79.3561,13.1646],[79.3921,13.1925],[79.4316,13.1893],[79.4531,13.2384],[79.4185,13.243],[79.4138,13.3002],[79.3983,13.3302],[79.4952,13.3452],[79.5373,13.3386],[79.54,13.2724],[79.574,13.259],[79.6062,13.2882],[79.6518,13.2918],[79.6936,13.2735],[79.7598,13.2075],[79.7947,13.2421],[79.735,13.276],[79.7618,13.3127],[79.7917,13.2935],[79.8173,13.3186],[79.9313,13.3515],[79.958,13.3792],[79.9396,13.4251],[79.9733,13.4297],[79.9724,13.4691],[80.0078,13.4783],[80.0284,13.5388],[80.0771,13.5264],[80.0782,13.4888],[80.1446,13.5013],[80.1619,13.4883],[80.2259,13.4851],[80.2422,13.4725],[80.2683,13.5645],[80.301,13.4787],[80.3238,13.4501],[80.3464,13.3154],[80.3447,13.2762],[80.2862,13.0602],[80.2595,12.9369],[80.2478,12.8103],[80.2551,12.7831],[80.1656,12.5276],[80.1564,12.4601],[80.1377,12.4106],[80.0568,12.3262],[79.8846,12.0645],[79.8738,12.0426]],[[79.6384,11.9863],[79.6184,11.9261],[79.6559,11.9079],[79.6693,11.9375],[79.6384,11.9863]]]},"properties":{"ST_NM":"Tamil Nadu","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[79.396,25.0322],[79.3737,25.0467],[79.3894,25.0918],[79.4239,25.045],[79.396,25.0322]]],[[[80.0651,28.8367],[80.1185,28.828],[80.1713,28.782],[80.2161,28.7546],[80.2505,28.7573],[80.2768,28.7115],[80.3194,28.6977],[80.3256,28.6664],[80.377,28.6289],[80.4161,28.6395],[80.4623,28.6216],[80.4721,28.5908],[80.5235,28.555],[80.5034,28.6644],[80.5397,28.6902],[80.6111,28.6387],[80.6516,28.6343],[80.7144,28.5686],[80.7687,28.5659],[80.7842,28.5293],[80.8438,28.4996],[80.8963,28.5071],[80.9052,28.4663],[80.9786,28.434],[80.9979,28.4521],[81.058,28.4139],[81.0803,28.389],[81.2106,28.3607],[81.2339,28.326],[81.2327,28.2889],[81.3207,28.1972],[81.3181,28.145],[81.3639,28.1413],[81.3906,28.1736],[81.4444,28.1618],[81.4839,28.1186],[81.4781,28.0826],[81.5511,28.0472],[81.6439,27.9931],[81.6988,27.9877],[81.8046,27.9038],[81.8332,27.8977],[81.8993,27.8536],[81.9679,27.9288],[82.0699,27.9233],[82.121,27.8659],[82.1533,27.8668],[82.208,27.843],[82.3037,27.7737],[82.3678,27.7434],[82.4024,27.704],[82.4492,27.6797],[82.5167,27.6913],[82.5408,27.6858],[82.605,27.7058],[82.7086,27.716],[82.7136,27.6645],[82.7378,27.6427],[82.7539,27.5848],[82.7351,27.5027],[82.9292,27.5011],[82.9688,27.4637],[83.0349,27.4488],[83.1621,27.4573],[83.1883,27.4539],[83.2112,27.4232],[83.2723,27.3834],[83.2962,27.334],[83.3385,27.3337],[83.3745,27.3595],[83.4029,27.401],[83.385,27.4361],[83.4095,27.4787],[83.6149,27.4693],[83.8308,27.3699],[83.8635,27.3441],[83.8715,27.3073],[83.9043,27.3266],[83.9292,27.2916],[83.9118,27.246],[83.9557,27.2353],[83.987,27.1976],[83.9474,27.1118],[83.9647,27.0843],[84.0165,27.1055],[84.0056,27.0603],[84.0495,27.0345],[84.0564,26.9902],[84.0443,26.9315],[84.0798,26.8779],[84.1298,26.893],[84.1406,26.8527],[84.1661,26.8338],[84.2188,26.8714],[84.2541,26.8566],[84.26,26.807],[84.2326,26.7537],[84.2549,26.7267],[84.3061,26.7496],[84.3303,26.684],[84.4106,26.6702],[84.4195,26.6261],[84.3528,26.6199],[84.2847,26.5996],[84.1593,26.6361],[84.0882,26.6362],[84.09,26.607],[84.0478,26.5363],[84.0069,26.5256],[83.9402,26.5253],[83.9152,26.5029],[83.9108,26.4497],[83.9915,26.4323],[84.0186,26.4471],[84.0683,26.3884],[84.1755,26.3732],[84.1861,26.3137],[84.1769,26.265],[84.0599,26.2236],[84.0262,26.1966],[84.056,26.1001],[84.0887,26.1003],[84.2066,25.9989],[84.3119,25.9438],[84.354,25.9588],[84.4119,25.9308],[84.4276,25.8913],[84.5109,25.8714],[84.534,25.8763],[84.5508,25.8407],[84.6248,25.7919],[84.61,25.7552],[84.5603,25.7369],[84.5611,25.6839],[84.5202,25.675],[84.4621,25.7089],[84.4297,25.7111],[84.3646,25.7419],[84.3285,25.7311],[84.324,25.6704],[84.2941,25.6602],[84.2232,25.6625],[84.1989,25.7022],[84.1544,25.7274],[84.1051,25.7212],[84.075,25.6953],[84.0813,25.6365],[84.0174,25.6148],[83.9142,25.5452],[83.8079,25.4091],[83.7712,25.3969],[83.7423,25.4099],[83.6946,25.3712],[83.6636,25.3725],[83.6298,25.3301],[83.5372,25.3036],[83.4093,25.2456],[83.4035,25.2164],[83.3536,25.1886],[83.3434,25.0509],[83.3436,24.9663],[83.3617,24.9537],[83.377,24.86],[83.4014,24.8194],[83.3912,24.7891],[83.4281,24.7682],[83.4849,24.704],[83.5204,24.6775],[83.5019,24.6486],[83.5437,24.6283],[83.5227,24.5986],[83.5223,24.5477],[83.5033,24.5254],[83.4015,24.5035],[83.3859,24.458],[83.4479,24.3711],[83.38,24.3131],[83.4072,24.2888],[83.408,24.2628],[83.3785,24.2291],[83.3821,24.1952],[83.3547,24.1268],[83.3299,24.1017],[83.2821,24.0498],[83.2791,24.0183],[83.2426,24.0116],[83.2079,23.9214],[83.1542,23.9041],[83.1415,23.8849],[83.0751,23.8701],[83.0543,23.8793],[82.9543,23.8708],[82.8103,23.9629],[82.8038,24.0036],[82.7513,24.0119],[82.7742,24.0748],[82.7123,24.0886],[82.6646,24.1298],[82.7281,24.1356],[82.7443,24.1656],[82.7364,24.2229],[82.7728,24.3076],[82.764,24.3707],[82.7134,24.3813],[82.7434,24.4987],[82.7207,24.5138],[82.7482,24.5613],[82.8008,24.5801],[82.7738,24.6418],[82.7287,24.6357],[82.671,24.697],[82.5391,24.6478],[82.5239,24.6726],[82.4569,24.6733],[82.4277,24.7022],[82.4073,24.6829],[82.418,24.6415],[82.4019,24.5914],[82.3299,24.6185],[82.273,24.6752],[82.2351,24.6709],[82.2556,24.7494],[82.0977,24.8162],[82.0107,24.8469],[81.9598,24.8372],[81.9079,24.8814],[81.9196,24.9278],[81.9079,24.9801],[81.8352,25.0173],[81.7927,25.0045],[81.7458,25.0335],[81.7084,25.0353],[81.6686,25.0715],[81.6117,25.0563],[81.6054,25.0787],[81.6378,25.1004],[81.6027,25.1364],[81.5787,25.1908],[81.5186,25.1861],[81.4842,25.116],[81.4992,25.077],[81.4225,25.099],[81.4069,25.1272],[81.3565,25.1634],[81.292,25.1619],[81.2662,25.1396],[81.263,25.0519],[81.2237,24.9988],[81.2153,24.9329],[81.1722,24.9573],[81.1396,24.8875],[81.0967,24.9209],[81.0897,24.9463],[81.0339,24.9526],[80.9964,24.9281],[80.929,24.9612],[80.8296,24.918],[80.8088,24.9489],[80.8552,25.004],[80.8355,25.0241],[80.8781,25.0655],[80.8688,25.1165],[80.9043,25.1589],[80.8823,25.1831],[80.8486,25.163],[80.8254,25.1215],[80.8038,25.1376],[80.7605,25.1347],[80.7306,25.1129],[80.7834,25.0759],[80.7663,25.0528],[80.7291,25.0672],[80.6812,25.053],[80.6763,25.0786],[80.6233,25.0886],[80.6325,25.1226],[80.6019,25.1505],[80.5924,25.0902],[80.5523,25.0628],[80.5067,25.084],[80.5062,25.0428],[80.5465,25.0321],[80.5309,25.0013],[80.5008,25.0045],[80.4569,24.981],[80.449,25.0787],[80.4083,25.0571],[80.3774,25.0069],[80.3477,25.0177],[80.331,24.9922],[80.2879,25.0381],[80.3304,25.0475],[80.3506,25.0904],[80.3527,25.1303],[80.4317,25.1776],[80.408,25.2177],[80.3482,25.2785],[80.3108,25.2864],[80.3221,25.3346],[80.3163,25.3858],[80.2639,25.4241],[80.2535,25.4008],[80.1959,25.4019],[80.1311,25.3342],[80.089,25.3558],[80.0727,25.3368],[80.0343,25.3421],[80.0221,25.2976],[79.9808,25.2618],[79.9366,25.2475],[79.8772,25.2509],[79.8513,25.2275],[79.8661,25.1411],[79.8258,25.1071],[79.747,25.1393],[79.6758,25.1237],[79.6083,25.1281],[79.5692,25.1718],[79.5187,25.1199],[79.525,25.0974],[79.4827,25.0797],[79.4263,25.1191],[79.4053,25.1062],[79.3842,25.1427],[79.3903,25.1701],[79.4382,25.1968],[79.447,25.2445],[79.3686,25.2924],[79.3421,25.329],[79.2998,25.3377],[79.269,25.3051],[79.2807,25.2617],[79.345,25.2508],[79.3447,25.2173],[79.307,25.2249],[79.3136,25.1361],[79.2824,25.1173],[79.2404,25.1131],[79.2038,25.1259],[79.1658,25.1075],[79.116,25.1399],[79.0948,25.176],[79.031,25.1384],[79.0309,25.1849],[79.0636,25.222],[79.0222,25.2413],[79.0059,25.195],[78.9538,25.219],[78.921,25.2007],[78.8903,25.1607],[78.8717,25.188],[78.9201,25.2736],[78.9639,25.2994],[78.8841,25.3441],[78.8641,25.3102],[78.8519,25.2302],[78.7977,25.2892],[78.8802,25.3859],[78.9013,25.3616],[78.9438,25.3491],[78.9763,25.42],[78.9205,25.5138],[78.9528,25.5375],[78.8841,25.5544],[78.8844,25.5156],[78.8415,25.5125],[78.8662,25.4657],[78.8354,25.4558],[78.7967,25.4828],[78.7318,25.46],[78.759,25.4307],[78.7486,25.3916],[78.7746,25.353],[78.7267,25.3434],[78.7153,25.3717],[78.6627,25.3822],[78.7115,25.4281],[78.6582,25.441],[78.6448,25.4146],[78.602,25.4089],[78.585,25.3468],[78.538,25.3595],[78.533,25.3009],[78.5608,25.2646],[78.5705,25.2052],[78.6007,25.1554],[78.6019,25.0978],[78.6273,25.0869],[78.6527,25.0499],[78.6361,24.9593],[78.6634,24.9384],[78.6766,24.8986],[78.7533,24.869],[78.7899,24.8104],[78.7701,24.7577],[78.7812,24.7069],[78.7465,24.662],[78.757,24.5989],[78.7838,24.5886],[78.8348,24.6048],[78.8831,24.6414],[78.935,24.5608],[78.9501,24.5007],[78.9185,24.4951],[78.9151,24.4582],[78.9936,24.4227],[78.963,24.3442],[78.9096,24.2961],[78.9167,24.269],[78.8846,24.2505],[78.888,24.227],[78.8471,24.2139],[78.7894,24.1771],[78.7645,24.2321],[78.7031,24.2269],[78.6686,24.24],[78.6602,24.2674],[78.5961,24.3351],[78.502,24.3903],[78.478,24.339],[78.4385,24.3123],[78.4098,24.2711],[78.3819,24.2731],[78.3297,24.3257],[78.3658,24.386],[78.2707,24.4462],[78.2711,24.4774],[78.2448,24.4874],[78.2266,24.5339],[78.2645,24.5522],[78.2768,24.6619],[78.2256,24.753],[78.2357,24.7717],[78.1723,24.8778],[78.334,24.9949],[78.3472,25.0245],[78.3395,25.0872],[78.3861,25.1038],[78.4112,25.1295],[78.4166,25.1835],[78.3821,25.2226],[78.372,25.2589],[78.3386,25.2919],[78.3279,25.3523],[78.301,25.362],[78.3691,25.4386],[78.4287,25.4879],[78.4195,25.5335],[78.4938,25.5786],[78.5447,25.5616],[78.5979,25.5705],[78.6583,25.5599],[78.7162,25.6045],[78.8105,25.6194],[78.8167,25.6763],[78.7633,25.7199],[78.7713,25.7497],[78.8083,25.8009],[78.8492,25.8281],[78.8842,25.913],[78.9333,25.9485],[78.9525,25.988],[78.9479,26.0263],[79.0121,26.0832],[78.9521,26.1293],[78.9943,26.1462],[79.0252,26.2207],[79.0653,26.2298],[79.0621,26.2736],[79.135,26.3248],[79.1205,26.3483],[79.0845,26.3581],[79.0914,26.4046],[79.1237,26.4116],[79.1295,26.4404],[79.0627,26.4532],[79.0679,26.4969],[79.0189,26.541],[78.9876,26.5931],[79.0165,26.6007],[78.9938,26.6405],[79.0084,26.6639],[78.9151,26.7062],[78.8694,26.6994],[78.8159,26.7624],[78.7719,26.7701],[78.7215,26.7964],[78.6806,26.7859],[78.6745,26.7657],[78.63,26.7732],[78.613,26.752],[78.5775,26.7485],[78.522,26.7803],[78.4596,26.7883],[78.4269,26.8256],[78.3952,26.8171],[78.3615,26.8691],[78.2835,26.8545],[78.2711,26.8142],[78.223,26.8306],[78.2027,26.8654],[78.2326,26.8743],[78.2723,26.9192],[78.1687,26.9478],[78.1245,26.9493],[78.1112,26.8959],[78.0569,26.9068],[77.987,26.8893],[77.9678,26.9037],[77.9088,26.9064],[77.9043,26.8833],[77.8505,26.9127],[77.7747,26.9322],[77.7324,26.9201],[77.7226,26.8743],[77.6076,26.8278],[77.5007,26.817],[77.4875,26.7881],[77.4366,26.7676],[77.4206,26.8106],[77.4266,26.859],[77.4902,26.9005],[77.5832,26.9242],[77.7114,26.9974],[77.6798,27.0471],[77.6656,27.0173],[77.6018,27.0225],[77.5772,27.0683],[77.5376,27.0983],[77.6037,27.1238],[77.6218,27.1722],[77.6584,27.1701],[77.6811,27.1944],[77.6168,27.2865],[77.6125,27.3319],[77.5483,27.3366],[77.5072,27.3771],[77.4395,27.3907],[77.4211,27.422],[77.4337,27.46],[77.399,27.5002],[77.34,27.5266],[77.3345,27.5913],[77.3171,27.6068],[77.3462,27.6395],[77.3409,27.7036],[77.3194,27.7335],[77.3015,27.7949],[77.2837,27.8011],[77.3312,27.8311],[77.3493,27.8557],[77.4132,27.8517],[77.4795,27.8979],[77.4753,27.9293],[77.5294,27.9255],[77.5411,27.982],[77.4811,28.0976],[77.5124,28.1249],[77.5306,28.1859],[77.5188,28.2425],[77.4927,28.252],[77.5062,28.3041],[77.4725,28.3367],[77.5052,28.3627],[77.4776,28.4191],[77.4364,28.431],[77.3863,28.468],[77.3454,28.5133],[77.2971,28.566],[77.3426,28.622],[77.3163,28.6412],[77.326,28.7099],[77.3048,28.7129],[77.2355,28.7609],[77.1994,28.7981],[77.2243,28.8261],[77.2098,28.8579],[77.2329,28.9187],[77.1967,28.9377],[77.2023,28.9872],[77.1651,29.0766],[77.1341,29.0952],[77.1473,29.1796],[77.1325,29.2225],[77.1388,29.2663],[77.1583,29.3029],[77.1233,29.3704],[77.1484,29.4341],[77.1232,29.4554],[77.1334,29.4827],[77.0964,29.5195],[77.113,29.6097],[77.1559,29.6983],[77.1342,29.7185],[77.1466,29.7719],[77.1792,29.8127],[77.1782,29.8458],[77.2469,29.9767],[77.2764,29.9967],[77.2969,30.0534],[77.3343,30.0538],[77.3825,30.0925],[77.4058,30.0894],[77.4297,30.164],[77.4772,30.1824],[77.5784,30.3267],[77.6035,30.3692],[77.5856,30.3796],[77.576,30.3974],[77.6472,30.4048],[77.6765,30.3878],[77.7208,30.3309],[77.8463,30.2721],[77.937,30.2492],[77.912,30.1826],[77.8661,30.1192],[77.828,30.086],[77.7997,30.0873],[77.77,30.0426],[77.782,30.0187],[77.7441,29.9837],[77.7305,29.9317],[77.7472,29.9101],[77.7173,29.8875],[77.7415,29.8521],[77.7803,29.7651],[77.7697,29.7177],[77.8105,29.7024],[77.83,29.6683],[77.879,29.7003],[77.9264,29.7143],[77.9826,29.6406],[77.9675,29.5801],[78.0183,29.5983],[78.0575,29.6307],[78.1305,29.6526],[78.1805,29.6969],[78.2039,29.7373],[78.2459,29.7346],[78.2909,29.7587],[78.3357,29.7967],[78.3927,29.7675],[78.5068,29.7295],[78.5215,29.6579],[78.5416,29.6263],[78.6177,29.5581],[78.6505,29.5461],[78.7109,29.5005],[78.7433,29.5013],[78.7997,29.4646],[78.9253,29.4339],[78.9122,29.3943],[78.8402,29.346],[78.7954,29.3251],[78.7669,29.3366],[78.7272,29.3056],[78.7899,29.2477],[78.8733,29.2237],[78.9346,29.1297],[78.9823,29.1431],[79.0248,29.1125],[79.0505,29.157],[79.1502,29.1187],[79.1425,29.067],[79.2045,29.021],[79.2449,29.0101],[79.3068,28.9667],[79.3563,28.9678],[79.408,28.952],[79.4276,28.9128],[79.4256,28.8665],[79.533,28.8698],[79.5565,28.8993],[79.5843,28.8792],[79.5844,28.8463],[79.6561,28.8698],[79.7067,28.8411],[79.7491,28.8718],[79.7998,28.8875],[79.8461,28.8732],[79.8243,28.8073],[79.9246,28.7751],[79.9544,28.7229],[80.0301,28.7487],[80.0681,28.8029],[80.0651,28.8367]]]]},"properties":{"ST_NM":"Uttar Pradesh","region":"north"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[88.5194,21.5864],[88.5455,21.5381],[88.5283,21.5278],[88.4891,21.5503],[88.4929,21.5933],[88.5194,21.5864]]],[[[88.3594,21.8048],[88.2937,21.783],[88.2689,21.8152],[88.3043,21.8306],[88.3157,21.8542],[88.3516,21.8539],[88.3594,21.8048]]],[[[87.9502,21.5923],[87.9631,21.6438],[87.9912,21.6277],[87.9502,21.5923]]],[[[88.8378,21.605],[88.8813,21.5902],[88.9063,21.5584],[88.8669,21.5328],[88.829,21.56],[88.8378,21.605]]],[[[88.7736,21.6328],[88.7964,21.596],[88.7646,21.5665],[88.7289,21.5691],[88.7058,21.6002],[88.7163,21.6315],[88.7736,21.6328]]],[[[88.5846,21.6015],[88.5727,21.5702],[88.5136,21.5988],[88.519,21.6479],[88.5652,21.6249],[88.5846,21.6015]]],[[[88.6051,21.6149],[88.5595,21.6413],[88.5821,21.6632],[88.6051,21.6149]]],[[[88.3206,21.6069],[88.3098,21.7055],[88.3481,21.6847],[88.3434,21.6304],[88.3206,21.6069]]],[[[88.4063,21.7328],[88.4206,21.7028],[88.4102,21.6514],[88.4302,21.6255],[88.4057,21.6064],[88.3828,21.6485],[88.3827,21.6813],[88.4063,21.7328]]],[[[88.9664,21.7407],[88.9875,21.6908],[88.9648,21.6568],[88.9322,21.7456],[88.9664,21.7407]]],[[[88.9204,21.6311],[88.8916,21.6511],[88.8667,21.7062],[88.8802,21.7404],[88.9369,21.7008],[88.9204,21.6311]]],[[[89.0148,21.7781],[89.0743,21.7036],[89.0931,21.6383],[89.0728,21.6125],[89.0416,21.6095],[89.0239,21.6349],[89.0124,21.7141],[88.9765,21.7298],[88.9568,21.7665],[88.9941,21.7874],[89.0148,21.7781]]],[[[88.8375,21.7661],[88.8393,21.7193],[88.856,21.6533],[88.836,21.6194],[88.8048,21.6345],[88.8211,21.6672],[88.8191,21.7058],[88.7839,21.7326],[88.8375,21.7661]]],[[[88.45,21.7914],[88.4514,21.7188],[88.4705,21.6746],[88.4528,21.6111],[88.4177,21.6551],[88.432,21.6967],[88.4255,21.7607],[88.45,21.7914]]],[[[88.1258,21.6736],[88.1469,21.6451],[88.1207,21.6238],[88.0438,21.6436],[88.0326,21.6876],[88.1034,21.7855],[88.1303,21.7567],[88.1214,21.7385],[88.1351,21.6995],[88.1258,21.6736]]],[[[88.5553,21.7615],[88.6069,21.6771],[88.5199,21.7251],[88.5089,21.744],[88.5198,21.7914],[88.5526,21.8094],[88.5553,21.7615]]],[[[88.8951,21.7845],[88.8828,21.7524],[88.8665,21.7797],[88.836,21.7885],[88.8449,21.8582],[88.8709,21.8526],[88.8783,21.8056],[88.8951,21.7845]]],[[[88.7773,21.8688],[88.8209,21.8685],[88.8167,21.8226],[88.7799,21.7709],[88.7807,21.7378],[88.755,21.7074],[88.8055,21.6983],[88.7892,21.6537],[88.7464,21.6621],[88.7095,21.6948],[88.6928,21.7411],[88.7119,21.809],[88.6958,21.8596],[88.7138,21.9016],[88.7773,21.8688]]],[[[88.4243,21.7978],[88.4034,21.7389],[88.3823,21.782],[88.4243,21.7978]]],[[[88.354,21.796],[88.343,21.7281],[88.3087,21.7353],[88.3011,21.7751],[88.354,21.796]]],[[[88.1329,21.8734],[88.1653,21.8241],[88.1708,21.7379],[88.1491,21.6806],[88.1279,21.7307],[88.1382,21.7538],[88.1115,21.7906],[88.0842,21.7925],[88.106,21.8456],[88.1329,21.8734]]],[[[88.982,21.8961],[89.0249,21.8666],[89.0276,21.8316],[88.9949,21.8161],[88.9562,21.83],[88.982,21.8961]]],[[[88.6325,21.8698],[88.6516,21.8703],[88.641,21.789],[88.6144,21.8126],[88.6325,21.8698]]],[[[88.9435,21.9149],[88.9679,21.9085],[88.967,21.868],[88.9471,21.8518],[88.9451,21.8008],[88.9302,21.7709],[88.9007,21.7622],[88.9004,21.7885],[88.8883,21.8023],[88.8772,21.8519],[88.8506,21.9147],[88.8942,21.9147],[88.9153,21.933],[88.9435,21.9149]]],[[[88.4897,21.8476],[88.4461,21.8077],[88.3932,21.8266],[88.4001,21.8776],[88.4438,21.907],[88.4747,21.8898],[88.4897,21.8476]]],[[[88.7374,21.9227],[88.8033,21.916],[88.7956,21.8789],[88.7666,21.8814],[88.7374,21.9227]]],[[[88.7455,27.142],[88.7981,27.1393],[88.8638,27.1102],[88.8755,27.065],[88.8669,26.9931],[88.896,26.9692],[88.9173,26.9981],[88.9483,26.967],[88.9412,26.9309],[88.9754,26.9128],[89.022,26.9227],[89.0894,26.8893],[89.0939,26.8394],[89.1289,26.8065],[89.1718,26.8146],[89.256,26.8078],[89.3157,26.8436],[89.3697,26.8573],[89.3822,26.8364],[89.4287,26.8353],[89.4545,26.7979],[89.502,26.8106],[89.6399,26.7773],[89.6279,26.7225],[89.668,26.7367],[89.7344,26.7257],[89.7638,26.6988],[89.7993,26.7083],[89.8518,26.6972],[89.8633,26.6813],[89.8497,26.6281],[89.8695,26.614],[89.852,26.5228],[89.8688,26.4522],[89.833,26.385],[89.781,26.3528],[89.7139,26.2292],[89.7196,26.1659],[89.6846,26.1613],[89.6797,26.2136],[89.6354,26.2234],[89.6435,26.1828],[89.6126,26.1779],[89.5977,26.1322],[89.6287,26.1146],[89.6458,26.0631],[89.5785,26.0263],[89.5878,25.9802],[89.5404,25.97],[89.5318,26.0036],[89.4627,25.9981],[89.4282,26.0125],[89.357,26.0083],[89.3022,26.0478],[89.2545,26.0645],[89.2499,26.1026],[89.2197,26.1266],[89.1541,26.1414],[89.1357,26.1876],[89.1428,26.2136],[89.1089,26.3045],[89.0826,26.398],[89.0379,26.3997],[88.9572,26.4593],[88.9108,26.3704],[88.9748,26.3512],[88.9826,26.3096],[89.0276,26.2829],[89.045,26.2412],[88.9528,26.2419],[88.9264,26.2842],[88.8758,26.2868],[88.839,26.232],[88.8129,26.2557],[88.8131,26.2973],[88.7934,26.3103],[88.7174,26.2883],[88.677,26.255],[88.6664,26.2918],[88.6986,26.3313],[88.684,26.4032],[88.6275,26.439],[88.5643,26.4553],[88.5204,26.5083],[88.4887,26.509],[88.483,26.5392],[88.4302,26.5458],[88.4095,26.6314],[88.3765,26.5953],[88.3494,26.5123],[88.3631,26.4867],[88.4146,26.4698],[88.4608,26.4667],[88.4957,26.4375],[88.5143,26.3868],[88.5019,26.3605],[88.4624,26.3577],[88.4115,26.3377],[88.3485,26.2822],[88.3511,26.2221],[88.1771,26.1479],[88.182,26.0735],[88.1713,26.0319],[88.1495,26.019],[88.0869,25.9166],[88.0936,25.8739],[88.1128,25.8551],[88.1158,25.8039],[88.1567,25.7792],[88.24,25.8105],[88.2692,25.7808],[88.3566,25.7209],[88.4023,25.6718],[88.455,25.6632],[88.446,25.615],[88.4931,25.5619],[88.5531,25.5162],[88.6086,25.5164],[88.646,25.4786],[88.6997,25.4713],[88.7078,25.4999],[88.7614,25.5254],[88.8,25.5242],[88.8297,25.4898],[88.8401,25.3635],[88.8664,25.3417],[88.9061,25.3367],[88.9156,25.3111],[89.0088,25.2942],[89.005,25.2682],[88.9561,25.2538],[88.9498,25.18],[88.8763,25.1784],[88.8315,25.2054],[88.7986,25.1702],[88.715,25.2065],[88.6191,25.205],[88.5784,25.177],[88.5594,25.1911],[88.474,25.2093],[88.444,25.1975],[88.4602,25.1402],[88.4423,25.1154],[88.4353,25.0556],[88.4447,25.0258],[88.4137,24.9951],[88.4167,24.9747],[88.3804,24.9397],[88.3411,24.9416],[88.3305,24.8723],[88.2632,24.8921],[88.2516,24.9334],[88.2221,24.96],[88.1695,24.9498],[88.1527,24.9065],[88.1634,24.8505],[88.1107,24.8138],[88.0648,24.7507],[88.0617,24.7219],[88.0244,24.6881],[88.0774,24.6312],[88.11,24.5738],[88.1239,24.517],[88.243,24.4611],[88.3416,24.4382],[88.3825,24.3956],[88.4812,24.3523],[88.4952,24.3296],[88.5592,24.3081],[88.6475,24.3109],[88.6835,24.3244],[88.7261,24.2963],[88.7413,24.254],[88.7322,24.1719],[88.7446,24.1457],[88.7114,24.1216],[88.7428,24.0352],[88.7354,23.9152],[88.6532,23.8671],[88.5846,23.8696],[88.6023,23.8167],[88.5723,23.7823],[88.5624,23.6364],[88.5936,23.64],[88.6015,23.6062],[88.6381,23.5973],[88.6544,23.5564],[88.7433,23.483],[88.7931,23.5021],[88.7928,23.4438],[88.7655,23.4479],[88.7497,23.4011],[88.7589,23.3771],[88.7095,23.289],[88.7186,23.2548],[88.7785,23.2206],[88.8094,23.2535],[88.8802,23.23],[88.9116,23.2336],[88.9421,23.2057],[88.9346,23.1716],[88.8991,23.112],[88.8692,23.1003],[88.8785,23.0251],[88.8598,22.9441],[88.8907,22.9286],[88.9099,22.8799],[88.9503,22.8761],[88.9695,22.844],[88.9585,22.7958],[88.9123,22.7578],[88.9275,22.7194],[88.9605,22.6983],[88.9314,22.6342],[88.9588,22.6114],[88.9389,22.5873],[88.9733,22.5012],[88.9957,22.4718],[88.9727,22.4112],[88.9918,22.3911],[88.9844,22.3307],[89.0251,22.2985],[89.0332,22.2593],[89.0687,22.1938],[89.0712,22.1565],[89.0425,22.0917],[89.0549,22.047],[89.0746,22.028],[89.0662,21.9416],[89.0144,21.9207],[89.0076,21.9028],[88.9326,21.9426],[88.8447,21.926],[88.826,21.9414],[88.7568,21.9611],[88.7617,22.0291],[88.7054,21.9904],[88.6926,21.9534],[88.6333,21.9548],[88.634,21.9956],[88.6571,22.0244],[88.6371,22.0438],[88.5987,21.9823],[88.6067,21.918],[88.5796,21.8919],[88.5463,21.9048],[88.5393,21.8593],[88.4985,21.875],[88.5066,21.9032],[88.4317,21.9096],[88.3547,21.8675],[88.306,21.8604],[88.2953,21.8325],[88.2616,21.8173],[88.2559,21.801],[88.2814,21.7574],[88.2757,21.7214],[88.3022,21.6788],[88.2862,21.6105],[88.3024,21.5864],[88.2571,21.5574],[88.2188,21.6093],[88.236,21.645],[88.2101,21.725],[88.2121,21.7831],[88.1918,21.8479],[88.1641,21.8836],[88.1647,21.9435],[88.1456,21.9591],[88.1877,21.9953],[88.2135,22.0378],[88.2192,22.1025],[88.1894,22.1822],[88.1032,22.2148],[88.1698,22.1491],[88.1867,22.1046],[88.1674,22.0782],[88.0978,22.0283],[88.0601,22.0179],[88.0255,21.9674],[87.9866,21.8707],[87.9488,21.8242],[87.882,21.785],[87.8494,21.7405],[87.8064,21.7089],[87.6682,21.6488],[87.5943,21.6372],[87.4862,21.6098],[87.4683,21.6641],[87.4706,21.7052],[87.4444,21.7682],[87.374,21.772],[87.3473,21.7921],[87.2765,21.8052],[87.2466,21.8613],[87.2389,21.8999],[87.2551,21.9267],[87.2359,21.9571],[87.1634,21.9691],[87.1615,21.9356],[87.1199,21.9272],[87.0909,21.8992],[87.0986,21.8658],[87.0397,21.8674],[87.0019,21.913],[87.032,21.9957],[87.0282,22.0379],[86.9926,22.055],[86.9601,22.0879],[86.8519,22.1029],[86.8378,22.0977],[86.7948,22.1572],[86.7218,22.1468],[86.727,22.2168],[86.7569,22.2113],[86.7777,22.2368],[86.8022,22.2179],[86.8231,22.2661],[86.8871,22.2576],[86.8881,22.2971],[86.8332,22.3245],[86.8439,22.4015],[86.7647,22.4266],[86.7512,22.4827],[86.7937,22.4777],[86.802,22.5018],[86.7658,22.5757],[86.7101,22.5831],[86.6585,22.5757],[86.6331,22.611],[86.6413,22.6587],[86.5428,22.7222],[86.5029,22.7172],[86.4695,22.7541],[86.4194,22.791],[86.4647,22.8949],[86.4362,22.9229],[86.4706,22.9489],[86.4912,22.9387],[86.5206,22.9705],[86.4977,22.9928],[86.4256,22.9968],[86.3939,22.981],[86.364,23.0009],[86.3379,22.9906],[86.2932,23.0139],[86.2244,22.9946],[86.1855,23.0052],[86.156,23.0329],[86.127,23.0868],[86.0981,23.0854],[86.0492,23.1061],[86.0375,23.1471],[85.8951,23.155],[85.8834,23.196],[85.8206,23.2704],[85.8394,23.3073],[85.8679,23.3295],[85.8636,23.4316],[85.8761,23.4808],[85.9503,23.4709],[86.0319,23.4835],[86.0397,23.5149],[86.0168,23.5475],[86.042,23.5862],[86.0947,23.5631],[86.1586,23.5595],[86.1605,23.5083],[86.1485,23.4654],[86.2288,23.4434],[86.2604,23.4185],[86.3101,23.4118],[86.3505,23.4417],[86.3682,23.4834],[86.3674,23.5398],[86.4487,23.6014],[86.4618,23.6298],[86.5271,23.6296],[86.5991,23.6657],[86.7182,23.6991],[86.7453,23.68],[86.7985,23.6884],[86.8257,23.7776],[86.804,23.8024],[86.8533,23.8258],[86.8846,23.8658],[86.9157,23.8832],[86.9357,23.8522],[86.9657,23.8654],[87.0108,23.8525],[87.0535,23.8227],[87.1225,23.7962],[87.1517,23.7987],[87.1745,23.8547],[87.2235,23.8457],[87.2444,23.903],[87.2695,23.8744],[87.2951,23.9013],[87.2916,23.9585],[87.2624,23.9673],[87.2344,24.0325],[87.337,24.034],[87.3605,24.0129],[87.4402,23.9816],[87.5091,24.0322],[87.4933,24.0541],[87.5221,24.1122],[87.5468,24.085],[87.5713,24.0892],[87.5852,24.1242],[87.5782,24.1554],[87.6157,24.1658],[87.6844,24.1429],[87.7021,24.1745],[87.6532,24.2393],[87.7001,24.2628],[87.7547,24.3098],[87.787,24.3637],[87.7887,24.4155],[87.8107,24.4771],[87.7991,24.5258],[87.8278,24.5578],[87.8919,24.5656],[87.9133,24.5972],[87.9058,24.6314],[87.9171,24.6658],[87.8905,24.6755],[87.9075,24.7216],[87.86,24.7341],[87.8521,24.7618],[87.8967,24.8297],[87.8908,24.8552],[87.9611,24.9227],[87.958,24.9699],[87.896,25.011],[87.8767,25.0344],[87.7946,25.0897],[87.8014,25.1152],[87.7792,25.1436],[87.7729,25.2058],[87.7787,25.2505],[87.7114,25.2577],[87.7636,25.2648],[87.819,25.2425],[87.8452,25.2634],[87.8524,25.2952],[87.7842,25.3401],[87.7895,25.3769],[87.7643,25.386],[87.787,25.4493],[87.8306,25.4619],[87.8661,25.497],[87.9027,25.5048],[87.926,25.5387],[87.9662,25.5363],[88.0306,25.4907],[88.0653,25.4894],[88.0715,25.5158],[88.0314,25.5541],[88.0216,25.5962],[88.0477,25.6582],[88.0497,25.7022],[87.9679,25.7261],[87.9352,25.769],[87.9099,25.7809],[87.8923,25.8658],[87.8307,25.8709],[87.8108,25.928],[87.8452,25.9624],[87.8568,26.0247],[87.931,26.0823],[87.9498,26.0602],[87.9844,26.1018],[87.9797,26.1442],[88.0138,26.1492],[88.0348,26.1792],[88.0732,26.1752],[88.092,26.2023],[88.157,26.2557],[88.2277,26.2849],[88.2808,26.327],[88.2819,26.3749],[88.2341,26.3918],[88.2609,26.4196],[88.2257,26.4801],[88.1826,26.5042],[88.2354,26.5448],[88.1892,26.5596],[88.1349,26.5235],[88.1054,26.5511],[88.1628,26.6464],[88.1669,26.6994],[88.1814,26.7199],[88.1864,26.774],[88.1663,26.85],[88.1384,26.8975],[88.121,26.9505],[88.1331,26.9823],[88.0902,27.007],[88.0799,27.0343],[88.0398,27.0354],[87.9948,27.1315],[88.0089,27.141],[88.0148,27.2117],[88.0288,27.2207],[88.0788,27.2013],[88.0962,27.1334],[88.1536,27.1098],[88.1817,27.1325],[88.2322,27.1185],[88.2787,27.1305],[88.3166,27.1256],[88.3566,27.0953],[88.4306,27.0794],[88.4662,27.1122],[88.5291,27.1478],[88.5331,27.1767],[88.589,27.1893],[88.6574,27.1597],[88.6822,27.1768],[88.7165,27.1415],[88.7455,27.142]]]]},"properties":{"ST_NM":"West Bengal","region":"east"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[84.7647,19.0773],[84.6844,18.9675],[84.6036,18.8898],[84.5574,18.817],[84.5511,18.7901],[84.5124,18.7585],[84.4535,18.6934],[84.4372,18.6574],[84.3683,18.5932],[84.3551,18.5554],[84.2547,18.4748],[84.1484,18.3738],[84.1297,18.315],[84.0741,18.278],[83.8607,18.1745],[83.7506,18.1293],[83.6928,18.0966],[83.5686,18.0099],[83.5316,17.9511],[83.4727,17.9136],[83.4203,17.8571],[83.411,17.8094],[83.357,17.7582],[83.3475,17.7276],[83.2971,17.694],[83.2821,17.6607],[83.2396,17.6316],[83.2157,17.5937],[83.1629,17.5608],[83.1023,17.5417],[83.0116,17.5013],[82.9951,17.4752],[82.703,17.3439],[82.5491,17.2539],[82.4213,17.1553],[82.3204,17.0582],[82.2877,17.013],[82.2482,16.9048],[82.2667,16.8718],[82.3024,16.8745],[82.3556,16.8578],[82.3592,16.8145],[82.3442,16.7478],[82.3614,16.7049],[82.3168,16.6593],[82.3299,16.621],[82.3131,16.5623],[82.2313,16.541],[81.9729,16.4097],[81.8346,16.3671],[81.7195,16.3067],[81.6906,16.3278],[81.5027,16.3551],[81.3907,16.34],[81.3164,16.3105],[81.2683,16.2786],[81.2137,16.2076],[81.1873,16.0934],[81.1496,16.0247],[81.1484,15.9791],[81.061,15.9008],[81.0047,15.8382],[80.9953,15.8035],[81.0082,15.7541],[80.9359,15.7168],[80.8437,15.7069],[80.8162,15.7133],[80.8111,15.7648],[80.7817,15.8635],[80.7267,15.8793],[80.6493,15.8788],[80.5745,15.8628],[80.4899,15.8333],[80.4102,15.7935],[80.3262,15.7337],[80.2822,15.6857],[80.243,15.6149],[80.2295,15.5385],[80.2086,15.4792],[80.1407,15.3927],[80.1113,15.3456],[80.0834,15.2622],[80.0896,15.2155],[80.0471,15.0831],[80.0639,14.9484],[80.0868,14.8696],[80.0885,14.8252],[80.1124,14.7397],[80.1435,14.7019],[80.1639,14.6318],[80.196,14.5865],[80.1798,14.5058],[80.1672,14.3444],[80.1493,14.3044],[80.1296,14.2201],[80.1272,14.1502],[80.1467,14.0411],[80.2181,13.8814],[80.2552,13.7794],[80.2331,13.683],[80.2428,13.6158],[80.2683,13.5645],[80.2422,13.4725],[80.2259,13.4851],[80.1619,13.4883],[80.1446,13.5013],[80.0782,13.4888],[80.0771,13.5264],[80.0284,13.5388],[80.0078,13.4783],[79.9724,13.4691],[79.9733,13.4297],[79.9396,13.4251],[79.958,13.3792],[79.9313,13.3515],[79.8173,13.3186],[79.7917,13.2935],[79.7618,13.3127],[79.735,13.276],[79.7947,13.2421],[79.7598,13.2075],[79.6936,13.2735],[79.6518,13.2918],[79.6062,13.2882],[79.574,13.259],[79.54,13.2724],[79.5373,13.3386],[79.4952,13.3452],[79.3983,13.3302],[79.4138,13.3002],[79.4185,13.243],[79.4531,13.2384],[79.4316,13.1893],[79.3921,13.1925],[79.3561,13.1646],[79.365,13.1308],[79.3099,13.112],[79.2269,13.1589],[79.2344,13.1053],[79.1856,13.0753],[79.1848,13.0299],[79.1631,13.0203],[79.1085,13.0388],[79.0809,13.0258],[79.0634,13.0531],[78.9825,13.0864],[78.9239,13.0808],[78.9061,13.0452],[78.8814,13.0982],[78.842,13.0787],[78.813,13.0891],[78.7877,13.0642],[78.7513,13.055],[78.7145,13.0687],[78.7052,13.0153],[78.6555,13.0153],[78.6209,12.9913],[78.6335,12.9314],[78.6015,12.8508],[78.6077,12.8219],[78.5925,12.7827],[78.5575,12.7573],[78.5547,12.6991],[78.5043,12.7249],[78.5038,12.682],[78.4679,12.6759],[78.4717,12.6323],[78.3794,12.6251],[78.2964,12.6711],[78.2765,12.7016],[78.2401,12.7027],[78.2309,12.7607],[78.2456,12.7883],[78.2522,12.8606],[78.3124,12.8586],[78.3136,12.8765],[78.3602,12.937],[78.3887,12.9069],[78.4683,12.9009],[78.4121,12.9436],[78.4674,12.9751],[78.4622,13.0433],[78.5142,13.0619],[78.5166,13.1304],[78.5501,13.1642],[78.5773,13.1719],[78.5593,13.2862],[78.4793,13.3013],[78.3776,13.3632],[78.3745,13.462],[78.3824,13.5251],[78.4067,13.5769],[78.3852,13.5922],[78.3259,13.5949],[78.2593,13.585],[78.2437,13.5976],[78.1902,13.5902],[78.2042,13.6285],[78.1691,13.654],[78.0897,13.6591],[78.0859,13.6922],[78.1208,13.7157],[78.0915,13.7423],[78.1265,13.7885],[78.1148,13.8629],[78.0489,13.8961],[78.0462,13.8622],[77.9921,13.8689],[77.9559,13.831],[77.9522,13.8903],[77.9844,13.8976],[77.9875,13.9555],[77.9674,13.9602],[77.9268,13.9054],[77.8957,13.9411],[77.8144,13.9308],[77.8371,13.8698],[77.7822,13.8439],[77.7888,13.8232],[77.7316,13.8076],[77.7033,13.7698],[77.6513,13.7841],[77.6136,13.752],[77.5717,13.7382],[77.5407,13.756],[77.4921,13.6899],[77.4553,13.6823],[77.4501,13.7109],[77.4706,13.7581],[77.4453,13.8111],[77.4155,13.8398],[77.3624,13.8543],[77.3368,13.8328],[77.3165,13.8633],[77.2567,13.8466],[77.2199,13.8678],[77.1686,13.8645],[77.1629,13.7985],[77.1731,13.7621],[77.106,13.7678],[77.0647,13.7439],[77.0245,13.7793],[76.9969,13.7478],[76.978,13.8269],[77.0185,13.8726],[77.0417,13.9335],[76.9938,13.9626],[77.0003,13.9895],[76.9352,14.0328],[76.9717,14.0581],[76.9735,14.0836],[76.9443,14.1208],[76.8895,14.1357],[76.8945,14.1678],[77.0055,14.184],[77.0204,14.1572],[77.0316,14.0569],[77.0753,14.0435],[77.1318,14.044],[77.1411,14.0039],[77.2454,14.012],[77.2773,14.0347],[77.3108,14.0326],[77.3611,13.9909],[77.368,13.9503],[77.3544,13.9042],[77.435,13.915],[77.4379,13.9756],[77.3797,13.9899],[77.3849,14.0161],[77.3323,14.0307],[77.3976,14.1096],[77.3789,14.1359],[77.3937,14.1743],[77.467,14.1717],[77.5035,14.1572],[77.517,14.1861],[77.4945,14.2243],[77.5039,14.2638],[77.4789,14.2922],[77.4121,14.3365],[77.379,14.3228],[77.3887,14.2696],[77.4054,14.2667],[77.4183,14.2091],[77.3926,14.1989],[77.3595,14.234],[77.3638,14.2759],[77.2893,14.2813],[77.2866,14.3401],[77.2461,14.3175],[77.1974,14.3212],[77.1389,14.34],[77.1105,14.2687],[77.1149,14.2232],[77.0812,14.2142],[77.0525,14.2455],[77.0057,14.2358],[76.9401,14.2446],[76.9249,14.2738],[76.9457,14.3132],[76.9034,14.3227],[76.8848,14.3476],[76.8848,14.3957],[76.9158,14.4207],[76.9478,14.4132],[76.9748,14.4854],[76.9007,14.4892],[76.868,14.4741],[76.8556,14.5096],[76.8052,14.5375],[76.765,14.6022],[76.7763,14.6832],[76.803,14.7419],[76.7827,14.786],[76.8368,14.7908],[76.8515,14.8086],[76.8525,14.887],[76.8639,14.8956],[76.8675,14.9699],[76.7672,14.9749],[76.7902,15.0207],[76.7736,15.0592],[76.8021,15.095],[76.836,15.0793],[76.8779,15.0355],[76.9496,15.0304],[77.0496,15.0331],[77.0825,15.0061],[77.113,15.0341],[77.1301,15.1008],[77.1564,15.123],[77.1692,15.1714],[77.1548,15.2148],[77.1251,15.227],[77.1519,15.2754],[77.1183,15.2954],[77.117,15.3258],[77.0744,15.3259],[77.0448,15.3557],[77.0473,15.39],[77.032,15.4356],[77.0108,15.4488],[76.9746,15.5105],[77.0289,15.5005],[77.0305,15.6345],[77.0832,15.6592],[77.1215,15.6311],[77.1289,15.6659],[77.0787,15.6952],[77.0798,15.7274],[77.0491,15.7303],[77.0632,15.8296],[77.0252,15.8375],[77.0702,15.9078],[77.1026,15.9287],[77.1853,15.9568],[77.3011,15.958],[77.3795,15.9398],[77.4351,15.9478],[77.5135,15.9268],[77.6128,15.9175],[77.6575,15.8859],[77.7128,15.8945],[77.8036,15.8742],[77.8606,15.8847],[77.8904,15.9058],[77.9388,15.8831],[77.9754,15.8834],[78.0088,15.8648],[78.0255,15.9024],[78.0836,15.8409],[78.1242,15.837],[78.1754,15.8581],[78.1871,15.9117],[78.2522,15.9362],[78.2625,16.0267],[78.3069,16.0107],[78.3266,16.0368],[78.3655,16.0468],[78.4079,16.0748],[78.4791,16.0674],[78.5518,16.0428],[78.61,16.0872],[78.6503,16.0788],[78.6812,16.0348],[78.7355,16.0082],[78.7855,16.0212],[78.8371,16.0704],[78.8347,16.1452],[78.8693,16.1457],[78.8895,16.0847],[78.9222,16.1059],[78.9111,16.1885],[78.9866,16.2112],[79.0091,16.24],[79.1034,16.2234],[79.1238,16.2311],[79.1699,16.2099],[79.2208,16.2344],[79.2338,16.3358],[79.2081,16.3802],[79.2145,16.4847],[79.2273,16.5238],[79.2617,16.567],[79.2955,16.563],[79.3372,16.5821],[79.4187,16.5803],[79.4403,16.6149],[79.5104,16.6358],[79.5421,16.6323],[79.604,16.6724],[79.635,16.6611],[79.6622,16.6867],[79.7157,16.6892],[79.7446,16.7191],[79.7841,16.7306],[79.8124,16.6946],[79.8589,16.7047],[79.8855,16.6874],[79.8942,16.6492],[79.9324,16.6314],[79.9648,16.645],[79.9958,16.7001],[80.0306,16.7148],[80.055,16.7447],[80.0727,16.8165],[80.0171,16.8543],[80.0043,16.8801],[80.0396,16.9171],[80.0555,16.9715],[80.0952,16.9907],[80.1402,16.9906],[80.1702,17.0169],[80.2021,17.0171],[80.2649,16.9973],[80.3066,16.9738],[80.3217,16.8797],[80.3409,16.8598],[80.4078,16.849],[80.4642,16.82],[80.4645,16.7955],[80.5171,16.7759],[80.5702,16.7681],[80.6053,16.798],[80.5629,16.8329],[80.5683,16.8694],[80.5956,16.8843],[80.6019,16.9186],[80.5345,16.9614],[80.4985,16.9557],[80.4935,16.9275],[80.4497,16.9548],[80.3714,16.9759],[80.407,17.0158],[80.3873,17.0713],[80.4172,17.0735],[80.4386,17.0376],[80.4649,17.0301],[80.5054,17.0685],[80.5141,17.1221],[80.564,17.1338],[80.58,17.1531],[80.6369,17.1284],[80.6995,17.0838],[80.8288,17.0528],[80.8715,17.0699],[80.8794,17.1609],[80.924,17.1579],[80.9189,17.2198],[80.9984,17.1905],[81.0377,17.1934],[81.0796,17.2156],[81.1712,17.231],[81.1861,17.2485],[81.1767,17.2877],[81.1904,17.3249],[81.2683,17.3201],[81.2885,17.3281],[81.3226,17.3746],[81.3134,17.4082],[81.2455,17.4331],[81.2027,17.434],[81.1483,17.4637],[81.1596,17.4844],[81.1245,17.5271],[81.0801,17.5151],[81.0148,17.5222],[80.9984,17.5647],[80.9694,17.5981],[80.8554,17.6019],[80.8657,17.6355],[80.9111,17.6381],[80.8858,17.6813],[80.8855,17.7357],[80.9463,17.7602],[81.0406,17.7477],[81.0582,17.7331],[81.1015,17.7677],[81.0856,17.7981],[81.1683,17.8557],[81.2654,17.8111],[81.3961,17.82],[81.4186,17.8149],[81.4787,17.8375],[81.4885,17.8144],[81.5635,17.8272],[81.6188,17.8241],[81.6622,17.8816],[81.7104,17.8739],[81.7879,17.926],[81.8082,17.9564],[81.9635,18.0019],[82.007,18.0584],[82.075,18.0759],[82.1672,18.0527],[82.1873,18.0158],[82.2645,17.9956],[82.2709,18.058],[82.2897,18.0696],[82.3422,18.0587],[82.3476,18.0891],[82.3325,18.1276],[82.3517,18.1724],[82.3138,18.1848],[82.343,18.2813],[82.3731,18.2818],[82.3907,18.3272],[82.381,18.4346],[82.4718,18.5433],[82.5042,18.5144],[82.5259,18.5164],[82.5413,18.4216],[82.6053,18.3821],[82.5924,18.3291],[82.5966,18.265],[82.6367,18.2376],[82.6549,18.297],[82.7692,18.3382],[82.7888,18.3639],[82.7804,18.4315],[82.8139,18.4516],[82.8703,18.4193],[82.938,18.3616],[82.9751,18.3635],[83.0202,18.3924],[83.0527,18.3807],[83.0753,18.4041],[83.0191,18.4572],[83.0732,18.5155],[83.0436,18.545],[82.999,18.6215],[83.0226,18.655],[83.056,18.6662],[83.0707,18.7062],[83.1372,18.7863],[83.1913,18.7541],[83.2227,18.776],[83.2695,18.7653],[83.2807,18.7971],[83.346,18.8278],[83.4041,18.8449],[83.3903,18.883],[83.3484,18.9263],[83.3088,18.9998],[83.3636,19.0176],[83.3991,19.01],[83.4599,18.9557],[83.4765,19.0085],[83.4653,19.0886],[83.5164,19.0575],[83.573,19.0623],[83.5997,19.1364],[83.6497,19.1231],[83.664,19.0765],[83.7002,19.0253],[83.7456,18.9967],[83.7927,19.0189],[83.8219,18.9601],[83.8438,18.8761],[83.8945,18.8172],[84.0365,18.8173],[84.0916,18.7602],[84.1671,18.7893],[84.2243,18.7997],[84.2655,18.7852],[84.2869,18.8049],[84.319,18.788],[84.3601,18.8621],[84.416,18.8985],[84.4367,18.9238],[84.4288,18.97],[84.4762,18.9921],[84.4946,19.0319],[84.5669,19.0707],[84.5921,19.0232],[84.6257,19.0671],[84.6007,19.1275],[84.6526,19.1303],[84.6688,19.1669],[84.7126,19.1539],[84.6957,19.1273],[84.7647,19.0773]]]},"properties":{"ST_NM":"Andhra Pradesh","region":"south"}},{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[79.8544,10.9833],[79.8523,10.8309],[79.8413,10.828],[79.821,10.8456],[79.824,10.8842],[79.7769,10.8966],[79.7248,10.929],[79.7209,10.9692],[79.7467,11.0026],[79.8402,11.0021],[79.8544,10.9833]]],[[[79.807,11.8336],[79.7958,11.7855],[79.7559,11.7754],[79.7198,11.785],[79.7369,11.8423],[79.807,11.8336]]],[[[79.8406,11.9558],[79.8077,11.8364],[79.77,11.8747],[79.7134,11.8607],[79.71,11.8892],[79.7406,11.9055],[79.6916,11.9514],[79.7206,11.9927],[79.7428,11.9778],[79.7493,11.9222],[79.8098,11.9753],[79.8406,11.9558]]],[[[79.6384,11.9863],[79.6693,11.9375],[79.6559,11.9079],[79.6184,11.9261],[79.6384,11.9863]]]]},"properties":{"ST_NM":"Puducherry","region":"south"}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[80.66,21.3341],[80.6796,21.2988],[80.6511,21.2776],[80.6173,21.2297],[80.515,21.1829],[80.4643,21.1749],[80.4452,21.1207],[80.4497,21.0305],[80.4258,21.0059],[80.4637,20.9291],[80.5345,20.9345],[80.5562,20.8881],[80.5586,20.8115],[80.5492,20.7952],[80.56,20.726],[80.5804,20.673],[80.5213,20.6572],[80.481,20.6184],[80.5215,20.5805],[80.5646,20.6037],[80.6014,20.6088],[80.6263,20.5673],[80.6138,20.4359],[80.5915,20.393],[80.6264,20.3325],[80.6105,20.3183],[80.5461,20.3059],[80.5167,20.2661],[80.4881,20.276],[80.3981,20.2441],[80.4056,20.2178],[80.3885,20.1651],[80.4296,20.1361],[80.4601,20.151],[80.5056,20.1445],[80.5523,20.1111],[80.5567,20.0698],[80.5426,20.0106],[80.5489,19.9837],[80.5236,19.9337],[80.4808,19.9342],[80.4517,19.9572],[80.4113,19.9384],[80.408,19.9126],[80.4498,19.8963],[80.4902,19.9023],[80.4695,19.8274],[80.5198,19.8318],[80.5465,19.8177],[80.5425,19.7833],[80.5872,19.741],[80.6111,19.7382],[80.6764,19.6994],[80.6703,19.6092],[80.7147,19.6166],[80.7698,19.5866],[80.7755,19.5624],[80.8366,19.5659],[80.857,19.5228],[80.8952,19.5199],[80.8984,19.4818],[80.874,19.445],[80.8134,19.4336],[80.8118,19.4072],[80.853,19.3639],[80.7744,19.3137],[80.7599,19.2915],[80.7095,19.2817],[80.6719,19.3295],[80.6234,19.3056],[80.59,19.3518],[80.5785,19.4009],[80.5385,19.3776],[80.5204,19.3476],[80.4856,19.3406],[80.4378,19.2577],[80.3939,19.2448],[80.3893,19.1815],[80.3275,19.1353],[80.3397,19.0999],[80.3052,19.0272],[80.2738,18.9945],[80.2743,18.9318],[80.3263,18.8809],[80.3545,18.8266],[80.297,18.7918],[80.2748,18.7655],[80.2729,18.723],[80.2185,18.7079],[80.1787,18.6833],[80.1558,18.7006],[80.1123,18.6829],[80.0495,18.7287],[80.0188,18.7702],[79.9732,18.7718],[79.914,18.8261],[79.9616,18.8667],[79.9578,18.9363],[79.9383,19.0406],[79.8698,19.0423],[79.8584,19.0959],[79.8742,19.1243],[79.9446,19.1671],[79.9242,19.2155],[79.9364,19.2641],[79.9659,19.3111],[79.9591,19.336],[79.9779,19.4004],[79.9439,19.4707],[79.9055,19.5],[79.8638,19.5112],[79.8322,19.5391],[79.8163,19.574],[79.7786,19.5997],[79.7353,19.605],[79.7144,19.5869],[79.6322,19.5751],[79.6148,19.5608],[79.6005,19.5095],[79.5186,19.5431],[79.5008,19.5074],[79.469,19.5096],[79.4333,19.5373],[79.4055,19.5356],[79.3574,19.5776],[79.3184,19.5767],[79.273,19.5989],[79.2371,19.5572],[79.24,19.5353],[79.2075,19.5061],[79.2224,19.4676],[79.1897,19.4591],[79.1618,19.4878],[79.046,19.5483],[78.998,19.5401],[78.9753,19.5511],[78.9558,19.5997],[78.9555,19.6559],[78.8599,19.6895],[78.8407,19.7554],[78.7863,19.7765],[78.699,19.7886],[78.6036,19.8184],[78.5527,19.824],[78.475,19.8155],[78.423,19.8176],[78.3874,19.8446],[78.3807,19.8804],[78.3369,19.883],[78.307,19.9143],[78.2998,19.841],[78.3364,19.8379],[78.3647,19.7812],[78.3432,19.7132],[78.3118,19.691],[78.2762,19.6924],[78.2627,19.6651],[78.2905,19.646],[78.3037,19.5693],[78.275,19.552],[78.3092,19.4811],[78.3044,19.4561],[78.2445,19.4288],[78.22,19.433],[78.1925,19.4067],[78.1721,19.3597],[78.1937,19.3145],[78.1767,19.2778],[78.1753,19.2376],[78.1429,19.23],[78.1171,19.2486],[78.0557,19.2371],[78.0425,19.2706],[77.9435,19.3427],[77.9117,19.3163],[77.8635,19.3041],[77.8714,19.2538],[77.8477,19.1896],[77.838,19.1376],[77.8486,19.0865],[77.8049,19.1012],[77.8004,19.0511],[77.7648,19.0626],[77.7742,18.9974],[77.8218,18.9785],[77.8163,18.9473],[77.8586,18.9491],[77.8433,18.9087],[77.8844,18.9048],[77.9033,18.8666],[77.9489,18.8433],[77.84,18.8048],[77.7897,18.6949],[77.7596,18.7067],[77.7301,18.6672],[77.7504,18.5889],[77.7385,18.5568],[77.7016,18.5552],[77.6514,18.5323],[77.6396,18.5549],[77.6005,18.5273],[77.5764,18.4868],[77.5836,18.4451],[77.5567,18.4192],[77.5516,18.3889],[77.5204,18.3579],[77.5581,18.3314],[77.5514,18.2919],[77.5243,18.3078],[77.4927,18.2672],[77.4476,18.27],[77.4377,18.3103],[77.4102,18.3016],[77.3715,18.3251],[77.395,18.3478],[77.4141,18.3931],[77.3729,18.4011],[77.3535,18.4477],[77.3173,18.4433],[77.2418,18.4126],[77.2118,18.3163],[77.2094,18.2881],[77.1749,18.2849],[77.1404,18.2078],[77.0985,18.1929],[77.1126,18.1568],[77.064,18.1506],[76.997,18.1648],[76.9907,18.19],[76.952,18.1881],[76.9206,18.1182],[76.9571,18.1083],[76.945,18.0484],[76.9057,18.0097],[76.9207,17.9416],[76.8844,17.8945],[76.8522,17.9008],[76.738,17.8594],[76.7871,17.8332],[76.7826,17.8066],[76.7344,17.782],[76.6907,17.6835],[76.6333,17.7282],[76.6119,17.7701],[76.5872,17.7075],[76.563,17.7646],[76.5307,17.7583],[76.5241,17.7154],[76.4873,17.7148],[76.4867,17.6584],[76.4293,17.645],[76.4197,17.6037],[76.3316,17.596],[76.3466,17.5126],[76.3307,17.4702],[76.3333,17.4339],[76.3716,17.4364],[76.3635,17.3777],[76.4092,17.3714],[76.3832,17.3145],[76.2764,17.3346],[76.2721,17.3606],[76.1963,17.3636],[76.1627,17.3452],[76.1198,17.3704],[76.087,17.3359],[76.0624,17.3545],[75.926,17.3249],[75.8215,17.4212],[75.8043,17.3678],[75.7652,17.4059],[75.7308,17.4204],[75.6836,17.4169],[75.6749,17.457],[75.6331,17.4772],[75.6091,17.3941],[75.5742,17.3833],[75.5809,17.3512],[75.6101,17.345],[75.6038,17.3055],[75.6303,17.2739],[75.6542,17.2738],[75.662,17.2146],[75.6285,17.1887],[75.6504,17.1157],[75.6724,17.116],[75.6768,17.0654],[75.6661,16.9798],[75.6102,16.9717],[75.607,17.0046],[75.5673,17.0091],[75.5634,16.9676],[75.5294,16.9694],[75.4891,16.9444],[75.4656,16.9884],[75.4279,16.9665],[75.3922,16.9801],[75.3424,16.9563],[75.2797,16.9566],[75.29,16.904],[75.2648,16.8628],[75.2277,16.8432],[75.1828,16.8432],[75.1766,16.8677],[75.1366,16.8745],[75.1176,16.9135],[75.0643,16.9422],[74.9894,16.9523],[74.9232,16.9393],[74.9606,16.8812],[74.9266,16.8641],[74.9104,16.8351],[74.9198,16.7729],[74.8499,16.7728],[74.7748,16.7517],[74.7322,16.7183],[74.6911,16.7155],[74.6894,16.6767],[74.6573,16.6431],[74.6888,16.6166],[74.6359,16.5839],[74.5686,16.5539],[74.5436,16.5953],[74.5446,16.6355],[74.4908,16.6298],[74.4635,16.6045],[74.3967,16.5833],[74.3788,16.5284],[74.3176,16.5537],[74.291,16.5049],[74.2971,16.4645],[74.3298,16.4475],[74.3393,16.391],[74.3191,16.3716],[74.3173,16.3278],[74.3632,16.2856],[74.416,16.2801],[74.4177,16.258],[74.5032,16.2254],[74.4896,16.1774],[74.4913,16.1043],[74.4816,16.0889],[74.4288,16.112],[74.365,16.0584],[74.3811,16.0355],[74.4333,16.0589],[74.4631,16.038],[74.4283,15.9523],[74.3457,15.8508],[74.3665,15.8259],[74.3676,15.7858],[74.308,15.7485],[74.2397,15.7435],[74.2015,15.7586],[74.1616,15.7513],[74.1259,15.7241],[74.1317,15.6936],[74.1184,15.652],[74.0838,15.6341],[73.9908,15.6115],[73.9614,15.6415],[73.9635,15.6921],[73.9387,15.7427],[73.8778,15.7492],[73.8565,15.8008],[73.8252,15.7416],[73.7855,15.7255],[73.6754,15.727],[73.6293,15.8471],[73.5869,15.9107],[73.51,15.9422],[73.4897,15.9879],[73.4833,16.0362],[73.4575,16.0629],[73.4566,16.1288],[73.4049,16.2972],[73.3682,16.3639],[73.3589,16.4326],[73.3188,16.5188],[73.3337,16.5593],[73.3198,16.6076],[73.3516,16.623],[73.3305,16.6871],[73.3055,16.7299],[73.3181,16.7956],[73.2956,16.8169],[73.2942,16.8697],[73.2801,16.9048],[73.296,16.9844],[73.2787,16.9931],[73.2887,17.0583],[73.2448,17.2225],[73.199,17.3051],[73.2494,17.2961],[73.2064,17.3849],[73.1755,17.3902],[73.1938,17.4648],[73.1809,17.5096],[73.1422,17.5457],[73.1484,17.5977],[73.1141,17.6895],[73.136,17.7077],[73.0898,17.845],[73.0556,17.932],[73.0288,17.9496],[73.0357,17.9803],[72.9714,18.1316],[72.9892,18.1577],[72.9761,18.2011],[72.9353,18.227],[72.9373,18.2747],[72.9636,18.2805],[72.9746,18.2402],[73.0207,18.241],[73.0691,18.2086],[73.0642,18.3054],[73.0184,18.2842],[72.9691,18.3017],[72.9532,18.335],[72.9113,18.3659],[72.8965,18.4682],[72.9171,18.5307],[72.9312,18.5375],[72.8851,18.6343],[72.8655,18.6519],[72.8644,18.8051],[72.8106,18.8943],[72.8238,18.9397],[72.8144,18.9825],[72.827,19.09],[72.8142,19.1291],[72.7817,19.1587],[72.7966,19.1945],[72.7759,19.2258],[72.7869,19.3071],[72.8,19.3299],[72.7597,19.3721],[72.7443,19.4622],[72.7722,19.4862],[72.732,19.5272],[72.7164,19.5929],[72.7783,19.6078],[72.7423,19.6505],[72.7136,19.646],[72.7084,19.7101],[72.6851,19.7586],[72.6913,19.7955],[72.6549,19.8349],[72.6879,19.8726],[72.6643,19.9313],[72.7039,19.9654],[72.7578,19.8988],[72.7736,19.9456],[72.7684,19.9779],[72.7224,19.9946],[72.7081,20.0711],[72.7263,20.0817],[72.7375,20.1348],[72.7752,20.1319],[72.817,20.1561],[72.8211,20.1877],[72.8705,20.2281],[72.9616,20.2088],[72.9925,20.1177],[73.0396,20.0671],[73.0559,20.099],[73.1533,20.0729],[73.1709,20.0521],[73.2132,20.091],[73.2107,20.1205],[73.2547,20.127],[73.2782,20.1487],[73.2813,20.1902],[73.3016,20.2099],[73.3429,20.1995],[73.4166,20.1982],[73.413,20.2694],[73.4274,20.278],[73.4118,20.3638],[73.38,20.3939],[73.4209,20.4278],[73.4677,20.4964],[73.4742,20.5831],[73.4292,20.5962],[73.4202,20.6272],[73.3942,20.6407],[73.4484,20.6922],[73.5313,20.6741],[73.5509,20.6485],[73.5996,20.6368],[73.6269,20.5849],[73.6696,20.5632],[73.7155,20.5764],[73.7463,20.5683],[73.775,20.5995],[73.8384,20.6205],[73.8382,20.6547],[73.8119,20.692],[73.8627,20.7032],[73.8745,20.7296],[73.9049,20.7253],[73.9422,20.7423],[73.9236,20.8512],[73.9256,20.8883],[73.8882,20.9352],[73.9011,20.9821],[73.8677,20.9859],[73.8148,21.0233],[73.7801,21.0643],[73.7297,21.0822],[73.7058,21.1081],[73.6517,21.1074],[73.6431,21.1394],[73.7296,21.1652],[73.8157,21.1739],[73.8259,21.1999],[73.8116,21.231],[73.8487,21.2746],[73.8794,21.2658],[73.9425,21.3001],[73.9518,21.3952],[74.0083,21.4228],[74.0443,21.4191],[74.0466,21.4486],[74.214,21.4815],[74.2558,21.4766],[74.3206,21.4984],[74.3208,21.529],[74.2761,21.5619],[74.2634,21.5398],[74.2003,21.5323],[74.1577,21.5687],[74.0433,21.5456],[74.011,21.5491],[73.9675,21.5226],[73.9288,21.523],[73.8534,21.4973],[73.8348,21.5202],[73.8122,21.6025],[73.8386,21.633],[73.8849,21.6535],[73.881,21.7146],[73.8362,21.7468],[73.8263,21.8426],[73.8711,21.8412],[73.9296,21.8644],[74.0526,21.9271],[74.1467,21.9528],[74.1938,21.9257],[74.281,21.933],[74.3089,21.9724],[74.3411,21.974],[74.3901,22.0215],[74.4317,22.0302],[74.4394,21.9767],[74.4891,21.9558],[74.5093,21.9207],[74.5101,21.8292],[74.5003,21.8068],[74.5141,21.7659],[74.513,21.7185],[74.5478,21.7187],[74.5821,21.6649],[74.6642,21.6523],[74.6871,21.6317],[74.7837,21.6108],[74.8289,21.6097],[74.8689,21.6314],[75.0517,21.5665],[75.0899,21.5153],[75.1077,21.4622],[75.2071,21.4128],[75.3002,21.3912],[75.3824,21.3793],[75.4265,21.3907],[75.4964,21.3873],[75.5415,21.3691],[75.6164,21.388],[75.6701,21.3745],[75.7033,21.388],[75.8332,21.3766],[75.874,21.3925],[75.9105,21.3824],[75.9629,21.3896],[75.9866,21.3687],[76.0478,21.349],[76.0956,21.3711],[76.1284,21.2866],[76.1592,21.2535],[76.1652,21.1694],[76.1102,21.1612],[76.1354,21.1207],[76.1917,21.0866],[76.2719,21.0888],[76.2789,21.0701],[76.3804,21.0751],[76.4373,21.1001],[76.4931,21.1938],[76.5298,21.1818],[76.5608,21.1987],[76.6232,21.1849],[76.6626,21.2804],[76.6215,21.3322],[76.6827,21.3784],[76.7402,21.4113],[76.7443,21.4398],[76.7858,21.465],[76.7956,21.4894],[76.7635,21.5205],[76.7894,21.5398],[76.782,21.5686],[76.7994,21.595],[76.8273,21.5883],[76.8549,21.6133],[76.9012,21.5965],[76.9133,21.6118],[77.0084,21.6801],[77.0624,21.7071],[77.1296,21.7222],[77.2104,21.6896],[77.2268,21.7167],[77.26,21.714],[77.324,21.7527],[77.4058,21.7525],[77.456,21.7601],[77.5007,21.7468],[77.5438,21.7038],[77.5618,21.6657],[77.5762,21.5771],[77.6118,21.5385],[77.5751,21.5264],[77.5082,21.5509],[77.4546,21.5537],[77.4224,21.5169],[77.4417,21.4714],[77.4735,21.4542],[77.4917,21.3741],[77.5144,21.3759],[77.5314,21.419],[77.5633,21.3932],[77.6497,21.3921],[77.6773,21.3753],[77.7371,21.3622],[77.7467,21.3796],[77.7966,21.389],[77.8225,21.4072],[77.9019,21.3773],[77.981,21.4024],[78.0661,21.4374],[78.1763,21.4991],[78.182,21.5566],[78.2234,21.5526],[78.2635,21.5659],[78.2644,21.5913],[78.3208,21.5718],[78.3557,21.573],[78.408,21.6084],[78.4339,21.5356],[78.4571,21.4959],[78.5049,21.5266],[78.5408,21.5235],[78.5854,21.4867],[78.6881,21.4819],[78.7278,21.4623],[78.805,21.4904],[78.9411,21.5112],[78.9123,21.5488],[78.9165,21.5909],[78.9753,21.6176],[79.0123,21.5994],[79.1028,21.6014],[79.1631,21.6585],[79.2239,21.6486],[79.2212,21.6939],[79.2681,21.7154],[79.2909,21.6925],[79.4007,21.677],[79.4152,21.6908],[79.4962,21.674],[79.512,21.584],[79.578,21.5413],[79.7334,21.6033],[79.7899,21.5874],[79.8312,21.5467],[79.8631,21.5308],[79.9184,21.5244],[79.9298,21.5525],[79.9715,21.5577],[80.0005,21.5336],[80.0314,21.5556],[80.0723,21.5567],[80.1287,21.6114],[80.1546,21.6065],[80.1928,21.6355],[80.254,21.6245],[80.328,21.5711],[80.3308,21.5479],[80.3765,21.5233],[80.3848,21.4894],[80.4181,21.4484],[80.3959,21.405],[80.4129,21.3763],[80.4461,21.3711],[80.4611,21.403],[80.5392,21.3827],[80.6214,21.3203],[80.66,21.3341]]]},"properties":{"ST_NM":"Maharashtra","region":"west"}}]}');
 
 /***/ })
 
