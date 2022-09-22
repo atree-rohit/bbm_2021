@@ -1,7 +1,10 @@
 <style>
+    #controls{
+        margin: 0 2rem;
+    }
 	#map-container .state-selected{
 		/*fill: #afa;*/
-		fill: #ff5;
+		fill: #ffff55;
 		stroke: rgba(255,50,0,.5);
 		stroke-width:.5px;
 	}
@@ -16,207 +19,310 @@
 		cursor: pointer;
 		font-weight: 1000;
 	}
+
+    .map-points circle{
+		stroke-width: .5px;
+		stroke: red;
+		fill: pink;
+	}
+
+	.map-boundary path{
+		/* stroke: transparent; */
+		stroke-linejoin: round;
+		stroke-width: .1;
+	}
+	.map-boundary path:hover{
+		cursor: pointer;
+		fill: beige;
+	}
+
+    table, tr, th,td{
+        border: 1px solid white;
+    }
+    td {
+        padding: 0.5rem 1rem;
+    }
 	@media screen and (max-width: 800px) {
 		.poly_text{
 			font-size: 3.5vw;
 		}
 	}
-
 </style>
 
 <template>
 	<div>
+        <div id="controls">
+            <h3>{{mapModes[mapMode]}}</h3>
+            <ui-slider
+                v-model="mapMode"
+                color="primary-light2"
+                :step="1"
+                :min="0"
+                :max="3"
+                show-marker
+            />
+
+            <ui-slider
+                v-model="hexZoom"
+                :step="1"
+                :min="0"
+                :max="9"
+                show-marker
+                v-show="mapMode == 3"
+            />
+        </div>
 		<div id="map-container"></div>
 	</div>
 </template>
 
 <script>
+import * as d3 from "d3"
 import * as d3Legend from "d3-svg-legend"
-import country from '../country.json'
+import * as h3 from "h3-js"
+import country from '../districts_2020_rewind.json'
 export default {
-	name:"india-map",
-	props: ["map_data", "selected_state", "popup", "stateStats", "selected_region"],
+	name:"IndiaMap",
+    props: ["map_data", "selected_state", "popup", "stateStats", "selected_region"],
 	data() {
 		return{
+            mapMode: 0,
+            mapModes: ["Region", "State", "District", "Hexagons"],
+			hexZoom: 5,
 			states: null,
 			path: null,
 			svg: {},
 			projection: {},
 			colors: {},
 			legend: {},
-
 			state_data: {},
 			selected:"All",
+			max: 0,
 			state_max: 0,
 			height: 600 ,
 			width: 800,
-			tooltip:this.popup,
-			map_first_render:true,
+			tooltip:null,
+            regions: {
+				"east":["Arunachal Pradesh","Assam","Manipur","Meghalaya","Mizoram","Nagaland","Sikkim","Tripura","Bihar","Odisha","Jharkhand","West Bengal"],
+				"north":["Chandigarh","Punjab","Uttarakhand","Ladakh","Jammu and Kashmir","NCT of Delhi","Haryana","Himachal Pradesh","Uttar Pradesh"],
+				"south":["Karnataka","Telangana","Kerala","Andaman and Nicobar","Lakshadweep","Tamil Nadu","Andhra Pradesh","Puducherry"],
+				"west":["Rajasthan","Madhya Pradesh","Gujarat","Dadra and Nagar Haveli", "Daman and Diu","Chhattisgarh","Goa","Maharashtra"]
+			},
 			region_colors: {
 				north: "#f8df81",
 				south: "#badfda",
 				west: "#f6aa90",
 				east: "#d5b6d5"
-			}
+			},
+			observation_counts: {},
+			hexagons: {},
+			locations: [],
 		}
+	},
+	created() {
+		// console.clear()
 	},
 	mounted(){
 		this.init()
-		this.regionalStats()
-		// this.clicked(this.selectedGeoJson)
-		// this.map_first_render = false
-		// alert(`${this.width} x ${this.height}`)
+		this.data_fns()
 	},
 	computed:{
-		stateData () {
-			let op = {}
-
-			country.features.forEach(s => {
-				op[s.properties.ST_NM] = [];
-			})
-			this.map_data.forEach(o => {
-				if(o.state !== null){
-					op[o.state].push(o)
-				}
-			})
-			return op
-		},
-		selectedGeoJson () {
-			let op = {properties:{ST_NM: 'All'}}
-			if (this.selected !== 'All') {
-				Object.keys(country.features).forEach(c => {
-					if (country.features[c].properties.ST_NM === this.selected) {
-						op = country.features[c]
-					}
-				})
-			}
-			return op
-		},
+		observations(){ //final output from here
+            return this.map_data
+        },
 		zoom() {
-			let that = this
 			return d3.zoom()
 					.scaleExtent([.5, 50])
 					.translateExtent([[-0.5 * this.width,-0.75 * this.height],[2.5 * this.width, 2.5 * this.height]])
-					.on('zoom', function() {
-
-						that.svg.selectAll('.poly_text')
-							.attr('transform', d3.event.transform),
-						that.svg.selectAll('path')
-							.attr('transform', d3.event.transform),
-						that.svg.selectAll('circle')
-							.attr('transform', d3.event.transform)
-						.attr("r", 2 / d3.event.transform.k)
-					})
+					.on('zoom', this.handleZoom)
 		},
 	},
 	watch: {
 		map_data () {
 			this.init()
-
 		},
 		selected_state (newVal, oldVal) {
-			if (!d3.select("#map-container .map-points").empty()) {
-				d3.selectAll(".map-points").remove()
+			if (!d3.select("#map-container svg").empty()) {
+				d3.selectAll("#map-container svg").remove()
 			}
-
 			this.init()
+		},
+        mapMode(newVal) {
+            this.init()
+			if(newVal == 3)
+			this.init_hexagons()
+        },
+		hexZoom() {
+			this.init_hexagons()
+		},
+		observations() {
+			this.data_fns()
 		}
 	},
 	methods:{
-		regionalStats(){
-			let region_states = {}
-			let regions = [...new Set(country.features.map((s) => s.properties.region))]
-			let region_stats = {}
-			regions.map((r) => {
-				region_stats[r] = {
-					region: r,
-					observations: []
-				}
-			})
-			// Total observations, total users, total unique taxa with counts
-
-			country.features.forEach((s) => {
-				if(region_states[s.properties.region] == undefined){
-					region_states[s.properties.region] = []
-				}
-				region_states[s.properties.region].push(s.properties.ST_NM)
-			})
-			
-			this.map_data.forEach((o) => {
-				let region = Object.keys(region_states).filter((rs) => region_states[rs].indexOf(o.state) != -1)[0]
-				region_stats[region].observations.push(o)
-			})
-			
-			regions.map((r) => {
-				region_stats[r].users = [...new Set(region_stats[r].observations.map((o) => o.user_id))]
-				region_stats[r].user_counts = region_stats[r].users.map((u) => {
-					return {
-						name: u,
-						count: region_stats[r].observations.filter((o) => o.user_id == u).length
+		data_fns(){
+			const formatDate = d3.timeFormat("%Y")
+			let o  = d3.group(this.observations, o => formatDate(new Date(o.date)),o => o.portal, o => o.date)
+            let loc = d3.groups(this.observations, o => o.lat + "," + o.lon)
+			let lo = []
+			loc.forEach((l) => {
+                let state = l[1][0].state
+				let region = null
+				let district = l[1].filter((o) => o.district)
+                if(district.length ==0 ){
+                    district = null                    
+                } else {
+                    district = l[1].filter((o) => o.district)[0].district
+                }
+				Object.keys(this.regions).forEach((k) => {
+					if(this.regions[k].indexOf(state) != -1){
+						region = k
 					}
 				})
-				region_stats[r].user_counts.sort((a,b) => b.count - a.count)
-				region_stats[r].taxa = [...new Set(region_stats[r].observations.map((o) => o.taxa_name))]
-				region_stats[r].taxa_counts = region_stats[r].taxa.map((t) => {
-					return {
-						name: t,
-						count: region_stats[r].observations.filter((o) => o.taxa_name == t).length
-					}
+				// if(["West Bengal", "Sikkim"].indexOf(state) != -1)
+				lo.push({
+					region: region,
+					state: state,
+					district: district,
+					latitude: parseFloat(l[1][0].lat),
+					longitude: parseFloat(l[1][0].lon),
+					observation_count: l[1].length
 				})
-				region_stats[r].taxa_counts.sort((a,b) => b.count - a.count)
-				
 			})
-			console.table(region_stats)
-			let x = regions.map((r) => {
-				return {
-					name: r,
-					observations: region_stats[r].observations.length,
-					users: region_stats[r].users.length,
-					taxa: region_stats[r].taxa.length,
-					top_taxa: region_stats[r].taxa_counts.slice(0,5).map((t) => `${t.name} (${t.count})`).join(", "),
-					top_users: region_stats[r].user_counts.slice(0,5).map((u) => `${u.name} (${u.count})`).join(", "),
-				}
-			})
-			console.log(x.map((r) => [r.name, r.top_users]))
+			console.log("data_fns", lo)
+			this.locations = lo
+			this.init()
 		},
+        color_polygon(region, s_data) {
+            let op = this.colors(0)
+            if(this.mapMode === 0){
+				op = this.colors(this.get_observation_count("region", region))
+            } else if (this.mapMode === 1){
+                // op = `hsl(${parseInt(s_data.statecode) * 19}, 50%, 50%)`
+					op = this.colors(this.get_observation_count("state", s_data.statename)) 
+            } else if (this.mapMode === 2){
+				// op = `hsl(${parseInt(s_data.objectid) * 19}, 50%, 50%)` 
+				op = this.colors(this.get_observation_count("district", s_data.distname)) 
+			} else if(this.mapMode === 3){
+				op = 'hsl(200,100%, 80%)'
+			}
+            return op
+        },
+		color_hexagon(val){
+			return this.colors(val)
+		},
+		get_observation_count(mode, name){
+			let op = 0
+			if(mode == "region"){
+				op = this.observation_counts.region[name]
+			} else if (mode == "state" && this.observation_counts.state[name] != undefined) {
+                op = this.observation_counts.state[name]
+			} else if (mode == "district" && this.observation_counts.district[name] != undefined) {
+                op = this.observation_counts.district[name]
+			}
+			return op
+		},
+        handleZoom(e){
+            this.svg.selectAll('.poly_text')
+                .attr('transform', e.transform)
+            this.svg.selectAll('path')
+                .attr('transform', e.transform)
+            this.svg.selectAll('circle')
+                .attr('transform', e.transform)
+        },
 		init () {
-			this.map_first_render = true
 			this.states = null
 			this.path = null
 			this.svg = {}
 			this.projection = {}
-			this.colors = {}
-			this.legend = {}
-
-
-			this.state_data = {}
-			this.state_max = 0
 			this.height = window.innerHeight * 0.85
 			this.width = window.innerWidth * 0.5
 			if(window.innerWidth < 800){
 				this.height = window.innerHeight * 0.5
 				this.width = window.innerWidth * 0.9
 			}
-			country.features.forEach(s => {
-				this.state_data[s.properties.ST_NM] = [];
-			})
 
-			this.map_data.forEach(o => {
-				if(Object.keys(this.state_data).indexOf(o.state) != -1){
-					this.state_data[o.state].push(o)
-				} else {
-					console.log("unmatched state name", o.state, o)
+            this.init_tooltip()
+			this.init_observation_counts()
+			this.init_legend()
+			this.renderMap()
+		},
+        init_tooltip(){
+            this.tooltip = d3.select('body')
+							    .append('div')
+							    .attr('class', 'd3-tooltip')
+							    .style('position', 'absolute')
+							    .style('top', '0')
+							    .style('z-index', '10')
+							    .style('visibility', 'hidden')
+							    .style('padding', '10px')
+							    .style('background', 'rgba(0,0,0,0.6)')
+							    .style('border-radius', '4px')
+							    .style('color', '#fff')
+							    .text('a simple tooltip')
+
+        },
+		init_observation_counts() {
+			let scales = ["region", "state", "district"]
+			scales.forEach((s) => {
+				this.observation_counts[s] = {}
+			})
+			this.locations.forEach((l) => {
+				if(this.observation_counts.region[l.region] == undefined){
+					this.observation_counts.region[l.region] = 0
 				}
-			});
+				this.observation_counts.region[l.region] += l.observation_count
 
-			Object.keys(this.state_data).forEach(s => {
-				if(this.state_data[s].length > this.state_max)
-				this.state_max = this.state_data[s].length;
+				if(this.observation_counts.state[l.state] == undefined){
+					this.observation_counts.state[l.state] = 0
+				}
+				this.observation_counts.state[l.state] += l.observation_count
+
+				if(this.observation_counts.district[l.district] == undefined){
+					this.observation_counts.district[l.district] = 0
+				}
+				this.observation_counts.district[l.district] += l.observation_count
 			})
-			this.colors = d3.scaleLinear()
-				.domain([0, 1, this.state_max*.25, this.state_max])
-				.range(["#f77", "#ca0", "#ada", "#3d3"])
-
+			// console.log("observation_counts", this.observation_counts)
+		},
+		init_legend() {
+			this.colors = {}
+			this.legend = {}
+			this.max = 0
+			if(this.mapMode == 0 ){
+				Object.values(this.observation_counts.region).forEach((n) => {
+					if(n > this.max)
+						this.max = n
+				})
+				this.colors = d3.scaleLinear()
+					.domain([0, 5500, this.max])
+					// .interpolator(d3.interpolateRainbow);
+					.range(["#f77", "#33d", "#3d3"])
+			} else if (this.mapMode == 1){
+				Object.values(this.observation_counts.state).forEach((n) => {
+					if(n > this.max)
+						this.max = n
+				})
+				this.colors = d3.scaleLinear()
+					.domain([0, 1, this.max*0.1, this.max])
+					.range(["#f77", "#ca0", "#cda", "#3d3"])
+			} else if (this.mapMode == 2 ){
+				Object.values(this.observation_counts.district).forEach((n) => {
+					if(n > this.max)
+						this.max = n
+				})
+				this.colors = d3.scaleLinear()
+					.domain([0, 1, this.max*.25, this.max])
+					.range(["#f77", "#ca0", "#ada", "#3d3"])
+			} else if (this.mapMode == 3 ){
+				Object.values(this.hexagons).map((h) => h.observations).forEach((n) => {
+					if(n > this.max)
+						this.max = n
+				})
+				let hex_opacity = 0.75
+				this.colors = d3.scaleLog()
+					.domain([0, 1, this.max*.25, this.max])
+					.range([`rgba(255, 119, 119, ${hex_opacity})`, `rgba(204, 170, 0, ${hex_opacity})`, `rgba(170, 221, 170, ${hex_opacity})`, `rgba(51, 221, 51, ${hex_opacity})`])
+			}
 			this.legend = d3Legend.legendColor()
 								.shapeWidth(45)
 								.scale(this.colors)
@@ -225,17 +331,49 @@ export default {
 								.labelOffset(-10)
 								.labelAlign("start")
 								.cells(6)
-								// .shapePadding(47)
 
-			this.renderMap()
-			this.clicked(this.selectedGeoJson)
-			this.map_first_render = false
 		},
+		init_hexagons(){
+			this.hexagons = {}
+			if(this.locations != undefined){
+				this.locations.forEach((l) => {
+					let hex = h3.latLngToCell(l.latitude, l.longitude, this.hexZoom)
+					if(this.hexagons[hex] == undefined){
+						this.hexagons[hex] = {
+							observations: 0,
+							geometry: h3.cellToBoundary(hex)
+						}
+					}
+					this.hexagons[hex].observations += l.observation_count
+				})
+				// this.generateHexGeoJson()
+				this.init()
+			}
+		},
+		generateHexGeoJson(){
+			let hexagons = []
+			
+			Object.values(this.hexagons).forEach((h) => {
+				let coords = h.geometry.map((p) => [p[1], p[0]])
+				coords.push(coords[0])
+				hexagons.push({
+					type: "Feature",
+					geometry: {
+						type: "Polygon",
+						coordinates: [JSON.parse(JSON.stringify(coords))]
+					},
+					properties: {
+						count: h.observations
+					}
+				})
+
+			})
+			console.log("hex", hexagons)
+		},				
 		renderMap () {
 			this.selected = this.selected_state
-
 			if (!d3.select("#map-container svg").empty()) {
-				d3.selectAll("#map-container svg").remove()
+				d3.select("#map-container svg").remove()
 			}
 			this.svg = d3.select("#map-container")
 						.append("svg")
@@ -244,136 +382,127 @@ export default {
 							.attr("height", this.height)
 							// .style("background-color", "rgb(190, 229, 235)")
 							.classed("svg-content d-flex m-auto", true)
-
 			this.projection = d3.geoMercator().scale(850).center([87, 25.5])
 			this.path = d3.geoPath().projection(this.projection)
-
-
 			if(this.height > this.width){
 				this.legend.shapeWidth(35)
 				.cells(4)
 				// .shapePadding(37)
 			}
-
-
 			let base = this.svg.append("g")
-			.classed("map-boundary", true)
-
+				.classed("map-boundary", true)
 			let base_text = base.selectAll("text").append("g")
 			base = base.selectAll("path").append("g")
 			this.states = base.append("g").classed("states", true)
 			let that = this
-
-			country.features.forEach(state=> {
-				let s_name = state.properties.ST_NM
-				let region = state.properties.region
-				let that = this
-
+			country.features.forEach((state) => {
+				// console.log(state)
+				let region = null
+				let s_name = state.properties.statename
+                let district = state.properties.distname
+                Object.keys(this.regions).forEach((r) => {
+                    if(this.regions[r].indexOf(s_name) != -1){
+                        region = r
+                    }
+                })
 				let current_state = this.states.append("g")
-				.data([state])
-				.enter().append("path")
-				.attr("d", this.path)
-				.attr("id", this.stateID(s_name))
-				.attr("title", s_name)
-				.on('mouseover', function (d, i) {
-					that.tooltip.html(
-						`<table>
-						<tr><td>State</td><td>${s_name}</td></tr>
-						<tr><td>Observations</td><td>${that.stateStats[s_name].observations}</td></tr>
-						<tr><td>Users</td><td>${that.stateStats[s_name].users.size}</td></tr>
-						<tr><td>Unique Taxa</td><td>${that.stateStats[s_name].species.size}</td></tr>
-						</table>`)
-						.style('visibility', 'visible');
-					})
-				.on('mousemove', function () {
-					that.tooltip
-					.style('top', d3.event.pageY - 10 + 'px')
-					.style('left', d3.event.pageX + 10 + 'px');
-				})
-				.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
-				.on("click", this.clicked)
-
-
-				// if(this.stateData[s_name] == undefined){
-				// 	current_state.attr("fill", (d) => colors(-1))
-				// } else if (s_name == this.selected) {
-				// 	current_state.classed("state-selected", true)
-				// } else {
-				// 	current_state.attr("fill", (d) => this.colors(this.stateData[s_name].length))
-				// }
-
-				current_state.attr("fill", (d) => this.region_colors[region])
-			})
-			if(this.selected == "All"){
-				country.features.forEach(state=> {
-					let s_name = state.properties.ST_NM
-					let label = base_text.append("g")
-						.data([state])
-						.enter().append("text")
-						.classed("poly_text", true)
-						.attr("x", (h) => this.path.centroid(h)[0] )
-						.attr("y", (h) => this.path.centroid(h)[1] )
-						.attr("text-anchor", "middle")
-						.text(this.stateData[s_name].length)
-						.on('mouseover', function (d, i) {
-							that.tooltip.html(
-								`<table>
-								<tr><td>State</td><td>${s_name}</td></tr>
-								<tr><td>Observations</td><td>${that.stateStats[s_name].observations}</td></tr>
-								<tr><td>Users</td><td>${that.stateStats[s_name].users.size}</td></tr>
-								<tr><td>Unique Taxa</td><td>${that.stateStats[s_name].species.size}</td></tr>
-								</table>`)
-								.style('visibility', 'visible');
-							})
-						.on('mousemove', function () {
-							that.tooltip
-							.style('top', d3.event.pageY - 10 + 'px')
-							.style('left', d3.event.pageX + 10 + 'px');
+					.data([state])
+					.enter().append("path")
+					.attr("d", this.path)
+					.attr("id", this.stateID(s_name))
+					.attr("title", s_name)
+				if(this.mapMode !== 3){
+					current_state.on('mouseover', (d, i) => {
+						this.tooltip.html(
+							`<table>
+							<tr><td>Region</td><td>${region} (${this.get_observation_count("region", region)})</td></tr>
+							<tr><td>State</td><td>${s_name} (${this.get_observation_count("state", s_name)})</td></tr>
+							<tr><td>District</td><td>${district} (${this.get_observation_count("district", district)})</td></tr>
+							</table>`)
+							.style('visibility', 'visible')
 						})
-						.on('mouseout', () => that.tooltip.html(``).style('visibility', 'hidden'))
-						.on("click", this.clicked)
-				})
+					.on('mousemove', (event, d) => {
+						this.tooltip
+							.style('top', event.pageY - 10 + 'px')
+							.style('left', event.pageX + 10 + 'px')
+					})
+					.on('mouseout', () => this.tooltip.html(``).style('visibility', 'hidden'))
+					.on("click", (d) => this.clicked(d))
+				}
+				
+                if(region == null){
+                    console.log(s_name, region)
+                }
+				current_state.attr("fill", (d) => this.color_polygon(region, state.properties))
+				current_state.attr("stroke", (d) => this.color_polygon(region, state.properties))
+			})
+			if(this.mapMode == 3){
+				this.render_hex()
 			}
 
 			this.svg.append("g")
 				.attr("transform", "translate("+this.width*.5+", 50)")
 				.call(this.legend)
-				// .append("text")
-				// .classed("map_label", true)
-				// .attr("dx", 5)
-				// .attr("dy", -10)
-				// .classed("h1", true)
-				// .text(this.selected)
 
 			this.svg.call(this.zoom)
-			this.mapPoints()
-
-			// if(this.map_first_render){
-			// 	this.clicked(this.selectedGeoJson)
-			// 	this.map_first_render = false
-
-			// }
+			// this.mapPoints()
+		},
+		render_hex(){
+			let hex_layer = this.svg.append("g")
+				.classed("map-hexagons", true)
+			Object.values(this.hexagons).forEach((h) => {
+				let l = hex_layer.selectAll("g").append("g")
+					.data([this.get_geojson(h)])
+					.enter().append("path")
+					.classed("hex", true)
+					.attr("d", this.path)
+					.attr("fill", (d) => this.color_hexagon(d.properties.observations))
+					.on('mouseover', (d, i) => {
+						this.tooltip.html(
+							`<table>
+							<tr><td>Observations</td><td>${i.properties.observations}</td></tr>
+							</table>`)
+							.style('visibility', 'visible')
+						})
+					.on('mousemove', (event, d) => {
+						this.tooltip
+							.style('top', event.pageY - 10 + 'px')
+							.style('left', event.pageX + 10 + 'px')
+					})
+					.on('mouseout', () => this.tooltip.html(``).style('visibility', 'hidden'))
+			})
+		},
+		get_geojson(hex){
+			let points = Array.from(Array.from(hex.geometry).map((p) => [p[1], p[0]]).reverse())
+			points.push(points[0])
+			let op = {
+				type: 'Feature',
+				geometry: {
+					type: 'Polygon',
+					coordinates: [points]
+				},
+				properties: {
+					observations: hex.observations
+				}
+			}
+			return op
 		},
 		stateID(s){
 			return s.replaceAll(" ", "_").replaceAll("&", "")
 		},
 		clicked(d) {
 			this.tooltip.html(``).style('visibility', 'hidden')
-			let state = d.properties.ST_NM
-
+            console.log("x", d.target.__data__.properties.statename)
+			let state = d.target.__data__.properties.statename
 			if(state == this.selected && state != 'All')
 				if (!d3.select("#map-container .poly_text").empty()) {
 					d3.selectAll("#map-container .poly_text").remove()
 				}
 			let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
-
 			this.states.transition().style("fill", null)
-
 			if(d3.select(".state-selected")["_groups"][0][0] != null){
 				d3.select("#" + d3.select(".state-selected")["_groups"][0][0].id).attr("class", null)
-
 			}
-
 			if(this.map_first_render){
 				if(state == "All"){
 					[[x0, y0], [x1, y1]] = this.path.bounds(country)
@@ -394,7 +523,6 @@ export default {
 					this.$emit('stateSelected', state)
 				}
 			}
-
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
 				d3.zoomIdentity
@@ -406,20 +534,16 @@ export default {
 			*/
 		},
 		mapPoints(){
-			let points = []
-
-			if(this.selected != 'All'){
-				this.state_data[this.selected].forEach(o => {
-					let coords = null
-					if(o.location != undefined){
-						coords = o.location.split(",")
-					} else {
-						coords = [o.lat, o.lon]
-					}
-					points.push([coords[1], coords[0], o.id, o.place_guess]);
-				})
-			}
-
+			// let points = this.locations.filter((l) => window.unmatched_districts.indexOf(l.district) != -1).map((l) => [l.longitude, l.latitude, l.id, l])
+			let points = this.locations.map((l) => [l.longitude, l.latitude, l.id, l])
+			console.log("mapPoints", points)
+			// if(this.selected != 'All'){
+			// 	console.log("mapPoints", this.selected)
+			// 	this.state_data[this.selected].forEach(o => {
+			// 		let coords = o.location.split(",")
+			// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
+			// 	})
+			// }
 			if(points.length > 0){
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
@@ -428,8 +552,23 @@ export default {
 				.append("circle")
 				.attr("cx", (d) => this.projection(d)[0])
 				.attr("cy", (d) => this.projection(d)[1])
-				.attr("r", "0px")
-
+				.attr("r", "1px")
+				.attr("stroke", "red")
+				.attr("stroke-width", "0.25px")
+				.attr("fill", "green")
+				.on('mouseover', (d, i) => {
+						this.tooltip.html(
+							`<table>
+							<tr><td>Region</td><td>${JSON.stringify(i[3])}</td></tr>
+							</table>`)
+							.style('visibility', 'visible')
+						})
+					.on('mousemove', (event, d) => {
+						this.tooltip
+							.style('top', event.pageY - 10 + 'px')
+							.style('left', event.pageX + 10 + 'px')
+					})
+					.on('mouseout', () => this.tooltip.html(``).style('visibility', 'hidden'))
 				// map_points.on("click", (d) => that.setMissingState(d))
 			}
 		},
