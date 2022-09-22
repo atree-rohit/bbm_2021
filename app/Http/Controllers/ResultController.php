@@ -25,10 +25,19 @@ class ResultController extends Controller
                 ->get()
                 ->toArray();
         $ibp = IBP22::select("id", "fromDate as date","associatedMedia as img_url", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
+                ->where("fromDate", "like", "%2022-09%")
+                ->whereNotNull("taxa_id")
                 ->get()
                 ->toArray();
-        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get();
-        
+                
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
+        foreach($inat as $k=>$i){
+            $coords = explode(",", $i["location"]);
+            $inat[$k]["lat"] = $coords[0];
+            $inat[$k]["lon"] = $coords[1];
+            unset($inat[$k]["location"]);
+        }
+
         $form_data = [];
         $last_update = "";
         $all_portal_data = [
@@ -217,12 +226,40 @@ class ResultController extends Controller
     public function is_in_polygon2($longitude_x, $latitude_y,$polygon)
     {
         $i = $j = $c = 0;
-        $points_polygon = count($polygon)-1;
-        for ($i = 0, $j = $points_polygon ; $i < $points_polygon; $j = $i++) {
-            if ( (($polygon[$i][1]  >  $latitude_y != ($polygon[$j][1] > $latitude_y)) &&
-            ($longitude_x < ($polygon[$j][0] - $polygon[$i][0]) * ($latitude_y - $polygon[$i][1]) / ($polygon[$j][1] - $polygon[$i][1]) + $polygon[$i][0]) ) )
-                $c = !$c;
+        $bounds = [
+            "lat_min" => $polygon[0][1],
+            "lat_max" => $polygon[0][1],
+            "lon_min" => $polygon[0][0],
+            "lon_max" => $polygon[0][0]
+        ];
+        foreach($polygon as $p){
+            if($p[1] > $bounds["lat_max"]){
+                $bounds["lat_max"] = $p[1];
+            } else if($p[1] < $bounds["lat_min"]){
+                $bounds["lat_min"] = $p[1];
+            }
+            if($p[0] > $bounds["lon_max"]){
+                $bounds["lon_max"] = $p[0];
+            } else if($p[0] < $bounds["lon_min"]){
+                $bounds["lon_min"] = $p[0];
+            }
         }
+        if(
+            ($longitude_x >= $bounds["lon_min"] && $longitude_x <= $bounds["lon_max"])
+            && ($latitude_y >= $bounds["lat_min"] && $latitude_y <= $bounds["lat_max"])
+        ) {
+            $points_polygon = count($polygon)-1;
+            for ($i = 0, $j = $points_polygon ; $i < $points_polygon; $j = $i++) {
+                if ( 
+                    (($polygon[$i][1]  >  $latitude_y != ($polygon[$j][1] > $latitude_y)) 
+                    &&
+                    ($longitude_x < ($polygon[$j][0] - $polygon[$i][0]) * ($latitude_y - $polygon[$i][1]) / ($polygon[$j][1] - $polygon[$i][1]) + $polygon[$i][0]) ) )
+                    $c = !$c;
+            }
+        } else {
+            $c = 0;
+        }
+        
         return $c;
     }
 
@@ -499,7 +536,7 @@ class ResultController extends Controller
         $params = [
             "project_id=big-butterfly-month-india-2022",
             "order=desc",
-            "order_by=created_at",
+            "order_by=updated_at",
         ];
         $url_base = "https://api.inaturalist.org/v1/observations?" . implode("&", $params);
         // $url_base = public_path("data/2022/sample_inat.json");
@@ -518,7 +555,8 @@ class ResultController extends Controller
             $added_count = 0;
             foreach($data->results as $r){
                 if(!in_array($r->id, $this->existing_observation_ids)) {
-                    $this->add_inat_observation($r);
+                    $new_observation = $this->add_inat_observation($r);
+                    $inat_records->put($new_observation->id, $new_observation);
                     $added_count++;
                 } else if($r->updated_at != $inat_records[$r->id]->inat_updated_at) {
                     $this->update_inat_observation($r);
@@ -527,7 +565,12 @@ class ResultController extends Controller
                 }
             }
             $page++;
-            if(($page * $per_page > $total_results) || ($added_count > -2 )){
+            if(($page * $per_page > $total_results) || ($added_count < -2 )){
+                echo "<br><hr><br>";
+                echo $page . "*" . $per_page > $total_results;
+                echo "<br>";
+                echo $added_count;
+                echo "<br><hr><br>";
                 $new_flag = false;
             }
         } while($new_flag );
@@ -535,7 +578,7 @@ class ResultController extends Controller
         ob_end_flush(); 
         // $this->get_missing_taxa();
 
-        dd("injest csv files", $this->existing_observation_ids, $this->existing_taxa_ids);
+        dd("iNat Pull Complete: ", $this->existing_observation_ids, $this->existing_taxa_ids);
     }
     
     public function add_inat_observation($record)
@@ -556,7 +599,8 @@ class ResultController extends Controller
         $observation->inat_created_at = $record->created_at;
         $observation->inat_updated_at = $record->updated_at;
         $observation->save();
-        $this->existing_observation_ids[] = $observation->id;        
+        $this->existing_observation_ids[] = $observation->id;
+        return $observation;
     }
 
     public function update_inat_observation($record)
