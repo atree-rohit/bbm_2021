@@ -20,6 +20,7 @@ class CreateINat22sTable extends Migration
             $table->string('location')->nullable();
             $table->string('place_guess')->nullable();
             $table->string('state')->nullable();
+            $table->string('district')->nullable();
             $table->unsignedBigInteger('taxa_id')->nullable();
             $table->text('img_url')->nullable();
             $table->boolean('is_lepidoptera')->nullable();
