@@ -173,10 +173,10 @@ export default {
 			}
 
 		},
-		brushed () {
-			if (!d3.event.sourceEvent) return // Only transition after input.
-			if (!d3.event.selection) return // Ignore empty selections.
-			if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return // ignore brush-by-
+		brushed (event) {
+			if (!event.sourceEvent) return // Only transition after input.
+			if (!event.selection) return // Ignore empty selections.
+			if(event.sourceEvent && event.sourceEvent.type === "zoom") return // ignore brush-by-
 				//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
 				//The idea here is to count all the bar chart in the brush area. And reset the domain
 			var newInput = []
@@ -194,10 +194,10 @@ export default {
 
 			this.renderBrushedChart(newInput)
 		},
-		brushend () {
-			if (!d3.event.sourceEvent) return; // Only transition after input.
-			if (!d3.event.selection) return; // Ignore empty selections.
-			if(d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-
+		brushend (event) {
+			if (!event.sourceEvent) return; // Only transition after input.
+			if (!event.selection) return; // Ignore empty selections.
+			if(event.sourceEvent && event.sourceEvent.type === "zoom") return; // ignore brush-by-
 				//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
 				//The idea here is to count all the bar chart in the brush area. And reset the domain
 			var newInput = []
