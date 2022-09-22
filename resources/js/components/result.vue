@@ -56,21 +56,6 @@
 		overflow-x: auto;
 	}
 
-	.map-points circle{
-		stroke-width: .5px;
-		stroke: red;
-		fill: pink;
-	}
-
-	.map-boundary path{
-		stroke: #333;
-		stroke-linejoin: round;
-		stroke-width: .1;
-	}
-	.map-boundary path:hover{
-		cursor: pointer;
-		fill: beige;
-	}
 	.doughnut-chart path:hover,
 	.map-points circle:hover{
 		cursor: pointer;
@@ -425,7 +410,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import * as d3Collection from 'd3-collection'
 import country from '../country.json'
 import DataTable from './data-table'
 import IndiaMap from './india-map'
@@ -477,6 +463,7 @@ import ImageGallery from './image-gallery'
 		},
 		mounted() {
 			this.selected_state = "All"
+			// console.log("user", this.userTableData)
 		},
 		watch: {
 		},
@@ -513,7 +500,7 @@ import ImageGallery from './image-gallery'
 				user_data = this.filterDates(user_data)
 				user_data = this.filterTaxaLevels(user_data)
 				user_data = this.filterTaxa(user_data)
-				user_data = d3.nest().key(o => o.user_id).object(user_data)
+				user_data = d3Collection.nest().key(o => o.user_id).object(user_data)
 
 				op = Object.keys(user_data)
 						.map((u) => {
@@ -533,8 +520,6 @@ import ImageGallery from './image-gallery'
 					o.sl_no = id + 1
 					return o
 				})
-				console.log("user", op)
-
 				return op
 			},
 			dateTableData () {
@@ -656,7 +641,7 @@ import ImageGallery from './image-gallery'
 				filtered_observations = this.filterUsers(filtered_observations)
 				filtered_observations = this.filterDates(filtered_observations)
 				filtered_observations = this.filterTaxa(filtered_observations)
-				taxa_level = d3.nest().key(o => o.taxa_rank).object(filtered_observations)
+				taxa_level = d3Collection.nest().key(o => o.taxa_rank).object(filtered_observations)
 				Object.keys(taxa_level).forEach(tl => {
 					if(taxa_level[tl] != undefined){
 						op[tl] = taxa_level[tl].length
@@ -799,7 +784,6 @@ import ImageGallery from './image-gallery'
 				}
 				return op
 			},
-
 			selectPortal (p) {
 				let pos = this.selected_portals.indexOf(p)
 				if(pos == -1){
@@ -851,7 +835,6 @@ import ImageGallery from './image-gallery'
 				console.log(this.speciesTableData[t])
 				// this.selected_taxa.push(selected)
 			},
-
 			portalBtnClass (p) {
 				let op = "btn-outline-primary"
 				if(this.selected_portals.indexOf(p) != -1)
@@ -906,7 +889,6 @@ import ImageGallery from './image-gallery'
 				}
 				return op;
 			},
-
 			accordianTitle (f){
 				let op = ""
 				switch(f){
@@ -969,7 +951,6 @@ import ImageGallery from './image-gallery'
 				//
 				this.accordions[key] = false;
 			},
-
 			init () {
 				this.tooltip = d3.select('body')
 							    .append('div')
