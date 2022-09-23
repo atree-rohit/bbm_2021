@@ -195,7 +195,7 @@
 								   :selected_state="selected_state"
 								   :selected_region="selected_region"
 								   :popup="tooltip"
-								   :stateStats="stateStats"
+								   :areaStats="areaStats"
 								   @stateSelected='selectState'
 						/>
 					</div>
@@ -412,7 +412,8 @@
 <script>
 import axios from 'axios'
 import * as d3Collection from 'd3-collection'
-import country from '../country.json'
+import states from '../geojson/states.json'
+import districts from '../geojson/districts.json'
 import DataTable from './data-table'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
@@ -463,6 +464,7 @@ import ImageGallery from './image-gallery'
 		},
 		mounted() {
 			this.selected_state = "All"
+			console.log(this.areaStats)
 			// console.log("user", this.userTableData)
 		},
 		watch: {
@@ -543,11 +545,70 @@ import ImageGallery from './image-gallery'
 
 				return op;
 			},
+			areaStats(){
+				let op = {
+					all: { observations: 0, users: new Set(), species: new Set(), portals: new Set() },
+					region: {},
+					state: {},
+					district: {}
+				}
+				let regions = {}
+				states.features.forEach((s) => {
+					if(regions[s.properties.region] == undefined){
+						regions[s.properties.region] = []
+					}
+					regions[s.properties.region].push(s.properties.state)
+				})
+				districts.features.forEach((d) => {
+					if(op.region[d.properties.region] == undefined){
+						op.region[d.properties.region] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
+					}
+					if(op.state[d.properties.state] == undefined){
+						op.state[d.properties.state] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
+					}
+					if(op.district[d.properties.district] == undefined){
+						op.district[d.properties.district] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
+					}
+				})
+				this.filteredObservations.forEach((o) => {
+					let current_region = null
+					op.all.observations++,
+					op.all.users.add(o.user_id)
+					op.all.species.add(o.taxa_id)
+					op.all.portals.add(o.portal)
+
+					Object.keys(regions).forEach((r) => {
+						if(regions[r].indexOf(o.state) != -1){
+							current_region = r
+						}
+					})
+					if(current_region != null){
+						op.region[current_region].observations++
+						op.region[current_region].users.add(o.user_id)
+						op.region[current_region].species.add(o.taxa_id)
+						op.region[current_region].portals.add(o.portal)
+					}
+					
+					if(o.state !== null){
+						op.state[o.state].observations++
+						op.state[o.state].users.add(o.user_id)
+						op.state[o.state].species.add(o.taxa_id)
+						op.state[o.state].portals.add(o.portal)
+					}
+					if(o.district !== null){
+						op.district[o.district].observations++
+						op.district[o.district].users.add(o.user_id)
+						op.district[o.district].species.add(o.taxa_id)
+						op.district[o.district].portals.add(o.portal)						
+					}
+				})
+				return op
+			},
 			stateStats () {
 				let op = {}
 				op['All'] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
-				country.features.forEach(s => {
-					op[s.properties.ST_NM] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
+				states.features.forEach(s => {
+					op[s.properties.state] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 				})
 
 				this.filteredObservations.forEach(o => {
@@ -565,6 +626,7 @@ import ImageGallery from './image-gallery'
 						op[o.state].portals.add(o.portal)
 					}
 				})
+				// console.log("sS", op)
 
 				return op
 			},
