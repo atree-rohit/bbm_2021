@@ -426,7 +426,7 @@
 
 <script>
 import axios from 'axios';
-import country from '../country.json'
+import states from '../geojson/states.json'
 import DataTable from './data-table'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
