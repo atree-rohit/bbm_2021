@@ -21,12 +21,18 @@ class ResultController extends Controller
     private $polygons;
 
     public function index(){
+        $debug_flag = false;
+        if(isset($_GET["debug"]) && $_GET["debug"] == 1){
+            $debug_flag = true;
+        }
         $inat = INat22::select("id", "observed_on as date", "taxa_id", "location", "user_name as user_id", "state", "district", "img_url")
+                ->limit(-1)
                 ->get()
                 ->toArray();
         $ibp = IBP22::select("id", "fromDate as date","associatedMedia as img_url", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
                 ->where("fromDate", "like", "%2022-09%")
                 ->whereNotNull("taxa_id")
+                ->limit(-1)
                 ->get()
                 ->toArray();
                 
@@ -47,7 +53,7 @@ class ResultController extends Controller
             "ifb" => [],
         ];
         
-        return view('result.index', compact("taxa", "all_portal_data"));
+        return view('result.index', compact("taxa", "all_portal_data", "debug_flag"));
         /*
         */
     }
@@ -58,8 +64,62 @@ class ResultController extends Controller
         // $this->polygons = json_decode(file_get_contents(public_path("/data/2022/states.json")))->features;
         ini_set('max_execution_time', '60'); 
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        // $this->pull_ibp();
         $this->inat_set_state();
         $this->ibp_set_state();
+    }
+
+    public function ibp_fix_1()
+    {
+        $data = [
+            "district" => IBP22::where('district', null)->get(),
+            "taxa" => IBP22::where('taxa_id', null)->get(),
+        ];
+        // $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        echo "<table>";
+        // $record = $data["district"]->first();
+        foreach($data["district"] as $record){
+            foreach($this->polygons as $p){
+                $state = $p->properties->statename;
+                $district = $p->properties->distname;
+                echo "<h1>$district ".$p->geometry->type."</h1>";
+                $state_polygons = $p->geometry->coordinates;
+                if($p->geometry->type == "Polygon"){
+                    foreach($state_polygons as $dist_polygon){
+    
+                        $flag = $this->isWithinBounds($record->locationLat, $record->locationLon, $dist_polygon);
+                        if($flag){
+                            dd($flag);
+                        }
+                    }
+                } else {
+                    foreach($state_polygons as $dist_polygon){
+    
+                        $flag = $this->isWithinBounds($record->locationLat, $record->locationLon, $dist_polygon[0]);
+                        if($flag){
+                            dd($flag);
+                        }
+                        if(isset($dist_polygon[2])){
+                            dd($state_polygons);
+                        }
+                    }                    
+                }
+    
+                $row = [
+                    count($p->geometry->coordinates),
+                    str_replace("]],[[", "]],<br><br>[[", json_encode($p->geometry->coordinates)),
+                    $flag
+    
+                ];
+                if($row[2]){
+                echo "<tr><td>" . implode("</td><td>", $row) . "</td></tr>";
+                }
+            }
+            // dd();
+        }
+        
+        echo "</table>";
     }
 
     public function ibp_set_state()
@@ -226,6 +286,24 @@ class ResultController extends Controller
     public function is_in_polygon2($longitude_x, $latitude_y,$polygon)
     {
         $i = $j = $c = 0;
+        if($this->isWithinBounds($longitude_x, $latitude_y, $polygon)) {
+            $points_polygon = count($polygon)-1;
+            for ($i = 0, $j = $points_polygon ; $i < $points_polygon; $j = $i++) {
+                if ( 
+                    (($polygon[$i][1]  >  $latitude_y != ($polygon[$j][1] > $latitude_y)) 
+                    &&
+                    ($longitude_x < ($polygon[$j][0] - $polygon[$i][0]) * ($latitude_y - $polygon[$i][1]) / ($polygon[$j][1] - $polygon[$i][1]) + $polygon[$i][0]) ) )
+                    $c = !$c;
+            }
+        } else {
+            $c = 0;
+        }
+        
+        return $c;
+    }
+
+    public function getPolygonBounds($polygon)
+    {
         $bounds = [
             "lat_min" => $polygon[0][1],
             "lat_max" => $polygon[0][1],
@@ -244,23 +322,19 @@ class ResultController extends Controller
                 $bounds["lon_min"] = $p[0];
             }
         }
-        if(
-            ($longitude_x >= $bounds["lon_min"] && $longitude_x <= $bounds["lon_max"])
-            && ($latitude_y >= $bounds["lat_min"] && $latitude_y <= $bounds["lat_max"])
-        ) {
-            $points_polygon = count($polygon)-1;
-            for ($i = 0, $j = $points_polygon ; $i < $points_polygon; $j = $i++) {
-                if ( 
-                    (($polygon[$i][1]  >  $latitude_y != ($polygon[$j][1] > $latitude_y)) 
-                    &&
-                    ($longitude_x < ($polygon[$j][0] - $polygon[$i][0]) * ($latitude_y - $polygon[$i][1]) / ($polygon[$j][1] - $polygon[$i][1]) + $polygon[$i][0]) ) )
-                    $c = !$c;
-            }
-        } else {
-            $c = 0;
-        }
-        
-        return $c;
+        return $bounds;
+    }
+
+    public function isWithinBounds($x, $y, $polygon)
+    {
+        $bounds = $this->getPolygonBounds($polygon);
+        echo "<table border='1'>";
+        echo "<tr><td>".json_encode($bounds)."</td></tr>";
+        $row = implode("</td><td>", $bounds);
+        echo "<tr><td>$row</td></tr>";
+        echo "</table>";
+        return (($x >= $bounds["lon_min"] && $x <= $bounds["lon_max"])
+            && ($y >= $bounds["lat_min"] && $y <= $bounds["lat_max"]));
     }
 
     public function index_old()
@@ -435,7 +509,7 @@ class ResultController extends Controller
 
     public function pull_ibp()
     {
-        $file = public_path("data/2022/ibp_20220916-0954.csv");
+        $file = public_path("data/2022/ibp_20220925-0947.csv");
         $this->existing_observation_ids = IBP22::select("id")->get()->pluck("id")->toArray();
         $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
         $fields = ["createdBy", "placeName", "flagNotes", "associatedMedia", "locationLat", "locationLon", "rank", "scientificName", "commonName", "observedInMonth"];
