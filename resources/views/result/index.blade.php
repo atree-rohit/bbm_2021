@@ -8,7 +8,7 @@
 
 @section('content')
 <div id="app">
-	<result :taxa='@json($taxa)' :all_portal_data='@json($all_portal_data)' />
+	<result :taxa='@json($taxa)' :all_portal_data='@json($all_portal_data)' :debug_flag='@json($debug_flag)'/>
 </div>
 @endsection
 
