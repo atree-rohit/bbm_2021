@@ -405,6 +405,23 @@
 				</div>
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
+			<ui-collapsible :class="accordianClass('debug')" :disableRipple="true" :open="accordions[6]" @open="onAccordionOpen(6)" @close="onAccordionClose(6)" v-if="debug_flag">
+                <div slot="header" class="d-flex">
+					<span class="material-icons">
+						data_usage
+					</span>
+					<div>
+						{{accordianTitle('debug')}}
+					</div>
+				</div>
+                <div>
+					<span class="switch-label" :class="!set_polygon_switch?'switch-selected':''" @click="set_polygon_switch=false">Set Polygon - Off</span>
+					<label class="switch mx-3 my-auto"><input type="checkbox" v-model="set_polygon_switch"/>
+						<div></div>
+					</label>
+					<span class="switch-label" :class="set_polygon_switch?'switch-selected':''" @click="set_polygon_switch=true">Set Polygon - On</span>
+				</div>
+            </ui-collapsible>
 		</div>
 	</div>
 </template>
@@ -421,7 +438,7 @@ import DateChart from './date-chart'
 import ImageGallery from './image-gallery'
 	export default {
 		name:"result",
-		props: ["taxa", "all_portal_data"],
+		props: ["taxa", "all_portal_data", "debug_flag"],
 		components: { DataTable,
 						IndiaMap,
 						SpeciesSunburst,
@@ -455,8 +472,11 @@ import ImageGallery from './image-gallery'
 					1: false,
 					2: false,
 					3: false,
-					4: false
-				}
+					4: false,
+					5: false,
+					6: false,
+				},
+				set_polygon_switch: true,
 			}
 		},
 		created() {
@@ -464,13 +484,38 @@ import ImageGallery from './image-gallery'
 		},
 		mounted() {
 			this.selected_state = "All"
-			console.log(this.areaStats)
+			// console.log(this.areaStats)
 			// console.log("user", this.userTableData)
 		},
 		watch: {
 		},
 		computed:{
 			filteredObservations (){
+				let portals = (this.selected_portals.length == 0) ? Object.keys(this.all_portal_data) : this.selected_portals
+				
+				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
+
+				if (this.selected_state != 'All') {
+					op = op.filter((r) => r.state == this.selected_state)
+				}
+
+				if(this.selected_users.length > 0){
+					op = op.filter((r) => this.selected_users.indexOf(r.user_id) != -1)
+				}
+
+				if(this.selected_dates.length > 0){
+					op = op.filter((r) => this.selected_dates.indexOf(r.date) != -1)
+				}
+				
+				if(this.selected_taxa_levels.length > 0){
+					op = op.filter((r) => this.selected_taxa_levels.indexOf(r.taxa_rank) != -1)
+				}
+
+				op = this.filterTaxa(op)
+
+				return op
+			},
+			filteredObservations_old (){
 				let op =  this.filterPortal(op)
 
 				op = this.filterState(op)
@@ -492,6 +537,9 @@ import ImageGallery from './image-gallery'
 				op = this.filterDates(op)
 				op = this.filterTaxaLevels(op)
 				op = this.filterTaxa(op)
+				if(this.set_polygon_switch){
+					op = op.filter((r) => r.state == null)
+				}
 
 				return op
 			},
@@ -546,6 +594,7 @@ import ImageGallery from './image-gallery'
 				return op;
 			},
 			areaStats(){
+				let all_observations = this.filteredObservations
 				let op = {
 					all: { observations: 0, users: new Set(), species: new Set(), portals: new Set() },
 					region: {},
@@ -570,7 +619,11 @@ import ImageGallery from './image-gallery'
 						op.district[d.properties.district] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 					}
 				})
-				this.filteredObservations.forEach((o) => {
+				
+				if(this.set_polygon_switch == true){
+					all_observations = all_observations.filter((r) => r.state == null)
+				}
+				all_observations.forEach((o) => {
 					let current_region = null
 					op.all.observations++,
 					op.all.users.add(o.user_id)
@@ -588,7 +641,6 @@ import ImageGallery from './image-gallery'
 						op.region[current_region].species.add(o.taxa_id)
 						op.region[current_region].portals.add(o.portal)
 					}
-					
 					if(o.state !== null){
 						op.state[o.state].observations++
 						op.state[o.state].users.add(o.user_id)
@@ -855,7 +907,7 @@ import ImageGallery from './image-gallery'
 				}
 			},
 			selectState (s) {
-				// console.log("emit setter", s)
+				console.log("emit setter", s)
 				this.selected_state = s
 			},
 			tableSelectState (s){
@@ -894,7 +946,7 @@ import ImageGallery from './image-gallery'
 			},
 			tableSelectTaxa (t) {
 				// let selected = this.speciesTableData[t].name
-				console.log(this.speciesTableData[t])
+				console.log("select Taxa", this.speciesTableData[t])
 				// this.selected_taxa.push(selected)
 			},
 			portalBtnClass (p) {
@@ -944,7 +996,7 @@ import ImageGallery from './image-gallery'
 			},
 			accordianClass (f){
 				let op = ""
-				if(this.accordianTitle(f).includes(": All selected")){
+				if(this.accordianTitle(f).includes(": All selected") || f == "debug"){
 					op = ""
 				} else {
 					op = "filter-set"
@@ -1001,6 +1053,9 @@ import ImageGallery from './image-gallery'
 						} else {
 							op += "All selected"
 						}
+						break
+					case 'debug':
+						op = "Debug: "
 				}
 				return op
 			},
