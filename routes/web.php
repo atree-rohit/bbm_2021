@@ -57,6 +57,7 @@ Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 Route::get('/result/atree', [ResultController::class, 'index_atree'])->name('result.atree');
 Route::get('/result/pull_inat', [ResultController::class, 'pull_inat'])->name('result.pull_inat');
 Route::get('/result/pull_ibp', [ResultController::class, 'pull_ibp'])->name('result.pull_ibp');
+Route::get('/result/ibp_fix', [ResultController::class, 'ibp_fix'])->name('result.ibp_fix');
 Route::get('/result/set_state', [ResultController::class, 'set_state'])->name('result.set_state');
 
 Route::resource('/butterfly_count', CountFormController::class);
