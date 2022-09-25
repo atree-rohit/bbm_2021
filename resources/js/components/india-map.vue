@@ -198,7 +198,7 @@ export default {
 					observation_count: l[1].length
 				})
 			})
-			console.log("data_fns", lo)
+			// console.log("data_fns", lo)
 			this.locations = lo
 			this.init()
 		},
@@ -226,7 +226,7 @@ export default {
 		},
 		get_observation_count(mode, name){
 			let op = 0
-			console.log(name)
+			// console.log("Get Observation count: ", name)
 			if(mode == "region"){
 				op = this.areaStats.region[name].observations
 			} else if (mode == "state" && this.areaStats.state[name].observations != undefined) {
@@ -278,7 +278,7 @@ export default {
 
         },
 		init_observation_counts() {
-			console.log(this.areaStats)
+			// console.log("init_observation_counts: ", this.areaStats)
 			let scales = ["region", "state", "district"]
 			scales.forEach((s) => {
 				this.observation_counts[s] = {}
@@ -590,6 +590,8 @@ export default {
 				[[x0, y0], [x1, y1]] = this.path.bounds(regions);
 				// this.renderMap()
 			}
+			this.$emit('stateSelected', this.selected)
+			
 
 			// let state = d.target.__data__.properties.statename
 			/*
