@@ -196,7 +196,9 @@
 								   :selected_region="selected_region"
 								   :popup="tooltip"
 								   :areaStats="areaStats"
+								   :set_polygon="set_polygon_switch"
 								   @stateSelected='selectState'
+								   @pointSelected="setPoint"
 						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
@@ -476,7 +478,7 @@ import ImageGallery from './image-gallery'
 					5: false,
 					6: false,
 				},
-				set_polygon_switch: true,
+				set_polygon_switch: false,
 			}
 		},
 		created() {
@@ -910,6 +912,9 @@ import ImageGallery from './image-gallery'
 				console.log("emit setter", s)
 				this.selected_state = s
 			},
+			setPoint(p){
+				console.log("selectPoint", p[3].observations.map((o) => o.id))
+			},
 			tableSelectState (s){
 				let selected = this.statesTableData[s].state
 				if (this.selected_state == selected) {
@@ -1069,6 +1074,9 @@ import ImageGallery from './image-gallery'
 				this.accordions[key] = false;
 			},
 			init () {
+				if(this.debug_flag){
+					this.set_polygon_switch = true
+				}
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')

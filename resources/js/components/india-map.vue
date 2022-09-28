@@ -90,7 +90,7 @@ import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
 export default {
 	name:"IndiaMap",
-    props: ["map_data", "selected_state", "popup", "areaStats", "selected_region"],
+    props: ["map_data", "selected_state", "popup", "areaStats", "selected_region", "set_polygon"],
 	data() {
 		return{
             mapMode: 0,
@@ -141,7 +141,7 @@ export default {
         },
 		zoom() {
 			return d3.zoom()
-				.scaleExtent([.5, 50])
+				.scaleExtent([.5, 250])
 				.translateExtent([[-0.5 * this.width,-0.75 * this.height],[2.5 * this.width, 2.5 * this.height]])
 				.on('zoom', this.handleZoom)
 		},
@@ -175,7 +175,7 @@ export default {
             let loc = d3.groups(this.observations, o => o.lat + "," + o.lon)
 			let lo = []
 			loc.forEach((l) => {
-                let state = l[1][0].state
+				let state = l[1][0].state
 				let region = null
 				let district = l[1].filter((o) => o.district)
                 if(district.length ==0 ){
@@ -195,7 +195,8 @@ export default {
 					district: district,
 					latitude: parseFloat(l[1][0].lat),
 					longitude: parseFloat(l[1][0].lon),
-					observation_count: l[1].length
+					observation_count: l[1].length,
+					observations: l[1]
 				})
 			})
 			// console.log("data_fns", lo)
@@ -256,6 +257,10 @@ export default {
 			if(window.innerWidth < 800){
 				this.height = window.innerHeight * 0.5
 				this.width = window.innerWidth * 0.9
+			}
+
+			if(this.set_polygons){
+				this.mapMode = 2
 			}
 
 			this.init_observation_counts()
@@ -330,6 +335,13 @@ export default {
 				this.colors = d3.scaleLinear()
 					.domain([0, 1, this.max*.25, this.max])
 					.range(["#f77", "#ca0", "#ada", "#3d3"])
+
+				if(this.set_polygon){
+					this.colors = d3.scaleLinear()
+						.domain([0, 1, this.max*.25, this.max])
+						.range(["#77f", "#ca0", "#ada", "#3d3"])
+
+				}
 			} else if (this.mapMode == 3 ){
 				Object.values(this.hexagons).map((h) => h.observations).forEach((n) => {
 					if(n > this.max)
@@ -434,7 +446,7 @@ export default {
 				.call(this.legend)
 
 			this.svg.call(this.zoom)
-			// this.mapPoints()
+			this.mapPoints()
 		},
 		drawPolygon(polygon){
 			let region = polygon.properties.region ?? null
@@ -624,15 +636,15 @@ export default {
 		mapPoints(){
 			// let points = this.locations.filter((l) => window.unmatched_districts.indexOf(l.district) != -1).map((l) => [l.longitude, l.latitude, l.id, l])
 			let points = this.locations.map((l) => [l.longitude, l.latitude, l.id, l])
-			console.log("mapPoints", points)
 			// if(this.selected != 'All'){
-			// 	console.log("mapPoints", this.selected)
-			// 	this.state_data[this.selected].forEach(o => {
-			// 		let coords = o.location.split(",")
-			// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
-			// 	})
-			// }
-			if(points.length > 0){
+				// 	console.log("mapPoints", this.selected)
+				// 	this.state_data[this.selected].forEach(o => {
+					// 		let coords = o.location.split(",")
+					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
+					// 	})
+					// }
+			if((points.length > 0 && points.length < 500) || this.set_polygon ){
+				console.log("mapPoints", points)
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
 				.selectAll("circle")
@@ -640,24 +652,24 @@ export default {
 				.append("circle")
 				.attr("cx", (d) => this.projection(d)[0])
 				.attr("cy", (d) => this.projection(d)[1])
-				.attr("r", "1px")
-				.attr("stroke", "red")
+				.attr("r", "2px")
+				.attr("stroke", "yellow")
 				.attr("stroke-width", "0.25px")
 				.attr("fill", "green")
 				.on('mouseover', (d, i) => {
 						this.tooltip.html(
 							`<table>
-							<tr><td>Region</td><td>${JSON.stringify(i[3])}</td></tr>
+							<tr><td>Region</td><td>${JSON.stringify(i)}</td></tr>
 							</table>`)
 							.style('visibility', 'visible')
 						})
-					.on('mousemove', (event, d) => {
-						this.tooltip
-							.style('top', event.pageY - 10 + 'px')
-							.style('left', event.pageX + 10 + 'px')
-					})
-					.on('mouseout', () => this.tooltip.html(``).style('visibility', 'hidden'))
-				// map_points.on("click", (d) => that.setMissingState(d))
+				.on('mousemove', (event, d) => {
+					this.tooltip
+						.style('top', event.pageY - 10 + 'px')
+						.style('left', event.pageX + 10 + 'px')
+				})
+				.on('mouseout', () => this.tooltip.html(``).style('visibility', 'hidden'))
+				map_points.on("click", (d) => this.$emit('pointSelected', d.target["__data__"]))
 			}
 		},
 		capatilizeWords(str){
