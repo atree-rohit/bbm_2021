@@ -284,17 +284,18 @@ class ResultController extends Controller
     public function pull()
     {
         $result = [];
-        $result["ibp"] = $this->pull_ibp();
-        $result["inat"] = $this->pull_inat();
+        // $result["inat"] = $this->pull_inat();
+        // $result["ibp"] = $this->pull_ibp();
+        $result["taxa"] = $this->get_missing_taxa();
         dd($result);
     }
     public function pull_ibp()
     {
         $filename = $this->get_latest_ibp_csv_filename();
-        $file = public_path("data/2022/ibp/ibp_20220928-1030.csv");
+        $file = public_path("data/2022/ibp/$filename");
         $this->existing_observation_ids = IBP22::select("id")->get()->pluck("id")->toArray();
         $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
-        $ibp_records = INat22::all()->keyBy("id");
+        $ibp_records = IBP22::all()->keyBy("id");
 
 
         $headers = [];
@@ -339,7 +340,11 @@ class ResultController extends Controller
         $current_file_date = "";
         foreach($dir as $d){
             if(strpos($d, ".csv")){
-                $current_file_date = $this->parse_ibp_filename($d);
+                $parts = explode("-",str_replace("ibp_", "", str_replace(".csv", "", $d)));
+                $current_file_date = [
+                    "date" => (int) $parts[0],
+                    "time" => (int) $parts[1],
+                ];
                 if(
                     ($last_file_date == "")
                     || ($current_file_date["date"] > $last_file_date["date"])
@@ -350,15 +355,6 @@ class ResultController extends Controller
             }
         }
         return "ibp_" . strval($last_file_date["date"]) . "-" . strval($last_file_date["time"]) . ".csv";
-    }
-
-    public function parse_ibp_filename($name)
-    {
-        $parts = explode("-",str_replace("ibp_", "", str_replace(".csv", "", $name)));
-        return [
-            "date" => (int) $parts[0],
-            "time" => (int) $parts[1],
-        ];
     }
     
     public function add_ibp_observation($record)
@@ -449,9 +445,8 @@ class ResultController extends Controller
     public function pull_inat()
     {
         $this->existing_observation_ids = INat22::select("id")->get()->pluck("id")->toArray();
-        $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
         $inat_records = INat22::all()->keyBy("id");
-        
+
         $page = 1;
         $per_page = 200;
         $total_results = 201;
@@ -487,7 +482,7 @@ class ResultController extends Controller
                 }
             }
             $page++;
-            if(($page * $per_page > $total_results) || ($added_count < -2 )){
+            if(($page * $per_page > $total_results) || ($added_count < -5 )){
                 echo "<br><hr><br>";
                 echo $page . "*" . $per_page > $total_results;
                 echo "<br>";
@@ -498,10 +493,8 @@ class ResultController extends Controller
         } while($new_flag );
         
         ob_end_flush(); 
-        $this->get_missing_taxa();
         return [
             "observations" => count($this->existing_observation_ids),
-            "taxa" => count($this->existing_taxa_ids)
         ];
     }
     
@@ -557,8 +550,13 @@ class ResultController extends Controller
 
     public function get_missing_taxa()
     {
-        $missing_taxa = [];
-        $ancestors = INatTaxa22::all()->pluck("ancestry")->toArray();
+        $all_taxa = INatTaxa22::all();
+        $this->existing_taxa_ids = $all_taxa->pluck("id")->toArray();
+        $missing_taxa = [136547, 448213, 
+        
+        ];
+        $ancestors = $all_taxa->pluck("ancestry")->toArray();
+        
         foreach($ancestors as $a){
             $keys = explode("/", $a);
             foreach($keys as $k){
@@ -569,12 +567,18 @@ class ResultController extends Controller
             }
         }
         asort($missing_taxa);
+        $added = 0;
         ob_start();
         foreach($missing_taxa as $mt){
-            $this->pull_taxa_details($mt);
+            if($this->pull_taxa_details($mt)){
+                $added++;
+            }
         }
-        ob_end_flush(); 
-        dd($this->existing_taxa_ids);
+        return [
+            "missing" => count($missing_taxa),
+            "missing_taxa_added" => $added,
+            "total_taxa" => count($this->existing_taxa_ids)
+        ];
     }
 
     public function pull_taxa_details($taxa_id)
@@ -587,32 +591,16 @@ class ResultController extends Controller
 
         $data = json_decode(file_get_contents($url));
         $taxa_id = $data->results[0]->id ?? null;
-        if(!in_array($data->results[0]->id, $this->existing_taxa_ids))
-        $this->add_inat_taxa($data->results[0]);
-    }
-
-    public function get_taxa_id($taxa, $data)
-    {
-        
-        $taxa_id = $taxa->where("name", "like", $data["scientific_name"])->first();
-        if($taxa_id){
-            $taxa_id = $taxa_id->id;
-        } else {
-            $taxa_id = INatTaxa22::where("common_name", "like", "%". $data["common_name"] ."%")->get()->first();
-            if($taxa_id){
-                // dd($taxa_id);
-                $taxa_id = $taxa_id->id;
-            } else {
-                dd($data, $taxa_id);
-            }
-            // $taxa_id = $taxa->where()
+        if(!in_array($data->results[0]->id, $this->existing_taxa_ids)){
+            $this->add_inat_taxa($data->results[0]);
+            return true;
         }
-        return $taxa_id;
+        return false;
     }
 
     public function fix()
     {   
-        $this->ibp_fix_taxa();
+        $ibp_taxa_added = $this->ibp_fix_taxa();
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         $this->inat_set_state();
         $this->ibp_set_state();
@@ -628,6 +616,7 @@ class ResultController extends Controller
                 "state" => $ibp->where("state", null)->toArray(),
                 "district" => $ibp->where("district", null)->toArray(),
                 "taxa" => $ibp->where("taxa_id", null)->toArray(),
+                "taxa_added" => $ibp_taxa_added,
             ]
         ];
         
@@ -659,8 +648,8 @@ class ResultController extends Controller
                             $this->polygons[$index]->properties->distname
                         );
                         $table_op = [
-                            $i->location,
-                            $i->place_guess,
+                            $i->locationLat . ", " . $i->locationLon,
+                            $i->placeName,
                             $this->polygons[$index]->properties->statename,
                             $this->polygons[$index]->properties->distname,
                             $in_polygon
@@ -682,8 +671,8 @@ class ResultController extends Controller
                                 $this->polygons[$index]->properties->distname
                             );
                             $table_op = [
-                                $i->location,
-                                $i->place_guess,
+                                $i->locationLat . ", " . $i->locationLon,
+                                $i->placeName,
                                 $this->polygons[$index]->properties->statename,
                                 $this->polygons[$index]->properties->distname,
                                 $in_polygon
@@ -697,7 +686,6 @@ class ResultController extends Controller
         }
         echo "</table>";
     }
-
 
     public function inat_set_state()
     {
@@ -787,7 +775,6 @@ class ResultController extends Controller
         return $c;
     }
 
-
     public function isWithinBounds($x, $y, $polygon)
     {
         $bounds = [
@@ -824,10 +811,11 @@ class ResultController extends Controller
             "Burara harisa" => "Bibasis harisa",
             "Spindasis lohita" => "Cigaritis lohita",
         ];
-
+        
         $ibp = IBP22::where("taxa_id", null)->get()->groupBy("scientificName");
         $taxa = INatTaxa22::select("id", "name")->get()->keyBy("name")->toArray();
         $updated = 0;
+        dd($ibp->toArray());
         foreach($ibp as $species => $records){
             $species_name = explode(" ", $species);
             if(isset($species_name[1])){
@@ -844,8 +832,8 @@ class ResultController extends Controller
                         $r->save();
                         $updated++;
                     }
-                } else {
-                    dd($species_id);
+                } else if(count($species_id) > 1){
+                    dd("species_id", $species_id);
                 }
             } else {
                 if(isset($taxa[$species_name])){
@@ -858,5 +846,6 @@ class ResultController extends Controller
                 
             }
         }
+        return $updated;
     }
 }
