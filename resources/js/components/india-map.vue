@@ -93,7 +93,7 @@ export default {
     props: ["map_data", "selected_state", "popup", "areaStats", "selected_region", "set_polygon"],
 	data() {
 		return{
-            mapMode: 0,
+            mapMode: 2,
             mapModes: ["Region", "State", "District", "Hexagons"],
 			mapLayers: [regions, states, districts],
 			hexZoom: 5,
@@ -246,6 +246,7 @@ export default {
                 .attr('transform', e.transform)
             this.svg.selectAll('circle')
                 .attr('transform', e.transform)
+				.attr("r", text_size)
         },
 		init () {
 			this.polygons = null
@@ -643,7 +644,7 @@ export default {
 					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
 					// 	})
 					// }
-			if((points.length > 0 && points.length < 500) || this.set_polygon ){
+			if((points.length > 0 && points.length < 1500) || this.set_polygon ){
 				console.log("mapPoints", points)
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
