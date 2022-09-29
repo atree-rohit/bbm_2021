@@ -283,8 +283,9 @@ class ResultController extends Controller
 
     public function pull()
     {
+        $this->existing_taxa_ids = INatTaxa22::all()->pluck("id")->toArray();
         $result = [];
-        // $result["inat"] = $this->pull_inat();
+        $result["inat"] = $this->pull_inat();
         // $result["ibp"] = $this->pull_ibp();
         $result["taxa"] = $this->get_missing_taxa();
         dd($result);
@@ -551,10 +552,7 @@ class ResultController extends Controller
     public function get_missing_taxa()
     {
         $all_taxa = INatTaxa22::all();
-        $this->existing_taxa_ids = $all_taxa->pluck("id")->toArray();
-        $missing_taxa = [136547, 448213, 
-        
-        ];
+        $missing_taxa = [];
         $ancestors = $all_taxa->pluck("ancestry")->toArray();
         
         foreach($ancestors as $a){
@@ -575,7 +573,8 @@ class ResultController extends Controller
             }
         }
         return [
-            "missing" => count($missing_taxa),
+            "missing" => $missing_taxa,
+            "total_missing" => count($missing_taxa),
             "missing_taxa_added" => $added,
             "total_taxa" => count($this->existing_taxa_ids)
         ];
@@ -847,5 +846,30 @@ class ResultController extends Controller
             }
         }
         return $updated;
+    }
+
+    public function set_state(Request $request)
+    {
+        $ids = $request->ids;
+        $updated = 0;
+        if($ids["ibp"]){
+            foreach($ids["ibp"] as $i){
+                $observation = IBP22::find($i);
+                $observation->state = $request->state;
+                $observation->district = $request->district;
+                $observation->save();
+                $updated++;
+            }
+        }
+        if($ids["inat"]){
+            foreach(explode(",", $ids["inat"]) as $i){
+                $observation = INat22::find($i);
+                $observation->state = $request->state;
+                $observation->district = $request->district;
+                $observation->save();                
+                $updated++;
+            }
+        }
+        return response()->json(["added" => $updated]);        
     }
 }
