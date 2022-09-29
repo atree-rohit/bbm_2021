@@ -423,6 +423,25 @@
 					</label>
 					<span class="switch-label" :class="set_polygon_switch?'switch-selected':''" @click="set_polygon_switch=true">Set Polygon - On</span>
 				</div>
+				<div>
+					<div>
+						<label for="">IDs</label>
+						<input type="text" v-model="set_location_data.ids" />
+					</div>
+					<div>
+						<label for="">State</label>
+						<select v-model="set_location_data.state" @change="updateDistricts">
+							<option v-for='(s, i) in select_options.states' :key="i" :value="s" v-text="s" />
+						</select>
+					</div>
+					<div>
+						<label for="">District</label>
+						<select v-model="set_location_data.district">
+							<option v-for='(d, i) in select_options.districts' :key="i" :value="d" v-text="d" />
+						</select>
+					</div>
+					<button @click="setStateSubmit">Submit</button>
+				</div>
             </ui-collapsible>
 		</div>
 	</div>
@@ -459,7 +478,16 @@ import ImageGallery from './image-gallery'
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				observationsPerPage: 100,
 				observationsPageNo: 1,
-
+				
+				set_location_data: {
+					ids: null,
+					state: null,
+					district: null
+				},
+				select_options: {
+					states: states.features.map((s) => s.properties.state).sort(),
+					districts: districts.features.map((s) => s.properties.district).sort(),
+				},
 				tooltip: null,
 				tabs: [
 					{title:"Location"},
@@ -476,7 +504,7 @@ import ImageGallery from './image-gallery'
 					3: false,
 					4: false,
 					5: false,
-					6: false,
+					6: true,
 				},
 				set_polygon_switch: false,
 			}
@@ -913,7 +941,25 @@ import ImageGallery from './image-gallery'
 				this.selected_state = s
 			},
 			setPoint(p){
-				console.log("selectPoint", p[3].observations.map((o) => o.id))
+				let ids = {
+					ibp: p[3].observations.filter((o) => o.portal == "ibp").map((o) => o.id).join(","),
+					inat: p[3].observations.filter((o) => o.portal == "inat").map((o) => o.id).join(","),
+				}
+				this.set_location_data.ids = ids
+				// this.set_location_data.state = ""
+				// this.set_location_data.district = ""
+			},
+			updateDistricts(){
+				this.select_options.districts = districts.features.filter((d) => d.properties.state == this.set_location_data.state ).map((d) => d.properties.district).sort()
+				console.log("update districts", this.set_location_data)
+			},
+			setStateSubmit(){
+				console.log("axios post", this.set_location_data)
+				axios.post("/result/set_state", this.set_location_data)
+					.then((response) => {
+						console.log("added", response.data.added)
+						this.set_location_data.ids = ""
+					})
 			},
 			tableSelectState (s){
 				let selected = this.statesTableData[s].state

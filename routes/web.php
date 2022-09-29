@@ -57,7 +57,7 @@ Route::get('/result', [ResultController::class, 'index'])->name('result.index');
 Route::get('/result/atree', [ResultController::class, 'index_atree'])->name('result.atree');
 Route::get('/result/pull', [ResultController::class, 'pull'])->name('result.pull');
 Route::get('/result/fix', [ResultController::class, 'fix'])->name('result.fix');
-Route::get('/result/set_state', [ResultController::class, 'set_state'])->name('result.set_state');
+Route::post('/result/set_state', [ResultController::class, 'set_state'])->name('result.set_state');
 
 Route::resource('/butterfly_count', CountFormController::class);
 /*
