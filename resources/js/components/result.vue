@@ -192,13 +192,12 @@
 				>
 					<div id="map-container" v-if="tab.title === 'Location'">
 						<india-map :map_data="mapData"
-								   :selected_state="selected_state"
-								   :selected_region="selected_region"
+								   :selected_area="selected_area"
 								   :popup="tooltip"
 								   :areaStats="areaStats"
 								   :set_polygon="set_polygon_switch"
 								   @stateSelected='selectState'
-								   @pointSelected="setPoint"
+								   
 						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
@@ -220,8 +219,8 @@
 							</table>
 						</div>
 						<div class="d-flex justify-content-center py-1 switch-div">
-							<div class="me-5" v-if="selected_state != 'All'">
-								<button class="btn btn-sm btn-outline-danger" @click="selected_state = 'All'">
+							<div class="me-5" v-if="selected_area.state != 'All'">
+								<button class="btn btn-sm btn-outline-danger" @click="selected_area = {area: 'All', state: 'All', district: 'All'}">
 									Back to All States
 								</button>
 							</div>
@@ -234,11 +233,11 @@
 						<div class="species-data-table">
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"], ["Portals", "portals"]]'
-										:selected='[selected_state]'
+										:selected='[selected_area.state]'
 										:selected_col="'state'"
 										:sort_col="'observations'"
 										:sort_dir="'desc'"
-										@rowClick="tableSelectState"
+										@rowClick="selectTableState"
 										v-if="!table_switch"
 							/>
 							<data-table :data="speciesTableData"
@@ -436,10 +435,13 @@ import DateChart from './date-chart'
 				selected_portals: ["counts", "inat", "ibp", "ifb"],
 				selected_users: [],
 				selected_dates: [],
-				selected_state: "All",
+				selected_area: {
+					region: "All",
+					state: "All",
+					district: "All",
+				},
 				selected_taxa_levels: [],
 				selected_taxa: [],
-				selected_region: "",
 				filteredObservations: [],
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
@@ -477,14 +479,12 @@ import DateChart from './date-chart'
 			this.init()
 		},
 		mounted() {
-			this.selected_state = "All"
-
 		},
 		watch: {
 		},
 		computed:{
 			mapData (){
-				let op = this.getFilteredObservations()
+				let op = this.getFilteredObservations("states")
 
 				if(this.set_polygon_switch){
 					op = op.filter((r) => r.state == null)
@@ -698,12 +698,11 @@ import DateChart from './date-chart'
 					}
 				})
 
-				console.log("treeData", op)
 				return op
 			},
 			speciesTableHeaders () {
 				let op = [["Taxa Name","name"], ["Common Name","common_name"],["Observations","count"],["Users","user_count"]]
-				if(this.selected_state == "All"){
+				if(this.selected_area.state == "All"){
 					op.push(["States", "state_count"])
 				}
 				op.push(["Portals", "portals"])
@@ -722,8 +721,8 @@ import DateChart from './date-chart'
 				
 				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
 
-				if (type != "states" && this.selected_state != 'All') {
-					op = op.filter((r) => r.state == this.selected_state)
+				if (type != "states" && this.selected_area.state != 'All') {
+					op = op.filter((r) => r.state == this.selected_area.state)
 				}
 
 				if(type != "users" && this.selected_users.length > 0){
@@ -742,55 +741,6 @@ import DateChart from './date-chart'
 					op = this.filterTaxa(op)
 				}
 
-				return op
-			},
-			filterPortal (){
-				let op = []
-				let that = this
-				if(this.selected_portals.length == 0){
-					Object.keys(that.all_portal_data).forEach(p => {
-						op = op.concat(that.all_portal_data[p].map(o => {
-							o["portal"] = p
-							return o
-						}))
-					})
-				} else {
-					this.selected_portals.forEach(p => {
-						op = op.concat(that.all_portal_data[p].map(o => {
-							o["portal"] = p
-							return o
-						}))
-					})
-				}
-
-				return op
-			},
-			filterState (ar){
-				let op = ar
-				if (this.selected_state != 'All') {
-					op = op.filter(o => o.state == this.selected_state)
-				}
-				return op
-			},
-			filterUsers (ar){
-				let op = ar
-				if(this.selected_users.length > 0){
-					op = op.filter(x => this.selected_users.indexOf(x.user_id) !== -1)
-				}
-				return op
-			},
-			filterDates (ar){
-				let op = ar
-				if(this.selected_dates.length > 0){
-					op = op.filter(x => this.selected_dates.indexOf(x.date) !== -1)
-				}
-				return op
-			},
-			filterTaxaLevels (ar){
-				let op = ar
-				if(this.selected_taxa_levels.length > 0){
-					op = op.filter(x => this.selected_taxa_levels.indexOf(x.rank) !== -1)
-				}
 				return op
 			},
 			filterTaxa (ar){
@@ -832,8 +782,33 @@ import DateChart from './date-chart'
 				}
 			},
 			selectState (s) {
-				console.log("emit setter", s)
-				this.selected_state = s
+				let area_names = {
+					regions: [],
+					states: [],
+					districts: [],
+				}
+				this.selected_area.region = "All"
+				this.selected_area.state = "All"
+				this.selected_area.district = "All"
+				districts.features.map((d) => {
+					if(area_names.regions.indexOf(d.properties.region) == -1){
+						area_names.regions.push(d.properties.region)
+					}
+					if(area_names.states.indexOf(d.properties.state) == -1){
+						area_names.states.push(d.properties.state)
+					}
+					area_names.districts.push(d.properties.district)
+				})
+				if(area_names.regions.indexOf(s) != -1){
+					this.selected_area.region = s
+				} else if(area_names.states.indexOf(s) != -1){
+					this.selected_area.region = districts.features.filter((d) => d.properties.state == s)[0].properties.region
+					this.selected_area.state = s
+				} else if(area_names.districts.indexOf(s) != -1){
+					this.selected_area.region = districts.features.filter((d) => d.properties.district == s)[0].properties.region
+					this.selected_area.state = districts.features.filter((d) => d.properties.district == s)[0].properties.state
+					this.selected_area.district = s
+				}				
 			},
 			setPoint(p){
 				let ids = {
@@ -841,8 +816,6 @@ import DateChart from './date-chart'
 					inat: p[3].observations.filter((o) => o.portal == "inat").map((o) => o.id).join(","),
 				}
 				this.set_location_data.ids = ids
-				// this.set_location_data.state = ""
-				// this.set_location_data.district = ""
 			},
 			updateDistricts(){
 				this.select_options.districts = districts.features.filter((d) => d.properties.state == this.set_location_data.state ).map((d) => d.properties.district).sort()
@@ -856,13 +829,9 @@ import DateChart from './date-chart'
 						this.set_location_data.ids = ""
 					})
 			},
-			tableSelectState (s){
+			selectTableState (s){
 				let selected = this.statesTableData[s].state
-				if (this.selected_state == selected) {
-					this.selected_state = 'All'
-				} else {
-					this.selected_state = selected
-				}
+				this.selected_area.state = (this.selected_area.state == selected) ? 'All' : selected
 			},
 			seletUser (u){
 				let selected = this.userTableData[u]
@@ -874,7 +843,6 @@ import DateChart from './date-chart'
 				}
 			},
 			selectDateRange (d){
-				//
 				this.selected_dates = d
 			},
 			selectTaxaLevel (tname) {
@@ -886,14 +854,10 @@ import DateChart from './date-chart'
 				}
 			},
 			selectTaxon (t) {
-				//
 				this.selected_taxa = t
-				// console.log(this.selected_taxa)
 			},
 			tableSelectTaxa (t) {
-				// let selected = this.speciesTableData[t].name
 				console.log("select Taxa", this.speciesTableData[t])
-				// this.selected_taxa.push(selected)
 			},
 			portalBtnClass (p) {
 				let op = "btn-outline-primary"
@@ -1000,8 +964,15 @@ import DateChart from './date-chart'
 			cardValues (card) {
 				let root = this.areaStats.all
 				let op = ""
-				if(this.selected_state != "All"){
-					root = this.areaStats.state[this.selected_state]
+				if(this.selected_area.state != "All"){
+					root = this.areaStats.state[this.selected_area.state]
+				}
+				if(!root){
+					if(["north", "south", "east", "west"].indexOf(this.selected_area.state) != -1){
+						root = this.areaStats.region[this.selected_area.state]
+					} else {
+						root = this.areaStats.district[this.selected_area.state]
+					}
 				}
 				switch(card){
 					case "observations": op = root.observations
@@ -1019,7 +990,6 @@ import DateChart from './date-chart'
 				});
 			},
 			onAccordionClose (key) {
-				//
 				this.accordions[key] = false;
 			},
 			init () {
