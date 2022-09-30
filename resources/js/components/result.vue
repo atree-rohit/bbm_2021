@@ -512,7 +512,7 @@ import DateChart from './date-chart'
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 
 				op = op.map((o,id) => { return { ...o, sl_no: id+1 } })
-
+				console.log("UTD", op, user_data)
 				return op
 			},
 			dateTableData () {
@@ -720,6 +720,7 @@ import DateChart from './date-chart'
 				let portals = (this.selected_portals.length == 0) ? Object.keys(this.all_portal_data) : this.selected_portals
 				
 				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
+				console.log(op)
 
 				if (type != "states" && this.selected_area.state != 'All') {
 					op = op.filter((r) => r.state == this.selected_area.state)

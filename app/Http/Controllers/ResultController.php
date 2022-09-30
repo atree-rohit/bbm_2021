@@ -45,10 +45,12 @@ class ResultController extends Controller
             $inat[$k]["lon"] = $coords[1];
             $inat[$k]["date_created"] = $created_date[0];
             $inat[$k]["rank"] = $taxa[$inat[$k]["taxa_id"]]["rank"];
+            $inat[$k]["portal"] = "inat";
             unset($inat[$k]["location"]);
         }
         foreach($ibp as $k => $i){
             $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
+            $inat[$k]["portal"] = "ibp";
         }
 
         $form_data = [];
@@ -821,7 +823,7 @@ class ResultController extends Controller
         $ibp = IBP22::where("taxa_id", null)->get()->groupBy("scientificName");
         $taxa = INatTaxa22::select("id", "name")->get()->keyBy("name")->toArray();
         $updated = 0;
-        dd($ibp->toArray());
+        // dd($ibp->toArray());
         foreach($ibp as $species => $records){
             $species_name = explode(" ", $species);
             if(isset($species_name[1])){
