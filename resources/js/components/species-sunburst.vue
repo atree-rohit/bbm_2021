@@ -87,7 +87,7 @@
 <template>
     <div>
         <ul class="breadcrumb text-center">
-            <li v-for="(crumb, i) in breadcrumbs">
+            <li v-for="(crumb, i) in breadcrumbs" :key="i">
                 <a href="#" :title="`${taxa_levels[i]}: ${crumb}`" @click="crumbClick(crumb)">{{ crumb }}</a>
             </li>
         </ul>
@@ -205,7 +205,7 @@
             	.style("cursor", "pointer")
             		.on("mouseover", function (d){ d3.select(this).classed("taxa-selected", true)})
             		.on("mouseout", function (d){ d3.select(this).classed("taxa-selected",false)})
-            		.on("click", d =>  this.clicked(d))
+            		.on("click", (event, d) =>  this.clicked(d))
 
 
             	this.path.append("title")
@@ -229,11 +229,15 @@
             		.attr("r", this.radius)
             		.attr("fill", "none")
             		.attr("pointer-events", "all")
-            		.on("click", this.clicked)
+            		.on("click", (event, d) => this.clicked(d))
             },
             clicked(p) {
-                var selected_taxon = p.data.name
-                // console.log(selected_taxon, p)
+                var selected_taxon = null
+                if(p.data?.name){
+                    selected_taxon = p.data.name
+                } else {
+                    console.log(p)
+                }
 
                 if(selected_taxon == 'Reset'){
                     alert("Root of the Tree")

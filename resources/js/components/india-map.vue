@@ -129,13 +129,8 @@ export default {
 			locations: [],
 		}
 	},
-	created() {
-	},
 	mounted(){
 		this.init_tooltip()
-		// this.init()
-		// this.data_fns()
-		// console.clear()
 	},
 	computed:{
 		zoom() {
@@ -147,18 +142,15 @@ export default {
 	},
 	watch: {
 		map_data () {
-			console.log("watch map_data")
 			this.data_fns()
 		},
         mapMode(newVal) {
-			console.log("watch mapMode")
             this.init()
 			if(newVal == 3){
 				this.init_hexagons()
 			}
         },
 		hexZoom() {
-			console.log("watch hexZoom")
 			this.init_hexagons()
 		}
 	},
@@ -193,7 +185,7 @@ export default {
 					observations: l[1]
 				})
 			})
-			// console.log("data_fns", lo)
+			// console.log("data_fns", lo, this.areaStats)
 			this.locations = lo
 			this.init()
 		},
@@ -630,7 +622,7 @@ export default {
 					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
 					// 	})
 					// }
-			if((points.length > 0 && points.length < 1500) || this.set_polygon ){
+			if((points.length > 0 && points.length < 500) || this.set_polygon ){
 				// console.log("mapPoints", points)
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)

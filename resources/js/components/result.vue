@@ -730,7 +730,7 @@ import DateChart from './date-chart'
 				}
 
 				if(type != "dates" && this.selected_dates.length > 0){
-					op = op.filter((r) => this.selected_dates.indexOf(r.date) != -1)
+					op = op.filter((r) => this.selected_dates.indexOf(parseInt(r.date.replace("2022-09-", ""), 10)) != -1)
 				}
 				
 				if(type != "taxa" && this.selected_taxa_levels.length > 0){
@@ -754,7 +754,7 @@ import DateChart from './date-chart'
 							let match_flag = true
 
 							hierarchy[o.rank] = o.taxa_name
-							this.taxa[o.id].ancestry.split("/").forEach(id => {
+							this.taxa[o.taxa_id].ancestry.split("/").forEach(id => {
 								if(this.levels.indexOf(this.taxa[id].rank) != -1){
 									hierarchy[this.taxa[id].rank] = this.taxa[id].name
 								}

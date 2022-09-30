@@ -95,7 +95,6 @@ export default {
 			this.width = this.width - margin.left - margin.right
 			this.height = this.height - margin.top - margin.bottom
 			let height2 = 50
-			let that = this
 
 			if (!d3.select("#date-chart-continer svg").empty()) {
 				d3.selectAll("#date-chart-continer svg").remove()
@@ -138,19 +137,20 @@ export default {
 					.attr("height", (d) =>  this.height - this.yScale(d))
 
 			this.bars1.attr("fill","steelblue")
-				.on('mouseover', (d) => that.tooltip.html(`<div>${d} Observations</div>`).style('visibility', 'visible'))
-				.on('mousemove', function () {
-  						that.tooltip
-  							.style('top', d3.event.pageY - 10 + 'px')
-  							.style('left', d3.event.pageX + 10 + 'px')
-  						})
-				.on('mouseout', () => that.tooltip.html('').style('visibility', 'hidden'))
+				.on('mouseover', (event, d) => this.tooltip.html(`<div>${d} Observations</div>`).style('visibility', 'visible'))
+				.on('mousemove', (event, d) => {
+					this.tooltip
+						.style('top', event.pageY - 10 + 'px')
+						.style('left', event.pageX + 10 + 'px')
+				})
+				
+				.on('mouseout', () => this.tooltip.html('').style('visibility', 'hidden'))
 
 			var bars2 = context.selectAll("rect").data(dataset).enter().append("rect")
-			bars2.attr("x", (d,i) => that.xScale2(i))
-				.attr("y",(d) => that.yScale2(d))//for bottom to top
-				.attr("width", that.xScale2.bandwidth()/*width/dataset.length-barpadding*/)
-					.attr("height", (d) => height2 - that.yScale2(d))
+			bars2.attr("x", (d,i) => this.xScale2(i))
+				.attr("y",(d) => this.yScale2(d))//for bottom to top
+				.attr("width", this.xScale2.bandwidth()/*width/dataset.length-barpadding*/)
+					.attr("height", (d) => height2 - this.yScale2(d))
 			bars2.attr("fill", "red")
 
 			var brush = d3.brushX()
@@ -180,13 +180,12 @@ export default {
 				//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
 				//The idea here is to count all the bar chart in the brush area. And reset the domain
 			var newInput = []
-			var brushArea = d3.event.selection
-			let that = this
+			var brushArea = event.selection
 
 			if(brushArea === null) brushArea = this.xScale.range()
 
 			this.xScale2.domain().forEach((d) => {
-				var pos = that.xScale2(d) + that.xScale2.bandwidth()/2
+				var pos = this.xScale2(d) + this.xScale2.bandwidth()/2
 				if (pos >= brushArea[0] && pos <= brushArea[1]){
 				  newInput.push(d)
 				}
@@ -201,12 +200,11 @@ export default {
 				//scaleBand of bar chart is not continuous. Thus we cannot use method in line chart.
 				//The idea here is to count all the bar chart in the brush area. And reset the domain
 			var newInput = []
-			var brushArea = d3.event.selection
-			let that = this
+			var brushArea = event.selection
 			if(brushArea === null) brushArea = this.xScale.range()
 
 			this.xScale2.domain().forEach((d) => {
-				var pos = that.xScale2(d) + that.xScale2.bandwidth()/2;
+				var pos = this.xScale2(d) + this.xScale2.bandwidth()/2;
 				if (pos >= brushArea[0] && pos <= brushArea[1]){
 					newInput.push(d);
 				}
