@@ -93,7 +93,7 @@ export default {
     props: ["map_data", "selected_state", "popup", "areaStats", "selected_region", "set_polygon"],
 	data() {
 		return{
-            mapMode: 2,
+            mapMode: 0,
             mapModes: ["Region", "State", "District", "Hexagons"],
 			mapLayers: [regions, states, districts],
 			hexZoom: 5,
@@ -645,7 +645,7 @@ export default {
 					// 	})
 					// }
 			if((points.length > 0 && points.length < 1500) || this.set_polygon ){
-				console.log("mapPoints", points)
+				// console.log("mapPoints", points)
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
 				.selectAll("circle")
