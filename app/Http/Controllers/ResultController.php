@@ -25,11 +25,11 @@ class ResultController extends Controller
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
             $debug_flag = true;
         }
-        $inat = INat22::select("id", "observed_on as date", "taxa_id", "location", "user_name as user_id", "state", "district", "img_url")
+        $inat = INat22::select("id", "observed_on as date","inat_created_at as date_created", "taxa_id", "location", "user_name as user_id", "state", "district")
                 ->limit(-1)
                 ->get()
                 ->toArray();
-        $ibp = IBP22::select("id", "fromDate as date","associatedMedia as img_url", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
+        $ibp = IBP22::select("id", "fromDate as date", "createdOn as date_created", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
                 ->where("fromDate", "like", "%2022-09%")
                 ->whereNotNull("taxa_id")
                 ->limit(-1)
@@ -39,9 +39,16 @@ class ResultController extends Controller
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
         foreach($inat as $k=>$i){
             $coords = explode(",", $i["location"]);
+            $created_date = explode("T", $inat[$k]["date_created"]);
+
             $inat[$k]["lat"] = $coords[0];
             $inat[$k]["lon"] = $coords[1];
+            $inat[$k]["date_created"] = $created_date[0];
+            $inat[$k]["rank"] = $taxa[$inat[$k]["taxa_id"]]["rank"];
             unset($inat[$k]["location"]);
+        }
+        foreach($ibp as $k => $i){
+            $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
         }
 
         $form_data = [];
