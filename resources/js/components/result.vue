@@ -206,9 +206,9 @@
 							<table class="table cards-table">
 								<tbody>
 									<tr class="card-values">
-										<td v-text="stateStats[selected_state].observations"></td>
-										<td v-text="stateStats[selected_state].users.size"></td>
-										<td v-text="stateStats[selected_state].species.size"></td>
+										<td v-text="cardValues('observations')"></td>
+										<td v-text="cardValues('users')"></td>
+										<td v-text="cardValues('species')"></td>
 									</tr>
 									<tr class="card-labels">
 										<td>Observations</td>
@@ -252,44 +252,10 @@
 							/>
 						</div>
 					</div>
-					<div id="observations-container" v-if="tab.title === 'Observations'">
-						<div class="d-flex justify-content-center" id="observations-pagination-div">
-							<div v-if="observationsPageNo > 1">
-								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo--">&lt;</button>
-							</div>
-							<div class="mx-3 my-auto">Page {{observationsPageNo}} of {{totalObservationPages}}</div>
-							<div v-if="observationsPageNo <= totalObservationPages">
-								<button class="btn btn-outline-light btn-sm" @click="observationsPageNo++">&gt;</button>
-							</div>
-
-						</div>
-						<image-gallery :observations="filteredObservationsPaginated" :taxa="taxa"/>
-					</div>
 				</ui-tab>
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
-			<ui-collapsible :class="accordianClass('region')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)">
-				<div slot="header" class="d-flex">
-					<span class="material-icons">
-						crop_original
-					</span>
-					<div>
-						{{accordianTitle('region')}}
-					</div>
-					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_region.length > 0 && selected_region.length <3"
-							@click.stop='selected_portals = ["counts", "inat", "ibp", "ifb"]'
-						>Reset</button>
-				</div>
-				<div class="d-flex justify-content-center">
-					<button class="mx-2 btn" @click="selectRegion('north')">North</button>
-					<button class="mx-2 btn" @click="selectRegion('east')">East</button>
-					<button class="mx-2 btn" @click="selectRegion('south')">South</button>
-					<button class="mx-2 btn" @click="selectRegion('west')">West</button>
-				</div>
-            </ui-collapsible>
-			
 			<ui-collapsible :class="accordianClass('portals')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
 				<div slot="header" class="d-flex">
 					<span class="material-icons">
@@ -407,6 +373,7 @@
 				</div>
                 <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
+			
 			<ui-collapsible :class="accordianClass('debug')" :disableRipple="true" :open="accordions[6]" @open="onAccordionOpen(6)" @close="onAccordionClose(6)" v-if="debug_flag">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
@@ -456,28 +423,26 @@ import DataTable from './data-table'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
-import ImageGallery from './image-gallery'
 	export default {
 		name:"result",
 		props: ["taxa", "all_portal_data", "debug_flag"],
 		components: { DataTable,
 						IndiaMap,
 						SpeciesSunburst,
-						DateChart,
-						ImageGallery },
+						DateChart
+					},
 		data() {
 			return{
 				selected_portals: ["counts", "inat", "ibp", "ifb"],
 				selected_users: [],
 				selected_dates: [],
-				selected_state: "Goa",
+				selected_state: "All",
 				selected_taxa_levels: [],
 				selected_taxa: [],
-				selected_region: "south",
+				selected_region: "",
+				filteredObservations: [],
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
-				observationsPerPage: 100,
-				observationsPageNo: 1,
 				
 				set_location_data: {
 					ids: null,
@@ -492,7 +457,6 @@ import ImageGallery from './image-gallery'
 				tabs: [
 					{title:"Location"},
 					{title:"Table"},
-					{title:"Observations"},
 				],
 
 				date_switch:false,
@@ -514,59 +478,14 @@ import ImageGallery from './image-gallery'
 		},
 		mounted() {
 			this.selected_state = "All"
-			// console.log(this.areaStats)
-			// console.log("user", this.userTableData)
+
 		},
 		watch: {
 		},
 		computed:{
-			filteredObservations (){
-				let portals = (this.selected_portals.length == 0) ? Object.keys(this.all_portal_data) : this.selected_portals
-				
-				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
-
-				if (this.selected_state != 'All') {
-					op = op.filter((r) => r.state == this.selected_state)
-				}
-
-				if(this.selected_users.length > 0){
-					op = op.filter((r) => this.selected_users.indexOf(r.user_id) != -1)
-				}
-
-				if(this.selected_dates.length > 0){
-					op = op.filter((r) => this.selected_dates.indexOf(r.date) != -1)
-				}
-				
-				if(this.selected_taxa_levels.length > 0){
-					op = op.filter((r) => this.selected_taxa_levels.indexOf(r.taxa_rank) != -1)
-				}
-
-				op = this.filterTaxa(op)
-
-				return op
-			},
-			filteredObservations_old (){
-				let op =  this.filterPortal(op)
-
-				op = this.filterState(op)
-				op = this.filterUsers(op)
-				op = this.filterDates(op)
-				op = this.filterTaxaLevels(op)
-				op = this.filterTaxa(op)
-
-				return op
-			},
-			filteredObservationsPaginated (){
-				return  this.filteredObservations.filter(o => o.img_url != '').filter(o => o.portal != 'counts')
-							.slice(this.observationsPerPage * (this.observationsPageNo - 1), this.observationsPerPage * (this.observationsPageNo))
-			},
 			mapData (){
-				let op = this.filterPortal()
+				let op = this.getFilteredObservations()
 
-				op = this.filterUsers(op)
-				op = this.filterDates(op)
-				op = this.filterTaxaLevels(op)
-				op = this.filterTaxa(op)
 				if(this.set_polygon_switch){
 					op = op.filter((r) => r.state == null)
 				}
@@ -575,11 +494,7 @@ import ImageGallery from './image-gallery'
 			},
 			userTableData () {
 				let op = []
-				let user_data = this.filterPortal()
-				user_data = this.filterState(user_data)
-				user_data = this.filterDates(user_data)
-				user_data = this.filterTaxaLevels(user_data)
-				user_data = this.filterTaxa(user_data)
+				let user_data = this.getFilteredObservations("users")
 				user_data = d3Collection.nest().key(o => o.user_id).object(user_data)
 
 				op = Object.keys(user_data)
@@ -596,31 +511,24 @@ import ImageGallery from './image-gallery'
 						})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 
-				op = op.map((o,id) => {
-					o.sl_no = id + 1
-					return o
-				})
+				op = op.map((o,id) => { return { ...o, sl_no: id+1 } })
+
 				return op
 			},
 			dateTableData () {
 				let date_data = {}
-				let op = this.filterPortal()
+				let op = this.getFilteredObservations("dates")
 
-				op = this.filterState(op)
-				op = this.filterUsers(op)
-				op = this.filterTaxaLevels(op)
-				op = this.filterTaxa(op)
-
-				for(var i = 0; i<31; i++){
+				for(var i = 0; i<=31; i++){
 					date_data[i] = 0
 				}
 				op.forEach(o => {
-					if(Object.keys(date_data).indexOf(o[this.selectDateType].toString()) != -1){
-						date_data[o[this.selectDateType]]++
+					let key = parseInt(o[this.selectDateType].replace("2022-09-", ""), 10).toString()
+					if(Object.keys(date_data).indexOf(key) != -1){
+						date_data[key]++
 					}
 				})
 				op = Object.keys(date_data).map( d => { return { name:d, value:date_data[d] } } )
-
 				return op;
 			},
 			areaStats(){
@@ -686,32 +594,6 @@ import ImageGallery from './image-gallery'
 				})
 				return op
 			},
-			stateStats () {
-				let op = {}
-				op['All'] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
-				states.features.forEach(s => {
-					op[s.properties.state] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
-				})
-
-				this.filteredObservations.forEach(o => {
-					op['All'].observations++
-					op['All'].users.add(o.user_id)
-					op['All'].species.add(o.taxa_id)
-					op['All'].portals.add(o.portal)
-					if(o.state !== null){
-						if(op[o.state] == undefined){
-							console.log(`+${o.state}+`)
-						}
-						op[o.state].observations++
-						op[o.state].users.add(o.user_id)
-						op[o.state].species.add(o.taxa_id)
-						op[o.state].portals.add(o.portal)
-					}
-				})
-				// console.log("sS", op)
-
-				return op
-			},
 			speciesTableData () {
 				let op = []
 				this.filteredObservations.forEach(o => {
@@ -748,22 +630,20 @@ import ImageGallery from './image-gallery'
 					op[id].state_count = s.states.size
 					op[id].portals = [...s.portals].join(", ")
 				})
-
+				
 				return op
 			},
 			statesTableData () {
 				let op = []
 
-				Object.keys(this.stateStats).forEach(s => {
-					if(s != 'All'){
-						op.push({
-							state: s,
-							observations: this.stateStats[s].observations,
-							users: this.stateStats[s].users.size,
-							species: this.stateStats[s].species.size,
-							portals: [...this.stateStats[s].portals].join(", ")
-						})
-					}
+				Object.keys(this.areaStats.state).forEach(s => {
+					op.push({
+						state: s,
+						observations: this.areaStats.state[s].observations,
+						users: this.areaStats.state[s].users.size,
+						species: this.areaStats.state[s].species.size,
+						portals: [...this.areaStats.state[s].portals].join(", ")
+					})
 				})
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 				return op
@@ -774,18 +654,15 @@ import ImageGallery from './image-gallery'
 				levels.forEach(t => {
 					op[t] = 0
 				})
-				this.filteredObservations.map(o => { op[o.taxa_rank]++ })
+				this.filteredObservations.map(o => { op[o.rank]++ })
 				return op
 			},
 			taxaTableData () {
 				let op = {superfamily:0, family:0, subfamily:0, tribe:0, subtribe:0, genus:0, subgenus:0, species:0, subspecies:0, form:0}
 				let taxa_level = {}
-				let filtered_observations = this.filterPortal()
-				filtered_observations = this.filterState(filtered_observations)
-				filtered_observations = this.filterUsers(filtered_observations)
-				filtered_observations = this.filterDates(filtered_observations)
-				filtered_observations = this.filterTaxa(filtered_observations)
-				taxa_level = d3Collection.nest().key(o => o.taxa_rank).object(filtered_observations)
+				let filtered_observations = this.getFilteredObservations("taxa")
+				
+				taxa_level = d3Collection.nest().key(o => o.rank).object(filtered_observations)
 				Object.keys(taxa_level).forEach(tl => {
 					if(taxa_level[tl] != undefined){
 						op[tl] = taxa_level[tl].length
@@ -796,35 +673,32 @@ import ImageGallery from './image-gallery'
 			},
 			treeData (){
 				let op = []
-				let filtered_observations = this.filterPortal()
-				filtered_observations = this.filterState(filtered_observations)
-				filtered_observations = this.filterUsers(filtered_observations)
-				filtered_observations = this.filterDates(filtered_observations)
+				let filtered_observations = this.getFilteredObservations("tree")
 
-				// filtered_observations.forEach(o => {
-				// 	if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
-				// 		let taxa = this.taxa[o.taxa_id]
-				// 		let hierarchy = {}
-				// 		hierarchy[taxa.rank] = taxa.name
-				// 		hierarchy.key = taxa.name
-				// 		this.taxa[taxa.id].ancestry.split("/").forEach(id => {
-				// 			if(this.levels.indexOf(this.taxa[id].rank) != -1){
-				// 				hierarchy[this.taxa[id].rank] = this.taxa[id].name
-				// 			}
-				// 		})
-				// 		this.levels.forEach((l, lid) => {
-				// 			if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
-				// 				hierarchy[l] = "Incertae sedis"
-				// 			}
-				// 		})
-				// 		if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
-				// 			hierarchy.value = 1
-				// 			op.push(hierarchy)
-				// 		}
-				// 	}
-				// })
+				filtered_observations.forEach(o => {
+					if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
+						let taxa = this.taxa[o.taxa_id]
+						let hierarchy = {}
+						hierarchy[taxa.rank] = taxa.name
+						hierarchy.key = taxa.name
+						this.taxa[taxa.id].ancestry.split("/").forEach(id => {
+							if(this.levels.indexOf(this.taxa[id].rank) != -1){
+								hierarchy[this.taxa[id].rank] = this.taxa[id].name
+							}
+						})
+						this.levels.forEach((l, lid) => {
+							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
+								hierarchy[l] = "Incertae sedis"
+							}
+						})
+						if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
+							hierarchy.value = 1
+							op.push(hierarchy)
+						}
+					}
+				})
 
-
+				console.log("treeData", op)
 				return op
 			},
 			speciesTableHeaders () {
@@ -838,16 +712,37 @@ import ImageGallery from './image-gallery'
 			selectDateType () {
 				let op = "date"
 				if(this.date_switch)
-					op = "created_date"
+					op = "date_created"
 				return op
 			},
-			totalObservationPages () {
-				return Math.ceil(this.filteredObservations.filter(o => o.img_url != '').length/this.observationsPerPage)
-			}
 		},
 		methods: {
-			selectRegion(region){
+			getFilteredObservations (type = null){
+				let portals = (this.selected_portals.length == 0) ? Object.keys(this.all_portal_data) : this.selected_portals
 				
+				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
+
+				if (type != "states" && this.selected_state != 'All') {
+					op = op.filter((r) => r.state == this.selected_state)
+				}
+
+				if(type != "users" && this.selected_users.length > 0){
+					op = op.filter((r) => this.selected_users.indexOf(r.user_id) != -1)
+				}
+
+				if(type != "dates" && this.selected_dates.length > 0){
+					op = op.filter((r) => this.selected_dates.indexOf(r.date) != -1)
+				}
+				
+				if(type != "taxa" && this.selected_taxa_levels.length > 0){
+					op = op.filter((r) => this.selected_taxa_levels.indexOf(r.rank) != -1)
+				}
+
+				if(type != "tree" ){
+					op = this.filterTaxa(op)
+				}
+
+				return op
 			},
 			filterPortal (){
 				let op = []
@@ -894,7 +789,7 @@ import ImageGallery from './image-gallery'
 			filterTaxaLevels (ar){
 				let op = ar
 				if(this.selected_taxa_levels.length > 0){
-					op = op.filter(x => this.selected_taxa_levels.indexOf(x.taxa_rank) !== -1)
+					op = op.filter(x => this.selected_taxa_levels.indexOf(x.rank) !== -1)
 				}
 				return op
 			},
@@ -908,8 +803,8 @@ import ImageGallery from './image-gallery'
 							let hierarchy = {}
 							let match_flag = true
 
-							hierarchy[o.taxa_rank] = o.taxa_name
-							this.taxa[o.taxa_id].ancestry.split("/").forEach(id => {
+							hierarchy[o.rank] = o.taxa_name
+							this.taxa[o.id].ancestry.split("/").forEach(id => {
 								if(this.levels.indexOf(this.taxa[id].rank) != -1){
 									hierarchy[this.taxa[id].rank] = this.taxa[id].name
 								}
@@ -1057,14 +952,6 @@ import ImageGallery from './image-gallery'
 			accordianTitle (f){
 				let op = ""
 				switch(f){
-					case 'region':
-						op = "Region : "
-						if (this.selected_region.length == 1){
-							op += `${this.selected_region.length} selected`
-						} else {
-							op += "All selected"
-						}
-						break
 					case 'portals':
 						op = "Portals : "
 						if (this.selected_portals.length == 4){
@@ -1110,6 +997,22 @@ import ImageGallery from './image-gallery'
 				}
 				return op
 			},
+			cardValues (card) {
+				let root = this.areaStats.all
+				let op = ""
+				if(this.selected_state != "All"){
+					root = this.areaStats.state[this.selected_state]
+				}
+				switch(card){
+					case "observations": op = root.observations
+						break;
+					case "users": op = root.users.size
+						break;
+					case "species": op = root.species.size
+						break;
+				}
+				return op
+			},
 			onAccordionOpen (id) {
 				Object.keys(this.accordions).forEach(key => {
 					this.accordions[key] = key == id; // eslint-disable-line eqeqeq
@@ -1123,6 +1026,7 @@ import ImageGallery from './image-gallery'
 				if(this.debug_flag){
 					this.set_polygon_switch = true
 				}
+				this.filteredObservations = this.getFilteredObservations()
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
