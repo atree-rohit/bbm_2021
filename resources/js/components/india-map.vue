@@ -2,12 +2,28 @@
     #controls{
         margin: 0 2rem;
     }
-	#map-container .state-selected{
+	.map-boundary path{
+		/* stroke: transparent; */
+		stroke-linejoin: round;
+		stroke-width: .1;
+	}
+	.map-boundary path:hover{
+		cursor: pointer;
+		fill: beige;
+	}
+
+	.map-boundary .current-state{
+		stroke: rgba(0,50,255,.75);
+		stroke-width:.25px;
+		filter: brightness(1.25)
+	}
+	.map-boundary .selected-polygon{
 		/*fill: #afa;*/
 		fill: #ffff55;
-		stroke: rgba(255,50,0,.5);
+		stroke: rgba(255,50,0,.75);
 		stroke-width:.5px;
 	}
+
 	.poly_text{
 		fill: #545;
 		font-size: 1.0rem;
@@ -32,15 +48,7 @@
 		fill: pink;
 	}
 
-	.map-boundary path{
-		/* stroke: transparent; */
-		stroke-linejoin: round;
-		stroke-width: .1;
-	}
-	.map-boundary path:hover{
-		cursor: pointer;
-		fill: beige;
-	}
+
 
     table, tr, th,td{
         border: 1px solid white;
@@ -90,13 +98,13 @@ import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
 export default {
 	name:"IndiaMap",
-    props: ["map_data", "selected_state", "popup", "areaStats", "selected_region", "set_polygon"],
+    props: ["map_data", "selected_area", "popup", "areaStats", "set_polygon"],
 	data() {
 		return{
             mapMode: 0,
             mapModes: ["Region", "State", "District", "Hexagons"],
 			mapLayers: [regions, states, districts],
-			hexZoom: 5,
+			hexZoom: 3,
 			polygons: null,
 			path: null,
 			svg: {},
@@ -116,12 +124,6 @@ export default {
 				"south":["Karnataka","Telangana","Kerala","Andaman and Nicobar","Lakshadweep","Tamil Nadu","Andhra Pradesh","Puducherry"],
 				"west":["Rajasthan","Madhya Pradesh","Gujarat","Dadra and Nagar Haveli", "Daman and Diu","Chhattisgarh","Goa","Maharashtra"]
 			},
-			region_colors: {
-				north: "#f8df81",
-				south: "#badfda",
-				west: "#f6aa90",
-				east: "#d5b6d5"
-			},
 			observation_counts: {},
 			hexagons: {},
 			locations: [],
@@ -131,14 +133,11 @@ export default {
 	},
 	mounted(){
 		this.init_tooltip()
-		this.init()
-		this.data_fns()
+		// this.init()
+		// this.data_fns()
 		// console.clear()
 	},
 	computed:{
-		observations(){ //final output from here
-            return this.map_data
-        },
 		zoom() {
 			return d3.zoom()
 				.scaleExtent([.5, 250])
@@ -148,31 +147,26 @@ export default {
 	},
 	watch: {
 		map_data () {
-			this.init()
-		},
-		selected_state (newVal, oldVal) {
-			if (!d3.select("#map-container svg").empty()) {
-				d3.selectAll("#map-container svg").remove()
-			}
-			this.init()
+			console.log("watch map_data")
+			this.data_fns()
 		},
         mapMode(newVal) {
+			console.log("watch mapMode")
             this.init()
-			if(newVal == 3)
-			this.init_hexagons()
+			if(newVal == 3){
+				this.init_hexagons()
+			}
         },
 		hexZoom() {
+			console.log("watch hexZoom")
 			this.init_hexagons()
-		},
-		observations() {
-			this.data_fns()
 		}
 	},
 	methods:{
 		data_fns(){
 			const formatDate = d3.timeFormat("%Y")
-			let o  = d3.group(this.observations, o => formatDate(new Date(o.date)),o => o.portal, o => o.date)
-            let loc = d3.groups(this.observations, o => o.lat + "," + o.lon)
+			let o  = d3.group(this.map_data, o => formatDate(new Date(o.date)),o => o.portal, o => o.date)
+            let loc = d3.groups(this.map_data, o => o.lat + "," + o.lon)
 			let lo = []
 			loc.forEach((l) => {
 				let state = l[1][0].state
@@ -312,44 +306,25 @@ export default {
 			this.legend = {}
 			this.max = 0
 			if(this.mapMode == 0 ){
-				Object.values(this.observation_counts.region).forEach((n) => {
-					if(n > this.max)
-						this.max = n
-				})
+				this.max = Math.max(...Object.values(this.observation_counts.region))
 				this.colors = d3.scaleLinear()
-					.domain([0, 5500, this.max])
-					// .interpolator(d3.interpolateRainbow);
+					.domain([0, this.max * 0.25, this.max])
 					.range(["#f77", "#33d", "#3d3"])
 			} else if (this.mapMode == 1){
-				Object.values(this.observation_counts.state).forEach((n) => {
-					if(n > this.max)
-						this.max = n
-				})
+				this.max = Math.max(...Object.values(this.observation_counts.state))
 				this.colors = d3.scaleLinear()
 					.domain([0, 1, this.max*0.1, this.max])
 					.range(["#f77", "#ca0", "#cda", "#3d3"])
 			} else if (this.mapMode == 2 ){
-				Object.values(this.observation_counts.district).forEach((n) => {
-					if(n > this.max)
-						this.max = n
-				})
+				this.max = Math.max(...Object.values(this.observation_counts.district))
 				this.colors = d3.scaleLinear()
 					.domain([0, 1, this.max*.25, this.max])
 					.range(["#f77", "#ca0", "#ada", "#3d3"])
 
-				if(this.set_polygon){
-					this.colors = d3.scaleLinear()
-						.domain([0, 1, this.max*.25, this.max])
-						.range(["#77f", "#ca0", "#ada", "#3d3"])
-
-				}
 			} else if (this.mapMode == 3 ){
-				Object.values(this.hexagons).map((h) => h.observations).forEach((n) => {
-					if(n > this.max)
-						this.max = n
-				})
-				let hex_opacity = 0.75
-				this.colors = d3.scaleLog()
+				this.max = Math.max(...Object.values(this.hexagons).map((h) => h.observations))
+				let hex_opacity = 0.8
+				this.colors = d3.scaleLinear()
 					.domain([0, 1, this.max*.25, this.max])
 					.range([`rgba(255, 119, 119, ${hex_opacity})`, `rgba(204, 170, 0, ${hex_opacity})`, `rgba(170, 221, 170, ${hex_opacity})`, `rgba(51, 221, 51, ${hex_opacity})`])
 			}
@@ -401,9 +376,8 @@ export default {
 			console.log("hex", hexagons)
 		},				
 		renderMap () {
-			this.selected = this.selected_state
-			if (!d3.select("#map-container svg").empty()) {
-				d3.select("#map-container svg").remove()
+			if (!d3.select("#map-container svg.svg-content").empty()) {
+				d3.select("#map-container svg.svg-content").remove()
 			}
 			this.svg = d3.select("#map-container")
 						.append("svg")
@@ -455,13 +429,13 @@ export default {
 			let district = polygon.properties.district ?? null
 			let names = [region, state, district]
 			let table_text = ""
+			// console.log(names)
 			if(this.mapMode < 3){
 				for(let i = 0 ; i <= this.mapMode ; i++){
 					let level = this.mapModes[i]
 					table_text += `<tr><td>${level}</td><td>${this.capatilizeWords(names[i])} - ${this.get_observation_count(level.toLowerCase(), names[i])}</td></tr>`
 				}
 			}
-
 			let current_polygon = this.polygons.append("g")
 				.data([polygon])
 				.enter().append("path")
@@ -569,7 +543,7 @@ export default {
 		},
 		getPolygonId(polygon){
 			let op = polygon.region
-			let replace_chars = [" ", "&", "(", ")"]
+			let replace_chars = [" ", "&", "(", ")", "."]
 			if(polygon.state != undefined){
 				op = polygon.state
 			}
@@ -581,6 +555,14 @@ export default {
 			})
 			return op
 		},
+		set_state_class (state, district) {
+			this.mapLayers[2].features.map((p) => {
+				if(p.properties.state == state && p.properties.district != district){
+					d3.select("#" + this.getPolygonId(p.properties)).classed("current-state", true)
+				}
+			})
+
+		},
 		clicked(d) {
 			let props = d.target.__data__.properties
 			let region = props.region ?? null
@@ -588,16 +570,20 @@ export default {
 			let district = props.district ?? null
 			let name = [region, state, district][this.mapMode]
 			let polygon = this.mapLayers[this.mapMode].features
-				.filter((p) => p.properties[["region", "state", "district"][this.mapMode]] == name)[0]
+			.filter((p) => p.properties[["region", "state", "district"][this.mapMode]] == name)[0]
 			this.tooltip.html(``).style('visibility', 'hidden')
             
 			let [[x0, y0], [x1, y1]] = [[0,0],[0,0]]
 			
-			d3.selectAll(".state-selected").classed("state-selected", false)
+			d3.selectAll(".current-state").classed("current-state", false)
+			d3.selectAll(".selected-polygon").classed("selected-polygon", false)
 			if(this.selected == "All" || this.selected != name){
 				this.selected = name;
 				[[x0, y0], [x1, y1]] = this.path.bounds(polygon);
-				d3.select("#" + this.getPolygonId(props)).classed("state-selected", true)
+				d3.select("#" + this.getPolygonId(props)).classed("selected-polygon", true)
+				if(this.mapMode == 2){
+					this.set_state_class(state, district)
+				}
 			} else {
 				this.selected = "All";
 				[[x0, y0], [x1, y1]] = this.path.bounds(regions);
