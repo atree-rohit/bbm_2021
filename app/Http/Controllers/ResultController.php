@@ -50,17 +50,12 @@ class ResultController extends Controller
         }
         foreach($ibp as $k => $i){
             $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
-            $inat[$k]["portal"] = "ibp";
+            $ibp[$k]["portal"] = "ibp";
         }
 
         $form_data = [];
         $last_update = "";
-        $all_portal_data = [
-            "counts" => [],
-            "inat" => $inat,
-            "ibp" => $ibp,
-            "ifb" => [],
-        ];
+        $all_portal_data = array_merge($inat, $ibp);
         
         return view('result.index', compact("taxa", "all_portal_data", "debug_flag"));
         /*

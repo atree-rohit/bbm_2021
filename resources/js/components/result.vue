@@ -442,7 +442,6 @@ import DateChart from './date-chart'
 				},
 				selected_taxa_levels: [],
 				selected_taxa: [],
-				filteredObservations: [],
 
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				
@@ -512,7 +511,6 @@ import DateChart from './date-chart'
 				op.sort((a,b) => (a.observations < b.observations) ? 1 : ((b.observations < a.observations) ? -1 : 0))
 
 				op = op.map((o,id) => { return { ...o, sl_no: id+1 } })
-				console.log("UTD", op, user_data)
 				return op
 			},
 			dateTableData () {
@@ -532,7 +530,7 @@ import DateChart from './date-chart'
 				return op;
 			},
 			areaStats(){
-				let all_observations = this.filteredObservations
+				let all_observations = this.getFilteredObservations()
 				let op = {
 					all: { observations: 0, users: new Set(), species: new Set(), portals: new Set() },
 					region: {},
@@ -596,7 +594,7 @@ import DateChart from './date-chart'
 			},
 			speciesTableData () {
 				let op = []
-				this.filteredObservations.forEach(o => {
+				this.getFilteredObservations().forEach(o => {
 					let new_flag = true
 					let taxa_name = ""
 					if (this.taxa[o.taxa_id] != undefined){
@@ -654,7 +652,7 @@ import DateChart from './date-chart'
 				levels.forEach(t => {
 					op[t] = 0
 				})
-				this.filteredObservations.map(o => { op[o.rank]++ })
+				this.getFilteredObservations().map(o => { op[o.rank]++ })
 				return op
 			},
 			taxaTableData () {
@@ -673,7 +671,7 @@ import DateChart from './date-chart'
 			},
 			treeData (){
 				let op = []
-				let filtered_observations = this.getFilteredObservations("tree")
+				let filtered_observations = this.getFilteredObservations()
 
 				filtered_observations.forEach(o => {
 					if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
@@ -717,10 +715,11 @@ import DateChart from './date-chart'
 		},
 		methods: {
 			getFilteredObservations (type = null){
-				let portals = (this.selected_portals.length == 0) ? Object.keys(this.all_portal_data) : this.selected_portals
+				let all_portals = Array.from(new Set(this.all_portal_data.map((o) => o.portal)))
+				let portals = (this.selected_portals.length == 0) ? all_portals : this.selected_portals
 				
-				let op =  portals.map((p) => this.all_portal_data[p]).reduce((pre, curr) => pre.concat(curr))
-				console.log(op)
+				let op = this.all_portal_data.filter((o) => portals.indexOf(o.portal) != -1)
+
 
 				if (type != "states" && this.selected_area.state != 'All') {
 					op = op.filter((r) => r.state == this.selected_area.state)
@@ -997,7 +996,6 @@ import DateChart from './date-chart'
 				if(this.debug_flag){
 					this.set_polygon_switch = true
 				}
-				this.filteredObservations = this.getFilteredObservations()
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
