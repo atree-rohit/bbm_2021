@@ -639,6 +639,7 @@ class ResultController extends Controller
     {   
         $counts_add_taxa_id = $this->counts_fix_taxa();
         $counts_fix_location = $this->counts_fix_location();
+        $counts_fix_state = $this->counts_fix_state();
         $ibp_taxa_added = $this->ibp_fix_taxa();
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         $this->inat_set_state();
@@ -660,6 +661,7 @@ class ResultController extends Controller
             "counts" => [
                 "taxa_id_added" => $counts_add_taxa_id,
                 "coordinates_set" => $counts_fix_location,
+                "states_fixed" => $counts_fix_state,
             ]
         ];
         
@@ -740,6 +742,45 @@ class ResultController extends Controller
             }
         }
         return $count;
+    }
+
+    public function counts_fix_state()
+    {
+        $data = CountForm::all();
+        $states = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        $state_names = [];
+
+        $fixes = [
+            "Jammu & Kashmir" => "Jammu and Kashmir",
+            "Delhi" => "NCT of Delhi",
+            "Gurugram (valley site)" => "Haryana",
+            "Pitampura, New Delhi" => "NCT of Delhi",
+            "Maharashtra " => "Maharashtra",
+        ];
+        $fixed_count = 0;
+
+        $unmatched_states = [];
+        foreach($states as $s){
+            if(!in_array($s->properties->statename, $state_names)){
+                $state_names[] = $s->properties->statename;
+            }
+        }
+        foreach($data->groupBy("state") as $state => $state_data){
+            if(!in_array($state, $state_names)){
+                if (isset($fixes[$state])) {
+                    foreach($state_data as $sd){
+                        // dd($sd, $fixes[$state]);
+                        // echo $sd->state . ":" . $fixes[$state] . "<br>";
+                        $sd->state = $fixes[$state];
+                        $sd->save();
+                        $fixed_count++;
+                    }
+                } else {
+                    dd($state, $state_data);
+                }
+            }
+        }
+        return $fixed_count;
     }
     public function ibp_set_state()
     {
