@@ -555,10 +555,12 @@ import DateChart from './date-chart'
 						op.district[d.properties.district] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 					}
 				})
+				console.log(op.state)
 				
 				if(this.set_polygon_switch == true){
 					all_observations = all_observations.filter((r) => r.state == null)
 				}
+				
 				all_observations.forEach((o) => {
 					let current_region = null
 					op.all.observations++,
@@ -577,6 +579,7 @@ import DateChart from './date-chart'
 						op.region[current_region].species.add(o.taxa_id)
 						op.region[current_region].portals.add(o.portal)
 					}
+					console.log(o.state)
 					if(o.state !== null){
 						op.state[o.state].observations++
 						op.state[o.state].users.add(o.user_id)
