@@ -269,10 +269,14 @@
 						>Reset</button>
 				</div>
 				<div class="d-flex justify-content-center">
-					<button class="mx-2 btn" :class="portalBtnClass('counts')" @click="selectPortal('counts')">Butterfly Counts</button>
-					<button class="mx-2 btn" :class="portalBtnClass('inat')" @click="selectPortal('inat')">iNaturalist</button>
-					<button class="mx-2 btn" :class="portalBtnClass('ibp')" @click="selectPortal('ibp')">India Biodiversity Portal</button>
-					<button class="mx-2 btn" :class="portalBtnClass('ifb')" @click="selectPortal('ifb')">iFoundButterflies</button>
+					<button
+						v-for="portal in portal_names"
+						:key="portal[0]"
+						class="mx-2 btn"
+						:class="portalBtnClass(portal[0])"
+						@click="selectPortal(portal[0])"
+						v-text="`Butterfly Counts(${ portalObservationCounts(portal[0]) })`"
+					/>
 				</div>
             </ui-collapsible>
 
@@ -433,6 +437,12 @@ import DateChart from './date-chart'
 		data() {
 			return{
 				selected_portals: ["counts", "inat", "ibp", "ifb"],
+				portal_names: [
+					["counts", "Butterfly Counts"],
+					["inat", "iNaturalist"],
+					["ibp", "India Biodiversity Portal"],
+					["ifb", "iFoundButterflies"]
+				],
 				selected_users: [],
 				selected_dates: [],
 				selected_area: {
@@ -963,6 +973,9 @@ import DateChart from './date-chart'
 						op = "Debug: "
 				}
 				return op
+			},
+			portalObservationCounts(p){
+				return this.getFilteredObservations().filter((o) => o.portal == p).length
 			},
 			cardValues (card) {
 				let root = this.areaStats.all
