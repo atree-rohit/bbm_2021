@@ -35,6 +35,13 @@ class ResultController extends Controller
                 ->limit(-1)
                 ->get()
                 ->toArray();
+        $counts_raw = CountForm::where("flag", false)
+                ->where("created_at", "like", "%2022-09%")
+                ->with("rows_cleaned")
+                ->get();
+        $counts = $this->get_counts_data_array($counts_raw);
+
+        
                 
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
         foreach($inat as $k=>$i){
@@ -53,13 +60,40 @@ class ResultController extends Controller
             $ibp[$k]["portal"] = "ibp";
         }
 
+        
+        // dd($inat[0], $counts, $counts_raw->first()->toArray());
+
         $form_data = [];
         $last_update = "";
-        $all_portal_data = array_merge($inat, $ibp);
+        $all_portal_data = array_merge($counts, $inat, $ibp);
         
         return view('result.index', compact("taxa", "all_portal_data", "debug_flag"));
         /*
         */
+    }
+
+    public function get_counts_data_array($data)
+    {
+        $op = [];
+        foreach($data as $d){
+            $row = [
+                "portal" => "counts",
+            ];
+            $row["id"] = $d->id;
+            $row["date"] = substr($d->date, 0, strpos($d->date, "T"));
+            $row["date_created"] = substr($d->created_at, 0, strpos($d->created_at, " "));
+            $row["lat"] = $d->latitude;
+            $row["lon"] = $d->longitude;
+            $row["user_id"] = $d->name;
+            $row["state"] = $d->state;
+            $row["district"] = $d->district;
+            foreach($d->rows_cleaned as $sp){
+                $row["taxa_id"] = $sp->inat_taxa_id;
+            }
+
+            $op[] = $row;
+        }
+        return $op;
     }
 
 
@@ -290,7 +324,7 @@ class ResultController extends Controller
         $this->existing_taxa_ids = INatTaxa22::all()->pluck("id")->toArray();
         $result = [];
         $result["inat"] = $this->pull_inat();
-        // $result["ibp"] = $this->pull_ibp();
+        $result["ibp"] = $this->pull_ibp();
         $result["taxa"] = $this->get_missing_taxa();
         dd($result);
     }
@@ -603,6 +637,8 @@ class ResultController extends Controller
 
     public function fix()
     {   
+        $counts_add_taxa_id = $this->counts_fix_taxa();
+        $counts_fix_location = $this->counts_fix_location();
         $ibp_taxa_added = $this->ibp_fix_taxa();
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         $this->inat_set_state();
@@ -620,6 +656,10 @@ class ResultController extends Controller
                 "district" => $ibp->where("district", null)->toArray(),
                 "taxa" => $ibp->where("taxa_id", null)->toArray(),
                 "taxa_added" => $ibp_taxa_added,
+            ],
+            "counts" => [
+                "taxa_id_added" => $counts_add_taxa_id,
+                "coordinates_set" => $counts_fix_location,
             ]
         ];
         
@@ -627,6 +667,80 @@ class ResultController extends Controller
 
     }
 
+    public function counts_fix_taxa()
+    {
+        $counts_raw = CountForm::with("rows_cleaned")->get();
+        $taxa = INatTaxa22::all()->keyBy("name")->toArray();
+        $data = FormRow::where("inat_taxa_id", null)->get()->groupBy("scientific_name");
+        $count = 0;
+        $corrections = [
+            "Charaxes bharata" => "Polyura bharata",
+            "Charaxes pandava" => "Polyura pandava",
+            "Chilades pandava" => "Luthrodes pandava",
+            "Spindasis vulcanus" => "Cigaritis vulcanus",
+        ];
+        foreach($data as $sci=>$records){
+            if(isset($taxa[$sci])){
+                foreach($records as $r){
+                    $r->inat_taxa_id = $taxa[$sci]["id"];
+                    $r->save();
+                    $count++;
+                }
+            } else if(isset($corrections[$sci])){
+                foreach($records as $r){
+                    $r->inat_taxa_id = $taxa[$corrections[$sci]]["id"];
+                    $r->save();
+                    $count++;
+                }
+            }
+        }
+        $corrections = [
+            "Lime Butterfly" => "Lime Swallowtail",
+            "Common Mormon" => "Common Mormon Swallowtail",
+            "Plain Tiger" => "Plain Tiger Butterfly",
+            "Indian Fritillary" => "Tropical Fritillary"
+
+        ];
+        $data = FormRow::where("inat_taxa_id", null)->get()->groupBy("common_name");
+        $taxa = INatTaxa22::all()->keyBy("common_name")->toArray();
+        foreach($data as $name=>$records){
+            if($name != ""){
+                if(isset($taxa[$name]) && $taxa[$name]["rank"] != "subspecies"){
+                    foreach($records as $r){
+                        $r->inat_taxa_id = $taxa[$name]["id"];
+                        $r->save();
+                        $count++;
+                    }
+                } else if(isset($corrections[$name])){
+                    if(isset($taxa[$corrections[$name]]) && $taxa[$corrections[$name]]["rank"] != "subspecies"){
+                        foreach($records as $r){
+                            $r->inat_taxa_id = $taxa[$corrections[$name]]["id"];
+                            $r->save();
+                            $count++;
+                        }
+                    }
+                }
+            }
+        }
+        return $count;
+    }
+
+    public function counts_fix_location()
+    {
+        $data = CountForm::where("latitude", null)->get();
+        $count = 0;
+        foreach($data as $d){
+            if($d->coordinates != null && strpos($d->coordinates, "°N")){
+                $coordinates = explode(", ", $d->coordinates);
+                echo $d->coordinates . "<br>";
+                $d->latitude = str_replace("°N", "", $coordinates[0]);
+                $d->longitude = str_replace("°E", "", $coordinates[1]);
+                $d->save();
+                $count++;
+            }
+        }
+        return $count;
+    }
     public function ibp_set_state()
     {
         $ibp = IBP22::where("district", null)
