@@ -25,55 +25,22 @@ class ResultController extends Controller
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
             $debug_flag = true;
         }
-        $inat = INat22::select("id", "observed_on as date","inat_created_at as date_created", "taxa_id", "location", "user_name as user_id", "state", "district")
-                ->limit(-1)
-                ->get()
-                ->toArray();
-        $ibp = IBP22::select("id", "fromDate as date", "createdOn as date_created", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
-                ->where("fromDate", "like", "%2022-09%")
-                ->whereNotNull("taxa_id")
-                ->limit(-1)
-                ->get()
-                ->toArray();
-        $counts_raw = CountForm::where("flag", false)
-                ->where("created_at", "like", "%2022-09%")
-                ->with("rows_cleaned")
-                ->get();
-        $counts = $this->get_counts_data_array($counts_raw);
-
-        
-                
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
-        foreach($inat as $k=>$i){
-            $coords = explode(",", $i["location"]);
-            $created_date = explode("T", $inat[$k]["date_created"]);
-
-            $inat[$k]["lat"] = $coords[0];
-            $inat[$k]["lon"] = $coords[1];
-            $inat[$k]["date_created"] = $created_date[0];
-            $inat[$k]["rank"] = $taxa[$inat[$k]["taxa_id"]]["rank"];
-            $inat[$k]["portal"] = "inat";
-            unset($inat[$k]["location"]);
-        }
-        foreach($ibp as $k => $i){
-            $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
-            $ibp[$k]["portal"] = "ibp";
-        }
-
         
-        // dd($inat[0], $counts, $counts_raw->first()->toArray());
-
-        $form_data = [];
         $last_update = "";
-        $all_portal_data = array_merge($counts, $inat, $ibp);
+        $all_portal_data = array_merge($this->get_counts_data_array(), $this->get_inat_data_array($taxa), $this->get_ibp_data_array($taxa));
+        // $all_portal_data = array_merge($this->get_counts_data_array());
         
         return view('result.index', compact("taxa", "all_portal_data", "debug_flag"));
-        /*
-        */
     }
 
-    public function get_counts_data_array($data)
+    public function get_counts_data_array()
     {
+        $data = CountForm::where("flag", false)
+            ->where("created_at", "like", "%2022-09%")
+            ->with("rows_cleaned")
+            ->get();
+
         $op = [];
         foreach($data as $d){
             $row = [
@@ -88,14 +55,50 @@ class ResultController extends Controller
             $row["state"] = $d->state;
             $row["district"] = $d->district;
             foreach($d->rows_cleaned as $sp){
-                $row["taxa_id"] = $sp->inat_taxa_id;
+                if($sp->flag == 0){
+                    $row["taxa_id"] = $sp->inat_taxa_id;
+                    $row["individuals"] = (int) $sp->individuals;
+                    $op[] = $row;
+                }
             }
-
-            $op[] = $row;
         }
         return $op;
     }
 
+    public function get_inat_data_array($taxa)
+    {
+        $inat = INat22::select("id", "observed_on as date","inat_created_at as date_created", "taxa_id", "location", "user_name as user_id", "state", "district")
+                ->limit(-1)
+                ->get()
+                ->toArray();
+        foreach($inat as $k=>$i){
+            $coords = explode(",", $i["location"]);
+            $created_date = explode("T", $inat[$k]["date_created"]);
+
+            $inat[$k]["lat"] = $coords[0];
+            $inat[$k]["lon"] = $coords[1];
+            $inat[$k]["date_created"] = $created_date[0];
+            $inat[$k]["rank"] = $taxa[$inat[$k]["taxa_id"]]["rank"];
+            $inat[$k]["portal"] = "inat";
+            unset($inat[$k]["location"]);
+        }
+        return $inat;
+    }
+
+    public function get_ibp_data_array($taxa)
+    {
+        $ibp = IBP22::select("id", "fromDate as date", "createdOn as date_created", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
+                ->where("fromDate", "like", "%2022-09%")
+                ->whereNotNull("taxa_id")
+                ->limit(-1)
+                ->get()
+                ->toArray();
+        foreach($ibp as $k => $i){
+            $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
+            $ibp[$k]["portal"] = "ibp";
+        }
+        return $ibp;        
+    }
 
     public function ibp_fix_1()
     {
@@ -637,11 +640,8 @@ class ResultController extends Controller
 
     public function fix()
     {   
-        $counts_add_taxa_id = $this->counts_fix_taxa();
-        $counts_fix_location = $this->counts_fix_location();
-        $counts_fix_state = $this->counts_fix_state();
-        $ibp_taxa_added = $this->ibp_fix_taxa();
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
+        dd($this->counts_set_district()->toArray());
         $this->inat_set_state();
         $this->ibp_set_state();
 
@@ -656,12 +656,13 @@ class ResultController extends Controller
                 "state" => $ibp->where("state", null)->toArray(),
                 "district" => $ibp->where("district", null)->toArray(),
                 "taxa" => $ibp->where("taxa_id", null)->toArray(),
-                "taxa_added" => $ibp_taxa_added,
+                "taxa_added" => $this->ibp_fix_taxa(),
             ],
             "counts" => [
-                "taxa_id_added" => $counts_add_taxa_id,
-                "coordinates_set" => $counts_fix_location,
-                "states_fixed" => $counts_fix_state,
+                "taxa_id_added" => $this->counts_fix_taxa(),
+                "coordinates_set" => $this->counts_fix_location(),
+                "district_set" => $this->counts_set_district(),
+                "states_fixed" => $this->counts_fix_state(),
             ]
         ];
         
@@ -744,10 +745,35 @@ class ResultController extends Controller
         return $count;
     }
 
+    public function counts_set_district()
+    {
+        // $this->polygons
+        $forms = CountForm::where("district", null)->where("latitude" , "<>", null)->get();
+        $unmatched_states = [];
+        foreach($forms as $f){
+            foreach($this->polygons as $p){
+                foreach($p->geometry->coordinates as $polygon){
+                    $in_polygon = $this->is_in_polygon2($f->longitude, $f->latitude,  $polygon);
+                    if($in_polygon){
+                        if($f->state == $p->properties->statename){
+                            $f->district = $p->properties->distname;
+                            $f->save();
+                            break;
+                        } else {
+                            $unmatched_states[] = [$f->toArray(), $p->properties->statename, $p->properties->distname];
+                        }
+                        // dd($in_polygon, $f, $p);
+                    }
+                }
+            }
+        }
+        dd($unmatched_states);
+        return $forms;
+    }
+
     public function counts_fix_state()
     {
         $data = CountForm::all();
-        $states = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         $state_names = [];
 
         $fixes = [
@@ -760,7 +786,7 @@ class ResultController extends Controller
         $fixed_count = 0;
 
         $unmatched_states = [];
-        foreach($states as $s){
+        foreach($this->polygons as $s){
             if(!in_array($s->properties->statename, $state_names)){
                 $state_names[] = $s->properties->statename;
             }
