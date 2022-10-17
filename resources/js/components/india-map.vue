@@ -65,7 +65,6 @@
 
 <template>
 	<div>
-		{{selected_area}}
         <div id="controls">
             <h3>{{mapModes[mapMode]}} - {{selected}}</h3>
             <ui-slider
