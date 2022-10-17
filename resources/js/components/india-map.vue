@@ -65,6 +65,7 @@
 
 <template>
 	<div>
+		{{selected_area}}
         <div id="controls">
             <h3>{{mapModes[mapMode]}} - {{selected}}</h3>
             <ui-slider
@@ -622,7 +623,8 @@ export default {
 					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
 					// 	})
 					// }
-			if((points.length > 0 && points.length < 500) || this.set_polygon ){
+			
+			if((points.length > 0 && points.length < 300) || this.set_polygon ){
 				// console.log("mapPoints", points)
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
