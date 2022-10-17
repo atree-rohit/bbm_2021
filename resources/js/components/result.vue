@@ -275,7 +275,7 @@
 						class="mx-2 btn"
 						:class="portalBtnClass(portal[0])"
 						@click="selectPortal(portal[0])"
-						v-text="`Butterfly Counts(${ portalObservationCounts(portal[0]) })`"
+						v-text="`${portal[1]} (${ portalObservationCounts(portal[0]) })`"
 					/>
 				</div>
             </ui-collapsible>
