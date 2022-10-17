@@ -565,7 +565,6 @@ import DateChart from './date-chart'
 						op.district[d.properties.district] = { observations: 0, users: new Set(), species: new Set(), portals: new Set() }
 					}
 				})
-				console.log(op.state)
 				
 				if(this.set_polygon_switch == true){
 					all_observations = all_observations.filter((r) => r.state == null)
@@ -589,7 +588,6 @@ import DateChart from './date-chart'
 						op.region[current_region].species.add(o.taxa_id)
 						op.region[current_region].portals.add(o.portal)
 					}
-					console.log(o.state)
 					if(o.state !== null){
 						op.state[o.state].observations++
 						op.state[o.state].users.add(o.user_id)
@@ -730,8 +728,10 @@ import DateChart from './date-chart'
 			getFilteredObservations (type = null){
 				let all_portals = Array.from(new Set(this.all_portal_data.map((o) => o.portal)))
 				let portals = (this.selected_portals.length == 0) ? all_portals : this.selected_portals
-				
-				let op = this.all_portal_data.filter((o) => portals.indexOf(o.portal) != -1)
+				let op = this.all_portal_data
+				if(type != "portal"){
+					op = op.filter((o) => portals.indexOf(o.portal) != -1)
+				}
 
 
 				if (type != "states" && this.selected_area.state != 'All') {
@@ -745,7 +745,7 @@ import DateChart from './date-chart'
 				if(type != "dates" && this.selected_dates.length > 0){
 					op = op.filter((r) => this.selected_dates.indexOf(parseInt(r.date.replace("2022-09-", ""), 10)) != -1)
 				}
-				
+
 				if(type != "taxa" && this.selected_taxa_levels.length > 0){
 					op = op.filter((r) => this.selected_taxa_levels.indexOf(r.rank) != -1)
 				}
@@ -788,10 +788,17 @@ import DateChart from './date-chart'
 			},
 			selectPortal (p) {
 				let pos = this.selected_portals.indexOf(p)
-				if(pos == -1){
+				if(this.selected_portals.length == 4){
+					this.selected_portals = [p]
+					
+				}else if(pos == -1){
 					this.selected_portals.push(p)
 				} else {
 					this.selected_portals.splice(pos, 1)
+				}
+
+				if(this.selected_portals.length == 0 ){
+					this.selected_portals = this.portal_names.map((p) => p[0])
 				}
 			},
 			selectState (s) {
@@ -975,7 +982,7 @@ import DateChart from './date-chart'
 				return op
 			},
 			portalObservationCounts(p){
-				return this.getFilteredObservations().filter((o) => o.portal == p).length
+				return this.getFilteredObservations("portal").filter((o) => o.portal == p).length
 			},
 			cardValues (card) {
 				let root = this.areaStats.all
