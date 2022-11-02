@@ -56,8 +56,7 @@
 		overflow-x: auto;
 	}
 
-	.doughnut-chart path:hover,
-	.map-points circle:hover{
+	.doughnut-chart path:hover{
 		cursor: pointer;
 		stroke: yellow;
 		fill: red;
@@ -196,7 +195,9 @@
 								   :popup="tooltip"
 								   :areaStats="areaStats"
 								   :set_polygon="set_polygon_switch"
+								   :set_points="set_points"
 								   @stateSelected='selectState'
+								   @pointSelected="setPoint"
 								   
 						/>
 					</div>
@@ -388,7 +389,7 @@
 				</div>
                 <div>
 					<span class="switch-label" :class="!set_polygon_switch?'switch-selected':''" @click="set_polygon_switch=false">Set Polygon - Off</span>
-					<label class="switch mx-3 my-auto"><input type="checkbox" v-model="set_polygon_switch"/>
+					<label class="switch mx-3 my-auto"><input type="checkbox" v-model="set_polygon_switch"  @keyup.space="setStateSubmit"/>
 						<div></div>
 					</label>
 					<span class="switch-label" :class="set_polygon_switch?'switch-selected':''" @click="set_polygon_switch=true">Set Polygon - On</span>
@@ -482,10 +483,19 @@ import DateChart from './date-chart'
 					6: true,
 				},
 				set_polygon_switch: false,
+				set_points: {
+					inat: [], 
+					ibp: [],
+				},
 			}
 		},
 		created() {
 			this.init()
+			window.addEventListener('keydown', (e) => {
+				if (e.key == 'Enter') {
+					this.setStateSubmit()
+				}
+			});
 		},
 		mounted() {
 		},
@@ -839,13 +849,15 @@ import DateChart from './date-chart'
 			},
 			updateDistricts(){
 				this.select_options.districts = districts.features.filter((d) => d.properties.state == this.set_location_data.state ).map((d) => d.properties.district).sort()
-				console.log("update districts", this.set_location_data)
+				// console.log("update districts", this.set_location_data)
 			},
 			setStateSubmit(){
-				console.log("axios post", this.set_location_data)
+				// console.log("axios post", this.set_location_data)
 				axios.post("/result/set_state", this.set_location_data)
 					.then((response) => {
 						console.log("added", response.data.added)
+						this.set_points.inat = [...new Set(this.set_points.inat.concat(this.set_location_data.ids.inat))]
+						this.set_points.ibp = [...new Set(this.set_points.ibp.concat(this.set_location_data.ids.ibp))]
 						this.set_location_data.ids = ""
 					})
 			},
@@ -1018,6 +1030,7 @@ import DateChart from './date-chart'
 			init () {
 				if(this.debug_flag){
 					this.set_polygon_switch = true
+					console.log(this.mapData.length)
 				}
 				this.tooltip = d3.select('body')
 							    .append('div')
