@@ -88,7 +88,7 @@ class ResultController extends Controller
     public function get_ibp_data_array($taxa)
     {
         $ibp = IBP22::select("id", "fromDate as date", "createdOn as date_created", "taxa_id", "locationLat as lat", "locationLon as lon",  "createdBy as user_id", "state", "district")
-                ->where("fromDate", "like", "%2022-09%")
+                // ->where("fromDate", "like", "%2022-09%")
                 ->whereNotNull("taxa_id")
                 ->limit(-1)
                 ->get()
@@ -333,8 +333,9 @@ class ResultController extends Controller
     }
     public function pull_ibp()
     {
-        $filename = $this->get_latest_ibp_csv_filename();
-        $file = public_path("data/2022/ibp/$filename");
+        // $filename = $this->get_latest_ibp_csv_filename();
+        // $file = public_path("data/2022/ibp/$filename");
+        $file = public_path("data/20_22/ibp_all_butterflies_in_sept_20221102.csv");
         $this->existing_observation_ids = IBP22::select("id")->get()->pluck("id")->toArray();
         $this->existing_taxa_ids = INatTaxa22::select("id")->get()->pluck("id")->toArray();
         $ibp_records = IBP22::all()->keyBy("id");
@@ -348,12 +349,12 @@ class ResultController extends Controller
             if($header_flag){
                 $headers = $row;
                 $header_flag = false;
-            } else if(count($row) !== count($headers)){
-                dd("mismatch", $row);
+            } else if(count($row) > count($headers)){
+                dd("mismatch", $row, $headers);
             } else {
                 $current_row = [];
                 foreach($headers as $k=>$h){
-                    $current_row[$h] = $row[$k];
+                    $current_row[$h] = $row[$k]??null;
                 }
                 $data[] = $current_row;
             }
@@ -366,8 +367,10 @@ class ResultController extends Controller
         foreach($data as $d){
             if(!in_array($d["catalogNumber"], $this->existing_observation_ids)) {
                 $new_observation = $this->add_ibp_observation($d);
-                $ibp_records->put($new_observation->id, $new_observation);
-                $counts["added"]++;
+                if($new_observation->id != -1){
+                    $ibp_records->put($new_observation->id, $new_observation);
+                    $counts["added"]++;
+                }
             } else if($this->update_ibp_observation($d)){
                 $counts["updated"]++;
             }
@@ -407,13 +410,27 @@ class ResultController extends Controller
         foreach($cols as $c){
             $ibp->{$c} = $record[$c];
         }
-        $ibp->createdOn = $this->format_ibp_date($record["createdOn"]);
-        $ibp->fromDate = $this->format_ibp_date($record["fromDate"]);
-        // $ibp->state = ucwords(strtolower($record["state"]));
-        $ibp->taxa_id = $this->get_taxa_id_ibp($record);
-        $ibp->save();
+        if(isset($record["createdOn"]) && isset($record["fromDate"])){
+            $ibp->createdOn = $this->format_ibp_date($record["createdOn"]);
+            $ibp->fromDate = $this->format_ibp_date($record["fromDate"]);
+            // $ibp->state = ucwords(strtolower($record["state"]));
+            $ibp->taxa_id = $this->get_taxa_id_ibp($record);
+            if($this->check_ibp_month($ibp->createdOn) && $this->check_ibp_month($ibp->fromDate)){
+                echo "yes - " . $ibp->createdOn . " - " . $ibp->fromDate . "<br>";
+                $ibp->save();
+            } else {
+                echo "no - " . $ibp->createdOn . " - " . $ibp->fromDate . "<br>";
+            }
+        } else {
+            $ibp->id = -1;
+        }
         return $ibp;
-        
+    }
+
+    public function check_ibp_month($date)
+    {
+        $arr = explode("-", $date);
+        return (int) $arr[1] == 9;
     }
 
     public function update_ibp_observation($record)
@@ -423,15 +440,17 @@ class ResultController extends Controller
         foreach($cols as $c){
             $ibp->{$c} = $record[$c];
         }
-        $ibp->createdOn = $this->format_ibp_date($record["createdOn"]);
-        $ibp->fromDate = $this->format_ibp_date($record["fromDate"]);
-        // $ibp->state = ucwords(strtolower($record["state"]));
-        $ibp->taxa_id = $this->get_taxa_id_ibp($record);
-        
-        if($ibp->isDirty()){
-            $ibp->save();
-            return true;
+        if(isset($record["createdOn"]) && isset($record["fromDate"])){
+            $ibp->createdOn = $this->format_ibp_date($record["createdOn"]);
+            $ibp->fromDate = $this->format_ibp_date($record["fromDate"]);
+            // $ibp->state = ucwords(strtolower($record["state"]));
+            $ibp->taxa_id = $this->get_taxa_id_ibp($record);
+            if($ibp->isDirty()){
+                $ibp->save();
+                return true;
+            }
         }
+        
         return false;
     }
     public function format_ibp_date($date)
@@ -641,7 +660,7 @@ class ResultController extends Controller
     public function fix()
     {   
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
-        dd($this->counts_set_district()->toArray());
+        // dd($this->counts_set_district()->toArray());
         $this->inat_set_state();
         $this->ibp_set_state();
 
@@ -661,7 +680,7 @@ class ResultController extends Controller
             "counts" => [
                 "taxa_id_added" => $this->counts_fix_taxa(),
                 "coordinates_set" => $this->counts_fix_location(),
-                "district_set" => $this->counts_set_district(),
+                // "district_set" => $this->counts_set_district(),
                 "states_fixed" => $this->counts_fix_state(),
             ]
         ];
@@ -986,14 +1005,32 @@ class ResultController extends Controller
     public function ibp_fix_taxa()
     {
         $corrections = [
-            "Tarucus balkanicus" => "Tarucus balkanica",
             "Acraea terpsichore" => "Acraea terpsicore",
+            "Acraea violae" => "Acraea terpsicore",
             "Appias olferna" => "Appias libythea",
-            "Chilasa clytia" => "Papilio clytia",
-            "Limenitis procris" => "Moduza procris",
-            "Tarucus extricatus" => "Tarucus nara",
+            "Arhopala pseudocentaurus" => "Arhopala centaurus",
+            "Biclycus anynona" => "Bicyclus anynana",
             "Burara harisa" => "Bibasis harisa",
+            "Celastrina huegeli" => "Celastrina huegelii",
+            "Charaxes bharata" => "Polyura bharata",
+            "Charaxes eudamippus" => "Polyura eudamippus",
+            "Chilasa clytia" => "Papilio clytia",
+            "Chilades pandava" => "Luthrodes pandava",
+            "Childrena childreni" => "Argynnis childreni",
+            "Dacalana pencilligera" => "Dacalana penicilligera",
+            "Eurema lisa" => "Pyrisitia lisa",
+            "Heteropsis adolphei" => "Telinga adolphei",
+            "Lethe insana" => "Lethe isana",
+            "Limenitis procris" => "Moduza procris",
+            "Mycalesis malsara" => "Telinga malsara",
+            "Spindasis elima" => "Cigaritis elima",
             "Spindasis lohita" => "Cigaritis lohita",
+            "Spindasis rukmini" => "Cigaritis rukmini",
+            "Spindasis vulcanus" => "Cigaritis vulcanus",
+            "Tarucus balkanicus" => "Tarucus balkanica",
+            "Tarucus extricatus" => "Tarucus nara",
+            "Catapoecilma major" => "Catapaecilma major",
+            "Everes diporides" => "Cupido argiades",            
         ];
         
         $ibp = IBP22::where("taxa_id", null)->get()->groupBy("scientificName");
@@ -1038,7 +1075,7 @@ class ResultController extends Controller
         $ids = $request->ids;
         $updated = 0;
         if($ids["ibp"]){
-            foreach($ids["ibp"] as $i){
+            foreach(explode(",", $ids["ibp"]) as $i){
                 $observation = IBP22::find($i);
                 $observation->state = $request->state;
                 $observation->district = $request->district;
