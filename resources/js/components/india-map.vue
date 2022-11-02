@@ -44,8 +44,13 @@
 
     .map-points circle{
 		stroke-width: .5px;
-		stroke: red;
-		fill: pink;
+		stroke: rgba(0,0,0,.25);
+		fill: transparent;
+	}
+
+	.map-points circle:hover{
+		cursor:pointer;
+		stroke: rgba(0,255,0,.5);
 	}
 
 
@@ -65,6 +70,7 @@
 
 <template>
 	<div>
+		{{selected_area}}
         <div id="controls">
             <h3>{{mapModes[mapMode]}} - {{selected}}</h3>
             <ui-slider
@@ -98,7 +104,7 @@ import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
 export default {
 	name:"IndiaMap",
-    props: ["map_data", "selected_area", "popup", "areaStats", "set_polygon"],
+    props: ["map_data", "selected_area", "popup", "areaStats", "set_polygon", "set_points"],
 	data() {
 		return{
             mapMode: 0,
@@ -583,26 +589,6 @@ export default {
 			}
 			this.$emit('stateSelected', this.selected)
 			
-
-			// let state = d.target.__data__.properties.statename
-			/*
-				if(state == this.selected && state != 'All')
-				if (!d3.select("#map-container .poly_text").empty()) {
-					d3.selectAll("#map-container .poly_text").remove()
-				}
-				{
-					if(this.selected == state){
-						
-					} else {
-					}
-					if(this.selected == state){
-						this.$emit('stateSelected', 'All')
-					} else {
-						this.$emit('stateSelected', state)
-					}
-				}
-			*/
-
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
 				d3.zoomIdentity
@@ -610,6 +596,8 @@ export default {
 				.scale(Math.min(8, 0.9 / Math.max((x1 - x0) / this.width, (y1 - y0) / this.height)))
 				.translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
 			)
+
+			this.mapPoints()
 			
 		},
 		mapPoints(){
@@ -622,9 +610,13 @@ export default {
 					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
 					// 	})
 					// }
-			
-			if((points.length > 0 && points.length < 300) || this.set_polygon ){
-				// console.log("mapPoints", points)
+			if(this.selected_area.state != "All"){
+				points = points.filter((p) => p[3].state == this.selected_area.state)
+			}
+			if((points.length > 0 && points.length < 3000) || this.set_polygon ){
+				if (!d3.select("#map-container .map-points").empty()) {
+					d3.select("#map-container .map-points").remove()
+				}
 				let map_points = this.svg.append('g')
 				.classed('map-points', true)
 				.selectAll("circle")
@@ -632,10 +624,7 @@ export default {
 				.append("circle")
 				.attr("cx", (d) => this.projection(d)[0])
 				.attr("cy", (d) => this.projection(d)[1])
-				.attr("r", "2px")
-				.attr("stroke", "yellow")
-				.attr("stroke-width", "0.25px")
-				.attr("fill", "green")
+				.attr("r", "20px")
 				.on('mouseover', (d, i) => {
 						this.tooltip.html(
 							`<table>
