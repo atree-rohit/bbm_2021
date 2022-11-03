@@ -409,9 +409,11 @@ export default {
 				this.mapLayers[this.mapMode].features.forEach((polygon) => {
 					this.drawPolygon(polygon)
 				})
-				this.mapLayers[this.mapMode].features.forEach((polygon) => {
-					this.drawPolygonLabel(base_text, polygon)
-				})
+				if(this.mapMode < 2){
+					this.mapLayers[this.mapMode].features.forEach((polygon) => {
+						this.drawPolygonLabel(base_text, polygon)
+					})					
+				}
 			}
 
 			this.svg.append("g")
@@ -624,7 +626,7 @@ export default {
 				.append("circle")
 				.attr("cx", (d) => this.projection(d)[0])
 				.attr("cy", (d) => this.projection(d)[1])
-				.attr("r", "20px")
+				.attr("r", "1.5px")
 				.on('mouseover', (d, i) => {
 						this.tooltip.html(
 							`<table>
