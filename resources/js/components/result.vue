@@ -177,6 +177,7 @@
 <template>
 	<div class="container-fluid" id="report-page">
 		<div id="locations-tab">
+			{{selected}}
 			<ui-tabs
 				:fullwidth="true"
 				:raised="true"
@@ -265,8 +266,8 @@
 						{{accordianTitle('portals')}}
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_portals.length > 0 && selected_portals.length <3"
-							@click.stop='selected_portals = ["counts", "inat", "ibp", "ifb"]'
+							v-if="selected.portals.length > 0 && selected.portals.length <3"
+							@click.stop='selected.portals = ["counts", "inat", "ibp", "ifb"]'
 						>Reset</button>
 				</div>
 				<div class="d-flex justify-content-center">
@@ -290,13 +291,13 @@
 						{{accordianTitle('users')}}
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_users.length > 0"
-							@click.stop='selected_users = []'
+							v-if="selected.users.length > 0"
+							@click.stop='selected.users = []'
 						>Reset</button>
 				</div>
 				<data-table :data="userTableData"
 							:headers='[["Sl No","sl_no"],["User ID","id"],["Observations","observations"],["State","state"], ["Portals", "portals"]]'
-							:selected='selected_users'
+							:selected='selected.users'
 							:selected_col="'id'"
 							:sort_col="'sl_no'"
 							:sort_dir="'asc'"
@@ -313,8 +314,8 @@
 						{{accordianTitle('date')}}
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_dates.length > 0"
-							@click.stop='selected_dates = []'
+							v-if="selected.dates.length > 0"
+							@click.stop='selected.dates = []'
 						>Reset</button>
 				</div>
                 <div id="date-filter">
@@ -325,7 +326,7 @@
 						</label>
 						<span class="switch-label" :class="date_switch?'switch-selected':''" @click="date_switch=true">Created on</span>
 					</div>
-					<date-chart :dateTableData="dateTableData" :selected_dates="selected_dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
+					<date-chart :dateTableData="dateTableData" :selected_dates="selected.dates" :popup="tooltip" @dateRangeSelected='selectDateRange'/>
 				</div>
             </ui-collapsible>
 
@@ -338,8 +339,8 @@
 						{{accordianTitle('id_level')}}
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_taxa_levels.length > 0 && selected_taxa_levels.length < 10"
-							@click.stop='selected_taxa_levels = []'
+							v-if="selected.taxa_levels.length > 0 && selected.taxa_levels.length < Object.keys(taxaTableData).length"
+							@click.stop='selected.taxa_levels = []'
 						>Reset</button>
 				</div>
                 <div id="taxon-level-filter">
@@ -371,11 +372,11 @@
 						{{accordianTitle('taxon')}}
 					</div>
 					<button class="badge rounded-pill ms-2 btn-danger"
-							v-if="selected_taxa.length > 1"
-							@click.stop='selected_taxa = []'
+							v-if="selected.taxa.length > 1"
+							@click.stop='selected.taxa = []'
 						>Reset</button>
 				</div>
-                <species-sunburst :tree_data="treeData" :selected="selected_taxa" @select-taxon="selectTaxon"/>
+                <species-sunburst :tree_data="treeData" :selected="selected.taxa" @select-taxon="selectTaxon"/>
             </ui-collapsible>
 			
 			<ui-collapsible :class="accordianClass('debug')" :disableRipple="true" :open="accordions[6]" @open="onAccordionOpen(6)" @close="onAccordionClose(6)" v-if="debug_flag">
@@ -427,9 +428,13 @@ import DataTable from './data-table'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
+
+import { mapState } from 'vuex'
+import store from '../store/index'
+
 	export default {
 		name:"result",
-		props: ["taxa", "all_portal_data", "debug_flag"],
+		props: ["debug_flag"],
 		components: { DataTable,
 						IndiaMap,
 						SpeciesSunburst,
@@ -437,23 +442,17 @@ import DateChart from './date-chart'
 					},
 		data() {
 			return{
-				selected_portals: ["counts", "inat", "ibp", "ifb"],
 				portal_names: [
 					["counts", "Butterfly Counts"],
 					["inat", "iNaturalist"],
 					["ibp", "India Biodiversity Portal"],
 					["ifb", "iFoundButterflies"]
 				],
-				selected_users: [],
-				selected_dates: [],
 				selected_area: {
 					region: "All",
 					state: "All",
 					district: "All",
 				},
-				selected_taxa_levels: [],
-				selected_taxa: [],
-
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				
 				set_location_data: {
@@ -490,18 +489,29 @@ import DateChart from './date-chart'
 			}
 		},
 		created() {
+			store.dispatch('fetchTaxa')
+			store.dispatch('fetchAllPortalData')
 			this.init()
-			window.addEventListener('keydown', (e) => {
-				if (e.key == 'Enter') {
-					this.setStateSubmit()
-				}
-			});
+			
+			if(this.debug_flag) {
+				window.addEventListener('keydown', (e) => {
+					if (e.key == 'Enter') {
+						this.setStateSubmit()
+					}
+				});
+			}
+			
 		},
 		mounted() {
 		},
 		watch: {
 		},
 		computed:{
+			...mapState({
+				taxa: state=> state.taxa,
+				all_portal_data: state=> state.all_portal_data,
+				selected: state=> state.selected,
+			}),
 			mapData (){
 				let op = this.getFilteredObservations("states")
 
@@ -694,28 +704,30 @@ import DateChart from './date-chart'
 				let op = []
 				let filtered_observations = this.getFilteredObservations()
 
-				filtered_observations.forEach(o => {
-					if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
-						let taxa = this.taxa[o.taxa_id]
-						let hierarchy = {}
-						hierarchy[taxa.rank] = taxa.name
-						hierarchy.key = taxa.name
-						this.taxa[taxa.id].ancestry.split("/").forEach(id => {
-							if(this.levels.indexOf(this.taxa[id].rank) != -1){
-								hierarchy[this.taxa[id].rank] = this.taxa[id].name
+				if(Object.keys(this.taxa).length > 0) {
+					filtered_observations.forEach(o => {
+						if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
+							let taxa = this.taxa[o.taxa_id]
+							let hierarchy = {}
+							hierarchy[taxa.rank] = taxa.name
+							hierarchy.key = taxa.name
+							this.taxa[taxa.id].ancestry.split("/").forEach(id => {
+								if(this.levels.indexOf(this.taxa[id].rank) != -1){
+									hierarchy[this.taxa[id].rank] = this.taxa[id].name
+								}
+							})
+							this.levels.forEach((l, lid) => {
+								if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
+									hierarchy[l] = "Incertae sedis"
+								}
+							})
+							if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
+								hierarchy.value = 1
+								op.push(hierarchy)
 							}
-						})
-						this.levels.forEach((l, lid) => {
-							if( (hierarchy[l] == undefined) && (lid < this.levels.indexOf(taxa.rank)) ){
-								hierarchy[l] = "Incertae sedis"
-							}
-						})
-						if(op.map(e => e.species).indexOf(hierarchy.species) == -1){
-							hierarchy.value = 1
-							op.push(hierarchy)
 						}
-					}
-				})
+					})
+				}
 
 				return op
 			},
@@ -737,7 +749,7 @@ import DateChart from './date-chart'
 		methods: {
 			getFilteredObservations (type = null){
 				let all_portals = Array.from(new Set(this.all_portal_data.map((o) => o.portal)))
-				let portals = (this.selected_portals.length == 0) ? all_portals : this.selected_portals
+				let portals = (this.selected.portals.length == 0) ? all_portals : this.selected.portals
 				let op = this.all_portal_data
 				if(type != "portal"){
 					op = op.filter((o) => portals.indexOf(o.portal) != -1)
@@ -748,16 +760,16 @@ import DateChart from './date-chart'
 					op = op.filter((r) => r.state == this.selected_area.state)
 				}
 
-				if(type != "users" && this.selected_users.length > 0){
-					op = op.filter((r) => this.selected_users.indexOf(r.user_id) != -1)
+				if(type != "users" && this.selected.users.length > 0){
+					op = op.filter((r) => this.selected.users.indexOf(r.user_id) != -1)
 				}
 
-				if(type != "dates" && this.selected_dates.length > 0){
-					op = op.filter((r) => this.selected_dates.indexOf(parseInt(r.date.replace("2022-09-", ""), 10)) != -1)
+				if(type != "dates" && this.selected.dates.length > 0){
+					op = op.filter((r) => this.selected.dates.indexOf(parseInt(r.date.replace("2022-09-", ""), 10)) != -1)
 				}
 
-				if(type != "taxa" && this.selected_taxa_levels.length > 0){
-					op = op.filter((r) => this.selected_taxa_levels.indexOf(r.rank) != -1)
+				if(type != "taxa" && this.selected.taxa_levels.length > 0){
+					op = op.filter((r) => this.selected.taxa_levels.indexOf(r.rank) != -1)
 				}
 
 				if(type != "tree" ){
@@ -768,7 +780,7 @@ import DateChart from './date-chart'
 			},
 			filterTaxa (ar){
 				let op = ar
-				if(this.selected_taxa.length > 1){
+				if(this.selected.taxa.length > 1){
 					let taxa_match = []
 
 					op.forEach(o => {
@@ -782,7 +794,7 @@ import DateChart from './date-chart'
 									hierarchy[this.taxa[id].rank] = this.taxa[id].name
 								}
 							})
-							this.selected_taxa.forEach((t,id)  => {
+							this.selected.taxa.forEach((t,id)  => {
 								if(t != hierarchy[this.levels[id]] && t != 'Incertae sedis')
 									match_flag = false
 							})
@@ -797,18 +809,29 @@ import DateChart from './date-chart'
 				return op
 			},
 			selectPortal (p) {
-				let pos = this.selected_portals.indexOf(p)
-				if(this.selected_portals.length == 4){
-					this.selected_portals = [p]
-					
+				let pos = this.selected.portals.indexOf(p)
+				if(this.selected.portals.length == 4){
+					store.dispatch('setSelected', {
+						selected: [p],
+						type: "portals"
+					})
 				}else if(pos == -1){
-					this.selected_portals.push(p)
+					store.dispatch('setSelected', {
+						selected: p,
+						type: "portals"
+					})
 				} else {
-					this.selected_portals.splice(pos, 1)
+					store.dispatch('removeSelected', {
+						selected: p,
+						type: "portals"
+					})
 				}
 
-				if(this.selected_portals.length == 0 ){
-					this.selected_portals = this.portal_names.map((p) => p[0])
+				if(this.selected.portals.length == 0 ){
+					store.dispatch('setSelected', {
+						selected: this.portal_names.map((p) => p[0]),
+						type: "portals"
+					})
 				}
 			},
 			selectState (s) {
@@ -867,33 +890,52 @@ import DateChart from './date-chart'
 			},
 			seletUser (u){
 				let selected = this.userTableData[u]
-				let index = this.selected_users.indexOf(selected.id)
-				if (index !== -1) {
-					this.selected_users.splice(index, 1);
+				let index = this.selected.users.indexOf(selected.id)
+				console.log("selected", u, selected, index, this.selected.users)
+				if (index == -1) {
+					store.dispatch('setSelected', {
+						selected: selected.id,
+						type: "users"
+					})
 				} else {
-					this.selected_users.push(selected.id)
+					store.dispatch('removeSelected', {
+						selected: selected.id,
+						type: "users"
+					})
 				}
 			},
 			selectDateRange (d){
-				this.selected_dates = d
+				store.dispatch('setSelected', {
+					selected: d,
+					type: "dates"
+				})
 			},
 			selectTaxaLevel (tname) {
-				let op = this.selected_taxa_levels.indexOf(tname)
+				let op = this.selected.taxa_levels.indexOf(tname)
 				if(op == -1){
-					this.selected_taxa_levels.push(tname)
+					store.dispatch('setSelected', {
+						selected: tname,
+						type: "taxa_levels"
+					})
 				} else {
-					this.selected_taxa_levels.splice(op, 1)
+					store.dispatch('removeSelected', {
+						selected: tname,
+						type: "taxa_levels"
+					})
 				}
 			},
 			selectTaxon (t) {
-				this.selected_taxa = t
+				store.dispatch('setSelected', {
+					selected: t,
+					type: "taxa"
+				})
 			},
 			tableSelectTaxa (t) {
 				console.log("select Taxa", this.speciesTableData[t])
 			},
 			portalBtnClass (p) {
 				let op = "btn-outline-primary"
-				if(this.selected_portals.indexOf(p) != -1)
+				if(this.selected.portals.indexOf(p) != -1)
 					op = "btn-success"
 				return op
 			},
@@ -901,12 +943,12 @@ import DateChart from './date-chart'
 				let op = "btn-outline-danger"
 				switch(t){
 					case 'all':
-						if(this.selected_taxa_levels.length < 10){
+						if(this.selected.taxa_levels.length < Object.keys(this.taxaTableData).length){
 							op = "btn-primary"
 						}
 						break;
 					case 'none':
-						if(this.selected_taxa_levels.length > 0){
+						if(this.selected.taxa_levels.length > 0){
 							op = "btn-primary"
 						}
 						break;
@@ -916,16 +958,16 @@ import DateChart from './date-chart'
 			idLevelBtnClick (t) {
 				switch(t){
 					case 'all':
-							this.selected_taxa_levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
+							this.selected.taxa_levels = ["superfamily", "family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "species", "subspecies", "form"]
 						break;
 					case 'none':
-							this.selected_taxa_levels = []
+							this.selected.taxa_levels = []
 						break;
 				}
 			},
 			taxaLevelBtnClass (tname, no) {
 				let op = "btn-outline-secondary"
-				if (this.selected_taxa_levels.indexOf(tname) != -1) {
+				if (this.selected.taxa_levels.indexOf(tname) != -1) {
 					if( no == 0){
 						op = "btn-danger"
 					} else {
@@ -950,40 +992,40 @@ import DateChart from './date-chart'
 				switch(f){
 					case 'portals':
 						op = "Portals : "
-						if (this.selected_portals.length == 4){
+						if (this.selected.portals.length == 4){
 							op += "All selected"
 						} else {
-							op += `${this.selected_portals.length} selected`
+							op += `${this.selected.portals.length} selected`
 						}
 						break
 					case'users':
 						op = "Users : "
-						if(this.selected_users.length > 0) {
-							op += `${this.selected_users.length} selected`
+						if(this.selected.users.length > 0) {
+							op += `${this.selected.users.length} selected`
 						} else {
 							op += "All selected"
 						}
 						break
 					case 'date':
 						op = "Date : "
-						if(this.selected_dates.length > 0 && this.selected_dates.length < 30) {
-							op += `${Math.min(...this.selected_dates)} - ${Math.max(...this.selected_dates)} Sept, 2021`
+						if(this.selected.dates.length > 0 && this.selected.dates.length < 30) {
+							op += `${Math.min(...this.selected.dates)} - ${Math.max(...this.selected.dates)} September`
 						} else {
 							op += "All selected"
 						}
 						break
 					case 'id_level':
 						op = "ID Level : "
-						if(this.selected_taxa_levels.length > 0 && this.selected_taxa_levels.length < 10) {
-							op += `${this.selected_taxa_levels.length} selected`
+						if(this.selected.taxa_levels.length > 0 && this.selected.taxa_levels.length < Object.keys(this.taxaTableData).length) {
+							op += `${this.selected.taxa_levels.length} selected`
 						} else {
 							op += "All selected"
 						}
 						break
 					case 'taxon':
 						op = "Taxon: "
-						if(this.selected_taxa.length > 1){
-							op += this.selected_taxa.join(" > ")
+						if(this.selected.taxa.length > 1){
+							op += this.selected.taxa.join(" > ")
 						} else {
 							op += "All selected"
 						}
@@ -1031,7 +1073,15 @@ import DateChart from './date-chart'
 				if(this.debug_flag){
 					this.set_polygon_switch = true
 					console.log(this.mapData.length)
+					store.dispatch('setSelected', {
+						selected: [p],
+						type: "portals"
+					})
 				}
+				store.dispatch('setSelected', {
+					selected: this.portal_names.map((p) => p[0]),
+					type: "portals"
+				})
 				this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
