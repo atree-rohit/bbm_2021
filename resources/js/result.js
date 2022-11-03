@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import moment from 'moment'
 import * as d3 from "d3"
+import store from './store/index'
 import KeenUI from 'keen-ui';
 import 'keen-ui/dist/keen-ui.css';
 
@@ -13,6 +14,7 @@ Vue.prototype.moment = moment
 
 const app = new Vue({
     el: '#app',
+    store,
     components: {Result},
     data() {
         return{
