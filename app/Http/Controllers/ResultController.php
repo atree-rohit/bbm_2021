@@ -20,6 +20,26 @@ class ResultController extends Controller
     private $existing_taxa_ids;
     private $polygons;
 
+    public function get_data()
+    {
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
+        $all_data = [
+            "counts" => $this->get_counts_data_array(), 
+            "inat" => $this->get_inat_data_array($taxa), 
+            "ibp" => $this->get_ibp_data_array($taxa)
+        ];
+        $all_portal_data = array_merge($this->get_counts_data_array(), $this->get_inat_data_array($taxa), $this->get_ibp_data_array($taxa));
+        return response($all_portal_data, 200)
+            ->header('Content-Type', 'application/json');;
+    }
+
+    public function get_taxa()
+    {
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
+        return response($taxa, 200)
+            ->header('Content-Type', 'application/json');;
+    }
+
     public function index(){
         $debug_flag = false;
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
