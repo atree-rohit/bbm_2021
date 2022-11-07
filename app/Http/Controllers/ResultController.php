@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\iNat;
 use App\Models\BOI;
 use App\Models\IBP;
-use App\Models\iNatTaxa;
+use App\Models\iNat;
 use App\Models\IBP22;
 use App\Models\INat22;
-use App\Models\INatTaxa22;
-use App\Models\CountForm;
 use App\Models\FormRow;
+use App\Models\iNatTaxa;
+use App\Models\CountForm;
+use App\Models\INatTaxa22;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 
 class ResultController extends Controller
@@ -20,6 +21,7 @@ class ResultController extends Controller
     private $existing_taxa_ids;
     private $polygons;
 
+    //API Functions
     public function get_data()
     {
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
@@ -40,6 +42,8 @@ class ResultController extends Controller
             ->header('Content-Type', 'application/json');;
     }
 
+
+    //Controller functions
     public function index(){
         $debug_flag = false;
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
@@ -57,7 +61,7 @@ class ResultController extends Controller
     public function get_counts_data_array()
     {
         $data = CountForm::where("flag", false)
-            ->where("created_at", "like", "%2022-09%")
+            // ->where("created_at", "like", "%2022-09%")
             ->with("rows_cleaned")
             ->get();
 
@@ -346,11 +350,90 @@ class ResultController extends Controller
     {
         $this->existing_taxa_ids = INatTaxa22::all()->pluck("id")->toArray();
         $result = [];
-        $result["inat"] = $this->pull_inat();
-        $result["ibp"] = $this->pull_ibp();
+        // dd($this->counts_export_json());
+        
+        // $result["counts"] = $this->pull_counts();
+        // $result["inat"] = $this->pull_inat();
+        // $result["ibp"] = $this->pull_ibp();
         $result["taxa"] = $this->get_missing_taxa();
         dd($result);
     }
+
+    public function counts_export_json()
+    {
+        $forms = DB::connection('mysql2')->select("SELECT * FROM `count_forms`");
+        $rows = DB::connection('mysql2')->select("SELECT * FROM `form_rows`");
+        $op = [];
+        foreach($forms as $f){
+            $row = $f;
+            if($row->duplicate == false){
+                $coords = explode(",", $row->coordinates);
+                $row->latitude = trim($coords[0]);
+                $row->longitude = trim($coords[1]);
+                $row->original_filename = $row->filename;
+                unset($row->filename);
+                $row->rows = $this->get_form_rows($rows, $f->id);
+                $op[] = $row;
+            }
+        }
+        file_put_contents(public_path("data/20_22/counts2020_20221107.json"), json_encode($op));
+        return count($op);
+    }
+
+    public function pull_counts()
+    {
+        $data = json_decode(file_get_contents(public_path("data/20_22/counts2020_20221107.json")));
+        $count = [
+            "forms" => 0,
+            "rows" => 0,
+        ];
+        $cols = ['name', 'affiliation', 'phone', 'email', 'team_members', 'photo_link', 'location', 'state', 'district', 'coordinates', 'latitude', 'longitude', 'date', 'date_cleaned', 'start_time', 'end_time', 'altitude', 'distance', 'weather', 'comments', 'file', 'original_filename', 'duplicate', 'flag', 'validated', 'date_created_cleaned', 'created_at', 'updated_at'];
+        $row_cols = ['sl_no', 'common_name', 'scientific_name', 'no_of_individuals_cleaned', 'remarks', 'id_quality', 'flag', 'created_at', 'updated_at'];
+
+        foreach($data as $form){
+            if($form->duplicate == 0){
+                $count_form = new CountForm();
+                foreach($cols as $col){
+                    $count_form->$col = $form->$col ?? null;
+                }
+                if($count_form->flag == null){
+                    $count_form->flag = false;
+                }
+                $count_form->validated = false;
+                $count_form->save();
+                $count["forms"]++;
+                foreach($form->rows as $row){
+                    if($row->id_quality != "flag") {
+                        $new_row = new FormRow();
+                        $new_row->count_form_id = $count_form->id;
+                        $new_row->individuals = $count_form->no_of_individuals;
+                        foreach($row_cols as $col){
+                            $new_row->$col = $row->$col ?? null;
+                        }
+                        if($count_form->flag == null){
+                            $count_form->flag = false;
+                        }
+                        // dd($count_form, $new_row);
+                        $new_row->save();
+                        $count["rows"]++;
+                    }
+                }
+            }
+        }
+        return $count;
+    }
+
+    public function get_form_rows($rows, $val)
+    {
+        $op = [];
+        foreach($rows as $r){
+            if($r->count_form_id == $val){
+                $op[] = $r;
+            }
+        }
+        return $op;
+    }
+
     public function pull_ibp()
     {
         // $filename = $this->get_latest_ibp_csv_filename();
@@ -473,6 +556,7 @@ class ResultController extends Controller
         
         return false;
     }
+
     public function format_ibp_date($date)
     {
         $op = implode("-", array_reverse(explode("/", $date)));
@@ -681,6 +765,7 @@ class ResultController extends Controller
     {   
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         // dd($this->counts_set_district()->toArray());
+        // dd($this->counts_set_district());
         $this->inat_set_state();
         $this->ibp_set_state();
 
@@ -700,7 +785,7 @@ class ResultController extends Controller
             "counts" => [
                 "taxa_id_added" => $this->counts_fix_taxa(),
                 "coordinates_set" => $this->counts_fix_location(),
-                // "district_set" => $this->counts_set_district(),
+                "district_set" => $this->counts_set_district(),
                 "states_fixed" => $this->counts_fix_state(),
             ]
         ];
@@ -716,10 +801,18 @@ class ResultController extends Controller
         $data = FormRow::where("inat_taxa_id", null)->get()->groupBy("scientific_name");
         $count = 0;
         $corrections = [
+            "Apatura ambica" => "Mimathyma ambica",
+            "Appias olferna" => "Appias libythea",
+            "Arhopala pseudocentaurus" => "Arhopala centaurus",
+            "Burara anadi" => "Bibasis anadi",
             "Charaxes bharata" => "Polyura bharata",
             "Charaxes pandava" => "Polyura pandava",
+            "Charaxes agrarius" => "Polyura agraria",
             "Chilades pandava" => "Luthrodes pandava",
+            "Colotis vestalis" => "Colotis phisadia",
             "Spindasis vulcanus" => "Cigaritis vulcanus",
+            "Spindasis" => "Cigaritis",
+            "Tarucus extricatus" => "Tarucus nara"
         ];
         foreach($data as $sci=>$records){
             if(isset($taxa[$sci])){
@@ -788,25 +881,27 @@ class ResultController extends Controller
     {
         // $this->polygons
         $forms = CountForm::where("district", null)->where("latitude" , "<>", null)->get();
+        // dd($forms->toArray());
         $unmatched_states = [];
         foreach($forms as $f){
             foreach($this->polygons as $p){
                 foreach($p->geometry->coordinates as $polygon){
-                    $in_polygon = $this->is_in_polygon2($f->longitude, $f->latitude,  $polygon);
+                    $in_polygon = $this->is_in_polygon2($f->longitude, $f->latitude, $polygon);
                     if($in_polygon){
                         if($f->state == $p->properties->statename){
                             $f->district = $p->properties->distname;
+                            // dd("dist", $f);
                             $f->save();
                             break;
                         } else {
-                            $unmatched_states[] = [$f->toArray(), $p->properties->statename, $p->properties->distname];
+                            $unmatched_states[] = [$f->toArray(), $f->state, $p->properties->statename, $p->properties->distname];
                         }
-                        // dd($in_polygon, $f, $p);
                     }
+                    // dd($in_polygon, $f->toArray(), $p);
                 }
             }
         }
-        dd($unmatched_states);
+        print_r($unmatched_states);
         return $forms;
     }
 
