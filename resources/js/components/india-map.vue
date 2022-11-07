@@ -70,9 +70,9 @@
 
 <template>
 	<div>
-		{{selected_area}}
+		{{selected.area}}
         <div id="controls">
-            <h3>{{mapModes[mapMode]}} - {{selected}}</h3>
+            <h3>{{mapModes[mapMode]}} - {{selected_area}}</h3>
             <ui-slider
                 v-model="mapMode"
                 color="primary-light2"
@@ -102,9 +102,11 @@ import * as h3 from "h3-js"
 import regions from '../geojson/regions.json'
 import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
+import { mapState } from 'vuex'
+import store from '../store/index'
 export default {
 	name:"IndiaMap",
-    props: ["map_data", "selected_area", "popup", "areaStats", "set_polygon", "set_points"],
+    props: ["map_data", "popup", "areaStats", "set_polygon", "set_points"],
 	data() {
 		return{
             mapMode: 0,
@@ -118,7 +120,7 @@ export default {
 			colors: {},
 			legend: {},
 			state_data: {},
-			selected:"All",
+			selected_area:"All",
 			max: 0,
 			state_max: 0,
 			height: 600 ,
@@ -130,6 +132,11 @@ export default {
 				"south":["Karnataka","Telangana","Kerala","Andaman and Nicobar","Lakshadweep","Tamil Nadu","Andhra Pradesh","Puducherry"],
 				"west":["Rajasthan","Madhya Pradesh","Gujarat","Dadra and Nagar Haveli", "Daman and Diu","Chhattisgarh","Goa","Maharashtra"]
 			},
+			area_names: {
+				region: [],
+				state: [],
+				district: []
+			},
 			observation_counts: {},
 			hexagons: {},
 			locations: [],
@@ -137,8 +144,12 @@ export default {
 	},
 	mounted(){
 		this.init_tooltip()
+		this.init_area_names()
 	},
 	computed:{
+		...mapState({
+			selected: state=> state.selected.area,
+		}),
 		zoom() {
 			return d3.zoom()
 				.scaleExtent([.5, 250])
@@ -260,7 +271,7 @@ export default {
 			this.init_legend()
 			this.renderMap()
 		},
-        init_tooltip(){
+		init_tooltip(){
             this.tooltip = d3.select('body')
 							    .append('div')
 							    .attr('class', 'd3-tooltip')
@@ -275,6 +286,12 @@ export default {
 							    .text('a simple tooltip')
 
         },
+		init_area_names(){
+			["region", "state", "district"].forEach((mode) => {
+				this.area_names[mode] = [...new Set(districts.features.map((l) => l.properties[mode]))]
+				
+			})
+		},
 		init_observation_counts() {
 			// console.log("init_observation_counts: ", this.areaStats)
 			let scales = ["region", "state", "district"]
@@ -577,19 +594,20 @@ export default {
 			
 			d3.selectAll(".current-state").classed("current-state", false)
 			d3.selectAll(".selected-polygon").classed("selected-polygon", false)
-			if(this.selected == "All" || this.selected != name){
-				this.selected = name;
+			if(this.selected_area == "All" || this.selected_area != name){
+				this.selected_area = name;
 				[[x0, y0], [x1, y1]] = this.path.bounds(polygon);
 				d3.select("#" + this.getPolygonId(props)).classed("selected-polygon", true)
 				if(this.mapMode == 2){
 					this.set_state_class(state, district)
 				}
 			} else {
-				this.selected = "All";
+				this.selected_area = "All";
 				[[x0, y0], [x1, y1]] = this.path.bounds(regions);
 				// this.renderMap()
 			}
-			this.$emit('stateSelected', this.selected)
+			// this.$emit('stateSelected', this.selected_area)
+			this.selectArea()
 			
 			this.svg.transition().duration(750).call(
 				this.zoom.transform,
@@ -599,8 +617,37 @@ export default {
 				.translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
 			)
 
-			this.mapPoints()
-			
+			this.mapPoints()	
+		},
+		dispatchSelectArea(type, name){
+			store.dispatch('setSelectedArea', {
+				type: type,
+				selected: name
+			})			
+		},
+		resetSelectedAreas(){
+			this.dispatchSelectArea("region", "All") 
+			this.dispatchSelectArea("state", "All") 
+			this.dispatchSelectArea("district", "All") 
+		},
+		selectArea () {
+			if(this.selected_area == "All"){
+				this.resetSelectedAreas()
+			} else {
+				if(this.area_names.region.indexOf(this.selected_area) != -1){
+					this.dispatchSelectArea("region", this.selected_area) 
+				} else if(this.area_names.state.indexOf(this.selected_area) != -1){
+					let region = districts.features.filter((d) => d.properties.state == this.selected_area)[0].properties.region
+					this.dispatchSelectArea("region", region) 
+					this.dispatchSelectArea("state", this.selected_area) 
+				} else if(this.area_names.district.indexOf(this.selected_area) != -1){
+					let region = districts.features.filter((d) => d.properties.district == this.selected_area)[0].properties.region
+					let state = districts.features.filter((d) => d.properties.district == this.selected_area)[0].properties.state
+					this.dispatchSelectArea("region", region) 
+					this.dispatchSelectArea("state", state) 
+					this.dispatchSelectArea("district", this.selected_area) 
+				}
+			}
 		},
 		mapPoints(){
 			// let points = this.locations.filter((l) => window.unmatched_districts.indexOf(l.district) != -1).map((l) => [l.longitude, l.latitude, l.id, l])
@@ -612,8 +659,8 @@ export default {
 					// 		points.push([coords[1], coords[0], o.id, o.place_guess]);
 					// 	})
 					// }
-			if(this.selected_area.state != "All"){
-				points = points.filter((p) => p[3].state == this.selected_area.state)
+			if(this.selected.state != "All"){
+				points = points.filter((p) => p[3].state == this.selected.state)
 			}
 			if((points.length > 0 && points.length < 3000) || this.set_polygon ){
 				if (!d3.select("#map-container .map-points").empty()) {

@@ -14,6 +14,11 @@ const store = new Vuex.Store({
             dates: [],
             taxa_levels: [],
             taxa: [],
+            area: {
+                region: "All",
+                state: "All",
+                district: "All",
+            },
         }
     },
     mutations: {
@@ -26,6 +31,10 @@ const store = new Vuex.Store({
         SET_SELECTED(state, data) {
             console.log("mutation set-selected: ", data)
             state.selected[data.type] = data.selected
+        },
+        SET_SELECTED_AREA(state, data) {
+            console.log("mutation set-selected-area: ", data)
+            state.selected.area[data.type] = data.selected
         },
         ADD_SELECTED(state, data) {
             console.log("mutation add-selected:", data)
@@ -55,6 +64,9 @@ const store = new Vuex.Store({
             } else {
                 commit('ADD_SELECTED', payload)
             }
+        },
+        setSelectedArea({commit}, payload) {
+            commit('SET_SELECTED_AREA', payload)
         },
         removeSelected({commit}, payload) {
             commit('REMOVE_SELECTED', payload)

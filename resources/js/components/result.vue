@@ -177,7 +177,6 @@
 <template>
 	<div class="container-fluid" id="report-page">
 		<div id="locations-tab">
-			{{selected}}
 			<ui-tabs
 				:fullwidth="true"
 				:raised="true"
@@ -191,15 +190,13 @@
 					v-for="tab in tabs"
 				>
 					<div id="map-container" v-if="tab.title === 'Location'">
-						<india-map :map_data="mapData"
-								   :selected_area="selected_area"
-								   :popup="tooltip"
-								   :areaStats="areaStats"
-								   :set_polygon="set_polygon_switch"
-								   :set_points="set_points"
-								   @stateSelected='selectState'
-								   @pointSelected="setPoint"
-								   
+						<india-map 
+							:map_data="mapData"
+							:popup="tooltip"
+							:areaStats="areaStats"
+							:set_polygon="set_polygon_switch"
+							:set_points="set_points"
+							@pointSelected="setPoint"
 						/>
 					</div>
 					<div id="map-data-table" v-if="tab.title === 'Table'">
@@ -221,8 +218,8 @@
 							</table>
 						</div>
 						<div class="d-flex justify-content-center py-1 switch-div">
-							<div class="me-5" v-if="selected_area.state != 'All'">
-								<button class="btn btn-sm btn-outline-danger" @click="selected_area = {area: 'All', state: 'All', district: 'All'}">
+							<div class="me-5" v-if="selected.area.state != 'All'">
+								<button class="btn btn-sm btn-outline-danger" @click="resetSelectedAreas">
 									Back to All States
 								</button>
 							</div>
@@ -235,7 +232,7 @@
 						<div class="species-data-table">
 							<data-table :data="statesTableData"
 										:headers='[["State","state"],["Observations","observations"],["Unique Taxa","species"],["Users","users"], ["Portals", "portals"]]'
-										:selected='[selected_area.state]'
+										:selected='[selected.area.state]'
 										:selected_col="'state'"
 										:sort_col="'observations'"
 										:sort_dir="'desc'"
@@ -415,6 +412,7 @@
 					<button @click="setStateSubmit">Submit</button>
 				</div>
             </ui-collapsible>
+			<pre>{{selected}}</pre>
 		</div>
 	</div>
 </template>
@@ -448,11 +446,6 @@ import store from '../store/index'
 					["ibp", "India Biodiversity Portal"],
 					["ifb", "iFoundButterflies"]
 				],
-				selected_area: {
-					region: "All",
-					state: "All",
-					district: "All",
-				},
 				levels: ["superfamily", "family", "subfamily", "tribe", "genus", "species"],
 				
 				set_location_data: {
@@ -706,6 +699,7 @@ import store from '../store/index'
 
 				if(Object.keys(this.taxa).length > 0) {
 					filtered_observations.forEach(o => {
+						console.log(this.taxa[o.taxa_id], o.taxa_id)
 						if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
 							let taxa = this.taxa[o.taxa_id]
 							let hierarchy = {}
@@ -733,7 +727,7 @@ import store from '../store/index'
 			},
 			speciesTableHeaders () {
 				let op = [["Taxa Name","name"], ["Common Name","common_name"],["Observations","count"],["Users","user_count"]]
-				if(this.selected_area.state == "All"){
+				if(this.selected.area.state == "All"){
 					op.push(["States", "state_count"])
 				}
 				op.push(["Portals", "portals"])
@@ -756,8 +750,8 @@ import store from '../store/index'
 				}
 
 
-				if (type != "states" && this.selected_area.state != 'All') {
-					op = op.filter((r) => r.state == this.selected_area.state)
+				if (type != "states" && this.selected.area.state != 'All') {
+					op = op.filter((r) => r.state == this.selected.area.state)
 				}
 
 				if(type != "users" && this.selected.users.length > 0){
@@ -834,34 +828,19 @@ import store from '../store/index'
 					})
 				}
 			},
-			selectState (s) {
-				let area_names = {
-					regions: [],
-					states: [],
-					districts: [],
-				}
-				this.selected_area.region = "All"
-				this.selected_area.state = "All"
-				this.selected_area.district = "All"
-				districts.features.map((d) => {
-					if(area_names.regions.indexOf(d.properties.region) == -1){
-						area_names.regions.push(d.properties.region)
-					}
-					if(area_names.states.indexOf(d.properties.state) == -1){
-						area_names.states.push(d.properties.state)
-					}
-					area_names.districts.push(d.properties.district)
+			resetSelectedAreas(){
+				store.dispatch('setSelectedArea', {
+					selected: "All",
+					type: "region"
 				})
-				if(area_names.regions.indexOf(s) != -1){
-					this.selected_area.region = s
-				} else if(area_names.states.indexOf(s) != -1){
-					this.selected_area.region = districts.features.filter((d) => d.properties.state == s)[0].properties.region
-					this.selected_area.state = s
-				} else if(area_names.districts.indexOf(s) != -1){
-					this.selected_area.region = districts.features.filter((d) => d.properties.district == s)[0].properties.region
-					this.selected_area.state = districts.features.filter((d) => d.properties.district == s)[0].properties.state
-					this.selected_area.district = s
-				}				
+				store.dispatch('setSelectedArea', {
+					selected: "All",
+					type: "state"
+				})
+				store.dispatch('setSelectedArea', {
+					selected: "All",
+					type: "district"
+				})
 			},
 			setPoint(p){
 				let ids = {
@@ -886,12 +865,14 @@ import store from '../store/index'
 			},
 			selectTableState (s){
 				let selected = this.statesTableData[s].state
-				this.selected_area.state = (this.selected_area.state == selected) ? 'All' : selected
+				store.dispatch('setSelectedArea', {
+					selected: (this.selected.area.state == selected) ? 'All' : selected,
+					type: "state"
+				})
 			},
 			seletUser (u){
 				let selected = this.userTableData[u]
 				let index = this.selected.users.indexOf(selected.id)
-				console.log("selected", u, selected, index, this.selected.users)
 				if (index == -1) {
 					store.dispatch('setSelected', {
 						selected: selected.id,
@@ -1041,14 +1022,14 @@ import store from '../store/index'
 			cardValues (card) {
 				let root = this.areaStats.all
 				let op = ""
-				if(this.selected_area.state != "All"){
-					root = this.areaStats.state[this.selected_area.state]
+				if(this.selected.area.state != "All"){
+					root = this.areaStats.state[this.selected.area.state]
 				}
 				if(!root){
-					if(["north", "south", "east", "west"].indexOf(this.selected_area.state) != -1){
-						root = this.areaStats.region[this.selected_area.state]
+					if(["north", "south", "east", "west"].indexOf(this.selected.area.state) != -1){
+						root = this.areaStats.region[this.selected.area.state]
 					} else {
-						root = this.areaStats.district[this.selected_area.state]
+						root = this.areaStats.district[this.selected.area.state]
 					}
 				}
 				switch(card){
@@ -1073,10 +1054,10 @@ import store from '../store/index'
 				if(this.debug_flag){
 					this.set_polygon_switch = true
 					console.log(this.mapData.length)
-					store.dispatch('setSelected', {
-						selected: [p],
-						type: "portals"
-					})
+					// store.dispatch('setSelected', {
+					// 	selected: [p],
+					// 	type: "portals"
+					// })
 				}
 				store.dispatch('setSelected', {
 					selected: this.portal_names.map((p) => p[0]),
