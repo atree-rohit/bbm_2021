@@ -254,6 +254,31 @@
 			</ui-tabs>
 		</div>
 		<div id="map-filters">
+			<ui-collapsible :class="accordianClass('years')" :disableRipple="true" :open="accordions[0]" @open="onAccordionOpen(0)" @close="onAccordionClose(0)"
+			>
+				<div slot="header" class="d-flex">
+					<span class="material-icons">
+						date_range
+					</span>
+					<div>
+						{{accordianTitle('years')}}
+					</div>
+					<button class="badge rounded-pill ms-2 btn-danger"
+							v-if="selected.years.length > 0 && selected.years.length <3"
+							@click.stop='selected.years = [2020, 2021, 2022]'
+						>Reset</button>
+				</div>
+				<div class="d-flex justify-content-center">
+					<button
+						v-for="year in [2020,2021,2022]"
+						:key="year"
+						class="mx-2 btn"
+						:class="yearBtnClass(year)"
+						@click="selectYear(year)"
+						v-text="year"
+					/>
+				</div>
+			</ui-collapsible>
 			<ui-collapsible :class="accordianClass('portals')" :disableRipple="true" :open="accordions[1]" @open="onAccordionOpen(1)" @close="onAccordionClose(1)">
 				<div slot="header" class="d-flex">
 					<span class="material-icons">
@@ -305,7 +330,7 @@
             <ui-collapsible :class="accordianClass('date')" :disableRipple="true" :open="accordions[3]" @open="onAccordionOpen(3)" @close="onAccordionClose(3)">
                 <div slot="header" class="d-flex">
 					<span class="material-icons">
-						today
+						calendar_month
 					</span>
 					<div>
 						{{accordianTitle('date')}}
@@ -412,7 +437,15 @@
 					<button @click="setStateSubmit">Submit</button>
 				</div>
             </ui-collapsible>
-			<pre>{{selected}}</pre>
+			<div class="row">
+				<div class="col">
+					<pre>{{selected}}</pre>
+				</div>
+				<div class="col">
+					<pre>{{accordions}}</pre>
+				</div>
+
+			</div>
 		</div>
 	</div>
 </template>
@@ -498,6 +531,12 @@ import store from '../store/index'
 		mounted() {
 		},
 		watch: {
+			all_portal_data(newVal){
+				const formatDate = d3.timeFormat("%Y")
+				let x = d3.group(newVal, d => d.portal, d => formatDate(new Date(d.date_created)))
+				
+				console.log(x)
+			}
 		},
 		computed:{
 			...mapState({
@@ -544,7 +583,7 @@ import store from '../store/index'
 					date_data[i] = 0
 				}
 				op.forEach(o => {
-					let key = parseInt(o[this.selectDateType].replace("2022-09-", ""), 10).toString()
+					let key = parseInt(o[this.selectDateType]?.replace("2022-09-", ""), 10).toString()
 					if(Object.keys(date_data).indexOf(key) != -1){
 						date_data[key]++
 					}
@@ -582,7 +621,6 @@ import store from '../store/index'
 				if(this.set_polygon_switch == true){
 					all_observations = all_observations.filter((r) => r.state == null)
 				}
-				
 				all_observations.forEach((o) => {
 					let current_region = null
 					op.all.observations++,
@@ -602,6 +640,9 @@ import store from '../store/index'
 						op.region[current_region].portals.add(o.portal)
 					}
 					if(o.state !== null){
+						if(op.state[o.state] == undefined){
+							console.log(o.state, o)
+						}
 						op.state[o.state].observations++
 						op.state[o.state].users.add(o.user_id)
 						op.state[o.state].species.add(o.taxa_id)
@@ -699,7 +740,6 @@ import store from '../store/index'
 
 				if(Object.keys(this.taxa).length > 0) {
 					filtered_observations.forEach(o => {
-						console.log(this.taxa[o.taxa_id], o.taxa_id)
 						if(o.taxa_id != undefined && this.taxa[o.taxa_id].rank == "species"){
 							let taxa = this.taxa[o.taxa_id]
 							let hierarchy = {}
@@ -745,24 +785,31 @@ import store from '../store/index'
 				let all_portals = Array.from(new Set(this.all_portal_data.map((o) => o.portal)))
 				let portals = (this.selected.portals.length == 0) ? all_portals : this.selected.portals
 				let op = this.all_portal_data
-				if(type != "portal"){
-					op = op.filter((o) => portals.indexOf(o.portal) != -1)
+				let years = (this.selected.years.length == 0) ? [2020,2021,2022] : this.selected.years
+
+				if(type != "years" && this.accordions[0]){
+					const getYear = (d) => new Date(d).getFullYear()
+
+					op = op.filter((o) => years.indexOf(getYear(o.date)) != -1)
 				}
 
+				if(type != "portal" && this.accordions[1]){
+					op = op.filter((o) => portals.indexOf(o.portal) != -1)
+				}
 
 				if (type != "states" && this.selected.area.state != 'All') {
 					op = op.filter((r) => r.state == this.selected.area.state)
 				}
 
-				if(type != "users" && this.selected.users.length > 0){
+				if(type != "users" && this.selected.users.length > 0 && this.accordions[2]){
 					op = op.filter((r) => this.selected.users.indexOf(r.user_id) != -1)
 				}
 
-				if(type != "dates" && this.selected.dates.length > 0){
+				if(type != "dates" && this.selected.dates.length > 0 && this.accordions[3]){
 					op = op.filter((r) => this.selected.dates.indexOf(parseInt(r.date.replace("2022-09-", ""), 10)) != -1)
 				}
 
-				if(type != "taxa" && this.selected.taxa_levels.length > 0){
+				if(type != "taxa" && this.selected.taxa_levels.length > 0 && this.accordions[4]){
 					op = op.filter((r) => this.selected.taxa_levels.indexOf(r.rank) != -1)
 				}
 
@@ -801,6 +848,25 @@ import store from '../store/index'
 					op = taxa_match
 				}
 				return op
+			},
+			selectYear(y){
+				let pos = this.selected.years.indexOf(y)
+				if(this.selected.years.length == 3){
+					store.dispatch('setSelected', {
+						selected: [y],
+						type: "years"
+					})
+				} else if(pos == -1){
+					store.dispatch('setSelected', {
+						selected: y,
+						type: "years"
+					})
+				} else {
+					store.dispatch('removeSelected', {
+						selected: y,
+						type: "years"
+					})
+				}
 			},
 			selectPortal (p) {
 				let pos = this.selected.portals.indexOf(p)
@@ -914,6 +980,12 @@ import store from '../store/index'
 			tableSelectTaxa (t) {
 				console.log("select Taxa", this.speciesTableData[t])
 			},
+			yearBtnClass(y){
+				let op = "btn-outline-primary"
+				if(this.selected.years.indexOf(y) != -1)
+					op = "btn-success"
+				return op
+			},
 			portalBtnClass (p) {
 				let op = "btn-outline-primary"
 				if(this.selected.portals.indexOf(p) != -1)
@@ -971,6 +1043,14 @@ import store from '../store/index'
 			accordianTitle (f){
 				let op = ""
 				switch(f){
+					case 'years' :
+						op = "Years: "
+						if (this.selected.years.length == 3){
+							op += "All selected"
+						} else {
+							op += `${this.selected.years.length} selected`
+						}
+						break;
 					case 'portals':
 						op = "Portals : "
 						if (this.selected.portals.length == 4){
@@ -1054,14 +1134,14 @@ import store from '../store/index'
 				if(this.debug_flag){
 					this.set_polygon_switch = true
 					console.log(this.mapData.length)
-					// store.dispatch('setSelected', {
-					// 	selected: [p],
-					// 	type: "portals"
-					// })
 				}
 				store.dispatch('setSelected', {
 					selected: this.portal_names.map((p) => p[0]),
 					type: "portals"
+				})
+				store.dispatch('setSelected', {
+					selected: [2020,2021, 2022],
+					type: "years"
 				})
 				this.tooltip = d3.select('body')
 							    .append('div')
