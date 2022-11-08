@@ -9,6 +9,7 @@ const store = new Vuex.Store({
         taxa: {},
         all_portal_data: [],
         selected: {
+            years: [],
             portals:[],
             users: [],
             dates: [],
