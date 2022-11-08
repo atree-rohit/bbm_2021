@@ -11,6 +11,7 @@ use App\Models\FormRow;
 use App\Models\iNatTaxa;
 use App\Models\CountForm;
 use App\Models\INatTaxa22;
+use Hamcrest\Type\IsString;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
@@ -25,11 +26,11 @@ class ResultController extends Controller
     public function get_data()
     {
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
-        $all_data = [
-            "counts" => $this->get_counts_data_array(), 
-            "inat" => $this->get_inat_data_array($taxa), 
-            "ibp" => $this->get_ibp_data_array($taxa)
-        ];
+        // $all_data = [
+        //     "counts" => $this->get_counts_data_array(), 
+        //     "inat" => $this->get_inat_data_array($taxa), 
+        //     "ibp" => $this->get_ibp_data_array($taxa)
+        // ];
         $all_portal_data = array_merge($this->get_counts_data_array(), $this->get_inat_data_array($taxa), $this->get_ibp_data_array($taxa));
         return response($all_portal_data, 200)
             ->header('Content-Type', 'application/json');;
@@ -49,44 +50,55 @@ class ResultController extends Controller
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
             $debug_flag = true;
         }
-        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
         
-        $last_update = "";
-        $all_portal_data = array_merge($this->get_counts_data_array(), $this->get_inat_data_array($taxa), $this->get_ibp_data_array($taxa));
-        // $all_portal_data = array_merge($this->get_counts_data_array());
-        
-        return view('result.index', compact("taxa", "all_portal_data", "debug_flag"));
+        return view('result.index', compact("debug_flag"));
     }
 
     public function get_counts_data_array()
     {
         $data = CountForm::where("flag", false)
-            // ->where("created_at", "like", "%2022-09%")
             ->with("rows_cleaned")
             ->get();
 
         $op = [];
+
+
         foreach($data as $d){
-            $row = [
-                "portal" => "counts",
-            ];
-            $row["id"] = $d->id;
-            $row["date"] = substr($d->date, 0, strpos($d->date, "T"));
-            $row["date_created"] = substr($d->created_at, 0, strpos($d->created_at, " "));
-            $row["lat"] = $d->latitude;
-            $row["lon"] = $d->longitude;
-            $row["user_id"] = $d->name;
-            $row["state"] = $d->state;
-            $row["district"] = $d->district;
-            foreach($d->rows_cleaned as $sp){
-                if($sp->flag == 0){
-                    $row["taxa_id"] = $sp->inat_taxa_id;
-                    $row["individuals"] = (int) $sp->individuals;
-                    $op[] = $row;
+            if($d->date_cleaned != null){
+                $row = [
+                    "portal" => "counts",
+                ];
+                $row["id"] = $d->id;
+                $row["date"] = $this->format_date_js($d->date_cleaned);
+                $row["date_created"] = substr($d->created_at, 0, strpos($d->created_at, " "));
+                $row["lat"] = $d->latitude;
+                $row["lon"] = $d->longitude;
+                $row["user_id"] = $d->name;
+                $row["state"] = $d->state;
+                $row["district"] = $d->district;
+                foreach($d->rows_cleaned as $sp){
+                    if($sp->flag == 0){
+                        $row["taxa_id"] = $sp->inat_taxa_id;
+                        $row["individuals"] = (int) $sp->individuals;
+                        $op[] = $row;
+                    }
                 }
+            } else {
+                dd($d);
             }
         }
         return $op;
+    }
+
+    public function format_date_js($date)
+    {
+        $date = 
+        $arr = explode("-", $date);
+        if((int) $arr[2] > 2019 && (int) $arr[2] < 2023){
+            return $arr[2] . "-" . $arr[1] . "-" . $arr[0];
+        } else {
+            dd($date, $arr);
+        }
     }
 
     public function get_inat_data_array($taxa)
@@ -117,11 +129,20 @@ class ResultController extends Controller
                 ->limit(-1)
                 ->get()
                 ->toArray();
-        foreach($ibp as $k => $i){
-            $ibp[$k]["rank"] = $taxa[$ibp[$k]["taxa_id"]]["rank"];
-            $ibp[$k]["portal"] = "ibp";
+        //filter out the ones outside the date range    
+        $filtered = [];
+        foreach($ibp as $i){
+            $date = explode("T", $i["date"]);
+            $date = explode("-", $date[0]);
+            if((int) $date[0] > 2019 && (int) $date[0] < 2023){
+                $filtered[] = $i;
+            }
         }
-        return $ibp;        
+        foreach($filtered as $k => $i){
+            $filtered[$k]["rank"] = $taxa[$filtered[$k]["taxa_id"]]["rank"];
+            $filtered[$k]["portal"] = "ibp";
+        }
+        return $filtered;
     }
 
     public function ibp_fix_1()
@@ -351,12 +372,97 @@ class ResultController extends Controller
         $this->existing_taxa_ids = INatTaxa22::all()->pluck("id")->toArray();
         $result = [];
         // dd($this->counts_export_json());
+        // $result = $this->pull_inat_csv();
+        // dd($result);
         
         // $result["counts"] = $this->pull_counts();
-        // $result["inat"] = $this->pull_inat();
-        // $result["ibp"] = $this->pull_ibp();
+        // dd($this->get_missing_inat_taxa());
+
+
+        $result["inat"] = $this->pull_inat();
+        $result["ibp"] = $this->pull_ibp();
         $result["taxa"] = $this->get_missing_taxa();
         dd($result);
+    }
+
+    public function get_missing_inat_taxa()
+    {
+        $observations = INat22::where("taxa_id", null)->get();
+        $count = [
+            "total" => 0,
+            "new_taxa" => 0,
+        ];
+        foreach($observations as $o){
+            $data = json_decode(file_get_contents("https://www.inaturalist.org/observations/".$o->id.".json"));
+            if(!in_array($data->taxon->id, $this->existing_taxa_ids)){
+                $this->add_inat_taxa($data->taxon);
+                $count["new_taxa"]++;
+            }
+            $o->taxa_id = $data->taxon->id;
+            $count["total"]++;
+            $o->save();
+        }
+        return $count;
+    }
+
+    public function pull_inat_csv()
+    {
+        $row = [];
+        $open = fopen(public_path("/data/20_22/inat_3_yrs.csv"), "r");
+        $headers_set = false;
+        $headers  = [];
+        $count = [
+            "added_with_taxa_id" => 0,
+            "added_without_taxa_id" => 0,
+            "skipped" => 0,
+        ];
+        $col_map = [
+            "id" => "id",
+            "observed_on" => "observed_on",
+            "place_guess" => "place_guess",
+            "state" => "place_admin1_name",
+            "user_id" => "user_id",
+            "user_name" => "user_name",
+            "quality_grade" => "quality_grade",
+            "img_url" => "image_url",
+            "license_code" => "license",
+            "inat_created_at" => "created_at",
+            "inat_updated_at" => "updated_at",
+        ];
+        $taxa = INatTaxa22::all()->pluck("id", "name")->toArray();
+        $existing_observation_ids = INat22::all()->pluck("id")->toArray();
+
+        while (($data = fgetcsv($open, 10000, ",")) !== FALSE) 
+        {
+            if(!$headers_set){
+                $headers = $data;
+                $headers_set = true;
+            } else {
+                $row = [];
+                foreach($headers as $k=> $v){
+                    $row[$v] = $data[$k];
+                }
+                if(!in_array($row["id"], $existing_observation_ids)){
+                    $row_cleaned = new INat22();
+                    foreach($col_map as $k=>$v){
+                        $row_cleaned->$k = $row[$v];
+                    }
+                    $row_cleaned->location = $row["latitude"].",".$row["longitude"];
+                    if(isset($taxa[$row["scientific_name"]])){
+                        $row_cleaned->taxa_id = $taxa[$row["scientific_name"]];
+                        $count["added_with_taxa_id"]++;
+                    } else {
+                        $row_cleaned->taxa_id = null;
+                        $count["added_without_taxa_id"]++;
+                    }
+                    $row_cleaned->save();
+                } else {
+                    $count["skipped"]++;
+                }
+                
+            }
+        }
+        dd($count);
     }
 
     public function counts_export_json()
@@ -716,7 +822,22 @@ class ResultController extends Controller
     public function get_missing_taxa()
     {
         $all_taxa = INatTaxa22::all();
+        $taxa = [
+            "inat" => array_unique(INat22::select("taxa_id")->get()->pluck("taxa_id")->toArray()),
+            "ibp" => array_unique(IBP22::select("taxa_id")->get()->pluck("taxa_id")->toArray()),
+            "counts" => array_unique(FormRow::all()->pluck("inat_taxa_id")->toArray())
+        ];
+        $keyed_taxa = $all_taxa->keyBy("id");
         $missing_taxa = [];
+
+        foreach(array_keys($taxa) as $type) {
+            foreach($taxa[$type] as $t){
+                if(!isset($keyed_taxa[$t]) && $t != null){
+                    $missing_taxa[] = $t;
+                }
+            }
+        }
+        // dd($missing_taxa);
         $ancestors = $all_taxa->pluck("ancestry")->toArray();
         
         foreach($ancestors as $a){
@@ -766,8 +887,21 @@ class ResultController extends Controller
         $this->polygons = json_decode(file_get_contents(public_path("/data/2022/districts_2020_rewind.json")))->features;
         // dd($this->counts_set_district()->toArray());
         // dd($this->counts_set_district());
+        $data = INat22::where("user_name", "")->get()->groupBy("user_id");
+        $added = 0;
+        foreach($data as $k=>$v){
+            $x = json_decode(file_get_contents("https://www.inaturalist.org/users/$k.json"));
+            foreach($v as $obv){
+                $obv->user_name = $x->login;
+                $obv->save();
+                $added++;
+            }
+        }
+        dd($added);
+
         $this->inat_set_state();
         $this->ibp_set_state();
+
 
         $inat = INat22::all();
         $ibp = IBP22::all();
@@ -787,6 +921,7 @@ class ResultController extends Controller
                 "coordinates_set" => $this->counts_fix_location(),
                 "district_set" => $this->counts_set_district(),
                 "states_fixed" => $this->counts_fix_state(),
+                "set_dates" => $this->counts_set_dates(),
             ]
         ];
         
@@ -942,6 +1077,29 @@ class ResultController extends Controller
         }
         return $fixed_count;
     }
+
+    public function counts_set_dates()
+    {
+        $rows = CountForm::where("date_cleaned", null)->get();
+        $count = [
+            "cleaned" => 0,
+            "failed" => 0
+        ];
+        
+        foreach($rows as $r){
+            // echo $r->date . "<br>";
+            if(strlen($r->date) > 10 && $r->date[10] == "T"){
+                $r->date_cleaned = substr($r->date, 0, 10);
+                $r->save();
+                $count["cleaned"]++;
+            } else {
+                // dd($r);
+                $count["failed"]++;
+            }
+        }
+        return $count;
+    }
+
     public function ibp_set_state()
     {
         $ibp = IBP22::where("district", null)
@@ -1007,7 +1165,7 @@ class ResultController extends Controller
 
     public function inat_set_state()
     {
-        $inat = INat22::where("state", null)
+        $inat = INat22::where("district", null)
                 ->get();
 
         echo "<table border='1'>";
