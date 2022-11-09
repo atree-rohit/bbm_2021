@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/js/result.js": "/js/result.js",
+    "/js/result_2022.js": "/js/result_2022.js",
     "/js/validate.js": "/js/validate.js",
     "/js/butterfly_counts.js": "/js/butterfly_counts.js",
     "/js/inat.js": "/js/inat.js",
@@ -8,5 +9,6 @@
     "/js/count_clean.js": "/js/count_clean.js",
     "/js/boi_fix_taxa.js": "/js/boi_fix_taxa.js",
     "/css/app.css": "/css/app.css",
+    "/css/result_2022.css": "/css/result_2022.css",
     "/css/style.css": "/css/style.css"
 }
