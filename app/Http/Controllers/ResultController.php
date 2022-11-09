@@ -21,18 +21,24 @@ class ResultController extends Controller
     private $existing_observation_ids;
     private $existing_taxa_ids;
     private $polygons;
+    private $limit;
 
     //API Functions
-    public function get_data()
+    public function get_data($year)
     {
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
-        // $all_data = [
-        //     "counts" => $this->get_counts_data_array(), 
-        //     "inat" => $this->get_inat_data_array($taxa), 
-        //     "ibp" => $this->get_ibp_data_array($taxa)
-        // ];
-        $all_portal_data = array_merge($this->get_counts_data_array(), $this->get_inat_data_array($taxa), $this->get_ibp_data_array($taxa));
-        return response($all_portal_data, 200)
+        $this->limit = -1;
+        $all_data = [
+            "counts" => $this->get_counts_data_array_2022($year), 
+            "inat" => $this->get_inat_data_array_2022($year), 
+            "ibp" => $this->get_ibp_data_array_2022($year), 
+        ];
+        // $all_portal_data = array_merge(
+        //         array_slice($this->get_counts_data_array(), 0, 10), 
+        //         array_slice($this->get_inat_data_array($taxa), 0, -1),
+        //         array_slice($this->get_ibp_data_array($taxa), 0, 10)
+        //     );
+        return response($all_data, 200)
             ->header('Content-Type', 'application/json');;
     }
 
@@ -43,6 +49,93 @@ class ResultController extends Controller
             ->header('Content-Type', 'application/json');;
     }
 
+    public function get_counts_data_array_2022($pull_year)
+    {
+        $data = CountForm::where("flag", false)
+            ->with("rows_cleaned")
+            ->limit($this->limit)
+            ->get();
+
+        $op = [];
+
+        foreach($data as $d){
+            if($d->date_cleaned != null){
+                
+                $row["date"] = $this->format_date_js($d->date_cleaned);
+                $date = explode("-",$row["date"]);
+                $year = $date[0];
+                // $row["date_created"] = substr($d->created_at, 0, strpos($d->created_at, " "));
+                // $row["lat"] = $d->latitude;
+                // $row["lon"] = $d->longitude;
+                $row["user_id"] = $d->name;
+                // $row["district"] = $d->district;
+                if($year == $pull_year){
+                    foreach($d->rows_cleaned as $sp){
+                        if($sp->flag == 0){
+                            // $row["id"] = $sp->id;
+                            $row["taxa_id"] = $sp->inat_taxa_id;
+                            $row["date"] = (int) substr($row["date"], -2);
+                            // $row["individuals"] = (int) $sp->individuals;
+                            
+                            $op[$d->state][$d->district][] = $row;
+                        }
+                    }
+                }
+            } else {
+                dd($d);
+            }
+        }
+        return $op;
+    }
+
+    public function get_inat_data_array_2022($pull_year)
+    {
+        $inat = INat22::select("id", "date_cleaned as date", "taxa_id", "user_name as user_id", "state", "district")
+                ->where("date_cleaned", "like", "%$pull_year%")
+                ->limit($this->limit)
+                ->get()
+                ->toArray();
+        $op = [];
+
+        foreach($inat as $k=>$i){
+            $year = explode("-", $i["date"])[0];
+            $state = $i["state"];
+            $district = $i["district"];
+            $i["date"] = (int) substr($i["date"], -2);
+            unset($i["state"]);
+            unset($i["district"]);
+            unset($i["id"]);
+            $op[$state][$district][] = $i;
+        }
+        return $op;
+    }
+
+    public function get_ibp_data_array_2022($pull_year)
+    {
+        $ibp = IBP22::select("id", "fromDate as date", "createdOn as date_created", "taxa_id",  "createdBy as user_id", "state", "district")
+                ->where("fromDate", "like", "%$pull_year%")
+                ->whereNotNull("taxa_id")
+                ->limit($this->limit)
+                ->get()
+                ->toArray();
+        //filter out the ones outside the date range    
+        $filtered = [];
+        $op = [];
+        foreach($ibp as $i){
+            $date = explode("T", $i["date"]);
+            $year = explode("-", $date[0])[0];
+            $state = $i["state"];
+            $district = $i["district"];
+            $i["date"] = (int) substr($i["date"], -2);
+            if((int) $year > 2019 && (int) $year < 2023){
+                unset($i["state"]);
+                unset($i["id"]);
+                $op[$state][$district][] = $i;
+            }
+        }
+        
+        return $op;
+    }
 
     //Controller functions
     public function index(){
@@ -51,7 +144,7 @@ class ResultController extends Controller
             $debug_flag = true;
         }
         
-        return view('result.index', compact("debug_flag"));
+        return view('result.index_2022', compact("debug_flag"));
     }
 
     public function get_counts_data_array()
@@ -110,6 +203,8 @@ class ResultController extends Controller
         foreach($inat as $k=>$i){
             $coords = explode(",", $i["location"]);
             $created_date = explode("T", $inat[$k]["date_created"]);
+            // $inat[$k]["date"] = str_replace("/", "-", $inat[$k]["date"]);
+            $inat[$k]["date"] = date("Y-m-d", strtotime($inat[$k]["date"]) );
 
             $inat[$k]["lat"] = $coords[0];
             $inat[$k]["lon"] = $coords[1];
