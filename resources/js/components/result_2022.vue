@@ -67,7 +67,17 @@
 				</ul>
 			</div>
 		</div>
-		<div class="container-fluid">
+		<div id="filters-1" class="d-flex justify-content-center py-2" v-if="mode=='table'">
+			<button
+				v-for="filter in table_filters"
+				:key="filter"
+				class="btn btn-sm mx-1"
+				:class="(selected_table_filter == filter) ? 'btn-success' : 'btn-outline-dark'"
+				@click="selected_table_filter = filter"
+				v-text="capitalizeWords(filter)"
+			/>
+		</div>
+		<div class="container-fluid" v-if="mode == 'map'">
 			<div class="row">
 				{{selected}}
 			</div>
@@ -98,6 +108,13 @@
 				</div>
 			</div>
 		</div>
+		<div class="container-fluid" v-else-if="mode == 'table'">
+			<data-table-22 :data="tableData"
+						:headers='table_headers[selected_table_filter]'
+						:sort_col="'observations'"
+						:sort_dir="'desc'"
+			/>
+		</div>
 		
 	</div>
 </template>
@@ -109,7 +126,7 @@ import axios from 'axios'
 import * as d3Collection from 'd3-collection'
 import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
-import DataTable from './data-table'
+import DataTable22 from './data-table-2022'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
@@ -120,7 +137,7 @@ import store from '../store/index_2022'
 	export default {
 		name:"result",
 		props: ["debug_flag"],
-		components: { DataTable,
+		components: { DataTable22,
 						IndiaMap,
 						SpeciesSunburst,
 						DateChart
@@ -128,13 +145,34 @@ import store from '../store/index_2022'
 		data() {
 			return{
 				modes: ["map", "table", "chart"],
-				mode: "map",
+				mode: "table",
 				filters: {
 					years: [2020,2021,2022],
 					portals: ["BBM Counts", "iNaturalist", "India Biodiversity Portal", "iFoundButterflies"],
 					state: states.features.map(d => d.properties.state).sort(),
 					date: Array.from({length: 30}, (_, i) => i + 1),
 					species: []
+				},
+				table_filters: [ "states", "species"],
+				selected_table_filter: "states",
+				table_headers: {
+					states: [
+						["State","state"],
+						["Observations","observations"],
+						["Unique Taxa","unique_taxa"],
+						["Years","years"],
+						["Users","users"],
+						["Portals", "portals"]
+					],
+					species: [
+						["Taxa Name", "taxa"],
+						["Rank", "rank"],
+						["Observations", "observations"],
+						["States", "states"],
+						["Years", "years"],
+						["Users", "users"],
+						["Portals", "portals"]
+					]
 				},
 				portal_names: {
 					"All": "All",
@@ -146,16 +184,56 @@ import store from '../store/index_2022'
 			}
 		},
 		created(){
-			store.dispatch('fetchTaxa')
-			store.dispatch('fetchAllPortalData', 2020)
+			store.dispatch('fetchData')
+			// store.dispatch('fetchTaxa')
+			// store.dispatch('fetchAllPortalData', 2020)
 			this.init();
 		},
 		computed: {
 			...mapState({
-				filtered_data: state=> state.filtered_data,
-				filtered_taxa: state=> state.filtered_taxa,
-				selected: state=> state.selected,
+				filtered_data: state => state.filtered_data,
+				filtered_taxa: state => state.filtered_taxa,
+				selected: state => state.selected,
+				district_lists: state => state.district_lists,
 			}),
+			tableData(){
+				let op = []
+				let arr = []
+				if(this.selected_table_filter == "states"){
+					arr = d3.groups(this.filtered_data, d => d.state)
+					arr.map((row) => {
+						op.push({
+							state: row[0],
+							observations: row[1].reduce((a,b) => a + b.count, 0),
+							unique_taxa: new Set(row[1].map((r) => r.taxa_id)).size,
+							years: [...new Set(row[1].map((r) => r.year))].sort(),
+							users: new Set(row[1].map((r) => r.user_id)).size,
+							portals: [...new Set(row[1].map((r) => r.portal))].sort()
+						})
+					})
+				} else if(this.selected_table_filter == "species"){
+					arr = d3.groups(this.filtered_data, d => d.taxa_id)
+					
+					arr.map((row) => {
+						let taxa = this.filtered_taxa.filter((t) => t.id == row[0])[0]
+						let name = taxa?.name
+						if(taxa?.common_name){
+							name += ` (${taxa.common_name})`
+						}
+						op.push({
+							taxa: name,
+							rank: taxa?.rank,
+							observations: row[1].reduce((a,b) => a + b.count, 0),
+							states: [...new Set(row[1].map((r) => r.state))].sort().length,
+							years: [...new Set(row[1].map((r) => r.year))].sort(),
+							users: new Set(row[1].map((r) => r.user_id)).size,
+							portals: [...new Set(row[1].map((r) => r.portal))].sort()
+						})
+					})
+				}
+				
+				return op
+			},
 		},
 		watch:{
 			filtered_taxa(newVal){
@@ -169,9 +247,7 @@ import store from '../store/index_2022'
 		methods: {
 			init(){
 				Object.keys(this.filters).forEach((filter) => {
-					if(filter != "years"){
-						this.filters[filter].unshift("All")
-					}
+					this.filters[filter].unshift("All")
 				})
 			},
 			capitalizeWords,
@@ -182,9 +258,6 @@ import store from '../store/index_2022'
 						value: this.portal_names[value]}
 					)
 				} else {
-					if(filter == "years"){
-						store.dispatch('fetchAllPortalData', value)
-					}
 					store.dispatch('setSelected', {filter, value})
 				}
 				this.closeDropdowns()
