@@ -22,8 +22,76 @@ class ResultController extends Controller
     private $existing_taxa_ids;
     private $polygons;
     private $limit;
+    private $users;
 
     //API Functions
+
+    public function grouped_data()
+    {
+        $data = [
+            2020 => $this->get_data(2020)->original,
+            2021 => $this->get_data(2021)->original,
+            2022 => $this->get_data(2022)->original,
+        ];
+        $this->users = [];
+        $this->limit = -1;
+        $op = [];
+        
+        foreach($data as $year => $y){
+            foreach($y as $portal => $p){
+                foreach($p as $state => $s){
+                    foreach($s as $district => $d){
+                        if(!isset($op[$state][$district][$year][$portal])){
+                            $op[$state][$district][$year][$portal] = [];
+                        }
+                        foreach($d as $row){
+                            $user_id = $this->get_user_id($row["user_id"], $portal);
+                            if(!isset($op[$state][$district][$year][$portal][$row["taxa_id"]])){
+                                $op[$state][$district][$year][$portal][$row["taxa_id"]][] = [$user_id, $row["date"], 1];
+                            } else {
+                                $new_flag = true;
+                                foreach($op[$state][$district][$year][$portal][$row["taxa_id"]] as $k => $v){
+                                    if($v[0] == $user_id && $v[1] == $row["date"]){
+                                        $new_flag = false;
+                                        $op[$state][$district][$year][$portal][$row["taxa_id"]][$k][2] += 1;
+                                    }
+                                }
+                                if($new_flag){
+                                    $op[$state][$district][$year][$portal][$row["taxa_id"]][] = [$user_id, $row["date"], 1];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->toArray();
+        
+        // dd(strlen(json_encode($data)), strlen(json_encode($op)), strlen(json_encode($this->users)));
+        $data = [
+            "data" => $op,
+            "users" => $this->users,
+            "taxa" => $taxa,
+        ];
+        return response($data, 200)
+            ->header('Content-Type', 'application/json');
+    }
+
+    public function get_user_id($user, $portal)
+    {
+        foreach($this->users as $id => $u){
+            if($u["name"] == $user && $u["portal"] == $portal){
+                return ($id);
+            }
+        }
+        $this->users[] = [
+            "name" => $user,
+            "portal" => $portal
+        ];
+        return count($this->users);
+    }
+
     public function get_data($year)
     {
         $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
@@ -39,7 +107,7 @@ class ResultController extends Controller
         //         array_slice($this->get_ibp_data_array($taxa), 0, 10)
         //     );
         return response($all_data, 200)
-            ->header('Content-Type', 'application/json');;
+            ->header('Content-Type', 'application/json');
     }
 
     public function get_taxa()
@@ -143,6 +211,8 @@ class ResultController extends Controller
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
             $debug_flag = true;
         }
+
+        $this->grouped_data();
         
         return view('result.index_2022', compact("debug_flag"));
     }

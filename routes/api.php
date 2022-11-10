@@ -17,4 +17,5 @@ use App\Http\Controllers\ResultController;
 */
 
 Route::get('/data/{slug}', [ResultController::class, 'get_data'])->name('result.api_data');
+Route::get('/grouped_data', [ResultController::class, 'grouped_data'])->name('result.grouped_data');
 Route::get('/taxa', [ResultController::class, 'get_taxa'])->name('result.api_taxa');
