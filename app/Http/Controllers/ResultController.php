@@ -158,8 +158,8 @@ class ResultController extends Controller
 
     public function get_inat_data_array_2022($pull_year)
     {
-        $inat = INat22::select("id", "date_cleaned as date", "taxa_id", "user_name as user_id", "state", "district")
-                ->where("date_cleaned", "like", "%$pull_year%")
+        $inat = INat22::select("id", "observed_on as date", "taxa_id", "user_name as user_id", "state", "district")
+                ->where("observed_on", "like", "%$pull_year%")
                 ->limit($this->limit)
                 ->get()
                 ->toArray();
@@ -255,7 +255,7 @@ class ResultController extends Controller
 
     public function format_date_js($date)
     {
-        $date = 
+        
         $arr = explode("-", $date);
         if((int) $arr[2] > 2019 && (int) $arr[2] < 2023){
             return $arr[2] . "-" . $arr[1] . "-" . $arr[0];
