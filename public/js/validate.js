@@ -2088,7 +2088,6 @@ __webpack_require__.r(__webpack_exports__);
       handler: function handler(val, oldVal) {
         this.populateRowComments(); // call it in the context of your component object
       },
-
       deep: true
     }
   },
@@ -2098,16 +2097,22 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     populateRowComments: function populateRowComments() {
       var _this = this;
+
       this.row_values.forEach(function (row) {
         _this.row_comments[row.id] = [];
+
         _this.row_cols.forEach(function (col) {
           var cell_class = _this.inputSpeciesClass(row.id, col, row[col]);
+
           switch (cell_class) {
             case "text-blank":
               _this.row_comments[row.id].push(_this.titleCase(col) + " is blank. Please fill it if possible");
+
               break;
+
             case "unmatched-name":
               _this.row_comments[row.id].push(_this.titleCase(col) + " doesnt with our list.");
+
             // Please check the name. If you are unsure, go ahead and validate it, we will review this in a short while.
           }
         });
@@ -2115,6 +2120,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     inputSpeciesClass: function inputSpeciesClass(row_id, col, val) {
       var op = "";
+
       switch (col) {
         case "sl_no":
         case "no_of_individuals":
@@ -2124,6 +2130,7 @@ __webpack_require__.r(__webpack_exports__);
             }
           });
           break;
+
         case "common_name":
           op = "unmatched-name";
           this.species_names.forEach(function (sp) {
@@ -2132,6 +2139,7 @@ __webpack_require__.r(__webpack_exports__);
             }
           });
           break;
+
         case "scientific_name":
           op = "unmatched-name";
           this.species_names.forEach(function (sp) {
@@ -2141,6 +2149,7 @@ __webpack_require__.r(__webpack_exports__);
           });
           break;
       }
+
       return op;
     },
     inputDetailsClass: function inputDetailsClass(col) {
@@ -2150,13 +2159,16 @@ __webpack_require__.r(__webpack_exports__);
     },
     titleCase: function titleCase(str) {
       var splitStr = str.toLowerCase().split('_');
+
       for (var i = 0; i < splitStr.length; i++) {
         splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
       }
+
       return splitStr.join(' ');
     },
     validateData: function validateData() {
       var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
       var that = this;
       var post_data = {
         form: this.form_values,
@@ -2189,7 +2201,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var render = function render() {
   var _vm = this,
-    _c = _vm._self._c;
+      _c = _vm._self._c;
+
   return _c("div", {
     staticClass: "container-fluid"
   }, [_c("table", {
@@ -2218,6 +2231,7 @@ var render = function render() {
       on: {
         input: function input($event) {
           if ($event.target.composing) return;
+
           _vm.$set(_vm.form_values, col, $event.target.value);
         }
       }
@@ -2245,6 +2259,7 @@ var render = function render() {
         on: {
           input: function input($event) {
             if ($event.target.composing) return;
+
             _vm.$set(row, col, $event.target.value);
           }
         }
@@ -2269,9 +2284,11 @@ var render = function render() {
     }
   }, [_vm._v("Validate")])])]);
 };
+
 var staticRenderFns = [function () {
   var _vm = this,
-    _c = _vm._self._c;
+      _c = _vm._self._c;
+
   return _c("thead", {
     staticClass: "text-center"
   }, [_c("tr", [_c("th", {
@@ -3152,7 +3169,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "watchSyncEffect": () => (/* binding */ watchSyncEffect)
 /* harmony export */ });
 /*!
- * Vue.js v2.7.13
+ * Vue.js v2.7.8
  * (c) 2014-2022 Evan You
  * Released under the MIT License.
  */
@@ -3264,13 +3281,7 @@ var isReservedAttribute = makeMap('key,ref,slot,slot-scope,is');
  * Remove an item from an array.
  */
 function remove$2(arr, item) {
-    var len = arr.length;
-    if (len) {
-        // fast path for the only / last item
-        if (item === arr[len - 1]) {
-            arr.length = len - 1;
-            return;
-        }
+    if (arr.length) {
         var index = arr.indexOf(item);
         if (index > -1) {
             return arr.splice(index, 1);
@@ -3808,13 +3819,13 @@ if (true) {
             'referenced during render. Make sure that this property is reactive, ' +
             'either in the data option, or for class-based components, by ' +
             'initializing the property. ' +
-            'See: https://v2.vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.', target);
+            'See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.', target);
     };
     var warnReservedPrefix_1 = function (target, key) {
         warn$2("Property \"".concat(key, "\" must be accessed with \"$data.").concat(key, "\" because ") +
             'properties starting with "$" or "_" are not proxied in the Vue instance to ' +
             'prevent conflicts with Vue internals. ' +
-            'See: https://v2.vuejs.org/v2/api/#data', target);
+            'See: https://vuejs.org/v2/api/#data', target);
     };
     var hasProxy_1 = typeof Proxy !== 'undefined' && isNative(Proxy);
     if (hasProxy_1) {
@@ -3899,15 +3910,6 @@ var __assign = function() {
 };
 
 var uid$2 = 0;
-var pendingCleanupDeps = [];
-var cleanupDeps = function () {
-    for (var i = 0; i < pendingCleanupDeps.length; i++) {
-        var dep = pendingCleanupDeps[i];
-        dep.subs = dep.subs.filter(function (s) { return s; });
-        dep._pending = false;
-    }
-    pendingCleanupDeps.length = 0;
-};
 /**
  * A dep is an observable that can have multiple
  * directives subscribing to it.
@@ -3915,8 +3917,6 @@ var cleanupDeps = function () {
  */
 var Dep = /** @class */ (function () {
     function Dep() {
-        // pending subs cleanup
-        this._pending = false;
         this.id = uid$2++;
         this.subs = [];
     }
@@ -3924,15 +3924,7 @@ var Dep = /** @class */ (function () {
         this.subs.push(sub);
     };
     Dep.prototype.removeSub = function (sub) {
-        // #12696 deps with massive amount of subscribers are extremely slow to
-        // clean up in Chromium
-        // to workaround this, we unset the sub for now, and clear them on
-        // next scheduler flush.
-        this.subs[this.subs.indexOf(sub)] = null;
-        if (!this._pending) {
-            this._pending = true;
-            pendingCleanupDeps.push(this);
-        }
+        remove$2(this.subs, sub);
     };
     Dep.prototype.depend = function (info) {
         if (Dep.target) {
@@ -3944,7 +3936,7 @@ var Dep = /** @class */ (function () {
     };
     Dep.prototype.notify = function (info) {
         // stabilize the subscriber list first
-        var subs = this.subs.filter(function (s) { return s; });
+        var subs = this.subs.slice();
         if ( true && !config.async) {
             // subs aren't sorted in scheduler if not running async
             // we need to sort them now to make sure they fire in correct
@@ -3952,12 +3944,12 @@ var Dep = /** @class */ (function () {
             subs.sort(function (a, b) { return a.id - b.id; });
         }
         for (var i = 0, l = subs.length; i < l; i++) {
-            var sub = subs[i];
             if ( true && info) {
+                var sub = subs[i];
                 sub.onTrigger &&
                     sub.onTrigger(__assign({ effect: subs[i] }, info));
             }
-            sub.update();
+            subs[i].update();
         }
     };
     return Dep;
@@ -4028,77 +4020,6 @@ methodsToPatch.forEach(function (method) {
         return result;
     });
 });
-
-var rawMap = new WeakMap();
-function reactive(target) {
-    makeReactive(target, false);
-    return target;
-}
-/**
- * Return a shallowly-reactive copy of the original object, where only the root
- * level properties are reactive. It also does not auto-unwrap refs (even at the
- * root level).
- */
-function shallowReactive(target) {
-    makeReactive(target, true);
-    def(target, "__v_isShallow" /* ReactiveFlags.IS_SHALLOW */, true);
-    return target;
-}
-function makeReactive(target, shallow) {
-    // if trying to observe a readonly proxy, return the readonly version.
-    if (!isReadonly(target)) {
-        if (true) {
-            if (isArray(target)) {
-                warn$2("Avoid using Array as root value for ".concat(shallow ? "shallowReactive()" : "reactive()", " as it cannot be tracked in watch() or watchEffect(). Use ").concat(shallow ? "shallowRef()" : "ref()", " instead. This is a Vue-2-only limitation."));
-            }
-            var existingOb = target && target.__ob__;
-            if (existingOb && existingOb.shallow !== shallow) {
-                warn$2("Target is already a ".concat(existingOb.shallow ? "" : "non-", "shallow reactive object, and cannot be converted to ").concat(shallow ? "" : "non-", "shallow."));
-            }
-        }
-        var ob = observe(target, shallow, isServerRendering() /* ssr mock reactivity */);
-        if ( true && !ob) {
-            if (target == null || isPrimitive(target)) {
-                warn$2("value cannot be made reactive: ".concat(String(target)));
-            }
-            if (isCollectionType(target)) {
-                warn$2("Vue 2 does not support reactive collection types such as Map or Set.");
-            }
-        }
-    }
-}
-function isReactive(value) {
-    if (isReadonly(value)) {
-        return isReactive(value["__v_raw" /* ReactiveFlags.RAW */]);
-    }
-    return !!(value && value.__ob__);
-}
-function isShallow(value) {
-    return !!(value && value.__v_isShallow);
-}
-function isReadonly(value) {
-    return !!(value && value.__v_isReadonly);
-}
-function isProxy(value) {
-    return isReactive(value) || isReadonly(value);
-}
-function toRaw(observed) {
-    var raw = observed && observed["__v_raw" /* ReactiveFlags.RAW */];
-    return raw ? toRaw(raw) : observed;
-}
-function markRaw(value) {
-    if (isObject(value)) {
-        rawMap.set(value, true);
-    }
-    return value;
-}
-/**
- * @internal
- */
-function isCollectionType(value) {
-    var type = toRawType(value);
-    return (type === 'Map' || type === 'WeakMap' || type === 'Set' || type === 'WeakSet');
-}
 
 var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 var NO_INIITIAL_VALUE = {};
@@ -4181,19 +4102,21 @@ var Observer = /** @class */ (function () {
  * or the existing observer if the value already has one.
  */
 function observe(value, shallow, ssrMockReactivity) {
-    if (value && hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
-        return value.__ob__;
+    if (!isObject(value) || isRef(value) || value instanceof VNode) {
+        return;
     }
-    if (shouldObserve &&
+    var ob;
+    if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+        ob = value.__ob__;
+    }
+    else if (shouldObserve &&
         (ssrMockReactivity || !isServerRendering()) &&
         (isArray(value) || isPlainObject(value)) &&
         Object.isExtensible(value) &&
-        !value.__v_skip /* ReactiveFlags.SKIP */ &&
-        !rawMap.has(value) &&
-        !isRef(value) &&
-        !(value instanceof VNode)) {
-        return new Observer(value, shallow, ssrMockReactivity);
+        !value.__v_skip /* ReactiveFlags.SKIP */) {
+        ob = new Observer(value, shallow, ssrMockReactivity);
     }
+    return ob;
 }
 /**
  * Define a reactive property on an Object.
@@ -4369,6 +4292,74 @@ function dependArray(value) {
     }
 }
 
+function reactive(target) {
+    makeReactive(target, false);
+    return target;
+}
+/**
+ * Return a shallowly-reactive copy of the original object, where only the root
+ * level properties are reactive. It also does not auto-unwrap refs (even at the
+ * root level).
+ */
+function shallowReactive(target) {
+    makeReactive(target, true);
+    def(target, "__v_isShallow" /* ReactiveFlags.IS_SHALLOW */, true);
+    return target;
+}
+function makeReactive(target, shallow) {
+    // if trying to observe a readonly proxy, return the readonly version.
+    if (!isReadonly(target)) {
+        if (true) {
+            if (isArray(target)) {
+                warn$2("Avoid using Array as root value for ".concat(shallow ? "shallowReactive()" : "reactive()", " as it cannot be tracked in watch() or watchEffect(). Use ").concat(shallow ? "shallowRef()" : "ref()", " instead. This is a Vue-2-only limitation."));
+            }
+            var existingOb = target && target.__ob__;
+            if (existingOb && existingOb.shallow !== shallow) {
+                warn$2("Target is already a ".concat(existingOb.shallow ? "" : "non-", "shallow reactive object, and cannot be converted to ").concat(shallow ? "" : "non-", "shallow."));
+            }
+        }
+        var ob = observe(target, shallow, isServerRendering() /* ssr mock reactivity */);
+        if ( true && !ob) {
+            if (target == null || isPrimitive(target)) {
+                warn$2("value cannot be made reactive: ".concat(String(target)));
+            }
+            if (isCollectionType(target)) {
+                warn$2("Vue 2 does not support reactive collection types such as Map or Set.");
+            }
+        }
+    }
+}
+function isReactive(value) {
+    if (isReadonly(value)) {
+        return isReactive(value["__v_raw" /* ReactiveFlags.RAW */]);
+    }
+    return !!(value && value.__ob__);
+}
+function isShallow(value) {
+    return !!(value && value.__v_isShallow);
+}
+function isReadonly(value) {
+    return !!(value && value.__v_isReadonly);
+}
+function isProxy(value) {
+    return isReactive(value) || isReadonly(value);
+}
+function toRaw(observed) {
+    var raw = observed && observed["__v_raw" /* ReactiveFlags.RAW */];
+    return raw ? toRaw(raw) : observed;
+}
+function markRaw(value) {
+    def(value, "__v_skip" /* ReactiveFlags.SKIP */, true);
+    return value;
+}
+/**
+ * @internal
+ */
+function isCollectionType(value) {
+    var type = toRawType(value);
+    return (type === 'Map' || type === 'WeakMap' || type === 'Set' || type === 'WeakSet');
+}
+
 /**
  * @internal
  */
@@ -4507,8 +4498,8 @@ function toRef(object, key, defaultValue) {
     return ref;
 }
 
-var rawToReadonlyMap = new WeakMap();
-var rawToShallowReadonlyMap = new WeakMap();
+var rawToReadonlyFlag = "__v_rawToReadonly";
+var rawToShallowReadonlyFlag = "__v_rawToShallowReadonly";
 function readonly(target) {
     return createReadonly(target, false);
 }
@@ -4532,13 +4523,13 @@ function createReadonly(target, shallow) {
         return target;
     }
     // already has a readonly proxy
-    var map = shallow ? rawToShallowReadonlyMap : rawToReadonlyMap;
-    var existingProxy = map.get(target);
+    var existingFlag = shallow ? rawToShallowReadonlyFlag : rawToReadonlyFlag;
+    var existingProxy = target[existingFlag];
     if (existingProxy) {
         return existingProxy;
     }
     var proxy = Object.create(Object.getPrototypeOf(target));
-    map.set(target, proxy);
+    def(target, existingFlag, proxy);
     def(proxy, "__v_isReadonly" /* ReactiveFlags.IS_READONLY */, true);
     def(proxy, "__v_raw" /* ReactiveFlags.RAW */, target);
     if (isRef(target)) {
@@ -6014,13 +6005,8 @@ function lifecycleMixin(Vue) {
             vm.$el.__vue__ = vm;
         }
         // if parent is an HOC, update its $el as well
-        var wrapper = vm;
-        while (wrapper &&
-            wrapper.$vnode &&
-            wrapper.$parent &&
-            wrapper.$vnode === wrapper.$parent._vnode) {
-            wrapper.$parent.$el = wrapper.$el;
-            wrapper = wrapper.$parent;
+        if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
+            vm.$parent.$el = vm.$el;
         }
         // updated hook is called by the scheduler to ensure that children are
         // updated in a parent's updated hook.
@@ -6375,7 +6361,6 @@ function flushSchedulerQueue() {
     // call component updated and activated hooks
     callActivatedHooks(activatedQueue);
     callUpdatedHooks(updatedQueue);
-    cleanupDeps();
     // devtool hook
     /* istanbul ignore if */
     if (devtools && config.devtools) {
@@ -6583,7 +6568,8 @@ function doWatch(source, cb, _a) {
     var oldValue = isMultiSource ? [] : INITIAL_WATCHER_VALUE;
     // overwrite default run
     watcher.run = function () {
-        if (!watcher.active) {
+        if (!watcher.active &&
+            !(flush === 'pre' && instance && instance._isBeingDestroyed)) {
             return;
         }
         if (cb) {
@@ -6663,7 +6649,6 @@ var activeEffectScope;
 var EffectScope = /** @class */ (function () {
     function EffectScope(detached) {
         if (detached === void 0) { detached = false; }
-        this.detached = detached;
         /**
          * @internal
          */
@@ -6676,8 +6661,8 @@ var EffectScope = /** @class */ (function () {
          * @internal
          */
         this.cleanups = [];
-        this.parent = activeEffectScope;
         if (!detached && activeEffectScope) {
+            this.parent = activeEffectScope;
             this.index =
                 (activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(this) - 1;
         }
@@ -6726,7 +6711,7 @@ var EffectScope = /** @class */ (function () {
                 }
             }
             // nested scope, dereference from parent to avoid memory leaks
-            if (!this.detached && this.parent && !fromParent) {
+            if (this.parent && !fromParent) {
                 // optimized O(1) removal
                 var last = this.parent.scopes.pop();
                 if (last && last !== this) {
@@ -6734,7 +6719,6 @@ var EffectScope = /** @class */ (function () {
                     last.index = this.index;
                 }
             }
-            this.parent = undefined;
             this.active = false;
         }
     };
@@ -7159,21 +7143,17 @@ var onBeforeUpdate = createLifeCycle('beforeUpdate');
 var onUpdated = createLifeCycle('updated');
 var onBeforeUnmount = createLifeCycle('beforeDestroy');
 var onUnmounted = createLifeCycle('destroyed');
+var onErrorCaptured = createLifeCycle('errorCaptured');
 var onActivated = createLifeCycle('activated');
 var onDeactivated = createLifeCycle('deactivated');
 var onServerPrefetch = createLifeCycle('serverPrefetch');
 var onRenderTracked = createLifeCycle('renderTracked');
 var onRenderTriggered = createLifeCycle('renderTriggered');
-var injectErrorCapturedHook = createLifeCycle('errorCaptured');
-function onErrorCaptured(hook, target) {
-    if (target === void 0) { target = currentInstance; }
-    injectErrorCapturedHook(hook, target);
-}
 
 /**
  * Note: also update dist/vue.runtime.mjs when adding new exports to this file.
  */
-var version = '2.7.13';
+var version = '2.7.8';
 /**
  * @internal type is manually declared in <root>/types/v3-define-component.d.ts
  */
@@ -7196,7 +7176,6 @@ function _traverse(val, seen) {
     var i, keys;
     var isA = isArray(val);
     if ((!isA && !isObject(val)) ||
-        val.__v_skip /* ReactiveFlags.SKIP */ ||
         Object.isFrozen(val) ||
         val instanceof VNode) {
         return;
@@ -7233,16 +7212,11 @@ var uid$1 = 0;
  */
 var Watcher = /** @class */ (function () {
     function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
-        recordEffectScope(this, 
-        // if the active effect scope is manually created (not a component scope),
-        // prioritize it
-        activeEffectScope && !activeEffectScope._vm
-            ? activeEffectScope
-            : vm
-                ? vm._scope
-                : undefined);
-        if ((this.vm = vm) && isRenderWatcher) {
-            vm._watcher = this;
+        recordEffectScope(this, activeEffectScope || (vm ? vm._scope : undefined));
+        if ((this.vm = vm)) {
+            if (isRenderWatcher) {
+                vm._watcher = this;
+            }
         }
         // options
         if (options) {
@@ -7513,7 +7487,7 @@ function initData(vm) {
         data = {};
          true &&
             warn$2('data functions should return an object:\n' +
-                'https://v2.vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
+                'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
     }
     // proxy data on instance
     var keys = Object.keys(data);
@@ -7811,7 +7785,6 @@ function initMixin$1(Vue) {
         vm.__v_skip = true;
         // effect scope
         vm._scope = new EffectScope(true /* detached */);
-        vm._scope._vm = true;
         // merge options
         if (options && options._isComponent) {
             // optimize internal component instantiation
@@ -10365,16 +10338,7 @@ function normalizeDirectives(dirs, vm) {
         }
         res[getRawDirName(dir)] = dir;
         if (vm._setupState && vm._setupState.__sfc) {
-            var setupDef = dir.def || resolveAsset(vm, '_setupState', 'v-' + dir.name);
-            if (typeof setupDef === 'function') {
-                dir.def = {
-                    bind: setupDef,
-                    update: setupDef,
-                };
-            }
-            else {
-                dir.def = setupDef;
-            }
+            dir.def = dir.def || resolveAsset(vm, '_setupState', 'v-' + dir.name);
         }
         dir.def = dir.def || resolveAsset(vm.$options, 'directives', dir.name, true);
     }
