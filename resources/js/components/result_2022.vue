@@ -16,6 +16,11 @@
 		background-color: #3490dc;
 		color: #f8fafc;
 	}
+	@media screen and (max-width: 800px) {
+		#result-page, #table-container{
+			padding:0;
+		}		
+	}
 
 </style>
 <template>
@@ -77,9 +82,31 @@
 				v-text="capitalizeWords(filter)"
 			/>
 		</div>
-		<div class="container-fluid" v-if="mode == 'map'">
+		<div class="container-fluid" v-if="mode == 'debug'">
 			<div class="row">
-				{{selected}}
+				<div class="col-12">
+					<div class="card bg-danger text-light ">
+						<div class="card-body">
+							<h3 class="card-title text-center">
+								{{selected}}
+							</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div
+					class="col"
+					v-for="(stat, portal) in portal_stats"
+					:key="portal"
+				>
+					<div class="card bg-info text-center">
+						<div class="card-body">
+							<h3 class="card-title">{{portal}}</h3>
+							<h1 class="card-text">{{stat}}</h1>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="row">
 				<div class="col-6">
@@ -108,7 +135,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="container-fluid" v-else-if="mode == 'table'">
+		<div class="container-fluid" v-else-if="mode == 'map'">
+			<IndiaMap />
+		</div>
+		<div id="table-container" class="container-fluid" v-else-if="mode == 'table'">
 			<data-table-22 :data="tableData"
 						:headers='table_headers[selected_table_filter]'
 						:sort_col="'observations'"
@@ -125,7 +155,6 @@ import { capitalizeWords } from "../utils/string.js"
 import axios from 'axios'
 import * as d3Collection from 'd3-collection'
 import states from '../geojson/states.json'
-import districts from '../geojson/districts.json'
 import DataTable22 from './data-table-2022'
 import IndiaMap from './india-map'
 import SpeciesSunburst from './species-sunburst'
@@ -145,12 +174,12 @@ import store from '../store/index_2022'
 		data() {
 			return{
 				modes: ["map", "table", "chart"],
-				mode: "table",
+				mode: "map",
 				filters: {
 					years: [2020,2021,2022],
 					portals: ["BBM Counts", "iNaturalist", "India Biodiversity Portal", "iFoundButterflies"],
 					state: states.features.map(d => d.properties.state).sort(),
-					date: Array.from({length: 30}, (_, i) => i + 1),
+					// date: Array.from({length: 30}, (_, i) => i + 1),
 					species: []
 				},
 				table_filters: [ "states", "species"],
@@ -185,8 +214,10 @@ import store from '../store/index_2022'
 		},
 		created(){
 			store.dispatch('fetchData')
-			// store.dispatch('fetchTaxa')
-			// store.dispatch('fetchAllPortalData', 2020)
+			if(this.debug_flag){
+				this.modes.unshift("debug")
+				this.mode="debug"
+			}
 			this.init();
 		},
 		computed: {
@@ -196,6 +227,15 @@ import store from '../store/index_2022'
 				selected: state => state.selected,
 				district_lists: state => state.district_lists,
 			}),
+			portal_stats(){
+				let op = {}
+				let arr = d3.groups(this.filtered_data, d => d.portal)
+				arr.forEach(d => {
+					op[d[0]] = d[1].reduce((a,b) => a + b.count, 0)
+				})
+				return op
+
+			},
 			tableData(){
 				let op = []
 				let arr = []
