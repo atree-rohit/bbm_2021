@@ -70,33 +70,35 @@
 
 <template>
 	<div>
-		{{selected.area}}
+		{{selected}}
         <div id="controls">
             <h3>{{mapModes[mapMode]}} - {{selected_area}}</h3>
-            <ui-slider
-                v-model="mapMode"
-                color="primary-light2"
-                :step="1"
-                :min="0"
-                :max="3"
-                show-marker
-            />
-
-            <ui-slider
-                v-model="hexZoom"
-                :step="1"
-                :min="0"
-                :max="9"
-                show-marker
-                v-show="mapMode == 3"
-            />
+			<div class="row">
+				<input
+					type="range"
+					class="form-range"
+					min="0"
+					max="3"
+					v-model="mapMode"
+				>
+			</div>
+            <div class="row">
+				<input
+					type="range"
+					class="form-range"
+					min="0"
+					max="9"
+					v-model="hexZoom"
+					v-show="mapMode == 3"
+				>
+				
+			</div>
         </div>
 		<div id="map-container"></div>
 	</div>
 </template>
 
 <script>
-import * as d3 from "d3"
 import * as d3Legend from "d3-svg-legend"
 import * as h3 from "h3-js"
 import regions from '../geojson/regions.json'
@@ -106,7 +108,6 @@ import { mapState } from 'vuex'
 import store from '../store/index'
 export default {
 	name:"IndiaMap",
-    props: ["map_data", "popup", "areaStats", "set_polygon", "set_points"],
 	data() {
 		return{
             mapMode: 0,
@@ -148,7 +149,8 @@ export default {
 	},
 	computed:{
 		...mapState({
-			selected: state=> state.selected.area,
+			selected: state => state.selected,
+			district_lists: state => state.district_lists,
 		}),
 		zoom() {
 			return d3.zoom()
@@ -158,15 +160,9 @@ export default {
 		},
 	},
 	watch: {
-		map_data () {
-			this.data_fns()
+		district_lists(){
+			this.init()
 		},
-        mapMode(newVal) {
-            this.init()
-			if(newVal == 3){
-				this.init_hexagons()
-			}
-        },
 		hexZoom() {
 			this.init_hexagons()
 		}
@@ -263,10 +259,6 @@ export default {
 				this.width = window.innerWidth * 0.9
 			}
 
-			if(this.set_polygons){
-				this.mapMode = 2
-			}
-
 			this.init_observation_counts()
 			this.init_legend()
 			this.renderMap()
@@ -298,22 +290,56 @@ export default {
 			scales.forEach((s) => {
 				this.observation_counts[s] = {}
 			})
-			this.locations.forEach((l) => {
-				if(this.observation_counts.region[l.region] == undefined){
-					this.observation_counts.region[l.region] = 0
+			this.mapLayers[2].features.forEach((district) => {
+				let props = district.properties
+				if(this.observation_counts.region[props.region] == undefined){
+					this.observation_counts.region[props.region] = 0
 				}
-				this.observation_counts.region[l.region] += l.observation_count
-
-				if(this.observation_counts.state[l.state] == undefined){
-					this.observation_counts.state[l.state] = 0
+				if(this.observation_counts.state[props.state] == undefined){
+					this.observation_counts.state[props.state] = 0
 				}
-				this.observation_counts.state[l.state] += l.observation_count
-
-				if(this.observation_counts.district[l.district] == undefined){
-					this.observation_counts.district[l.district] = 0
+				if(this.observation_counts.district[props.district] == undefined){
+					this.observation_counts.district[props.district] = 0
 				}
-				this.observation_counts.district[l.district] += l.observation_count
 			})
+			console.log(this.observation_counts)
+			Object.keys(this.district_lists).forEach((state) => {
+				
+				Object.keys(this.district_lists[state]).forEach((district) => {
+					let lists = this.district_lists[state][district]
+					let total = 0
+					let region = ""
+					Object.keys(this.regions).forEach((r) => {
+						if(this.regions[r].includes(state)){
+							region = r
+						}
+					})
+					Object.keys(lists).forEach((year) => {
+						total += Object.values(lists[year]).reduce((a,b) => a + b.count, 0)
+					})
+					this.observation_counts.district[district] += total
+					this.observation_counts.state[state] += total
+					this.observation_counts.region[region] += total
+				})
+			})
+			console.log(this.observation_counts)
+			
+			// this.locations.forEach((l) => {
+			// 	if(this.observation_counts.region[l.region] == undefined){
+			// 		this.observation_counts.region[l.region] = 0
+			// 	}
+			// 	this.observation_counts.region[l.region] += l.observation_count
+
+			// 	if(this.observation_counts.state[l.state] == undefined){
+			// 		this.observation_counts.state[l.state] = 0
+			// 	}
+			// 	this.observation_counts.state[l.state] += l.observation_count
+
+			// 	if(this.observation_counts.district[l.district] == undefined){
+			// 		this.observation_counts.district[l.district] = 0
+			// 	}
+			// 	this.observation_counts.district[l.district] += l.observation_count
+			// })
 			// console.log("observation_counts", this.observation_counts)
 		},
 		init_legend() {
@@ -662,7 +688,7 @@ export default {
 			if(this.selected.state != "All"){
 				points = points.filter((p) => p[3].state == this.selected.state)
 			}
-			if((points.length > 0 && points.length < 3000) || this.set_polygon ){
+			if((points.length > 0 && points.length < 3000) ){
 				if (!d3.select("#map-container .map-points").empty()) {
 					d3.select("#map-container .map-points").remove()
 				}
