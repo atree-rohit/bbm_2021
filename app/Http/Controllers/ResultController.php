@@ -94,18 +94,12 @@ class ResultController extends Controller
 
     public function get_data($year)
     {
-        $taxa = INatTaxa22::select("id", "name", "common_name", "rank", "ancestry")->get()->keyBy("id");
         $this->limit = -1;
         $all_data = [
             "counts" => $this->get_counts_data_array_2022($year), 
-            "inat" => $this->get_inat_data_array_2022($year), 
-            "ibp" => $this->get_ibp_data_array_2022($year), 
+            // "inat" => $this->get_inat_data_array_2022($year), 
+            // "ibp" => $this->get_ibp_data_array_2022($year), 
         ];
-        // $all_portal_data = array_merge(
-        //         array_slice($this->get_counts_data_array(), 0, 10), 
-        //         array_slice($this->get_inat_data_array($taxa), 0, -1),
-        //         array_slice($this->get_ibp_data_array($taxa), 0, 10)
-        //     );
         return response($all_data, 200)
             ->header('Content-Type', 'application/json');
     }
@@ -211,8 +205,6 @@ class ResultController extends Controller
         if(isset($_GET["debug"]) && $_GET["debug"] == 1){
             $debug_flag = true;
         }
-
-        $this->grouped_data();
         
         return view('result.index_2022', compact("debug_flag"));
     }
