@@ -90,8 +90,9 @@
 </template>
 
 <script>
+import { capitalizeWords } from "../utils/string.js"
 import * as d3Legend from "d3-svg-legend"
-import * as h3 from "h3-js"
+
 import regions from '../geojson/regions.json'
 import states from '../geojson/states.json'
 import districts from '../geojson/districts.json'
@@ -425,7 +426,7 @@ export default {
 			let name = [region, state, district][this.mapMode]
 			let mode = this.mapModes[this.mapMode].toLowerCase()
 			return `<table>
-				<tr><td>${this.capatilizeWords(mode)}</td><td>${this.capatilizeWords(name)}</td></tr>
+				<tr><td>${this.capitalizeWords(mode)}</td><td>${this.capitalizeWords(name)}</td></tr>
 				<tr><td>Observations</td><td>${this.areaStats[mode][name].observations}</td></tr>
 				<tr><td>Users</td><td>${this.areaStats[mode][name].users}</td></tr>
 				<tr><td>Unique Taxa</td><td>${this.areaStats[mode][name].species}</td></tr>
@@ -503,9 +504,7 @@ export default {
 				this.dispatchSelectArea("state", this.selected_area) 
 			}
 		},
-		capatilizeWords(str){
-			return str.split(" ").map((w) => w[0].toUpperCase() + w.substr(1)).join(" ")
-		},
+		capitalizeWords,
 	}
 };
 </script>
