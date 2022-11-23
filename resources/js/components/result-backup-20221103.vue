@@ -429,7 +429,7 @@ import SpeciesSunburst from './species-sunburst'
 import DateChart from './date-chart'
 
 import { mapState } from 'vuex'
-import store from '../store/index'
+import store from '../store/index.bak'
 
 	export default {
 		name:"result",
