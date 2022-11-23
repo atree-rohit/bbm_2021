@@ -182,7 +182,7 @@ import store from '../store/index_2022'
 					// date: Array.from({length: 30}, (_, i) => i + 1),
 					species: []
 				},
-				table_filters: [ "states", "species"],
+				table_filters: [ "states", "taxa"],
 				selected_table_filter: "states",
 				table_headers: {
 					states: [
@@ -193,7 +193,7 @@ import store from '../store/index_2022'
 						["Users","users"],
 						["Portals", "portals"]
 					],
-					species: [
+					taxa: [
 						["Taxa Name", "taxa"],
 						["Rank", "rank"],
 						["Observations", "observations"],
@@ -208,7 +208,7 @@ import store from '../store/index_2022'
 					"BBM Counts":  "counts",
 					"iNaturalist":  "inat",
 					"India Biodiversity Portal":  "ibp",
-					"iFoundButterflies":  "ifb",
+					// "iFoundButterflies":  "ifb",
 				}
 			}
 		},
@@ -251,7 +251,7 @@ import store from '../store/index_2022'
 							portals: [...new Set(row[1].map((r) => r.portal))].sort()
 						})
 					})
-				} else if(this.selected_table_filter == "species"){
+				} else if(this.selected_table_filter == "taxa"){
 					arr = d3.groups(this.filtered_data, d => d.taxa_id)
 					
 					arr.map((row) => {
