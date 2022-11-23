@@ -150,10 +150,6 @@ export default {
                     this.selected_rows.push(id)
             })
         },
-        data(newVal){
-            console.log("newVal", newVal)
-            console.log(this.sortedData)
-        }
     },
     computed: {
         tableHeight() {
