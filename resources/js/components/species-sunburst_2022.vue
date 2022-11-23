@@ -77,12 +77,15 @@
     content: normal;
   }
 
-    .breadcrumb li:hover a
-    {
-        color: #282 !important;
-        text-decoration: none;
-        text-shadow: 1px 1px 5px rgba(100,255,100,.25);
-    }
+.breadcrumb li:hover a
+{
+    color: #282 !important;
+    text-decoration: none;
+    text-shadow: 1px 1px 5px rgba(100,255,100,.25);
+}
+.taxa-selected{
+    fill: red !important;
+}
 </style>
 <template>
     <div>
@@ -96,6 +99,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import store from '../store/index_2022'
 	export default {
 		name:"species-sunburst",
 		data(){
@@ -121,43 +126,64 @@
 			}
 		},
 		computed: {
+            ...mapState({
+				filtered_data: state => state.filtered_data,
+				all_taxa: state => state.taxa,
+                selected: state => state.selected,
+			}),
             color () {
                 return d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, this.speciesData.children.length +4))
             },
 		},
 		watch: {
-            selected (newVal) {
-                if(newVal.length == 0){
-                    this.crumbClick("Papilionoidea")
+            filtered_data(){
+                this.init()
+                if(this.selected.species != "All"){
+                    let parent_id = this.all_taxa.find((d) => d.id == this.selected.species).ancestry.split("/").at(-2)
+                    let taxa = this.all_taxa.find((d) => d.id == parent_id)
+                    this.crumbClick(taxa.name)
                 }
             },
-            tree_data () {
-                this.init()
-
-                this.watch_click = true
-                this.crumbClick(this.selected[this.selected.length - 1])
-                this.watch_click = false
-
-            }
+            // selected(newVal){
+            //     console.log(newVal)
+            //     if(this.selected.species != "All"){
+            //         let taxa = this.all_taxa.find((d) => d.id == this.selected.species)
+            //         console.log(taxa)
+            //         // this.crumbClick(this.selected.species)
+            //     }
+            // }
 		},
-        mounted() {
-    		this.init()
-            this.crumbClick("Papilionoidea")
+        created() {
+    		// this.init()
+            // this.crumbClick("Papilionoidea")
 		},
 		methods: {
             init () {
+                console.log("render")
                 if(window.innerWidth < 800){
-                    this.width = window.innerWidth * 2
-                    this.height = window.innerHeight * 0.8
+                    this.width = window.innerWidth * 1.75
+                    this.height = window.innerHeight * 1.5
                 } else {
                     this.width = window.innerWidth * 0.5
-                    this.height = window.innerHeight * 0.6
+                    this.height = window.innerHeight * 0.4
                 }
                 this.radius = Math.min(this.height, this.width) * 0.15
 
                 var speciesTree = [];
+                let all_taxa = [...new Set (this.filtered_data.map((d) => d.taxa_id))]
+                let tree_data = []
+                all_taxa.map((t) => {
+                    let taxa = this.all_taxa.find((d) => d.id == t)
+                    let ancestry = this.get_ancestry(taxa.ancestry)
+                    Object.keys(ancestry).map((a) => {
+                        taxa[a] = ancestry[a]
+                    })
+                    taxa[taxa.rank] = taxa.name
+                    tree_data.push(taxa)
+                })
 
-                this.tree_data.forEach(d => {
+
+                tree_data.forEach(d => {
                     speciesTree.push([d.superfamily,d.family, d.subfamily, d.tribe, d.genus, d.species])
                 })
                 this.speciesData = this.createTree(speciesTree, "Reset")
@@ -203,7 +229,16 @@
             	.style("cursor", "pointer")
             		.on("mouseover", function (d){ d3.select(this).classed("taxa-selected", true)})
             		.on("mouseout", function (d){ d3.select(this).classed("taxa-selected",false)})
-            		.on("click", (event, d) =>  this.clicked(d))
+            		.on("click", (event, d) =>  {
+                        if(d.depth == 6){
+                            // store.dispatch('setSelected', {
+                            //     filter: "species",
+                            //     value: d.data.name}
+                            // )
+                        } else {
+                            this.clicked(d)
+                        }
+                    })
 
 
             	this.path.append("title")
@@ -219,6 +254,7 @@
             			.attr("dy", "0.35em")
             			.attr("fill-opacity", d => +this.labelVisible(d.current))
             			.attr("transform", d => this.labelTransform(d.current))
+                        .style("font-size", "0.5em")
                             .text(d => d.data.name)
 
                 this.parent = this.g.append("circle")
@@ -227,6 +263,18 @@
             		.attr("fill", "none")
             		.attr("pointer-events", "all")
             		.on("click", (event, d) => this.clicked(d))
+            },
+            get_ancestry(ancestry){
+                let ancestors = ancestry.split("/")
+                let levels = ["superfamily","family","subfamily","tribe","genus","species"]
+                let op = {}
+                ancestors.map((a) => {
+                    let taxa = this.all_taxa.find((d) => d.id == a)
+                    if(levels.indexOf(taxa.rank) != -1){
+                        op[taxa.rank] = taxa.name
+                    }
+                })
+                return op
             },
             clicked(p) {
                 var selected_taxon = null
