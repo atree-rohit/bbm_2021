@@ -25,6 +25,7 @@
 </style>
 <template>
 	<div id="result-page" class="container-fluid">
+		{{selected}}
 		<ul id="mode-tabs" class="nav nav-tabs nav-fill">
 			<li
 				v-for="m in modes"
@@ -136,7 +137,7 @@
 			</div>
 		</div>
 		<div class="container-fluid" v-else-if="mode == 'map'">
-			<IndiaMap />
+			<IndiaMap :key='timestamp'/>
 		</div>
 		<div id="table-container" class="container-fluid" v-else-if="mode == 'table'">
 			<data-table-22 :data="tableData"
@@ -145,6 +146,9 @@
 						:sort_dir="'desc'"
 			/>
 		</div>
+		<div id="chart-container" class="container-fluid" v-else-if="mode == 'chart'">
+			<species-sunburst :key='timestamp' />
+		</div>
 		
 	</div>
 </template>
@@ -152,12 +156,10 @@
 <script>
 import { capitalizeWords } from "../utils/string.js"
 
-import axios from 'axios'
-import * as d3Collection from 'd3-collection'
 import states from '../geojson/states.json'
 import DataTable22 from './data-table-2022'
 import IndiaMap from './india-map'
-import SpeciesSunburst from './species-sunburst'
+import SpeciesSunburst from './species-sunburst_2022'
 import DateChart from './date-chart'
 
 import { mapState } from 'vuex'
@@ -174,7 +176,7 @@ import store from '../store/index_2022'
 		data() {
 			return{
 				modes: ["map", "table", "chart"],
-				mode: "map",
+				mode: "chart",
 				filters: {
 					years: [2020,2021,2022],
 					portals: ["BBM Counts", "iNaturalist", "India Biodiversity Portal", "iFoundButterflies"],
@@ -225,8 +227,10 @@ import store from '../store/index_2022'
 				filtered_data: state => state.filtered_data,
 				filtered_taxa: state => state.filtered_taxa,
 				selected: state => state.selected,
-				district_lists: state => state.district_lists,
 			}),
+			timestamp(){
+				return Date.now()
+			},
 			portal_stats(){
 				let op = {}
 				let arr = d3.groups(this.filtered_data, d => d.portal)
