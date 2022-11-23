@@ -9,7 +9,6 @@ const store = new Vuex.Store({
         taxa: {},
         all_portal_data: [],
         all_data: [],
-        district_lists: [],
         selected: {
             portals: "All",
             years: "All",
@@ -22,25 +21,12 @@ const store = new Vuex.Store({
     },
     mutations: {
         SET_DATA(state, data){
-            // $op[$state][$district][$year][$portal][$row["taxa_id"]][] = [$user_id, $row["date"], 1];
             state.taxa = data.taxa
-            state.district_lists = {}
-            state.all_data = []
             let all_data = []
-            let district_lists = {}
             
             Object.keys(data.data).forEach((state) => {
                 Object.keys(data.data[state]).forEach((district) => {
                     Object.keys(data.data[state][district]).forEach((year) => {
-                        if(!district_lists[state]){
-                            district_lists[state] = {}
-                        }
-                        if(!district_lists[state][district]){
-                            district_lists[state][district] = {}
-                        }
-                        if(!district_lists[state][district][year]){
-                            district_lists[state][district][year] = {}
-                        }
                         Object.keys(data.data[state][district][year]).forEach((portal) => {
                             Object.keys(data.data[state][district][year][portal]).forEach((taxa) => {
                                 Object.keys(data.data[state][district][year][portal][taxa]).forEach((r) => {
@@ -54,18 +40,7 @@ const store = new Vuex.Store({
                                         user_id: row[0],
                                         date: row[1],
                                         count: row[2]
-                                    })
-                                    
-                                    if(!district_lists[state][district][year][taxa]){
-                                        district_lists[state][district][year][taxa] = {
-                                            portals: new Set(),
-                                            users: new Set(),
-                                            count: 0
-                                        }
-                                    } 
-                                    district_lists[state][district][year][taxa].portals.add(portal)
-                                    district_lists[state][district][year][taxa].users.add(row[0])
-                                    district_lists[state][district][year][taxa].count += row[2]
+                                    })                                    
                                 })
                             })
                         })
@@ -73,10 +48,10 @@ const store = new Vuex.Store({
                 })
             })
             state.all_data = all_data
-            state.district_lists = district_lists
             console.log("fetching data - Set_data complete")
         },
         SET_TAXA(state, taxa) {
+            console.log(taxa)
             state.taxa = taxa
         },
         SET_ALL_PORTAL_DATA(state, all_portal_data) {
@@ -150,8 +125,8 @@ const store = new Vuex.Store({
             console.log("fetching data - Start")
             return axios.get('/api/grouped_data')
                 .then((response) => commit('SET_DATA', response.data))
-                .then(() => commit('SET_FILTERED_DATA'))
                 .then(() => commit('SET_FILTERED_TAXA'))
+                .then(() => commit('SET_FILTERED_DATA'))
         },
         fetchTaxa({commit}) {
             return axios.get('/api/taxa')
@@ -164,8 +139,8 @@ const store = new Vuex.Store({
                 .then((response) => {
                     commit('SET_ALL_PORTAL_DATA', response.data)
                 })
-                .then(() => commit('SET_FILTERED_DATA'))
                 .then(() => commit('SET_FILTERED_TAXA'))
+                .then(() => commit('SET_FILTERED_DATA'))
         },
         setSelected({commit}, payload) {
             console.log("setSelected", payload)
