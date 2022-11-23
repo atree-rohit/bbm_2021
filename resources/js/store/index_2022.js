@@ -66,8 +66,6 @@ const store = new Vuex.Store({
                                     district_lists[state][district][year][taxa].portals.add(portal)
                                     district_lists[state][district][year][taxa].users.add(row[0])
                                     district_lists[state][district][year][taxa].count += row[2]
-                                    
-                                    
                                 })
                             })
                         })
