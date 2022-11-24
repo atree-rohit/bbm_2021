@@ -1,4 +1,4 @@
-<style scoped>
+<style>
     .breadcrumb {
         list-style: none;
         padding: 0;
@@ -86,12 +86,16 @@
 .taxa-selected{
     fill: red !important;
 }
+
+path[fill-opacity="0"] {
+    display: none;
+}
 </style>
 <template>
     <div>
         <ul class="breadcrumb text-center">
             <li v-for="(crumb, i) in breadcrumbs" :key="i">
-                <a href="#" :title="`${taxa_levels[i]}: ${crumb}`" @click="crumbClick(crumb)">{{ crumb }}</a>
+                <a href="#" :title="`${taxa_level_labels[i]}: ${crumb}`" @click="crumbClick(crumb)">{{ crumb }}</a>
             </li>
         </ul>
         <div id="sunburstChart" class=""></div>
@@ -108,58 +112,47 @@ import store from '../store/index_2022'
                 width: 0,
         		height:0,
         		radius: 0,
-        		margin: {
-        			top: 50,
-        			right: 50,
-        			left: 50,
-        			bottom: 50,
-        		},
         		g:"",
         		path:"",
         		parent:"",
         		label:"",
-        		speciesData:[],
+        		species_data:[],
         		root:{},
                 breadcrumbs:[],
-                watch_click:false,
-                taxa_levels: ["Super-family", "Family", "Sub-family", "Tribe", "Genus", "Species"],
+                taxa_levels: ["superfamily","family","subfamily","tribe","genus","species"],
+                taxa_level_labels: ["Super-family", "Family", "Sub-family", "Tribe", "Genus", "Species"],
 			}
 		},
 		computed: {
             ...mapState({
-				filtered_data: state => state.filtered_data,
+				filtered_data: state => state.all_data,
 				all_taxa: state => state.taxa,
                 selected: state => state.selected,
 			}),
             color () {
-                return d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, this.speciesData.children.length +4))
+                return d3.scaleOrdinal(d3.quantize(d3.interpolateWarm, this.species_data.children.length +4))
             },
 		},
+        mounted(){
+            this.init()
+            if(this.selected.taxa != "All"){
+                let taxa_name = this.all_taxa.find(taxa => taxa.id == this.selected.taxa).name
+                this.init()
+                this.crumbClick(taxa_name)
+            }
+        },
 		watch: {
             filtered_data(){
-                this.init()
-                if(this.selected.species != "All"){
-                    let parent_id = this.all_taxa.find((d) => d.id == this.selected.species).ancestry.split("/").at(-2)
-                    let taxa = this.all_taxa.find((d) => d.id == parent_id)
-                    this.crumbClick(taxa.name)
-                }
+                // this.renderChart()
+                // if(this.selected.species != "All"){
+                //     let parent_id = this.all_taxa.find((d) => d.id == this.selected.species).ancestry.split("/").at(-2)
+                //     let taxa = this.all_taxa.find((d) => d.id == parent_id)
+                //     this.crumbClick(taxa.name)
+                // }
             },
-            // selected(newVal){
-            //     console.log(newVal)
-            //     if(this.selected.species != "All"){
-            //         let taxa = this.all_taxa.find((d) => d.id == this.selected.species)
-            //         console.log(taxa)
-            //         // this.crumbClick(this.selected.species)
-            //     }
-            // }
-		},
-        created() {
-    		// this.init()
-            // this.crumbClick("Papilionoidea")
 		},
 		methods: {
             init () {
-                console.log("render")
                 if(window.innerWidth < 800){
                     this.width = window.innerWidth * 1.75
                     this.height = window.innerHeight * 1.5
@@ -169,36 +162,46 @@ import store from '../store/index_2022'
                 }
                 this.radius = Math.min(this.height, this.width) * 0.15
 
+                this.initTree()
+                this.renderChart()
+            },
+            initTree(){
                 var speciesTree = [];
-                let all_taxa = [...new Set (this.filtered_data.map((d) => d.taxa_id))]
-                let tree_data = []
-                all_taxa.map((t) => {
+                let tree_data = [];
+                
+                [...new Set (this.filtered_data.map((d) => d.taxa_id))].map((t) => {
                     let taxa = this.all_taxa.find((d) => d.id == t)
-                    let ancestry = this.get_ancestry(taxa.ancestry)
-                    Object.keys(ancestry).map((a) => {
-                        taxa[a] = ancestry[a]
-                    })
+                    let ancestry = this.getAncestry(taxa.ancestry)
+                    Object.keys(ancestry).map((a) => taxa[a] = ancestry[a])
                     taxa[taxa.rank] = taxa.name
                     tree_data.push(taxa)
                 })
 
-
                 tree_data.forEach(d => {
                     speciesTree.push([d.superfamily,d.family, d.subfamily, d.tribe, d.genus, d.species])
                 })
-                this.speciesData = this.createTree(speciesTree, "Reset")
-                this.root = this.partition(this.speciesData)
+                this.species_data = this.createTree(speciesTree, "Reset")
+                this.root = this.partition(this.species_data)
                 this.root.each(d => d.current = d)
-
-
-            	if (!d3.select("#sunburstChart svg").empty()) {
+            },
+            getAncestry(ancestry){
+                let ancestors = ancestry.split("/")
+                let op = {}
+                ancestors.map((a) => {
+                    let taxa = this.all_taxa.find((d) => d.id == a)
+                    if(this.taxa_levels.indexOf(taxa.rank) != -1){
+                        op[taxa.rank] = taxa.name
+                    }
+                })
+                return op
+            },
+            renderChart(){
+                if (!d3.select("#sunburstChart svg").empty()) {
                     d3.selectAll("#sunburstChart svg").remove()
                 }
                 const svg = d3.select("#sunburstChart")
             		.append("svg")
             		.classed("bg-light text-center border boorder-primary rounded", true)
-                    // .attr("width", this.width)
-                    // .attr("height", this.height)
             		.attr("viewBox", [0,0, this.width, this.height])
 
             	const arc = d3.arc()
@@ -217,32 +220,30 @@ import store from '../store/index_2022'
             		.selectAll("path")
                         .data(this.root.descendants().slice(1))
                         .join("path")
-                        .attr("fill", d => {
-                            while (d.depth > 2) d = d.parent; return this.color(d.data.name);
+                        .attr("fill", (d) => {
+                            while (d.depth > 2) {
+                                d = d.parent
+                            }
+                            return this.color(d.data.name)
                         })
-                        .attr("fill-opacity", d => this.arcVisible(d.current) ? (d.children ? 0.3 : 0.1) : 0)
+                        .attr("fill-opacity", (d) => this.arcVisible(d.current) ? (d.children ? 0.3 : 0.1) : 0)
                         .attr("stroke", "white")
-            			.attr("stroke-width", d => this.arcVisible(d.current) ? (d.children ? "1px" : "1px") : "0px")
-            			.attr("d", d=> arc(d.current))
+            			.attr("stroke-width", (d) => this.arcVisible(d.current) ? (d.children ? "1px" : "1px") : "0px")
+            			.attr("d", (d) => arc(d.current))
 
-            	this.path.filter(d => d.current)
-            	.style("cursor", "pointer")
-            		.on("mouseover", function (d){ d3.select(this).classed("taxa-selected", true)})
-            		.on("mouseout", function (d){ d3.select(this).classed("taxa-selected",false)})
+            	this.path.filter((d) => d.current)
+            	    .style("cursor", "pointer")
+            		.on("mouseover", (d) => d3.select(d.currentTarget).classed("taxa-selected", true))
+            		.on("mouseout", (d) => d3.select(d.currentTarget).classed("taxa-selected",false))
             		.on("click", (event, d) =>  {
-                        if(d.depth == 6){
-                            // store.dispatch('setSelected', {
-                            //     filter: "species",
-                            //     value: d.data.name}
-                            // )
-                        } else {
+                        if(d.depth < 6){
                             this.clicked(d)
                         }
                     })
 
 
             	this.path.append("title")
-            		.text( d => `${d.ancestors().map(d => d.data.name).reverse().join(" > ").replace("Reset > ", "")} - ${d.value}`);
+            		.text( (d) => `${d.ancestors().map((d1) => d1.data.name).reverse().join(" > ").replace("Reset > ", "")} - ${d.value}`);
 
             	this.label = this.g.append("g")
             		.classed("d3-arcs-labels", true)
@@ -264,18 +265,6 @@ import store from '../store/index_2022'
             		.attr("pointer-events", "all")
             		.on("click", (event, d) => this.clicked(d))
             },
-            get_ancestry(ancestry){
-                let ancestors = ancestry.split("/")
-                let levels = ["superfamily","family","subfamily","tribe","genus","species"]
-                let op = {}
-                ancestors.map((a) => {
-                    let taxa = this.all_taxa.find((d) => d.id == a)
-                    if(levels.indexOf(taxa.rank) != -1){
-                        op[taxa.rank] = taxa.name
-                    }
-                })
-                return op
-            },
             clicked(p) {
                 var selected_taxon = null
                 if(p.data?.name){
@@ -286,13 +275,8 @@ import store from '../store/index_2022'
 
                 if(selected_taxon == 'Reset'){
                     alert("Root of the Tree")
-                // } else if (p.data.children.length == 0){
-                //     alert(p.data.name)
                 } else {
                     this.breadcrumbs = this.populate_breadcrumbs(p,[]);
-                    if(this.watch_click == false ){
-                        this.$emit('select-taxon', this.breadcrumbs)
-                    }
                     const arc = d3.arc()
     					.startAngle(d => d.x0)
     					.endAngle(d => d.x1)
@@ -300,7 +284,6 @@ import store from '../store/index_2022'
     					.padRadius(this.radius * 1.5)
     					.innerRadius(d => d.y0 * this.radius)
     					.outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius))
-
 
     				this.parent.datum(p.parent || this.root);
     				this.root.each(d => d.target = {
@@ -311,32 +294,25 @@ import store from '../store/index_2022'
     				})
 
                     const t = this.g.transition().duration(750)
-                    const that = this
                     this.path.transition(t)
     					.tween("data", d => {
     						const i = d3.interpolate(d.current, d.target);
     						return t => d.current = i(t);
     					})
-    					.filter(function(d) {
-    						return +this.getAttribute("fill-opacity") || that.arcVisible(d.target)
-    					})
-    					.attr("fill-opacity", d => that.arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
-    					.attrTween("d", d => () => arc(d.current))
-        			that.label.filter(function(d) {
-    					return +this.getAttribute("fill-opacity") || that.labelVisible(d.target)
-                    }).transition(t)
-    					.attr("fill-opacity", d => +that.labelVisible(d.target))
-    					.attrTween("transform", d => () => that.labelTransform(d.current))
+    					.filter((d, i, nodes) => +d3.select(nodes[i]).attr("fill-opacity") || this.arcVisible(d.target))
+    					.attr("fill-opacity", (d) => this.arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+    					.attrTween("d", (d) => () => arc(d.current))
+        			this.label.filter((d, i, nodes) =>  +d3.select(nodes[i]).attr("fill-opacity") || this.labelVisible(d.target)).transition(t)
+    					.attr("fill-opacity", d => +this.labelVisible(d.target))
+    					.attrTween("transform", d => () => this.labelTransform(d.current))
+                    store.dispatch('selectTaxa', selected_taxon)
                 }
-
 			},
             arcVisible(d){
-                //
-                return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
+                return ((d.y1 <= 3) && (d.y0 >= 1) && (d.x1 > d.x0))
             },
             labelVisible(d) {
-                //
-                return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
+                return ((d.y1 <= 3) && (d.y0 >= 1) && ((d.y1 - d.y0) * (d.x1 - d.x0) > 0.03))
             },
             labelTransform(d) {
                 const x = (d.x0 + d.x1) / 2 * 180 / Math.PI
@@ -358,20 +334,17 @@ import store from '../store/index_2022'
 				})
 				return match
 			},
-            format(d){
-                //
-                return d3.format(d)
-			},
             partition(data) {
                 this.root = d3.hierarchy(data)
                     .sum(d => 1)
                     .sort((a, b) => b.value - a.value)
                 return d3.partition()
                     .size([2 * Math.PI, this.root.height + 1])
-					(this.root);
+					(this.root)
 			},
             createTree(structure, topItem) {
                 const node = (name) => ({name, children: []});
+                const top = node(topItem);
                 const addNode = (parent, child) => (parent.children.push(child), child);
                 const findNamedNode = (name, parent) => {
                     for (const child of parent.children) {
@@ -380,8 +353,6 @@ import store from '../store/index_2022'
                         if (found) { return found }
                     }
 				}
-                const topName = topItem;
-                const top = node(topName);
                 var current;
                 for (const children of structure) {
                     current = top;
@@ -390,7 +361,27 @@ import store from '../store/index_2022'
                         current = found ? found : addNode(current, node(name, current.name));
                     }
                 }
-                return top;
+
+                return this.trimTree(top)
+            },
+            trimTree(tree){
+                let level = 0
+                tree.children.forEach((superfamily, sf_id) => {
+                    superfamily.children.forEach((family, f_id) => {
+                        family.children.forEach((subfamily, su_id) => {
+                            subfamily.children.forEach((tribe, t_id) => {
+                                tribe.children.forEach((genus, g_id) => {
+                                    genus.children.forEach((species, s_id) => {
+                                        if(species.name==undefined){
+                                            tree.children[sf_id].children[f_id].children[su_id].children[t_id].children[g_id].children.splice(s_id, 1)
+                                        }
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+                return tree
             },
             populate_breadcrumbs(p,result){
                 if(p.data != null && p.data.name != "Reset"){
@@ -403,7 +394,6 @@ import store from '../store/index_2022'
             },
             crumbTitle(text, depth){
                 let taxon = ""
-                let rank = taxa_levels[depth]
                 if(text != undefined){
                     taxon = text.charAt(0).toUpperCase() + text.slice(1) + ": "
 
