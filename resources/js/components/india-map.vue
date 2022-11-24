@@ -293,9 +293,10 @@ export default {
 			this.max = 0
 			if(this.mapMode == 0 ){
 				this.max = Math.max(...Object.values(this.areaStats.region).map((r) => r.observations))
+				let min = Math.min(...Object.values(this.areaStats.region).map((r) => r.observations))
 				this.colors = d3.scaleLinear()
-					.domain([0, this.max * 0.25, this.max])
-					.range(["#f77", "#33d", "#3d3"])
+					.domain([min, this.max])
+					.range(["#33d", "#3d3"])
 			} else if (this.mapMode == 1){
 				this.max = Math.max(...Object.values(this.areaStats.state).map(((s) => s.observations)))
 				this.colors = d3.scaleLinear()
@@ -307,12 +308,6 @@ export default {
 					.domain([0, 1, this.max*.25, this.max])
 					.range(["#f77", "#ca0", "#ada", "#3d3"])
 
-			} else if (this.mapMode == 3 ){
-				this.max = Math.max(...Object.values(this.hexagons).map((h) => h.observations))
-				let hex_opacity = 0.8
-				this.colors = d3.scaleLinear()
-					.domain([0, 1, this.max*.25, this.max])
-					.range([`rgba(255, 119, 119, ${hex_opacity})`, `rgba(204, 170, 0, ${hex_opacity})`, `rgba(170, 221, 170, ${hex_opacity})`, `rgba(51, 221, 51, ${hex_opacity})`])
 			}
 			if(this.max == 0){
 				this.colors = d3.scaleLinear()
