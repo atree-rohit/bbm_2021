@@ -279,7 +279,7 @@ import store from '../store/index_2022'
 		},
 		watch:{
 			filtered_taxa(newVal){
-				console.log(newVal)
+				// console.log(newVal)
 				let taxa = Object.values(newVal)
 								.map((t) => (t.common_name) ? `${t.name} (${t.common_name})` : t.name)
 								.sort()
