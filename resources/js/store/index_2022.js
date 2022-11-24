@@ -14,7 +14,7 @@ const store = new Vuex.Store({
             years: "All",
             state: "All",
             date: "All",
-            species: "All",
+            taxa: "All"
         },
         filtered_data: [],
         filtered_taxa: [],
@@ -50,29 +50,6 @@ const store = new Vuex.Store({
             state.all_data = all_data
             console.log("fetching data - Set_data complete")
         },
-        SET_TAXA(state, taxa) {
-            console.log(taxa)
-            state.taxa = taxa
-        },
-        SET_ALL_PORTAL_DATA(state, all_portal_data) {
-            state.all_data = []
-            state.all_portal_data = all_portal_data
-            Object.keys(all_portal_data).forEach((portal) => {
-                Object.keys(all_portal_data[portal]).forEach((ind_state) => {
-                    Object.keys(all_portal_data[portal][ind_state]).forEach((district) => {
-                        state.all_data.push(all_portal_data[portal][ind_state][district].map((data) => {
-                            return {
-                                portal: portal,
-                                state: ind_state,
-                                district: district,
-                                ...data
-                            }
-                        }))
-                    })
-                })
-            })
-            state.all_data = state.all_data.flat()
-        },
         SET_SELECTED(state, selected) {
             if(selected.filter == "species"){
                 let species_name = selected.value
@@ -107,17 +84,39 @@ const store = new Vuex.Store({
                     return false
                 }
 
-                if (state.selected.species != "All" && d.taxa_id != state.selected.species){
-                    return false
+                if (state.selected.taxa != "All"){
+                    let ancestry = state.taxa.find((t) => t.id == d.taxa_id).ancestry
+                    return ancestry.includes(state.selected.taxa.toString())
                 }
                 return true
             })
             console.log("fetching data - filtered_data complete")
         },
         SET_FILTERED_TAXA(state) {
-            let all_taxa = state.all_data.map((d) => parseInt(d.taxa_id)).sort()
-            state.filtered_taxa = Object.values(state.taxa).filter((t) => all_taxa.includes(t.id))
+            let all_taxa = [...new Set(state.filtered_data.map((d) => parseInt(d.taxa_id)))]
+            let all_taxa_set = new Set(all_taxa)
+            let levels = ['family', 'superfamily', 'genus', 'species', 'subfamily', 'tribe']
+            all_taxa.map((t) => {
+                state.taxa.find((taxa) => taxa.id == t).ancestry
+                    .split("/")
+                    .map((a) => parseInt(a))
+                    .map((a) => all_taxa_set.add(a))
+            })
+            all_taxa = [...all_taxa_set]
+            state.filtered_taxa = Object.values(state.taxa)
+                .filter((t) => all_taxa.includes(t.id) && levels.includes(t.rank))
+            
+            // console.log(all_taxa, all_taxa_set, state.filtered_taxa)
             console.log("fetching data - filtered_taxa complete")
+        },
+        SELECT_TAXA(state, taxa_name){
+            let name = ""
+            if(taxa_name.includes("(")){
+                name = taxa_name.split("(")[0].trim()
+            } else {
+                name = taxa_name
+            }
+            state.selected.taxa = state.taxa.filter((t) => t.name == name)[0].id
         }
     },
     actions: {
@@ -125,26 +124,21 @@ const store = new Vuex.Store({
             console.log("fetching data - Start")
             return axios.get('/api/grouped_data')
                 .then((response) => commit('SET_DATA', response.data))
-                .then(() => commit('SET_FILTERED_TAXA'))
                 .then(() => commit('SET_FILTERED_DATA'))
-        },
-        fetchTaxa({commit}) {
-            return axios.get('/api/taxa')
-                .then((response) => {
-                    commit('SET_TAXA', response.data)
-                })
-        },
-        fetchAllPortalData({commit}, year) {          
-            return axios.get('/api/data/'+ year )
-                .then((response) => {
-                    commit('SET_ALL_PORTAL_DATA', response.data)
-                })
                 .then(() => commit('SET_FILTERED_TAXA'))
-                .then(() => commit('SET_FILTERED_DATA'))
         },
         setSelected({commit}, payload) {
             console.log("setSelected", payload)
-            commit('SET_SELECTED', payload)
+            if(payload.filter == "taxa"){
+                commit('SELECT_TAXA', payload.value)
+            } else {
+                commit('SET_SELECTED', payload)
+            }
+            commit('SET_FILTERED_DATA')
+        },
+        selectTaxa({commit}, payload){
+            console.log("selectTaxa", payload)
+            commit('SELECT_TAXA', payload)
             commit('SET_FILTERED_DATA')
         }
     },
