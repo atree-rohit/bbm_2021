@@ -138,6 +138,7 @@ export default {
 	mounted(){
 		this.init_tooltip()
 		this.init_area_names()
+		this.init()
 	},
 	computed:{
 		...mapState({
