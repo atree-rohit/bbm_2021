@@ -279,6 +279,7 @@ import store from '../store/index_2022'
 		},
 		watch:{
 			filtered_taxa(newVal){
+				console.log(newVal)
 				let taxa = Object.values(newVal)
 								.map((t) => (t.common_name) ? `${t.name} (${t.common_name})` : t.name)
 								.sort()
@@ -312,7 +313,7 @@ import store from '../store/index_2022'
 			},
 			filterBtnClass(filter){
 				if(filter == "taxa"){
-					return (this.selected[filter] == 'Papilionoidea') ? 'btn-dark' : 'btn-success'
+					return (this.selected[filter] == 47224) ? 'btn-dark' : 'btn-success'
 				} else {
 					return (this.selected[filter] == 'All') ? 'btn-dark' : 'btn-success'
 				}

@@ -136,10 +136,8 @@ import store from '../store/index_2022'
 		},
         mounted(){
             this.init()
-            if(this.selected.taxa != "Papilionoidea"){
-                let taxa = this.all_taxa.find(taxa => taxa.id == this.selected.taxa)
-                this.crumbClick(taxa.name)
-            }
+            let taxa = this.all_taxa.find(taxa => taxa.id == this.selected.taxa)
+            this.crumbClick(taxa.name)
         },
 		watch: {
             'selected.taxa': function(newVal){
