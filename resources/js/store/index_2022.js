@@ -48,7 +48,15 @@ const store = new Vuex.Store({
                 })
             })
             state.all_data = all_data
+
+            localStorage.setItem('all_data', JSON.stringify(all_data))
+            localStorage.setItem('taxa', JSON.stringify(data.taxa))
             console.log("fetching data - Set_data complete")
+        },
+        SET_DATA_FROM_LOCAL_STORAGE(state, data){
+            state.taxa = JSON.parse(localStorage.getItem('taxa'))
+            state.all_data = JSON.parse(localStorage.getItem('all_data'))
+            console.log("fetching data - Set_data from localStorage complete")
         },
         SET_SELECTED(state, selected) {
             if(selected.filter == "species"){
@@ -122,10 +130,19 @@ const store = new Vuex.Store({
     actions: {
         fetchData({commit}){
             console.log("fetching data - Start")
-            return axios.get('/api/grouped_data')
-                .then((response) => commit('SET_DATA', response.data))
-                .then(() => commit('SET_FILTERED_DATA'))
-                .then(() => commit('SET_FILTERED_TAXA'))
+            if(localStorage.getItem('all_data') && localStorage.getItem('taxa')){
+                commit('SET_DATA_FROM_LOCAL_STORAGE', {
+                    taxa: JSON.parse(localStorage.getItem('taxa')),
+                    data: JSON.parse(localStorage.getItem('all_data'))
+                })
+                commit('SET_FILTERED_DATA')
+                commit('SET_FILTERED_TAXA')
+            } else {
+                axios.get('/api/grouped_data')
+                    .then((response) => commit('SET_DATA', response.data))
+                    .then(() => commit('SET_FILTERED_DATA'))
+                    .then(() => commit('SET_FILTERED_TAXA'))
+            }
         },
         setSelected({commit}, payload) {
             console.log("setSelected", payload)
