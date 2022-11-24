@@ -97,8 +97,8 @@ class ResultController extends Controller
         $this->limit = -1;
         $all_data = [
             "counts" => $this->get_counts_data_array_2022($year), 
-            // "inat" => $this->get_inat_data_array_2022($year), 
-            // "ibp" => $this->get_ibp_data_array_2022($year), 
+            "inat" => $this->get_inat_data_array_2022($year), 
+            "ibp" => $this->get_ibp_data_array_2022($year), 
         ];
         return response($all_data, 200)
             ->header('Content-Type', 'application/json');
