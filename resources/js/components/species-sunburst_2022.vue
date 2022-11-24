@@ -112,6 +112,7 @@ import store from '../store/index_2022'
                 width: 0,
         		height:0,
         		radius: 0,
+                font_size:0,
         		g:"",
         		path:"",
         		parent:"",
@@ -135,35 +136,35 @@ import store from '../store/index_2022'
 		},
         mounted(){
             this.init()
-            if(this.selected.taxa != "All"){
+            if(this.selected.taxa != "Papilionoidea"){
                 let taxa_name = this.all_taxa.find(taxa => taxa.id == this.selected.taxa).name
-                this.init()
                 this.crumbClick(taxa_name)
             }
         },
 		watch: {
-            filtered_data(){
-                // this.renderChart()
-                // if(this.selected.species != "All"){
-                //     let parent_id = this.all_taxa.find((d) => d.id == this.selected.species).ancestry.split("/").at(-2)
-                //     let taxa = this.all_taxa.find((d) => d.id == parent_id)
-                //     this.crumbClick(taxa.name)
-                // }
-            },
+            'selected.taxa': function(newVal){
+                let taxa_name = this.all_taxa.find(taxa => taxa.id == newVal).name
+                this.crumbClick(taxa_name)
+            }
 		},
 		methods: {
             init () {
                 if(window.innerWidth < 800){
                     this.width = window.innerWidth * 1.75
                     this.height = window.innerHeight * 1.5
+                    this.font_size = 1
                 } else {
                     this.width = window.innerWidth * 0.5
                     this.height = window.innerHeight * 0.4
+                    this.font_size = 0.5
                 }
                 this.radius = Math.min(this.height, this.width) * 0.15
 
                 this.initTree()
                 this.renderChart()
+                if(this.selected.taxa == "All"){
+                    this.crumbClick("Papilionoidea")
+                }
             },
             initTree(){
                 var speciesTree = [];
@@ -255,7 +256,7 @@ import store from '../store/index_2022'
             			.attr("dy", "0.35em")
             			.attr("fill-opacity", d => +this.labelVisible(d.current))
             			.attr("transform", d => this.labelTransform(d.current))
-                        .style("font-size", "0.5em")
+                        .style("font-size", this.font_size.toString() + "rem")
                             .text(d => d.data.name)
 
                 this.parent = this.g.append("circle")
@@ -317,7 +318,7 @@ import store from '../store/index_2022'
             labelTransform(d) {
                 const x = (d.x0 + d.x1) / 2 * 180 / Math.PI
                 const y = (d.y0 + d.y1) / 2 * this.radius
-                return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
+                return `rotate(${x-90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
             },
             arc(d){
                 d3.arc()
