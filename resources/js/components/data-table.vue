@@ -98,8 +98,9 @@
                             <template v-if="h[1] == 'portals'">
                                 <!-- <span class="badge rounded-pill mx-1 badge-success">inat</span>' -->
                                 <span v-for="p in row[h[1]].split(', ')"
-                                        class="badge rounded-pill mx-1"
-                                        :class="badgeClass(p)"
+                                    :key="p"
+                                    class="badge rounded-pill mx-1"
+                                    :class="badgeClass(p)"
                                 >
                                     {{p}}
                                 </span>
