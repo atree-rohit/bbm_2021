@@ -52,7 +52,7 @@
 					type="button"
 					data-bs-toggle="dropdown"
 					aria-expanded="false"
-					:class="(selected[filter] == 'All') ? 'btn-outline-dark' : 'btn-success'"
+					:class="filterBtnClass(filter)"
 					v-text="filterBtnText(filter)"
 				/>
 				<ul
@@ -282,13 +282,15 @@ import store from '../store/index_2022'
 				let taxa = Object.values(newVal)
 								.map((t) => (t.common_name) ? `${t.name} (${t.common_name})` : t.name)
 								.sort()
-				this.filters.taxa = ["All", ...taxa]
+				this.filters.taxa = [...taxa]
 			},
 		},
 		methods: {
 			init(){
 				Object.keys(this.filters).forEach((filter) => {
-					this.filters[filter].unshift("All")
+					if(filter != "taxa"){
+						this.filters[filter].unshift("All")
+					}
 				})
 			},
 			capitalizeWords,
@@ -303,6 +305,13 @@ import store from '../store/index_2022'
 				}
 				this.closeDropdowns()
 			},
+			filterBtnClass(filter){
+				if(filter == "taxa"){
+					return (this.selected[filter] == 'Papilionoidea') ? 'btn-dark' : 'btn-success'
+				} else {
+					return (this.selected[filter] == 'All') ? 'btn-dark' : 'btn-success'
+				}
+			},	
 			filterBtnText(filter){
 				let op = this.capitalizeWords(filter) + " : "
 				if(filter == "taxa"){
@@ -310,7 +319,7 @@ import store from '../store/index_2022'
 					if(selected_taxa.length > 0){
 						op += selected_taxa[0].name
 					} else {
-						op += "All"
+						op += "Papilionoidea"
 					}
 				} else {
 					op += this.selected[filter]
