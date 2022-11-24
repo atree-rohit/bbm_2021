@@ -7,14 +7,13 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         taxa: {},
-        all_portal_data: [],
         all_data: [],
         selected: {
             portals: "All",
             years: "All",
             state: "All",
             date: "All",
-            taxa: "All"
+            taxa: "Papilionoidea"
         },
         filtered_data: [],
         filtered_taxa: [],
@@ -93,13 +92,15 @@ const store = new Vuex.Store({
                     return false
                 }
 
-                if (state.selected.taxa != "All"){
-                    let ancestry = state.taxa.find((t) => t.id == d.taxa_id).ancestry
-                    return ancestry.includes(state.selected.taxa.toString())
+                if (state.selected.taxa != "Papilionoidea"){
+                    return (
+                        state.selected.taxa == d.taxa_id ||
+                        state.filtered_taxa.find((t) => t.id == d.taxa_id)?.ancestry.includes(state.selected.taxa.toString())
+                    )
                 }
                 return true
             })
-            console.log("fetching data - filtered_data complete")
+            // console.log("fetching data - filtered_data complete")
         },
         SET_FILTERED_TAXA(state) {
             let all_taxa = [...new Set(state.filtered_data.map((d) => parseInt(d.taxa_id)))]
@@ -115,8 +116,7 @@ const store = new Vuex.Store({
             state.filtered_taxa = Object.values(state.taxa)
                 .filter((t) => all_taxa.includes(t.id) && levels.includes(t.rank))
             
-            // console.log(all_taxa, all_taxa_set, state.filtered_taxa)
-            console.log("fetching data - filtered_taxa complete")
+            // console.log("fetching data - filtered_taxa complete")
         },
         SELECT_TAXA(state, taxa_name){
             let name = ""
@@ -131,10 +131,11 @@ const store = new Vuex.Store({
     actions: {
         fetchData({commit}){
             console.log("fetching data - Start")
+            let refreshTime = 60 * 1000 // 1 hour
             if(
                 localStorage.getItem('all_data') && 
                 localStorage.getItem('taxa') &&
-                (new Date().getTime() - JSON.parse(localStorage.getItem('caching_time')) < ( 6 * 60 * 60 * 100))
+                (new Date().getTime() - JSON.parse(localStorage.getItem('caching_time')) < ( refreshTime))
                 ){
                 commit('SET_DATA_FROM_LOCAL_STORAGE', {
                     taxa: JSON.parse(localStorage.getItem('taxa')),
@@ -150,7 +151,7 @@ const store = new Vuex.Store({
             }
         },
         setSelected({commit}, payload) {
-            console.log("setSelected", payload)
+            // console.log("setSelected", payload)
             if(payload.filter == "taxa"){
                 commit('SELECT_TAXA', payload.value)
             } else {
@@ -159,8 +160,10 @@ const store = new Vuex.Store({
             commit('SET_FILTERED_DATA')
         },
         selectTaxa({commit}, payload){
-            console.log("selectTaxa", payload)
+            // console.log("selectTaxa", payload)
             commit('SELECT_TAXA', payload)
+        },
+        setFilteredData({commit}){
             commit('SET_FILTERED_DATA')
         }
     },

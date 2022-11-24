@@ -284,6 +284,11 @@ import store from '../store/index_2022'
 								.sort()
 				this.filters.taxa = [...taxa]
 			},
+			mode(newVal, oldVal){
+				if(oldVal == 'chart'){
+					store.dispatch('setFilteredData')
+				}
+			}
 		},
 		methods: {
 			init(){

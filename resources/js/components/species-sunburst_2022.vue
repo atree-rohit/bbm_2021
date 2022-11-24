@@ -137,8 +137,8 @@ import store from '../store/index_2022'
         mounted(){
             this.init()
             if(this.selected.taxa != "Papilionoidea"){
-                let taxa_name = this.all_taxa.find(taxa => taxa.id == this.selected.taxa).name
-                this.crumbClick(taxa_name)
+                let taxa = this.all_taxa.find(taxa => taxa.id == this.selected.taxa)
+                this.crumbClick(taxa.name)
             }
         },
 		watch: {
@@ -239,6 +239,8 @@ import store from '../store/index_2022'
             		.on("click", (event, d) =>  {
                         if(d.depth < 6){
                             this.clicked(d)
+                        } else if(d.depth == 6){
+                            store.dispatch('selectTaxa', d.data.name)
                         }
                     })
 
