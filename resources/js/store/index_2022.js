@@ -13,7 +13,7 @@ const store = new Vuex.Store({
             years: "All",
             state: "All",
             date: "All",
-            taxa: "Papilionoidea"
+            taxa: 47224
         },
         filtered_data: [],
         filtered_taxa: [],
@@ -92,7 +92,7 @@ const store = new Vuex.Store({
                     return false
                 }
 
-                if (state.selected.taxa != "Papilionoidea"){
+                if (state.selected.taxa != 47224){
                     return (
                         state.selected.taxa == d.taxa_id ||
                         state.filtered_taxa.find((t) => t.id == d.taxa_id)?.ancestry.includes(state.selected.taxa.toString())
@@ -131,7 +131,7 @@ const store = new Vuex.Store({
     actions: {
         fetchData({commit}){
             console.log("fetching data - Start")
-            let refreshTime = 60 * 1000 // 1 hour
+            let refreshTime = 12 * 60 * 1000 // 12 hours
             if(
                 localStorage.getItem('all_data') && 
                 localStorage.getItem('taxa') &&
