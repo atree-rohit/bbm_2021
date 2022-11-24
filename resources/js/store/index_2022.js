@@ -49,6 +49,7 @@ const store = new Vuex.Store({
             })
             state.all_data = all_data
 
+            localStorage.setItem('caching_time', JSON.stringify(new Date().getTime()))
             localStorage.setItem('all_data', JSON.stringify(all_data))
             localStorage.setItem('taxa', JSON.stringify(data.taxa))
             console.log("fetching data - Set_data complete")
@@ -130,7 +131,11 @@ const store = new Vuex.Store({
     actions: {
         fetchData({commit}){
             console.log("fetching data - Start")
-            if(localStorage.getItem('all_data') && localStorage.getItem('taxa')){
+            if(
+                localStorage.getItem('all_data') && 
+                localStorage.getItem('taxa') &&
+                (new Date().getTime() - JSON.parse(localStorage.getItem('caching_time')) < ( 6 * 60 * 60 * 100))
+                ){
                 commit('SET_DATA_FROM_LOCAL_STORAGE', {
                     taxa: JSON.parse(localStorage.getItem('taxa')),
                     data: JSON.parse(localStorage.getItem('all_data'))
