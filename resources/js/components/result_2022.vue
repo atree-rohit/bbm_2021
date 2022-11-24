@@ -25,7 +25,6 @@
 </style>
 <template>
 	<div id="result-page" class="container-fluid">
-		{{selected}}
 		<ul id="mode-tabs" class="nav nav-tabs nav-fill">
 			<li
 				v-for="m in modes"
@@ -137,7 +136,7 @@
 			</div>
 		</div>
 		<div class="container-fluid" v-else-if="mode == 'map'">
-			<IndiaMap :key='timestamp'/>
+			<IndiaMap />
 		</div>
 		<div id="table-container" class="container-fluid" v-else-if="mode == 'table'">
 			<data-table-22 :data="tableData"
@@ -147,7 +146,7 @@
 			/>
 		</div>
 		<div id="chart-container" class="container-fluid" v-else-if="mode == 'chart'">
-			<species-sunburst :key='timestamp' />
+			<species-sunburst />
 		</div>
 		
 	</div>
@@ -176,13 +175,13 @@ import store from '../store/index_2022'
 		data() {
 			return{
 				modes: ["map", "table", "chart"],
-				mode: "chart",
+				mode: "map",
 				filters: {
 					years: [2020,2021,2022],
-					portals: ["BBM Counts", "iNaturalist", "India Biodiversity Portal", "iFoundButterflies"],
+					portals: ["BBM Counts", "iNaturalist", "India Biodiversity Portal"],
 					state: states.features.map(d => d.properties.state).sort(),
 					// date: Array.from({length: 30}, (_, i) => i + 1),
-					species: []
+					taxa: []
 				},
 				table_filters: [ "states", "taxa"],
 				selected_table_filter: "states",
@@ -238,7 +237,6 @@ import store from '../store/index_2022'
 					op[d[0]] = d[1].reduce((a,b) => a + b.count, 0)
 				})
 				return op
-
 			},
 			tableData(){
 				let op = []
@@ -281,12 +279,11 @@ import store from '../store/index_2022'
 		},
 		watch:{
 			filtered_taxa(newVal){
-				let species = Object.values(newVal)
-								.filter((t) => t.rank == "species")
+				let taxa = Object.values(newVal)
 								.map((t) => (t.common_name) ? `${t.name} (${t.common_name})` : t.name)
 								.sort()
-				this.filters.species = ["All", ...species]
-			}
+				this.filters.taxa = ["All", ...taxa]
+			},
 		},
 		methods: {
 			init(){
@@ -308,7 +305,7 @@ import store from '../store/index_2022'
 			},
 			filterBtnText(filter){
 				let op = this.capitalizeWords(filter) + " : "
-				if(filter == "species"){
+				if(filter == "taxa"){
 					let selected_taxa = this.filtered_taxa.filter((t) => t.id == this.selected[filter])
 					if(selected_taxa.length > 0){
 						op += selected_taxa[0].name
