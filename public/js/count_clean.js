@@ -2669,6 +2669,7 @@ var render = function render() {
         "class": _vm.currentSort == h[1] ? "sort-col" : ""
       }, [h[1] == "portals" ? _vm._l(row[h[1]].split(", "), function (p) {
         return _c("span", {
+          key: p,
           staticClass: "badge rounded-pill mx-1",
           "class": _vm.badgeClass(p)
         }, [_vm._v("\n                                " + _vm._s(p) + "\n                            ")]);
