@@ -26,14 +26,14 @@
 		<nav class="navbar navbar-expand-lg navbar-light bg-primary shadow-sm">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="{{ url('/') }}">
-					<img id="nav-logo" src="{{url('/images/bbm_22_logo.jpg')}}">
+					<img id="nav-logo" src="{{url('/images/bbm_23_logo.jpg')}}">
 				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
 				<div class="mx-5"></div>
-				<div class="h2 text-center p-2 ms-5 mb-0">Big Butterfly Month - 2022</div>
+				<div class="h2 text-center p-2 ms-5 mb-0">Big Butterfly Month - 2023</div>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<!-- Left Side Of Navbar -->
 					<!-- Right Side Of Navbar -->
